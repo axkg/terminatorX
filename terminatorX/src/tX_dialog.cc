@@ -618,7 +618,7 @@ void show_about(int nag)
 		"OFF"
 #endif
 		" - for a "
-#ifdef BIG_ENDIAN_MACHINE
+#ifdef WORDS_BIGENDIAN
 		"big"
 		
 #else
