@@ -39,11 +39,11 @@ tX_threads=no
 
 dnl Some machines don't require any switches for pthread support...
 
-AC_MSG_CHECKING([whether gcc supports pthreads out of the box])
+AC_MSG_CHECKING([whether pthreads works without switches])
 	no_threads_flags=no
 	AC_LANG_SAVE
 	AC_LANG_C
-	AC_TRY_LINK([#include <pthread.h>], [void *ptr = pthread_mutex_lock;],
+	AC_TRY_LINK([#include <pthread.h>], [ pthread_t thread; pthread_create(&thread, NULL, NULL, NULL);],
 		no_threads_flags=yes,
 		no_threads_flags=no
 	)
@@ -54,16 +54,16 @@ if test "$no_threads_flags" = "yes"; then
 	tX_threads=auto
 fi
 
-dnl *BSD wants a "-pthread" among the CFLAGS...
+dnl Some machines prefer a -pthread...
 
 if test "$tX_threads" = "no"; then
-	AC_MSG_CHECKING([whether gcc requires -pthread])
+	AC_MSG_CHECKING([whether -pthread is required for pthreads])
 		use_gcc_threads=no
 		ac_save_CFLAGS=$CFLAGS
 		CFLAGS="$CFLAGS -pthread"
 		AC_LANG_SAVE
 		AC_LANG_C
-		AC_TRY_LINK([#include <pthread.h>], [void *ptr = pthread_mutex_lock;],
+		AC_TRY_LINK([#include <pthread.h>], [ pthread_t thread; pthread_create(&thread, NULL, NULL, NULL);],
 			use_gcc_threads=yes,
 			use_gcc_threads=no
 		)
@@ -77,18 +77,18 @@ if test "$tX_threads" = "no"; then
 	fi
 fi
 
-dnl If we haven't found it yet will try -lpthread...
+dnl If we haven't found pthreads yet will try -lpthread...
 
 if test "$tX_threads" = "no"; then
 	pthread_lib=no
-	AC_CHECK_LIB(pthread, pthread_mutex_lock, pthread_lib=yes, pthread_lib=no)
+	AC_CHECK_LIB(pthread, pthread_detach, pthread_lib=yes, pthread_lib=no)
 	
 	if test "$pthread_lib" = "yes"; then
 		tX_threads=lpthread
 	fi
 fi
 
-dnl If we still haven't found it, we panic...
+dnl If we still haven't found pthreads, we panic...
 
 if test "$tX_threads" = "no"; then
 	AC_MSG_ERROR([** failed to detect pthreads implementation **])
