@@ -346,7 +346,7 @@ create_tx_options (void)
   combo_entry5 = GTK_COMBO (alsa_samplerate)->entry;
   gtk_widget_show (combo_entry5);
 
-  alsa_buffersize = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (1024, 512, 32000, 512, 1024, 2048)));
+  alsa_buffersize = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (1024, 64, 512, 32, 64, 64)));
   gtk_widget_show (alsa_buffersize);
   gtk_table_attach (GTK_TABLE (table6), alsa_buffersize, 1, 2, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),

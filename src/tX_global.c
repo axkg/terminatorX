@@ -79,7 +79,7 @@ void set_global_defaults() {
 	globals.oss_buff_size=9;
 	globals.oss_samplerate=44100;
 
-	strcpy(globals.alsa_device, "plughw:0,0");	
+	strcpy(globals.alsa_device, "hw:0,0");	
 	globals.alsa_buff_no=2;
 	globals.alsa_buff_size=1024;
 	globals.alsa_samplerate=44100;
@@ -323,6 +323,6 @@ char *encode_xml(char *dest, const char *src) {
 	}
 	dest[t]=0;
 	
-	tX_debug("encode_xml: from \"%s\" to \"%s\".", src, dest); 
+	//tX_debug("encode_xml: from \"%s\" to \"%s\".", src, dest); 
 	return dest;
 }

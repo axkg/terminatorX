@@ -44,16 +44,13 @@ class tX_audiodevice
 	void init();
 	
 	public:
-	void set_latency_near(int milliseconds);
-	int get_latency(); /* call only valid *after* open() */
+	virtual double get_latency()=0; /* call only valid *after* open() */
+	int get_buffersize() { return samples_per_buffer; } /* call only valid *after* open() */
 	
-	void set_buffersize_near(int samples);
-	int get_buffersize(); /* call only valid *after* open() */
-	
-	virtual int open();
-	virtual int close();
+	virtual int open()=0;
+	virtual int close()=0;
 		
-	virtual void play(int16_t*); /* play blocked */
+	virtual void play(int16_t*)=0; /* play blocked */
 };
 
 
@@ -67,7 +64,9 @@ class tX_audiodevice_oss : public tX_audiodevice
 	public:
 	virtual int open();
 	virtual int close();
-		
+	
+	virtual double get_latency(); /* call only valid *after* open() */
+	
 	virtual void play(int16_t*); /* play blocked */
 	
 	tX_audiodevice_oss();
@@ -86,6 +85,8 @@ class tX_audiodevice_alsa : public tX_audiodevice
 	virtual int open();
 	virtual int close();
 		
+	virtual double get_latency(); /* call only valid *after* open() */
+
 	virtual void play(int16_t*); /* play blocked */
 	
 	tX_audiodevice_alsa();
