@@ -132,6 +132,12 @@ static void gtk_tx_init(GtkTx * tx) {
 	
 	tx->current_fg=&tx->fg;
 	tx->current_bg=&tx->bg;
+	
+	tx->spp=1;
+	tx->lastmute=-1;
+	tx->zoom=0;
+	tx->cursor_pos=0;
+	tx->cursor_x_pos=0;
 }
 
 GtkWidget *gtk_tx_new(int16_t * wavdata, int wavsamples) {
@@ -151,9 +157,13 @@ static void gtk_tx_destroy(GtkObject * object) {
 	g_return_if_fail(object != NULL);
 	g_return_if_fail(GTK_IS_TX(object));
 
+	GtkTx *tx=GTK_TX(object);
+	
+	if (tx->disp_data) { free(tx->disp_data); tx->disp_data=NULL; }
+	
 	if (GTK_OBJECT_CLASS(parent_class)->destroy) {
 		(*GTK_OBJECT_CLASS(parent_class)->destroy) (object);
-	}
+	}	
 }
 
 #define MAX_ZOOM_WIDTH 500000.0
@@ -221,7 +231,7 @@ static void gtk_tx_prepare(GtkWidget * widget) {
 	
 	tx->yc = widget->allocation.height / 2;
 
-	if (tx->disp_data) free(tx->disp_data);
+	if (tx->disp_data) { free(tx->disp_data); tx->disp_data=NULL; }
 
 	if (tx->data) {
 		int max_spp=tx->samples/widget->allocation.width;
@@ -283,6 +293,10 @@ static void gtk_tx_prepare(GtkWidget * widget) {
 	} else {
 	    tx->disp_data = NULL;
 	}
+	
+	tx->cursor_pos=-1;
+	tx->lastmute=-1;
+	
 	//tX_warning("spp: %i samples: %i width %i x %i", tx->spp, tx->samples, tx->display_width, x);
 }
 
@@ -368,11 +382,6 @@ static void gtk_tx_update(GtkTx * tx) {
 	gtk_widget_draw(GTK_WIDGET(tx), NULL);
 }
 
-void gtk_tx_prepare_pos_display(GtkTx * tx) {
-	tx->cursor_pos=-1;
-	tx->lastmute=-1;
-}
-
 void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	GtkWidget *widget;
 	GdkWindow *window;
@@ -387,7 +396,8 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	//current_x = sample / tx->spp + FR_SIZE;
 	current_pos = sample / tx->spp;
 	
-	if ((current_pos == tx->cursor_pos) && (tx->lastmute == mute)) return;
+	if ((current_pos == tx->cursor_pos) && 
+		(tx->lastmute == mute)) return;
 	tx->lastmute = mute;
 
 	/* speedup + easyness */
@@ -400,7 +410,7 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	ymax = widget->allocation.height-1;
 
 	/* clean up last pos */
-
+	
 	x = tx->cursor_x_pos;
 	
 	if (x >= 0) {
