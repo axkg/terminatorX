@@ -423,7 +423,7 @@ void tX_seqpar_master_volume :: do_exec(const float value)
 
 void tX_seqpar_master_volume :: do_update_graphics ()
 {
-	gtk_adjustment_set_value(volume_adj, 2.0-vtt_class::master_volume);
+	gtk_adjustment_set_value(volume_adj, vtt_class::master_volume);
 }
 
 const char * tX_seqpar_master_volume :: get_name()

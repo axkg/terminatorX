@@ -52,6 +52,10 @@
 #include "tX_vtt.h"
 #include <dirent.h>
 
+#ifdef USE_JACK
+extern void jack_check();
+#endif
+
 extern char *logo_xpm[];
 GtkWidget *opt_dialog;
 int opt_hidden=0;
@@ -150,6 +154,10 @@ void apply_options(GtkWidget *dialog) {
 	gtk_widget_queue_draw(main_flash_l);
 	gtk_tx_flash_update_colors(GTK_TX_FLASH(main_flash_r));
 	gtk_widget_queue_draw(main_flash_r);
+	
+#ifdef USE_JACK
+	jack_check();
+#endif	
 }
 
 

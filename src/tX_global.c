@@ -131,9 +131,6 @@ void set_global_defaults() {
 #endif		
 	globals.use_stdout_cmdline=0;
 	strcpy(globals.current_path, "");
-	globals.pitch=1.0;
-	globals.volume=1.0;
-	
 	strcpy(globals.lrdf_path, "/usr/share/ladspa/rdf:/usr/local/share/ladspa/rdf");
 	globals.fullscreen_enabled=0;
 	globals.confirm_events=0;
@@ -141,7 +138,7 @@ void set_global_defaults() {
 	
 	globals.vtt_inertia=10.0;
 	
-	globals.alsa_free_hwstats=1;
+	globals.alsa_free_hwstats=0;
 	globals.filename_length=20;
 	globals.restore_midi_connections=1;
 	

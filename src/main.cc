@@ -72,7 +72,7 @@ gint idle_tag;
 #ifdef USE_JACK	
 void jack_check()
 {
-	if (!tX_jack_client::get_instance()) {
+	if ((!tX_jack_client::get_instance()) && (globals.audiodevice_type==JACK)) {
 		tx_note("Couldn't connect to JACK server - JACK output not available.\n\nIf you want to use JACK, ensure the JACK daemon is running before you start terminatorX.", true);
 	}
 }
@@ -245,17 +245,19 @@ int main(int argc, char **argv)
 		
 	if (!globals.show_nag) {
 		display_mastergui();
-#ifdef USE_JACK	
-		jack_check();
-#endif			
 	}
 		
-	if (globals.startup_set)
-	{
+	if (globals.startup_set) {
 		while (gtk_events_pending()) gtk_main_iteration(); gdk_flush();	
+		tX_cursor::set_cursor(tX_cursor::WAIT_CURSOR);
 		load_tt_part(globals.startup_set);
+		tX_cursor::reset_cursor();
 	}
-		
+
+#ifdef USE_JACK	
+	jack_check();
+#endif			
+	
 #ifndef CREATE_BENCHMARK
 
 //	gdk_input_init();
