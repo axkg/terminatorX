@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,20 +41,23 @@ extern "C" {
 typedef struct _GtkTxFlash GtkTxFlash;
 typedef struct _GtkTxFlashClass GtkTxFlashClass;
 
+struct flash_channel {
+	int last_level;
+	int max;
+	int x1;
+	int x2;
+};
+
 struct _GtkTxFlash {
 	GtkWidget widget;
-
 	GdkColor colors[5];	
-	
 	int colors_allocated;
 	int levels;
-	int last_level;
 	int red_level;
 	f_prec level_value;
-	
-	int x1, x2;
-	
-	int max, max_cycles;
+	int max_cycles;
+	int center_expand;
+	struct flash_channel channel[2];
 };
 
 struct _GtkTxFlashClass {
@@ -63,7 +66,7 @@ struct _GtkTxFlashClass {
 
 GtkWidget* gtk_tx_flash_new();
 GType gtk_tx_flash_get_type (void);
-void gtk_tx_flash_set_level (GtkWidget *widget, f_prec new_value);
+void gtk_tx_flash_set_level (GtkWidget *widget, f_prec left_channel, f_prec right_channel);
 void gtk_tx_flash_clear (GtkWidget *widget);
 void gtk_tx_flash_update_colors(GtkTxFlash *tx);
 

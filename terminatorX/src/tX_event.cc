@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,9 +28,13 @@ void tX_event :: store (FILE *rc, gzFile rz, char *indent) {
 	tX_store("%s<event pid=\"%i\" value=\"%lf\" time=\"%i\"/>\n", indent, sp->get_persistence_id(), value, timestamp);
 }
 
-tX_event :: tX_event (xmlDocPtr doc, xmlNodePtr node) {
+tX_event* tX_event :: load_event (xmlDocPtr doc, xmlNodePtr node) {
 	unsigned int sp_persistence_id;
 	char *buffer;
+	float value;
+	guint32 timestamp;
+	tX_event *event=NULL;
+	tX_seqpar *sp=NULL;
 	
 	buffer=(char *) xmlGetProp(node, (xmlChar *) "pid");
 	if (buffer) sscanf(buffer, "%i", &sp_persistence_id);
@@ -43,7 +47,11 @@ tX_event :: tX_event (xmlDocPtr doc, xmlNodePtr node) {
 
 	sp=tX_seqpar::get_sp_by_persistence_id(sp_persistence_id);
 	
-	if (!sp) {
-		tX_error("fatal: couldn't resolve seq. parameter for event at %i.", timestamp);
+	if (sp) {
+		event=new tX_event(sp, timestamp, value);
+	} else {
+		tX_error("failed to resolve event at %i - pid [%i]. Event lost.", timestamp, sp_persistence_id);
 	}
+	
+	return event;
 }

@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -520,6 +520,16 @@ void vtt_class :: ec_clear_buffer()
 	ec_ptr=ec_buffer; 
 }
 
+#ifdef BIG_ENDIAN_MACHINE
+#define vabs(x) fabs(x)
+#else
+inline float vabs(float f)
+{
+	int i=((*(int*)&f)&0x7fffffff);
+	return (*(float*)&i);
+}
+#endif
+
 void vtt_class :: render()
 {
 	list <vtt_fx *> :: iterator effect;
@@ -548,19 +558,13 @@ void vtt_class :: render()
 		}
 
 		for (int sample=0; sample<samples_in_outputbuffer; sample++) {				
-			f_prec temp=output_buffer[sample]*=res_volume_left;
+			output_buffer[sample]*=res_volume_left;
 			output_buffer2[sample]*=res_volume_right;
-			
-			temp=fabs(temp);
-			if (temp>max_value) max_value=temp;
 		}
 	} else {
 		for (int sample=0; sample<samples_in_outputbuffer; sample++) {				
 			output_buffer2[sample]=output_buffer[sample]*res_volume_right;
-			f_prec temp=output_buffer[sample]*=res_volume_left;
-			
-			temp=fabs(temp);
-			if (temp>max_value) max_value=temp;
+			output_buffer[sample]*=res_volume_left;
 		}
 	}
 	
@@ -570,7 +574,16 @@ void vtt_class :: render()
 			output_buffer[sample]+=temp*ec_volume_left;
 			output_buffer2[sample]+=temp*ec_volume_right;
 		}
-	}	
+	}
+	
+	// find max signal for vu meters...
+	for (int sample=0; sample<samples_in_outputbuffer; sample++) {
+		f_prec lmax=vabs(output_buffer[sample]);
+		f_prec rmax=vabs(output_buffer2[sample]);
+		
+		if (lmax>max_value) max_value=lmax;
+		if (rmax>max_value2) max_value2=rmax;
+	}
 }
 
 extern void vg_create_fx_gui(vtt_class *vtt, vtt_fx_ladspa *effect, LADSPA_Plugin *plugin);
@@ -723,6 +736,9 @@ void vtt_class :: render_scratch()
 				}
 				
 				sample_res=(sample_a*amount_a)+(sample_b*amount_b);
+				
+				// scale to 0 db := 1.0f
+				sample_res/=FL_SHRT_MAX;
 								
 				if (fade_in) {
 					sample_res*=fade_vol;
@@ -895,8 +911,8 @@ int16_t * vtt_class :: render_all_turntables()
 			(*vtt)->render();			
 			
 			for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {
-				mix_buffer[mix_sample++]=(*vtt)->output_buffer[sample];
-				mix_buffer[mix_sample++]=(*vtt)->output_buffer2[sample];
+				mix_buffer[mix_sample++]=(*vtt)->output_buffer[sample]*FL_SHRT_MAX;
+				mix_buffer[mix_sample++]=(*vtt)->output_buffer2[sample]*FL_SHRT_MAX;
 			}
 
 			if (master_triggered) {
@@ -918,8 +934,8 @@ int16_t * vtt_class :: render_all_turntables()
 				(*vtt)->render();					
 
 				for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {
-					mix_buffer[mix_sample++]+=(*vtt)->output_buffer[sample];
-					mix_buffer[mix_sample++]+=(*vtt)->output_buffer2[sample];
+					mix_buffer[mix_sample++]+=(*vtt)->output_buffer[sample]*FL_SHRT_MAX;
+					mix_buffer[mix_sample++]+=(*vtt)->output_buffer2[sample]*FL_SHRT_MAX;
 				}
 			}
 			
@@ -932,8 +948,6 @@ int16_t * vtt_class :: render_all_turntables()
 				temp=mix_buffer[sample];
 
 #ifndef TX_DO_CLIP
-#define FL_SHRT_MAX 32767.0
-#define FL_SHRT_MIN -32768.0
 				if(temp < FL_SHRT_MIN) temp = FL_SHRT_MIN;
 				else if (temp > FL_SHRT_MAX) temp = FL_SHRT_MAX;
 #endif					
@@ -1044,6 +1058,7 @@ void vtt_class :: retrigger()
 	want_stop=0;
 
 	max_value=0;
+	max_value2=0;
 	
 	if (is_sync_master)	{
 		master_triggered=1;
@@ -1096,6 +1111,7 @@ int vtt_class :: stop_nolock()
 	want_stop=0;
 	is_playing=0;
 	max_value=0;
+	max_value2=0;
 
 	cleanup_required=true;
 	
@@ -1480,20 +1496,20 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 										ladspa_effect=add_stereo_effect((LADSPA_Stereo_Plugin *) plugin);
 										if (!stereo) {
 											sprintf(buffer,"Trying to load mono plugin into stereo queue [%i].", ladspa_id);
-											tx_note(buffer, true);							
+											tx_note(buffer, true, GTK_WINDOW(gtk_widget_get_toplevel(ld_loaddlg)));
 										}
 									} else {
 										ladspa_effect=add_effect(plugin);
 										if (stereo) {
 											sprintf(buffer,"Trying to load stereo plugin into mono queue [%i].", ladspa_id);
-											tx_note(buffer, true);							
+											tx_note(buffer, true, GTK_WINDOW(gtk_widget_get_toplevel(ld_loaddlg)));
 										}										
 									}
 									
 									ladspa_effect->load(doc, pluginNode);
 								} else {
 									sprintf(buffer,"The terminatorX set file you are loading makes use of a LADSPA plugin that is not installed on this machine. The plugin's ID is [%i].", ladspa_id);
-									tx_note(buffer, true);							
+									tx_note(buffer, true, GTK_WINDOW(gtk_widget_get_toplevel(ld_loaddlg)));
 								}
 							} else {
 								tX_warning("ladspa_plugin section without a ladspa_id element.");
@@ -1519,12 +1535,12 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 	}
 	
 	if (xpar_id>=0) {
-		set_x_input_parameter(tX_seqpar :: get_sp_by_persistence_id(xpar_id));
+		set_x_input_parameter(tX_seqpar::get_sp_by_persistence_id(xpar_id));
 	}
 	else set_x_input_parameter(NULL);
 	
 	if (ypar_id) {
-		set_y_input_parameter(tX_seqpar :: get_sp_by_persistence_id(ypar_id));
+		set_y_input_parameter(tX_seqpar::get_sp_by_persistence_id(ypar_id));
 	}
 	else set_y_input_parameter(NULL);
 	
@@ -1619,8 +1635,6 @@ int vtt_class :: load_all(xmlDocPtr doc, char *fname) {
 				vtt_class *vtt=new vtt_class(1);
 				vtt->load(doc, cur);
 				
-				tX_debug("loading a turntable..");
-
 				if (strlen(vtt->filename)) {
 					strcpy(fn_buff, vtt->filename);
 					ld_set_filename(fn_buff);

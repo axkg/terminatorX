@@ -13,6 +13,22 @@ changed.
   instance press the "Stereo FX" button and select the plugin of your choice.
 - fixed the plugin menu - empty categories no longer get a menu entry.
 - plugins that do not qualify as realtime capable will now be disabled.
+- I'm fed up with terminatorX related security postings, so the old suid-root
+  method had to go. To achieve realtime scheduling you now have two options:
+   a) run terminatorX as root (obviously dangerous and not recommended)
+   b) build terminatorX with capabilities enabled and install it suid-root.
+      Due to the use of PR_SET_KEEPCAPS this will work on Linux _only_.
+   c) use the JACK backend with "POSIX draft capabilities" (see jackd manpage)
+- Loading sets with missing LADPSA plugins no longer crash tX.
+- Fixed a bug that made reading error messages impossible with the load dialog
+  open.
+- The engine now handles audiodevices that break down when already in playback
+  mode more gracefully. This really necessary when jack decides to kick us out.
+- All vu meters are stereo now. Having a mono widget for a stereo thing just
+  didn't make any sense anymore.
+- modified the render loop to comply with LADSPA V1.1: 0 db is now at 1.0f. This
+  makes a lot of plugins work with terminatorX that haven't worked with previous
+  releases.
 
 [v3.81]
 - JACK doesn't seem to like SCHED_FIFO clients so I added a little test that
