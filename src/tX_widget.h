@@ -41,46 +41,64 @@ extern "C" {
 typedef struct _GtkTx        GtkTx;
 typedef struct _GtkTxClass   GtkTxClass;
 
-struct _GtkTx
-{
-        GtkWidget widget;
+typedef enum tx_widget_motion {
+	NO_MOTION,
+	MOTION_LEFT,
+	MOTION_RIGHT
+} tx_widget_motion;
+
+struct _GtkTx {
+	GtkWidget widget;
 
 	int16_t *disp_data;
-	
 	int16_t *data;
 	int samples;
 	
 	GdkColor fg;
 	GdkColor bg;
+	GdkColor focus_bg;
+	GdkColor focus_fg;
 
-	GdkColor busy_bg;
-	GdkColor busy_fg;
-	
-	GdkColor mute_bg;
-	GdkColor mute_fg;
-	
-	GdkColor framecol;
+	GdkColor busy;
+	GdkColor mute;
 
+	GdkColor *current_fg;
+	GdkColor *current_bg;
+	
 	int spp;
 	int yc;
-	int lastpos;
+	
 	int lastmute;
 	int do_showframe;
+	
+	GtkWidget *peer_scale;
+	
+	f_prec zoom;
+	f_prec zoom_scale;
+		
+	int cursor_pos;
+	int cursor_x_pos;
+
+	int display_width;
+	int display_x_offset;
+
+#ifdef USE_DISPLAY_NORMALIZE
+	f_prec max_value;
+#endif	
 };
 
-struct _GtkTxClass
-{
+struct _GtkTxClass {
 	GtkWidgetClass parent_class;
 };
 
-GtkWidget*     gtk_tx_new	(int16_t *wavdata, int wavsamples);
-guint	       gtk_tx_get_type	(void);
-void	       gtk_tx_set_data  (GtkTx *tx, int16_t *wavdata, int wavsamples);
-
-void 	       gtk_tx_prepare_pos_display (GtkTx *tx);
-void 	       gtk_tx_cleanup_pos_display (GtkTx *tx);
-void	       gtk_tx_update_pos_display  (GtkTx *tx, int sample, int mute);
-void           gtk_tx_show_frame(GtkTx *tx, int show);
+GtkWidget* gtk_tx_new	(int16_t *wavdata, int wavsamples);
+guint gtk_tx_get_type	(void);
+void gtk_tx_set_data  (GtkTx *tx, int16_t *wavdata, int wavsamples);
+void gtk_tx_prepare_pos_display (GtkTx *tx);
+void gtk_tx_cleanup_pos_display (GtkTx *tx);
+void	gtk_tx_update_pos_display  (GtkTx *tx, int sample, int mute);
+void gtk_tx_show_frame(GtkTx *tx, int show);
+void gtk_tx_set_zoom(GtkTx *tx, f_prec zoom);
 
 #ifdef __cplusplus
 }
