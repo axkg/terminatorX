@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/soundcard.h>
+#include <config.h>
 
 #include "tX_endian.h"
 
@@ -97,6 +98,10 @@ int tX_audiodevice_oss :: open()
 	
 	/* setting buffer size */	
 	buff_cfg=(globals.buff_no<<16) | globals.buff_size;
+
+#ifdef ENABLE_DEBUG_OUTPUT
+	fprintf(stderr, "[tX_adudiodevice_oss::open()] buff_no: %i, buff_size: %i, buff_cfg: %08x\n", globals.buff_no, globals.buff_size, buff_cfg);
+#endif		
 	
 	p=buff_cfg;
 		
@@ -121,7 +126,11 @@ int tX_audiodevice_oss :: open()
         i += ioctl(fd, SOUND_PCM_WRITE_RATE, &p);
 		
         i += ioctl(fd, SNDCTL_DSP_GETBLKSIZE, &blocksize);
-	
+
+#ifdef ENABLE_DEBUG_OUTPUT
+	fprintf(stderr, "[tX_adudiodevice_oss::open()] blocksize: %i\n", blocksize);
+#endif		
+
 	samples_per_buffer=blocksize/sizeof(int16_t);
 	globals.true_block_size=samples_per_buffer/2;
 	
