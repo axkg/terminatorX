@@ -83,10 +83,13 @@ void LADSPA_Plugin :: handlelib(void *lib, LADSPA_Descriptor_Function desc_func,
 	
 	for (i=0; (descriptor = desc_func(i)) != NULL; i++) {		
 		if (LADSPA_IS_INPLACE_BROKEN(descriptor->Properties)) {
-			tX_warning("Plugin \"%s\" [%i] disabled: No in-place processing support.", descriptor->Label, descriptor->UniqueID);
-		} else if (!LADSPA_IS_HARD_RT_CAPABLE(descriptor->Properties)) {
-			tX_warning("Plugin \"%s\" [%i] disabled: Not realtime capable.", descriptor->Label, descriptor->UniqueID);			
-		} else {		
+			tX_plugin_warning("Plugin \"%s\" [%i] disabled: No in-place processing support.", descriptor->Label, descriptor->UniqueID);
+		} else if (!LADSPA_IS_HARD_RT_CAPABLE(descriptor->Properties) && !globals.force_nonrt_plugins) {
+			tX_plugin_warning("Plugin \"%s\" [%i] disabled: Not realtime capable.", descriptor->Label, descriptor->UniqueID);
+		} else {
+			if (!LADSPA_IS_HARD_RT_CAPABLE(descriptor->Properties)) {
+				tX_warning("Plugin \"%s\" [%i] is classified as non-rt capable: loading forced.", descriptor->Label, descriptor->UniqueID);
+			}
 			in_audio=0; out_audio=0; in_ctrl=0;
 		
 			for (port = 0; port<descriptor->PortCount; port++) {			
@@ -103,7 +106,7 @@ void LADSPA_Plugin :: handlelib(void *lib, LADSPA_Descriptor_Function desc_func,
 			} if ((in_audio == 2) && (out_audio == 2)) {
 				new LADSPA_Stereo_Plugin(descriptor, filename);
 			}
-			else { tX_warning("Plugin \"%s\" [%i] disabled: Neither mono nor stereo.", descriptor->Label, descriptor->UniqueID); }
+			else { tX_plugin_warning("Plugin \"%s\" [%i] disabled: Neither mono nor stereo.", descriptor->Label, descriptor->UniqueID); }
 		}
 	}
 }
@@ -118,13 +121,13 @@ void LADSPA_Plugin :: scandir(char *dirname)
 	void *handle;
 	LADSPA_Descriptor_Function desc_func;
 	
-	if (!dirlen) { tX_error("tX: Error: empty directory name?"); return; };
+	if (!dirlen) { tX_error("empty directory name?"); return; };
 
 	if (dirname[dirlen - 1] != '/') needslash=1;
 	
 	dir = opendir(dirname);
 	
-	if (!dir) { tX_error("tX: Error: couldn't access directory \"%s\".", dirname); return; };
+	if (!dir) { tX_error("couldn't access directory \"%s\".", dirname); return; };
 	
 	while (1) {
 		entry=readdir(dir);		
@@ -148,7 +151,7 @@ void LADSPA_Plugin :: scandir(char *dirname)
 			if (dlerror() == NULL && desc_func) {
 				LADSPA_Plugin :: handlelib(handle, desc_func, entry->d_name);
 			} else {
-				tX_error("tX: Error: %s is not a LADSPA plugin library.", filename);
+				tX_error("\"%s\" is not a LADSPA plugin library.", filename);
 				dlclose(handle);
 			}
 		}
@@ -159,7 +162,6 @@ void LADSPA_Plugin :: scandir(char *dirname)
 
 void LADSPA_Plugin :: status ()
 {
-	printf ("tX: %i LADSPA plugins available\n", plugin_list.size());
 	debug_display();
 }
 
