@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section SYSTEM "./tX.dtd"[
+]>
+<section name="faq">
+  <faq>
+    <qa>
+      <question>What is terminatorX?</question>
+      <answer>
+	<para>terminatorX is a realtime audio synthesizer that allows you to
+	  scratch on digitally sampled audio data (*.wav, *.au, *.mp3, etc.)
+	  the way hiphop-DJs scratch on vinyl records. It features multiple
+	  turntables, realtime effects and an easy-to-use gtk+ GUI. The latest
+	  feature is the builtin sequencer. <bold>This software runs under
+	    LINUX only.</bold>
+	</para>
+      </answer>
+    </qa>
+
+    <qa>
+      <question>What does it cost?</question>
+      <answer>
+	<para>Nothing. TerminatorX is free software. Read the
+	  <link ref="COPYING">license</link> (GPL V2).
+	</para>
+      </answer>
+    </qa>
+
+    <qa>
+      <question>What platforms does it run on?</question>
+      <answer>
+	<para>TerminatorX should run on any recent Linux system. I develop
+	  terminatorX on an X86-System, but the source contains support for
+	  bigendian machines (PowerPC for example). If you experience platform
+	  related troubles, please let me know.
+	</para>
+      </answer>
+    </qa>
+
+    <qa>
+      <question>What audio quality is supported? </question>
+      <answer>
+	<para>TerminatorX operates at 16Bit / 44.1 kHz / Stereo
+	  (Since 3.71). Samples will be converted to Mono on
+	  loading.
+	</para>
+      </answer>
+    </qa>
+
+    <qa>
+      <question>
+	Why does it take terminatorX so long to load samples?
+      </question>
+      <answer>
+	<para>This depends on the file your loading. Wavfiles are loaded with
+	  the builtin wavloading routines (if enabled on compiletime) and this
+	  happens very fast. Other files will be opened through either sox or
+	  mpg123 and that may consume quite some time.
+	</para>
+	<para>
+	  Since Version 3.73 loading of audiofiles has been
+	  significantly accelerated with the libaudiofile, libvorbis and
+	  mad methods.
+	</para>
+      </answer
+	></qa>
+
+    <qa>
+      <question>Why doesn't terminatorX support streaming? </question>
+      <answer>
+	<para>Oh well due to my laziness I guess.
+	  <person>
+	    <name>Benno Senoner</name>
+	    <email>sbenno@gardena.net</email>
+	  </person> wrote a
+	  <link ref="http://www.gardena.net/benno/linux/terminatorX-3.2-mmap.patch">patch</link>
+	  against 3.2 to support &quot;on-the-fly&quot; reading of wavfiles.
+	  The problem is the patch wasn't applyable to later versions of
+	  terminatorX, nor would it work with sox/mpg123 support.
+	  I still plan to port the patch to the newer releases sometime.
+	</para>
+      </answer>
+    </qa>
+
+    <qa>
+      <question>
+	How can I use a second mouse, a joystick or other input devices for
+	scratching?
+      </question>
+      <answer>
+	<para>Well, you need to configure this mouse as an XFree86 XInput
+	  devices and from what I've read I assume you'll need to have XFree86
+	  3.3.3.1 or higher. If you want to know how to do this read your
+	  XF86Config manual page (run man XF86Config) and find the part on
+	  "the optional XInput section". If you successfully configured your
+	  second (third ...) mouse / input device for XFree86 you now need to
+	  turn on XInput-support in the Options-dialog of terminatorX and you
+	  have to select the XInput device you want terminatorX to
+	  initialize. Now either press "Apply" or "Ok" and you should be able
+	  to scratch with that devices next time you press "Start". I haven' t
+	  tested joysticks though.... 
+	</para>
+      </answer>
+    </qa>
+
+    <qa>
+      <question>Why do I get &quot;./terminatorX: undefined symbol:
+	_t24__default_alloc_template2b1i0.free_list&quot; when I run
+	terminatorX?
+      </question>
+      <answer>
+	<para>You proabably downloaded the binary-rpm-package and your
+	  libstdc++ is outdated. This seems to occur on Mandrake systems only.
+	  Upgrading with a newer libstdc++ package should fix this.
+	</para>
+      </answer>
+    </qa>
+
+    <qa>
+      <question>
+	Why do I get &quot;tX_seqpar.h:25: list: No such file or
+	directory&quot; when building terminatorX myself?
+      </question>
+      <answer>
+	<para>You don't have the libstdc++ headers installed. Install the
+	  libstdc++-devel package for the libstdc++-package you have installed.
+	</para>
+      </answer>
+    </qa>
+
+
+    <qa>
+      <question>What can I do if my mouse doesn't work in scratch mode?
+      </question>
+      <answer>
+	<para>Now this issue is rather tricky, as it seems a lot of problems
+	  can be the reason here, but there are some things you can try:
+	  <itemizedlist>
+	    <listitem>
+	      <nopara>Make sure that your X-Server supports XFree86-DGA. Remove
+		any lines that read</nopara><para><screen>Option
+		  "omit xfree86-dga"</screen></para><para> from your <screen>XF86Config</screen>. Check
+		whether the Server loaded dga by running <bold>xdpyinfo
+		</bold> - if DGA is loaded one of the lines you get from
+		xdpyinfo should read <italic>XFree86-DGA</italic>. To check
+		whether DGA actually works run <bold>dga</bold> as root -
+		<red>Warning:</red> the only way to exit this tool is
+		pressing 'q' on your keyboard - and it might take some seconds
+		until it reacts.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <nopara>Try running terminatorX as root. This fixes the problem
+		for most people.
+	      </nopara>
+	    </listitem>
+	  </itemizedlist>
+	</para>
+	<para>If all this doen't help let me know.
+	</para>
+      </answer>
+    </qa>
+    <qa>
+      <question>Should I install terminatorX suid root?</question>
+	  <answer>
+	    <para>
+	      Installing terminatorX <italic>suid root</italic> improves
+	      terminatorX' performance significantly for non-root users
+	      - as terminatorX will use the suid-root privileges to
+	      create the engine thread with
+	      realtime-scheduling-priority. Immediatley after the
+	      creation of the thread terminatorX drops root privileges
+	      before any files or devices are accessed. The problem is:
+	      the Linux pthreads manager thread can not be told to drop
+	      it's root privileges, which means that while the two
+	      threads executing terminatorX code run with the real
+	      user's privileges, the pthread manager thread still runs
+	      with root-privileges. While I cannot see how a malicious
+	      user or software could utlize this thread to acquire root
+	      privileges it might still be possible, so you'll have to
+	      make your on decision on performance vs security.
+	    </para>
+	  </answer>
+    </qa>
+    <qa>
+      <question>
+	How do I install terminatorX  suid root?</question>
+	  <answer>
+	    <para>As root <italic>cd</italic> into the directory you
+	      installed terminatorX to (typically that is
+	      <italic>/usr/local/bin</italic> or 
+	      <italic>/usr/bin</italic>) and run the following
+	      commandline:
+	    </para>
+	    <para>
+	      <screen>chown root: ./terminatorX &amp;&amp; chmod u+s ./terminatorX</screen>
+	    </para>
+	  </answer>
+    </qa>
+    <qa>
+      <question>Where does the name come from?</question>
+      <answer>
+	<para>If you don't know find out a little something about
+	  <link ref="http://www.publicenemy.com">Public Enemy</link>. Learn
+	  who <link ref="http://www.publicenemy.com/soldiers/termx.php">
+	    TerminatorX</link> is or
+	  <link ref="http://www.publicenemy.com/gallery/images/txday.jpg">see him</link>
+	  do his work
+	</para>
+      </answer>
+    </qa>
+  </faq>
+</section>
+

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section SYSTEM "./tX.dtd"[
+]>
+<section name="turntable gallery">
+  <turntable>
+	<para>While scratching with the mouse usually <italic>sounds</italic>
+	the way terminatorX users want it to (at least if the feedback I get is
+	representative) it doesn't really <italic>feel</italic> like scratching.
+	The only way to get that traditional haptic feedback is to turn your turntable
+	into a mouse device.
+	</para>
+	<para>If you want to do this without harming your mouse nor turntable, the method
+	suggested by the terminatorX logo should be feasible. Optical input devices are
+	known to produce best results in such a scenario. For those interested here's a 
+	<link ref="oldtable.html">document</link> on how I turned my old turntable into
+	a terminatorX device.
+	</para>
+	<para>
+	Luckily a lot of terminatorX users have built their own turntables and I'm really
+	happy to present some of these creations below. Please, if <italic>your</italic> turntable
+	is missing <link ref="mailto:alex@lisas.de">send</link> me some pictures of it
+	so I can add them here. <bold>Thanks</bold> to all contributors!
+	</para>
+	<turntabletable>
+		<tt title="Fernando's turntable">
+			<author>
+				<person>
+					<name>Fernando S. Fabreti</name>
+					<email>ffabreti@yahoo.com.br</email>
+				</person>
+			</author>
+			<text>
+				<para>Fernando's turntable differs from 
+				the others in this section as he attached the mouse
+				to the tone arm of the turntable. Take a look at the "in detail"
+				picture to find out how Fernando's table works.
+				</para>
+				<para><italic>Note</italic>: Fernando also contributed a scratch - see
+				<link ref="scratches.html">users' scratches-section</link>.
+				</para>
+			</text>
+			<ttimages>
+			<image filename="fernando1.jpg"><nopara>The whole thing</nopara></image>
+			<image filename="fernando2.jpg"><nopara>A little closer</nopara></image>
+			<image filename="fernando3.jpg"><nopara>Even closer</nopara></image>
+			<image filename="fernando4.jpg"><nopara>In detail</nopara></image>
+			<image filename="fernando5.jpg"><nopara>Fernado in action</nopara></image>
+			</ttimages>
+		</tt>
+		<tt title="Toqer's turntable">
+			<author><person><name>Toqer</name><email>toqer@pacbell.net</email></person></author>
+			<text>
+				<para>Toqer is using an optical device for his turntable.
+				The image is somewhat low-res but you get the idea.
+				</para>
+			</text>
+			<ttimages>
+				<image filename="toqer1.jpg"><nopara>Toqer's optical turntable</nopara></image>
+			</ttimages>
+		</tt>		
+		<tt title="Matt's turntable">
+			<author><person><name>Matt Thomas</name><email>loopdloop@jaggedsoft.com</email></person></author>
+			<text>
+				<para>Proudly presenting DJ Loopdloop's terminatorX turntable.
+				A very interesting aproach that hides the mouse completely inside
+				the turntable.
+				</para>
+				<para>Have a look...
+				</para>
+			</text>
+			<ttimages>
+				<image filename="matt1.jpg"><nopara>Could be a "usual" turntable</nopara></image>
+				<image filename="matt2.jpg"><nopara>But it's not</nopara></image>
+				<image filename="matt3.jpg"><nopara>Tricky details</nopara></image>
+			</ttimages>
+		</tt>		
+		<tt title="My turntable">
+			<author><person><name>Me</name><email>alex@lisas.de</email></person></author>
+			<text>
+				<para>These are the pictures of my very own terminatorX turntable.
+				The turntable is described in more detail <link ref="oldtable.html">here</link>.
+				</para>
+			</text>
+			<ttimages>
+				<image filename="tt_normal.jpg"><nopara>The turntable and its connector</nopara></image>
+				<image filename="tt_top1.jpg"><nopara>Again</nopara></image>
+				<image filename="tt_top_zoom.jpg"><nopara>The motor</nopara></image>
+				<image filename="tt_open_total.jpg"><nopara>Turntable's inside</nopara></image>
+				<image filename="tt_mouse_axis.jpg"><nopara>The axis to connect</nopara></image>
+				<image filename="tt_mouse_connect.jpg"><nopara>Axis attached to motor</nopara></image>
+				<image filename="tt_the_mouse.jpg"><nopara>Maximum compatibility ;)</nopara></image>
+			</ttimages>
+		</tt>
+	</turntabletable>	
+	<para>
+	Your turntable is missing? Please,
+	<link ref="mailto:alex@lisas.de">send</link> me some pictures of it
+	so I can add them.
+	</para>
+
+  </turntable>
+</section>
+
