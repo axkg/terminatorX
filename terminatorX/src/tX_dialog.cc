@@ -435,17 +435,11 @@ void show_about(int nag)
 	
 	style = gtk_widget_get_style( window );
 
-	if (!pmap)
-	{
-		pmap=gdk_pixmap_create_from_xpm_d(window->window, &mask, &style->bg[GTK_STATE_NORMAL], (gchar **)logo_xpm );
-	}
-
+	pmap=gdk_pixmap_create_from_xpm_d(window->window, &mask, &style->bg[GTK_STATE_NORMAL], (gchar **)logo_xpm);
 
   	pwid = gtk_pixmap_new( pmap, mask );
 	
-	gtk_widget_show( pwid );
-
-	printf("pixmap: %08x.\n", pwid);
+	printf("pixmap: %08x %08x.\n", pwid, pmap);
 	
 	if (nag) {
 		GtkWidget *box=gtk_vbox_new(FALSE, 2);
@@ -469,6 +463,7 @@ void show_about(int nag)
 		gtk_widget_show(box2);
 		gtk_widget_show(box);
 		gtk_widget_show(window);
+		gtk_widget_show(pwid);
 		
 		while (gtk_events_pending()) gtk_main_iteration();	
 	}
@@ -582,6 +577,8 @@ void show_about(int nag)
 	gtk_widget_show(window);
 	tX_set_icon(window, "tX About");
 	
+	while (gtk_events_pending()) gtk_main_iteration();
+		
 	about=window;
 }
 
