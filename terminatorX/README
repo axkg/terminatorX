@@ -1,16 +1,24 @@
-terminatorX V3.2 README
------------------------
+terminatorX V3.60 README
+------------------------
 
-Copyright (C) 1999 Alexander König
+New:
+     6.4   : Drag And Drop
+     6.5   : The Sequencer
+     
+Updated:
+     6.2.1 : The Main Panel
+     7     : Options
+
+Copyright (C) 1999, 2000 Alexander König
 eMail: alkoit00@fht-esslingen.de
-Homepage: http://termX.cjb.net
+Homepage: http://www.terminatorX.cx
 
 This is free software see the COPYING file that came with this
 distribution for details.
 
-WARNING: TerminatorX comes with ABSOLUTELY NO WARRANTY. Version 3.0 introduces
-         some features that are not too heavily tested and a crashing
-	 terminatorX may now result in locked X-Pointer.
+WARNING: TerminatorX comes with ABSOLUTELY NO WARRANTY. This software is known
+to lockup X11 or cause other problems under rare conditions. Don't use
+it on production servers. You have been warned!
 
 Contens:
 --------
@@ -21,6 +29,17 @@ Contens:
 	4.......Requirements
 	5.......Installation
 	6.......Operation
+	6.1.....The Master GUI
+	6.2.....The Turntable GUI
+	6.2.1...The Main Panel
+	6.2.2...The Trigger Panel
+	6.2.2.1.Syncing Turntables
+	6.2.3...The X- and Y-Control Panels
+	6.2.4...The Lowpass Panel
+	6.2.5...The Echo Panel
+	6.3.....Grab Mode Operation
+	6.4.....Drag And Drop
+	6.5.....The Sequencer
 	7.......Options/Configuration
 	7.......Further notes
 	8.......Contact/Homepage
@@ -28,191 +47,307 @@ Contens:
 1. What it is
 -------------
 
-TerminatorX is a realtime audio synthesizer. It enables you to scratch
-on wavfiles like you might have heard HipHop-DJs scratch on vinyl records.
+terminatorX is a realtime audio synthesizer that allows you to "scratch"
+on digitally sampled audio data (*.wav, *.au, *.mp3, etc.) the way hiphop-DJs
+scratch on vinyl records. It features multiple turntables, realtime effects and
+an easy-to-use gtk+ GUI.
 This is BETA Software please help me fix bugs. See section Contact/Homepage.
-Please read this README and take a look at the homepage
-http://www.termX.cjb.net BEFORE you complain.
+Please read this README and take a look at the homepage http://www.terminatorX.cx.
 
 2. Quickstart:
 ----------------
 
 	o Install terminatorX (see INSTALL)
 	o Run terminatorX
-	o Load a scratch file (and a loop if you want)
-	o Click Start
+	o Load an audiofile into the available turntable (you can add
+	  more turntables if you want) (Hint: Click on the button that
+	  holds "NONE" in the "Main"-panel)
+	o Click on the "Audio Engine"-button to start playback.
+	o Click on the "Mouse-Grab"-button to enter grab mode. The turntable
+	  with the red border has the input focus.
 	o Press <SPACE> or left mouse button to scratch
-	o Release <SPAVE> or left mouse button to let the scratch-file run at
+	o Release <SPACE> or left mouse button to let the scratch-file run at
 	  the turntable's default speed
-	o Press ESC or middle (third) mouse button to stop
+	o Press <ESC> to quit grab mode.
 	
 3. Features:
 ------------
 
-	Pre-3.0 Features (still there):
-	-------------------------------
+	NOTE: I decided to remove the old ridiculous feature list and replace
+	it by a shorter version.
 	
-	o CD-Quality operation
-	o Audio aliasing
-	o Optional playback of an additional loop wavfile to
-	  enable rhythm based scratching
-	o Recording of your scratching in a memory buffer, customizable by user
-	o Save that buffer (as a wavfile) with or without the loop mixed to it,
-	  no matter whether you recorded it with our without a loop playback
-	o Visual feedback to "see" current position in scratch-wavfile
-	o Kernel-level audio latency configurable
-	o Run terminatorX on the hardware platform of your choice,
-	  this software is known to run on the following platforms	  
-		- X86 (i386) (Linux)
-		- PowerPC (Linux)
-		- SUN Sparcs (Linux)
-	  It should run on other Linux hardware as well, if you manage to
-	  run it on any other platform (or you have prolems) please contact
-	  me.	  
-	
-	New Features (3.0++):
-	---------------------
-	
-	o Easy to use GUI (gtk+)
-	o No more commandline switches - settings are now configurable via
-	  the options dialog and saved on exit.
-	o Better mouse handling (now requires DGA)
-	o Support for other (XInput) devices
-	o (If enabled) Support for .mp3, .wav, .au, .iff, .smp, .cdr ....
-	o Improved visual feedback for better scratching.
-	o Mouse-button support ;)
-	o Mouse Y-axis support (see Options)
-	o Time-display
-	o Heavily enhanced audio-rendering engine. It is now 100% click free.
-	  (Btw: if you hear clicks these may result either:
-	   - from a buffer underrun -> enlarge audio buffersize (Options)
-	   - from "dirty" samples (either loop or scratch)
-	   - from importing audiofiles with a samplerate != 44.1 kHz)
-	o You can now mute the scratch (try <M>, <STRG>, right mouse button
-	  or (different!) <ALT>)
-	
+	- Scratching ;) 
+	- Multiple turntables
+	- Builtin Sequencer
+	- Pitch / Volume settings for each turntable
+	- Effects (Lowpass/Echo) configurable for each turntable
+	- Syncing tables to one master turntable
+	- Broad audiofile-type support through the use of sox and mpg123
+	- Recording (straight to disk now)
+	- Save turntable sets (.tX - files)
+	- and more 
 	
 4. Requirements:
 ----------------
 
-	o A Linux system with gcc/egcs and X-Windows installed. 	
+	- Software:
+	  ---------
+	  required:
+			o Linux (>= 2.0)
+			o glibc2 (pthreads)
+			o XFree86 (with DGA DirectMouse support)
+			o gtk+ (>= 1.2.0)
+			o a compiler (gcc)
+	  optional:
+	  		o XFree86 >= 3.3.3.1 to support other XInput devices
+			o sox for enhanced audio file support
+			o mpg123 for mp3 support
 	  
-	  You now need pthreads (alias LinuxThreads an implementation of POSIX
-	  threads) and a threadsafe libc: glibc2(++) as terminatorX is 
-	  multithreaded again (Hi, Andy ;))
-	  
-	  For the GUI you now need: gtk+ >= 1.2.0
-	  
-	  If you want to use other devices than your main X-Pointer
-	  you proabably need: XFree86 >= 3.3.3.1
-	  
-	  For enhanced audiofile support you need sox (and mpg123 for mp3s)
-	  
-	o A soundcard that's supported either by OSS our ALSA.
-	o A good clean mouse and pad, a good X-Pointer setup. see the mouse
-	  section on the homepage.
+	- Hardware:
+	  ---------
+			o A OSS compatible soundcard.
+			o A good clean mouse and pad, a good X-Pointer setup. 
 
-Notes: 	On performance the only thing I can say is this: it runs fine on my
-	P(I)233MMX with 98MB of RAM. On slower machines you might have to
-	enlarge the kernel-level audio buffer (see Options). Nobody ever
-	told me it didn't run (due to cpu-power) so if you think your machine's
-	to slow please tell me so I can specify machines to slow...
-	
-NEW:	Since Version 3.2 tX contains a lowpass filter which seems to eat quite
-	some CPU power. So a bigger machine wont hurt, I guess a 200MMX is sort
-	of the lower limit. Maybe I'll find ways to accelerate that stuff for
-	future versions...	
+NOTE on performance: tX is known to run pretty smooth on "current" PCs
+	(200MHz++). If you experience problems take a look at the config
+	options section in INSTALL.
 	
 5. Installation:
 ----------------
 
 For GNU-standards' sake this information is now located in the INSTALL file
-that came with your distribution of terminatorX.
+that came with this distribution of terminatorX.
   
 6. Operation:
 -------------
 
-This chapter was heavily cut as terminatorX now has a very easy to handle
-GUI. This GUI btw features tooltips, so if you want to know what a button/slider
-is about leave your mouse above that widget for a second or two and a short
-explanation will pop up.
+Since V3.5 terminatorX has separated GUIs for main operation and the turntable
+settings and therefore I'll (try to ;) explain these in different sections.
 
-Still if you're new to terminatorX (and not familiar with 3.0+) you should
-read the following.
+6.1 The Master GUI
+------------------
 
-About Scratching:
+The controls of the master gui are located in the top and the right bar of the
+terminatorX main window.
 
-At first you have to select the operation Mode:
+- Audio Engine Power / Mouse Grab
+With the Audio Engine Button you can en- and disable the audio playback
+engine without activating the sequencer. Unlike earlier versions you will
+not automatically enter mouse-grab mode so you can modify volume/pitch/echo
+settings etc. while you actually hear what you do. Some functions are not
+available when the audio engine is on, their controls will be marked insensitive
+when you enable the engine. To actually enter grab mode you'll have to click on
+the "Mouse Grab" button. See the "Grab Mode Operation" section to find out how
+to control the software then.
 
-- Free Scratch: 
-  This Mode enables scratching. The scratching is not recorded and therefore
-  the playback will only stop if you hit either the middle mouse button
-  or <ESC> ("Escape").
-  
-- Record Scratch:
-  This Mode enables scratching. The scratching will be recorded into the 
-  record buffer. Playback either stops when the record buffer is full or you
-  pressed one of buttons described above.
-  
-- Playback Scratch:
-  This mode disables scratching. For now your mouse will be locked anyway.
-  In this mode terminatorX will playback the record buffer. Playback will
-  either stop when all of the recorded data was played back or you pressed
-  on of the buttons described above.
+- Record (Audio Engine)
+To enable recording you have to enable the "Record"-toggle button BEFORE you 
+start the audio engine. You will be prompted for a filename after enabling the
+button. Audio will then be recorded to that file in RIFF/WAV format from the
+moment you turn the audio engine on until you turn it off again. Please be aware
+of the fact that recording audio requires A LOT of harddisk space!
 
-If you have a scratch-file (== a file to scratch on) loaded and maybe a loop
-as well you can hit the "Start" button to start Playback.
+- Sequencer Play / Record / Stop
+Please Read 6.5 to find out more about the sequencer.
 
-Both samples (scratch and loop) will playback at normal speed. To actually
-scratch you will have to keep either <SPACE> or left mouse button. Now the
-scratch sample is played back at the same speed you move your mouse -> you
-scratch ;). If you want to temporarily mute the scratch-sample press either,
-<M>, right mouse button or <CTRL>. You can also use <ALT> but the "meaning"
-of this key is inverted: 
-	- ALT pressed  -> scratch NOT muted.
-	- ALT released -> scratch muted.
-This is of course not true when playback starts. The scratch will be unmuted
-then. Why there are multiple ways of muting? So you can use whatever you
-prefer.
+- Master Volume / Pitch
+The volume and pitch settings of the individual turntables are relative to these
+master settings. This information will be stored within the .tX set files.
 
-If you want to "move" through the sample a little faster you can keep <F> 
-(alias fast) pressed to accelerate by factor 10.
+- Add Turntable
+Oh well, it says it all: adds a (new) turntable to the current set.
 
-To stop playback you either press middle mouse button, <ESC> or (for 
-compability with old versions) <RETURN>.
+- Save Set
+With this button you can save your current set and all related settings to a 
+.tX set file. Note that the audiofiles themselves will not be stored within
+these files but only references to them. Therefore on loading the set the 
+audiofiles have to be at the same location in the filesystem as they were when
+putting that set together.
 
-Recorded scratches can be saved with one of the four "save"-buttons on the
-right side of terminatorX's main window. "Fast" means you wont have to enter
-a filename, terminatorX will generate the name from the prefix you set (if
-not default is "tX_scratch") in the Options dialog. "(mix)" means the saved
-file will contain your scratch mixed with the loop file at the currently
-selected ratio. 
+- Load Set
+Loads a previously saved set (see above). The current set will be destroyed!
 
-NEW: Since version 3.2 terminatorX comes with an additonal resonating lowpass
-filter. If enabled this effect will be applied to the scratch-signal. The
-resonance parameter can be set with the slider underneath the "LP Filter" 
-on/off button. The other parameter (cutoff frequency) can be modified in
-realtime while scratching. Depending on what mouse-axis you chose for scratching
-the other axis will be used for modifying the cutoff frequency of the lowpass
-filter. Now if you think this sounds somewhat complicated, simply run
-terminatorX, enable "LP Filter" and set the resonance-factor close to the max
-(~ pretty far to the right) and move your mouse up and down (or from left )
-while scratching and hear what happens...
+- Hide Gui
+If you have a lot of turntables you may find all the panels disturbing in
+grab mode. Therefore you can hide these by clicking on "Hide Gui".
 
-Althoug tX is trying to adjust the input volume according to the resonance 
-factor, you might get clipping with high resonance values and samples that
-contain loud high-frequent parts. The only way to get around this for now is to
-reduce resonance.
+- Options
+Displays the options dialog. See section 7 (Options/Configuration)
+
+- About/Legal
+Displays a dialog with some info about the prog and the binary itself plus
+the good old GPL.
+
+- Quit
+No comment.
+
+6.2 The Turntable GUI
+---------------------
+
+The turntable GUI contains multiple controls and the realtime displays for each
+turntable.
+
+6.2.1 The Main Panel
+--------------------
+
+With the text entry widget you can setup a name for the turntable. "Delete" 
+removes the turntable from the current set. The button beneath these two holds
+the name of the currently loaded audiofile. On creation it will hold "NONE". To
+load an audiofile click that button. Volume and Pitch... oh well ;)
+
+"Edit" will run the soundfile editor you configured in the Options-dialog with
+the soundfile loaded into the turntable as parameter. After editing the file you
+can make terminatorX reload the file by clicking the "Reload" button.
+
+6.2.2 The Trigger Panel
+-----------------------
+
+"Trigger!" actually triggers that turntable right now -> it will start playing 
+immediately if the audio engine is turned on. Stop will stop playback (of this
+turntable) of course. Autotrigger will cause the turntable to be triggered
+whenever you turn on the audio engine. Loop en- or disables the looping of that
+turntable.
+
+6.2.2.1 Syncing Turntables
+--------------------------
+
+Let's start off with an example: Say you have two drumloops and one bassline
+loaded in three turntables. Of course you want these samples to be triggered
+at the same time but you don't want to invest time to cut them to the exact 
+length. Therefore you decide which of the drumloops to make the sync master. 
+You'll have to do this before you enable the audio engine (for now). Only one
+turntable can be the sync master. Now you can make the other two sync clients
+which will cause them to be (re-)triggered whenever the master is
+(re-)triggered. The number you can select to the right of the "Sync Client"
+button sets the trigger delay for the button: if it's set to zero the turntable
+will be triggered with every master trigger, if it's set to 1 it'll be triggered
+every 2nd master trigger and so on.
+
+A nice side effect of this feature is: you can now scratch the second (sync
+client) drum loop and no matter whether you're scratching is good or not the
+beat will be triggered correctly again ;)
+
+
+6.2.3 The X- and Y-Control Panels
+---------------------------------
+
+With these panels you can select which mouse axis (X = left to right, Y= up
+and down) controls which realtime parameter. Possible choices are
+o Scratching
+o Volume
+o Cutoff frequency for the lowpass filter
+o Feedback value for the echo
+o Nothing
+
+6.2.4 The Lowpass Panel
+-----------------------
+
+This panel contians the controls for the resonating lowpass filter. The
+"Resonance" and "Frequency" parameters control the actual filter and "Input
+Gain" enables you to preamp the signal in case the filter eats too much
+volume.
+
+6.2.5 The Echo Panel
+--------------------
+
+Here you can en- and disable the echo-effect and set "Duration" and "Feedback"
+parameters. The duration parameter scales to the actual sample length: so if you
+set it to 0.5 you will hear the echo when the red playback cursor is half way 
+through the sample. This is true for samples that are shorter than
+terminatorX' maximum echo buffer size only.
+
+6.3 Grab Mode Operation
+-----------------------
+
+After pressing "Mouse Grab" terminatorX enters "grab mode". This mode actually
+locks the mouse (as this input is now used to control the realtime parameters)
+and therefore you'll have to know some mouse/keyboard shortcuts to control
+the software without the GUI:
+
+Press <ESC> to quit grab mode.
+
+Select the turntable with input focus:
+The first turntable to hold the input focus will be the first turntable. You
+can now use <TAB> or right mouse button to switch to the next turntable. 
+Alternativley you can use <F1> to <F12> to select turtntable 1 to 12.
+
+Now the turntable that has the focus is the one you will manipulate with your
+mouse and keyboard inputs: Note that you can actually map different functions
+to the mouse x/y axis - so what actually happens when you move your mouse
+depends on what you select on the x/y control panels for each turntable.
+
+Keyboard:
+<TAB>		select next turntable
+<F1> to <F12>	select turntable 1 to 12
+<RETURN> 	triggers the turntable
+<BACSPACE> 	stops the turntable
+<S>		toggles "Sync Client"
+<SPACE>		while pressed turntable speed is mapped to mouse speed
+		(scratching!)
+<ALT>		mute on/off
+<CTRL>		mute on/off (inverted)
+<F>		(> "fast") warp mode (while scratching)
+<W>		same as above but the audio will be muted while warping
+
+Mouse:
+left button	same as <SPACE> -> scratching (triggers the turntable when
+		stopped)
+right button	select next turntable
+middle button	mute on/off
+
+Scratching works as before: press <SPACE> or left mouse button to actually
+scratch -> now your mouse controls the turntables speed -> release <SPACE>
+to let that turntable spin at default speed again.
+
+6.4 Drag And Drop
+-----------------
+
+Since V3.55 terminatorX provides multiple DND-Drop-Targets for use with GNOME/
+gmc (gmc is the GNU Midnight Commander). You can now load an audiofile into
+an existing turntable by dragging an audiofile from a gmc-window and drop it 
+over a. the "file"-button (on the "main"-panel) or b. (the easier target ;)
+over the wavdisplay (the green on black widget that displays the audiodata).
+To add a file set (== to load the file into a *new* turntable) simply drop the
+audiofile over the "New Turntable" Button. To load a complete terminatorX-set
+simply drop the setfile (*.tX) over the "Load Set" button. DND does not work
+with KDE.
+
+6.5 The Sequencer
+-----------------
+
+Release 3.60 introduces the sequencer. It can record and play back events for
+the following parameters:
+
+Master volume & pitch, scratching, (turntable) volume & pitch, triggers,
+loop (on/off), sync client settings, muting and all lowpass and echo paramters.
+
+To record events simply press the Record button of the sequencer, then press
+the Play button. All actions (for sequencable parameters - see above) you now
+take will be recorded into the song list. Press the Stop and Play again to
+see/hear how terminatorX plays back the events recorded before. You can now
+record events again for e.g. another turntable or record other parameters for
+the same turntable - whatever you want to do. Recording events for parameters
+for wich events have been recorded before will result in dubbing: if you touch
+a parameter while recording, events previously recorded will be erased from the
+moment you touch the paramater until you stop recording.
+
+When recording long sequences/songs you can use the sequencer-scale to start
+recording/playback from any song-position you want. To record a single
+paramteter value at a certain position simply move the sequencer-scale to that
+position, press Record, set the parameter and press Stop again.
+
+There is no other the way to edit the sequencer events currently, but future
+releases may feature an event-list editor.
 
 7. Options/Configuration
 ------------------------
 
 All configuration business now happens in the Options-dialog. The features
-that are not completely self-explaining do have tooltips. So in this document
+that are not completely self-explaining do have tooltips. So in this README
 I will discuss the buffer settings and the sense-cycles-option only. 
 
 A word on the settings in general: your settings are stored in the file
-~/.terminatorXrc.bin so if you think you completely messed up your settings
+~/.terminatorX3rc.bin so if you think you completely messed up your settings
 you will have to exit terminatorX - delete this file - and then re-run 
 terminatorX with the default settings.
 
@@ -225,9 +360,8 @@ The problem is the smaller the value you select is the faster your machine has
 to be. So if you here "clicks", or "drops" in audio output that are not related
 to your sample-material you will have to increase the buffer size. On the 
 other hand if you believe terminatorX does not react fast enought you have to
-decrease this parameter. The default value is 9. IMHO I'd say 8 is close to
-perfect but this value causes clicks on my machine already (I still use 8
-though ;) ).
+decrease this parameter. The default value is 8, but as my machine handles 7
+nicely (with --enhance-scheduler and root privileges) I use 7.
 
 Between rendering and outputing these blocks terminatorX checks for mouse 
 motion. The problem with mice is: they don´t report when they have stopped.
@@ -238,17 +372,31 @@ the cycle time as well, therefore if you here strange stop/run behaviour of
 the audio ouput while scratching after you decreased the buffersize you might 
 have to increase the stop-sense value too.
 
+Xinput Device: WARNING: Use this option *only* if you want to use an input 
+device other than your default-mouse for scratching. Selecting your default
+pointer will cause terminatorX to crash. See the "Using a turntable" section
+on the terminatorX homepage for details.
+
+With "Update Idle" / "Update Delay" you can configure GUI resposivness: Higher
+"Update Idle" will cause the wav-display (position display) and flash-widgets
+to update less often. Higher "Update Delay" values will cause the parameter
+widgets to update less often.
+
+You can now enter the soundfile editor of your choice in the "Soundfile editor"
+field. This editor will be started when clicking the "Edit"-button in the 
+main panel of the vtt-gui. If you enter for example "myeditor" terminatorX will
+run "myeditor sample_in_vtt.wav".
+
 8. Further notes:
 -----------------
 
 You can find more on terminatorX operation and especially the mouse
-configuration on the terminatorX homepage: http://termX.cjb.net
+configuration on the terminatorX homepage: http://www.terminatorX.cx
 
 9. Contact/Homepage:
 --------------------
 
-terminatorX's homepage:	http://termX.cjb.net
+terminatorX's homepage:	http://www.terminatorX.cx
 
-If you wan't to send me comments, bug-reports, patches or scratches (see
-the users' scratches section on the terminatorX homepage) send a me
-an eMail to alkoit00@fht-esslingen.de 
+send comments, bug-reports, patches or scratches (see scratches section on the
+terminatorX homepage) to: alkoit00@fht-esslingen.de

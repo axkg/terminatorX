@@ -3,7 +3,8 @@ terminatorX THANKS:
 I'd like to thank:
 
 - All authors of: the GNU tools and libraries, the Linux kernel, XFree86,
-                  sox, mpg123, the wav-tools, gtk+ and TCP/IP.
+                  sox, mpg123, the wav-tools, gtk+ and TCP/IP. 
+		  It's obvious but: without their work there'd be no tX
 	
 - All contributors (see AUTHORS)
 
@@ -18,9 +19,23 @@ I'd like to thank:
   (checkout: http://www-stud.fht-esslingen.de/luges/doc/gpl.html)
 
 - Paul Kellett <paul.kellett@maxim.abel.co.uk> for his lowpass filter published
-  in reso_lop.txt.
+  in reso_lop.txt
   (checkout: http://www.abel.co.uk/~maxim/)
 
+- Benno Senoner <sbenno@gardena.net> for his mmap() patch, all the low
+  latency kernel work and tips
+  (checkout: http://www.gardena.net/benno/linux/audio/) 
+
+- Michael Kahl <m.kahl@student.hu-berlin.de> for the cool MK II icon
+
+- Robert Dale <rob@nb.net> for makeing his already gone 3DNow!-Header
+  temporarily available again
+  
+- Scott C. Knight <scknight@indiana.edu> for helping me to get this thing
+  running on big endian machines again.
+
 - Everybody who contributed scratches...
+
+- The LAD people for all the help and support
 
 - The real Terminator X
