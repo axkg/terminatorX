@@ -25,7 +25,7 @@ class tX_panel
 	int is_hidden() { return client_hidden; }
 	void hide(int i) { gtk_toggle_button_set_active((GTK_TOGGLE_BUTTON(minbutton)), i); } 
 	
-	static GtkSignalFunc minimize(GtkWidget *w, tX_panel *p);
+	static void minimize(GtkWidget *w, tX_panel *p);
 };
 
 #endif

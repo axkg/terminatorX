@@ -37,7 +37,7 @@ int tx_tapedeck :: start_record (char *name, int bs)
 		
 	strcpy(file.name, name);
 	file.srate=44100;
-	file.chans=1;
+	file.chans=2;
 	file.depth=16;
 	file.bps=88200;
 	file.blkalign=2;

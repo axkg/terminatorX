@@ -123,9 +123,9 @@ int audiodevice :: dev_open(int dont_use_rt_buffsize)
 
         i +=  ioctl(fd, SOUND_PCM_WRITE_BITS, &p);
 
-	/* MONO */
+	/* STEREO :) */
 	
-        p =  1;
+        p =  2;
         i += ioctl(fd, SOUND_PCM_WRITE_CHANNELS, &p);
 	
 	/* 44.1 khz */
@@ -134,8 +134,10 @@ int audiodevice :: dev_open(int dont_use_rt_buffsize)
         i += ioctl(fd, SOUND_PCM_WRITE_RATE, &p);
 		
         i += ioctl(fd, SNDCTL_DSP_GETBLKSIZE, &blocksize);
-	globals.true_block_size=samples=blocksize/sizeof(int16_t);	
+	samples=blocksize/sizeof(int16_t);	
+	globals.true_block_size=samples/2;
 	
+	printf("bs: %i, samples: %i, tbs: %i\n", blocksize,samples,globals.true_block_size);
         ioctl(fd, SNDCTL_DSP_SYNC, 0);
 
 #ifdef USE_WRITER_THREAD

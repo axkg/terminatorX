@@ -91,8 +91,10 @@ typedef struct vtt_gui
 	GtkWidget *ec_enable;
 	tX_extdial *ec_lengthd;
 	tX_extdial *ec_feedbackd;
+	tX_extdial *ec_pand;
 	GtkAdjustment *ec_length;
 	GtkAdjustment *ec_feedback;
+	GtkAdjustment *ec_pan;
 
 	GdkWindow *file_dialog;
 	GtkWidget *fs;

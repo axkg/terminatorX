@@ -76,7 +76,8 @@ class vtt_class
 	static f_prec *mix_buffer_end;
 	
 	static int16_t *mix_out_buffer;
-	static f_prec mix_max;
+	static f_prec mix_max_l;
+	static f_prec mix_max_r;
 	static int samples_in_mix_buffer;
 	static pthread_mutex_t render_lock;
 	static pthread_mutex_t main_lock;
@@ -135,6 +136,11 @@ class vtt_class
 	f_prec rel_pitch; // The (user-selected) relative pitch
 	f_prec res_pitch;
 	
+	
+	f_prec pan; // The logical pan value -1 left, 0 center, 1 right
+	f_prec res_volume_left;
+	f_prec res_volume_right;
+	
 	int autotrigger;
 	int loop;
 	
@@ -179,17 +185,22 @@ class vtt_class
 	
 	/* echo vars */
 	f_prec ec_buffer[EC_MAX_BUFFER];
+	f_prec *ec_output_buffer;
 	f_prec *ec_delay;
 	f_prec *ec_ptr;
 	int ec_enable;
 	f_prec ec_length;
 	f_prec ec_res_length;
 	f_prec ec_feedback;
+	f_prec ec_pan;
+	f_prec ec_volume_left;
+	f_prec ec_volume_right;
 	
 	/* sequenceable parameters */
 	tX_seqpar_vtt_speed sp_speed;
 	tX_seqpar_vtt_volume sp_volume;
 	tX_seqpar_vtt_pitch sp_pitch;
+	tX_seqpar_vtt_pan sp_pan;
 	tX_seqpar_vtt_trigger sp_trigger;
 	tX_seqpar_vtt_loop sp_loop;
 	tX_seqpar_vtt_sync_client sp_sync_client;
@@ -201,6 +212,7 @@ class vtt_class
 	tX_seqpar_vtt_ec_enable sp_ec_enable;
 	tX_seqpar_vtt_ec_length sp_ec_length;
 	tX_seqpar_vtt_ec_feedback sp_ec_feedback;
+	tX_seqpar_vtt_ec_pan sp_ec_pan;
 	tX_seqpar_vtt_mute sp_mute;
 	tX_seqpar_spin sp_spin;
 
@@ -223,6 +235,8 @@ class vtt_class
 	void set_volume(f_prec);
 	void recalc_volume();
 	
+	void set_pan(f_prec);
+	
 	void set_pitch(f_prec);
 	void recalc_pitch();
 	
@@ -244,6 +258,7 @@ class vtt_class
 	void ec_set_enable(int);
 	void ec_set_length(f_prec);	
 	void ec_set_feedback(f_prec);
+	void ec_set_pan(f_prec);
 	void ec_clear_buffer();
 	
 	void set_sync_master(int);		
@@ -279,10 +294,12 @@ class vtt_class
 	int load_10(FILE *);
 	int load_11(FILE *);
 	int load_12(FILE *);
+	int load_13(FILE *);
 	
 	static int load_all_10(FILE *, char *fname); /* fname is for display only*/
 	static int load_all_11(FILE *, char *fname); /* fname is for display only*/
 	static int load_all_12(FILE *, char *fname); /* fname is for display only*/
+	static int load_all_13(FILE *, char *fname); /* fname is for display only*/
 	static int save_all(FILE *);
 	int load_file(char *name);	
 

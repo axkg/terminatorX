@@ -6,7 +6,7 @@
 #define WID_DYN TRUE, TRUE, 0
 #define WID_FIX FALSE, FALSE, 0
 
-GtkSignalFunc tX_panel :: minimize(GtkWidget *w, tX_panel *p)
+void tX_panel :: minimize(GtkWidget *w, tX_panel *p)
 {
 	p->client_hidden=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(p->minbutton));
 	
