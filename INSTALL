@@ -25,51 +25,13 @@ Step 1: Configure terminatorX.
 	if use bash: > export CFLAGS="-O2"
 	with tcsh:   > setenv CFLAGS "-O2"
 
-	I use CFLAGS="-O3 -mathlon" btw. You'll need to have a
-	"athlon-aware" compiler to use that though (gcc > 2.95.?).
+	Optionally you might want to add your platform specific tunings (-m* stuff).
 
 	All of the following configure options can be either enabled with
 	--enable-option or disabled with --disable-option.
 
 	The configure Options:
 	
-		Performance Options:
-		--------------------
-		
-		--enable-scheduler
-		
-		This option is now enabled by default. When run with root 
-		privileges terminatorX creates the engine thread with realtime
-		scheduling priorities which should result in much better
-		playback performance. Since Version 3.73 terminatorX supports
-		running suid root. If you install the terminatorX binary suid
-		root with the following commands: (with the default install
-		you should find the terminatorX binary in /usr/local/bin)
-		
-		> chown root terminatorX
-		> chmod u+s terminatorX
-		
-		terminatorX will be started with root privileges even when an
-		"unprivileged" user runs the binary. terminatorX will then 
-		create the engine thread with realtime priority before any files
-		are written, any parameters are evaluated or connections to the 
-		X11 display are established. Right after that terminatorX will
-		drop root privileges, so the actual terminatorX code runs 
-		unprivileged.
-		
-		The problem is, with Linux' pthreads implementation the pthread
-		manager thread (that can not be influenced by terminatorX) will 
-		still run with root privileges.
-		
-		So there is a small chance that a malicious attacker could 
-		utilize terminatorX to acquire root privileges if installed suid
-		root, although it should require quite some effort to create an
-		exploit	for that. On the other hand realtime scheduling 
-		massively improves the playback performance. So depending on who
-		can access your computer you will have to decide for yourself on
-		performance vs security. Alternatively you can of course run
-		terminatorX as root to achieve realtime scheduling.
-						
 		File support options:
 		---------------------
 		

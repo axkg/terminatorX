@@ -128,7 +128,7 @@ typedef struct {
 	int oss_samplerate;
 	
 	/* ALSA specific options */
-	char alsa_device[PATH_MAX];
+	char alsa_device_id[PATH_MAX];
 	int alsa_buffer_time;
 	int alsa_period_time;
 	int alsa_samplerate;
