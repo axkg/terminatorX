@@ -1206,6 +1206,14 @@ int16_t * vtt_class :: render_all_turntables()
 			for (sample=0; sample<samples_in_mix_buffer; sample+=2)
 			{				
 				temp=mix_buffer[sample];
+
+#ifndef TX_DO_CLIP
+#define FL_SHRT_MAX 32767.0
+#define FL_SHRT_MIN -32768.0
+				if(temp < FL_SHRT_MIN) temp = FL_SHRT_MIN;
+				else if (temp > FL_SHRT_MAX) temp = FL_SHRT_MAX;
+#endif					
+
 				mix_out_buffer[sample]=(int16_t) temp;
 			
 				if (temp>max) max=temp;
@@ -1223,6 +1231,12 @@ int16_t * vtt_class :: render_all_turntables()
 			for (sample=1; sample<samples_in_mix_buffer; sample+=2)
 			{				
 				temp=mix_buffer[sample];
+
+#ifndef TX_DO_CLIP
+				if(temp < FL_SHRT_MIN) temp = FL_SHRT_MIN;
+				else if (temp > FL_SHRT_MAX) temp = FL_SHRT_MAX;
+#endif
+				
 				mix_out_buffer[sample]=(int16_t) temp;
 			
 				if (temp>max) max=temp;
