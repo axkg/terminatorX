@@ -153,7 +153,7 @@ tX_audio_error tx_audiofile :: load(char *p_file_name)
 #endif	
 
 	if (!load_err) {
-		printf("samplerate is :%i\n", sample_rate);
+		tX_debug("tx_audiofile::load() Set samplerate to %i for file %s.", sample_rate, filename);
 	}
 	return(load_err);
 }
@@ -294,11 +294,6 @@ tX_audio_error tx_audiofile :: load_wav() {
 		return(TX_AUDIO_ERR_WAV_NOTFOUND);
 	}
 
-#ifdef USE_CONSOLE
-	printf("Loading: %s\n", filename);
-	if (parms.verbose) printf("File: %i Bytes Data, %i Bit Depth, %i Hz Samplerate.\n", wav_in.len, wav_in.depth, wav_in.srate);	
-#endif	
-
 	if (wav_in.depth != 16)
 	{
 		return(TX_AUDIO_ERR_NOT_16BIT);
@@ -311,17 +306,6 @@ tX_audio_error tx_audiofile :: load_wav() {
 
 	sample_rate=wav_in.srate;
 	
-#ifdef USE_CONSOLE	
-	if (wav_in.srate != 44100) 
-	{
-		puts("[load_wav] Warning: Wave-File was not recorded at 44.100 Hz!");
-	}
-	if (wav_in.blkalign != 2)
-	{
-		printf("[load_wav] Warning: Unexpected block alignment: %i.\n", wav_in.blkalign);
-	}
-#endif
-
 	memsize=wav_in.len;
 	data = (int16_t *) malloc (memsize);
 		

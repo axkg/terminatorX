@@ -222,10 +222,10 @@ void drop_file(GtkWidget *widget, GdkDragContext *context,
 
 	fn = strchr (filename, '\r');
 	*fn=0;	
-
+	
+	char *realfn=NULL;
 #ifdef USE_GTK2	
 	char *host=NULL;
-	char *realfn=NULL;
 	
 	realfn=g_filename_from_uri(filename, &host, NULL);
 	if (realfn) {
