@@ -24,8 +24,8 @@
 #include <tX_event.h>
 #include <tX_global.h>
 
-void tX_event :: store (FILE *output, char *indent) {
-	fprintf(output, "%s<event pid=\"%i\" value=\"%lf\" time=\"%i\"/>\n", indent, sp->get_persistence_id(), value, timestamp);
+void tX_event :: store (FILE *rc, gzFile rz, char *indent) {
+	tX_store("%s<event pid=\"%i\" value=\"%lf\" time=\"%i\"/>\n", indent, sp->get_persistence_id(), value, timestamp);
 }
 
 tX_event :: tX_event (xmlDocPtr doc, xmlNodePtr node) {

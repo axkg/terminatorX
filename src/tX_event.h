@@ -51,7 +51,7 @@ class tX_event
 	tX_event(FILE *input);
 #endif		
 	tX_event(xmlDocPtr, xmlNodePtr);
-	void store(FILE *output, char *indent);
+	void store(FILE *rc, gzFile rz, char *indent);
 
 	tX_seqpar *get_sp() { return sp; }
 	guint32 get_timestamp() { return timestamp; }

@@ -44,7 +44,7 @@ int tx_tapedeck :: start_record (char *name, int bs, int samplerate)
 	file.len=0;
 	file.sofar=0;
 
-	blocksize=bs;
+	blocksize=bs * sizeof(int16_t) * 2;
 
 	written_bytes=0;	
 

@@ -24,7 +24,7 @@ This might come after 4.0:
     
 - Support other languages.
 
---- Ok, the follownig points are already implemented:
+--- Ok, the following points are already implemented:
 
 - Rewrite the audio device layer, so that terminatorX operates at a fix block
   size - this will allow correct playback of sequencer events even if played

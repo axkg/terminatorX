@@ -43,6 +43,7 @@
 #define TX_XML_RC_VERSION "1.0"
 
 tx_global globals;
+int _store_compress_xml=0;
 
 void get_rc_name(char *buffer)
 {
@@ -130,6 +131,7 @@ void set_global_defaults() {
 	
 	strcpy(globals.lrdf_path, "/usr/share/ladspa/rdf:/usr/local/share/ladspa/rdf");
 	globals.fullscreen_enabled=1;
+	globals.compress_set_files=0;
 }
 
 int load_globals_xml() {
@@ -204,6 +206,7 @@ int load_globals_xml() {
 			restore_string("file_editor", globals.file_editor);
 			restore_string("lrdf_path", globals.lrdf_path);
 			
+			restore_int("compress_set_files", globals.compress_set_files);
 			restore_int("fullscreen_enabled", globals.fullscreen_enabled);
 
 			if (!elementFound) {
@@ -226,6 +229,8 @@ void store_globals() {
 	char device_type[16];
 	char indent[]="\t";
 	FILE *rc;
+	gzFile rz;
+	_store_compress_xml=0;
 	char tmp_xml_buffer[4096];
 	
 	get_rc_name(rc_name);
@@ -286,6 +291,7 @@ void store_globals() {
 		store_string("record_filename", globals.record_filename);
 		store_string("file_editor", globals.file_editor);
 		store_string("lrdf_path", globals.lrdf_path);
+		store_int("compress_set_files", globals.compress_set_files);
 		store_int("fullscreen_enabled", globals.fullscreen_enabled);
 		
 		fprintf(rc,"</terminatorXrc>\n");

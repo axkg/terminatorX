@@ -132,7 +132,7 @@ class tX_seqpar
 	public:
 	int is_mappable;	
 	void restore_meta(xmlNodePtr node);
-	void store_meta(FILE *output);
+	void store_meta(FILE *rc, gzFile rz);
 };
 
 class tX_seqpar_update : public tX_seqpar

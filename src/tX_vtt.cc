@@ -1339,13 +1339,13 @@ void vtt_class :: xy_input(f_prec x_value, f_prec y_value)
 
 #define store(data); if (fwrite((void *) &data, sizeof(data), 1, output)!=1) res+=1;
 
-int  vtt_class :: save(FILE *rc, char *indent) {
+int  vtt_class :: save(FILE *rc, gzFile rz, char *indent) {
 	list <vtt_fx *> :: iterator effect;
 	char tmp_xml_buffer[4096];
 	
 	int res=0;
 
-	fprintf(rc, "%s<turntable>\n", indent);
+	tX_store("%s<turntable>\n", indent);
 	strcat(indent, "\t");
 	
 	store_string("name", name);
@@ -1399,32 +1399,32 @@ int  vtt_class :: save(FILE *rc, char *indent) {
 
 	store_float("audio_x_zoom", gui_get_audio_x_zoom(this));
 	
-	fprintf(rc, "%s<fx>\n", indent);
+	tX_store("%s<fx>\n", indent);
 	strcat(indent, "\t");
 	
 	for (effect=fx_list.begin(); effect!=fx_list.end(); effect++) {
-		(*effect)->save(rc, indent);
+		(*effect)->save(rc, rz, indent);
 	}
 	indent[strlen(indent)-1]=0;
-	fprintf(rc, "%s</fx>\n", indent);
+	tX_store("%s</fx>\n", indent);
 	
 	indent[strlen(indent)-1]=0;
-	fprintf(rc, "%s</turntable>\n", indent);
+	tX_store("%s</turntable>\n", indent);
 	
 	return(res);
 }
 
 #define TX_XML_SETFILE_VERSION "1.0"
 
-int  vtt_class :: save_all(FILE* rc) {
+int  vtt_class :: save_all(FILE* rc, gzFile rz) {
 	int res=0;
 	list <vtt_class *> :: iterator vtt;
 	char indent[256];
 	
 	tX_seqpar :: create_persistence_ids();
 
-	fprintf(rc, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n");
-	fprintf(rc, "<terminatorXset version=\"%s\">\n", TX_XML_SETFILE_VERSION);
+	tX_store("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n");
+	tX_store("<terminatorXset version=\"%s\">\n", TX_XML_SETFILE_VERSION);
 	
 	strcpy(indent, "\t");
 
@@ -1434,12 +1434,12 @@ int  vtt_class :: save_all(FILE* rc) {
 	store_float_sp("master_pitch", globals.pitch, sp_master_pitch);
 
 	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
-		res+=(*vtt)->save(rc, indent);
+		res+=(*vtt)->save(rc, rz, indent);
 	}
 	
-	sequencer.save(rc, indent);
+	sequencer.save(rc, rz, indent);
 	
-	fprintf(rc, "</terminatorXset>\n");
+	tX_store("</terminatorXset>\n");
 	
 	return(res);
 }
