@@ -6,6 +6,7 @@ Contributors:
 licmak.awk: 		Christian <eleet@altern.org>
 tX_wavfunc.c-patch:	"Andrew C. Bul+hac?k" <acb@zikzak.net>
 MK II icon:		Michael Kahl <m.kahl@student.hu-berlin.de>
+new startup switches:	Josh Steiner <joschi@eds.org>
 
 Authors of files not written for tX but included in this distribution:
 mmx.h README.MMX:	Hank Dietz <hankd@ecn.purdue.ed> and

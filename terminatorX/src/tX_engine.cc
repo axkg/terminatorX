@@ -74,7 +74,7 @@ int new_grab_mouse=0;
 int want_recording=0;
 int is_recording=0;
 
-int grab_mouse(int newstate)
+void grab_mouse(int newstate)
 {
 	new_grab_mouse=newstate;
 }

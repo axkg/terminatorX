@@ -85,8 +85,6 @@ GtkWidget *but_both;
 
 GtkWidget *sound_editor;
 
-GtkAdjustment *gui_wrap;
-
 GtkTooltips *opt_tips;
 
 int opt_hidden=0;
@@ -110,18 +108,12 @@ void apply_options()
 	
 	globals.mouse_speed=mouse_speed->value;
 	globals.tooltips=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tooltips));
+	if (globals.tooltips) gtk_tooltips_enable(gui_tooltips);
+	else gtk_tooltips_disable(gui_tooltips);
+	
 	globals.show_nag=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(show_nag));
 	globals.update_idle=(int) update_idle->value;
-	globals.update_delay=(int) update_delay_adj->value;
-	
-	i=(int) gui_wrap->value;
-	
-	if (i!=globals.gui_wrap)
-	{
-		globals.gui_wrap=i;
-		//rebuild_vtts(1);
-	}
-	
+	globals.update_delay=(int) update_delay_adj->value;	
 	globals.flash_response=flash_response->value;
 	
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(but_text))) globals.button_type=BUTTON_TYPE_TEXT;
@@ -326,7 +318,7 @@ void create_options()
 
 	xinput_enable=gtk_check_button_new_with_label("XInput Device:");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(xinput_enable), globals.xinput_enable);		
-	gtk_tooltips_set_tip(opt_tips,	xinput_enable, "Enable this if you want to use other input than your default X-Pointer. You have to select your desired device as well.", NULL);
+	gtk_tooltips_set_tip(opt_tips,	xinput_enable, "CAREFUL! Enable this *only* if you want to use an input device than your default X-Pointer (yes, your mouse ;). You have to select your desired device as well. Selecting the default mouse pointer will crash terminatorX so if you want to use that keep this option disabled.", NULL);
 	add_widget_fix(xinput_enable);
 	
 	if (strlen(globals.xinput_device)>0)	
@@ -419,16 +411,7 @@ void create_options()
 	add_widget_dyn(item);
 	
 	end_box();
-	
-	begin_box();
-	
-	add_expl("Max. Number of Vtts per Column:  ");
-	gui_wrap=GTK_ADJUSTMENT(gtk_adjustment_new(globals.gui_wrap, 1, 10, 1, 1, 1));
-	item=gtk_spin_button_new(gui_wrap, 1.0, 0);
-	add_widget_dyn(item);
-	
-	end_box();
-	
+
 	begin_box();
 	
 	add_expl("Buttons as ");

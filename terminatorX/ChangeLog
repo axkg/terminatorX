@@ -3,7 +3,7 @@ All changes were done by me (Alexander König) if not stated otherwise.
 This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
-[v3.65]
+[v3.70]
 - this list may be incomplete
 - This release brings support for LADSPA plugins. These plugins can be inserted
   into any turntable's effect chain at any position. You can edit the the
@@ -29,7 +29,7 @@ changed.
   plugin effects click on their panel's label.
   NOTE: The panning-control is not working yet. It'll work as soon as stereo
   is done.
-- As always when introducing something new, the set-file file-format ha
+- As always when introducing something new, the set-file file-format has
   changed.
 - The parameter-to-mouse-axis mapping has been moved from hardcoded to
   dynamic. You can now map any parameter that's considered "mappable" to the
@@ -39,6 +39,14 @@ changed.
   release he has added some startup parameters for terminatorX, some of them
   aiming for future MIDI support, and therefor not functional yet. Run
   "terminatorX --help" to get more details.
+- I know write the "manual" in SGML with the DocBook DTD. The distribution
+  contains the HTML and the postscript version. These transformation have been
+  created using James Clark's jade (DSSSL-processor) and Norman Walsh's DSSSL
+  stylesheets for DocBook.
+- Removed obsolete "number of vtts"-option from the options dialog.
+- Applied a patch from Josh that fixes running the soundfile editor for files
+  including a blank in their filename.
+- New tooltips for the complete GUI.
 
 [v3.61] (unreleased)
 - applied a tiny patch from Atsushi Yamagata <yamagata@plathome.co.jp>
