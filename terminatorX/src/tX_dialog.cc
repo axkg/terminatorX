@@ -684,6 +684,7 @@ void show_about(int nag)
 		" endian.");
 	
 		gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
+		gtk_widget_set_size_request(label, 640, -1);
 		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
 		add_about_wid_fix(label);
 

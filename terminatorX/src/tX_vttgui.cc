@@ -889,8 +889,8 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_entry_set_text(GTK_ENTRY(g->name), vtt->name);
 	p->add_client_widget(g->name);
 	gui_set_tooltip(g->name, "Enter the turntable's name here.");
-	gtk_widget_set_size_request(g->name, 40, g->name->requisition.height);
-	
+	gtk_widget_set_size_request(g->name, 40, -1);
+
 	g->del=gtk_button_new_with_label("Delete");
 	gui_set_tooltip(g->del, "Click here to annihilate this turntable. All events recorded for this turntable will be erased, too.");
 	p->add_client_widget(g->del);
@@ -1087,7 +1087,7 @@ void build_vtt_gui(vtt_class *vtt)
 	
 	g->adjust_dialog=NULL;
 	
-	gui_set_name(vtt, vtt->name);
+	gui_set_name(vtt, vtt->name);	
 }
 
 void fx_up(GtkWidget *wid, vtt_fx *effect)
