@@ -28,12 +28,6 @@
 
 #include <config.h>
 
-#ifdef DONT_USE_FLASH
-#undef USE_FLASH
-#else
-#define USE_FLASH 1
-#endif
-
 #include <list>
 #include "tX_types.h"
 #include "tX_vttgui.h"
@@ -44,10 +38,6 @@
 #include "tX_seqpar.h"
 #include "tX_vttfx.h"
 #include "tX_ladspa.h"
-
-#ifdef USE_3DNOW
-#include "3dnow.h"
-#endif
 
 #define EC_MAX_BUFFER 256000
 
@@ -115,9 +105,7 @@ class vtt_class
 	vtt_fx* lp_fx;
 	vtt_fx* ec_fx;
 
-#ifdef USE_FLASH
 	f_prec max_value;
-#endif
 	
 	int16_t *buffer;	// Actual audio data
 	unsigned int samples_in_buffer;  // No. of samples in audio data
@@ -131,9 +119,6 @@ class vtt_class
 	/* main playback vars */
 	f_prec rel_volume; // The (user-selected) relative volume
 	f_prec res_volume; // The resulting volume
-#ifdef USE_3DNOW
-	mmx_t mm_res_volume;
-#endif	
 	f_prec rel_pitch; // The (user-selected) relative pitch
 	f_prec res_pitch;
 	

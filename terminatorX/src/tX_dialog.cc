@@ -499,13 +499,6 @@ void show_about(int nag)
 		"OFF"
 #endif
 
-		" - 3DNow!: "
-#ifdef USE_3DNOW
-		"ON"
-#else
-		"OFF"
-#endif
-		
 		" - enhanced scheduling: "
 #ifdef USE_SCHEDULER
 		"ON"
