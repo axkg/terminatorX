@@ -139,6 +139,9 @@ typedef struct {
 	
 	int fullscreen_enabled;
 	int confirm_events;
+	
+	double vtt_inertia;
+	
 } tx_global;
 
 extern tx_global globals;

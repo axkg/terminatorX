@@ -94,9 +94,9 @@ class tX_seqpar
 	static tX_seqpar *get_sp_by_persistence_id(unsigned int pid);
 
 	void record_value (const float value);
-	virtual void do_exec(const float value);
-	virtual void exec_value(const float value);	
-	virtual void do_update_graphics();
+	virtual void do_exec(const float value)=NULL;
+	virtual void exec_value(const float value)=NULL;	
+	virtual void do_update_graphics()=NULL;
 	void update_graphics();
 	static void update_all_graphics();
 	static void init_all_graphics();
