@@ -47,3 +47,6 @@
 
 /* Use OSS */
 #undef USE_OSS
+
+/* Don't use movqfix */
+#undef OVERRIDE_MOVQ_AUTODETECT

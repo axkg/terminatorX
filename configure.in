@@ -17,7 +17,7 @@ AC_ARG_ENABLE(wav,          [  --enable-wav            enables the builtin wav-l
 AC_ARG_ENABLE(xsetpointer,  [  --enable-xsetpointer    enables executing of xsetpointer [default=auto] ])
 dnl AC_ARG_ENABLE(alsa,         [  --enable-alsa           use ALSA for sound output [default=auto] ])
 AC_ARG_ENABLE(oss,          [  --enable-oss            use OSS for sound output [default=auto] ])
-
+AC_ARG_ENABLE(movqfix,	    [  --disable-movqfix       don't use movq fix for gcc >= 2.96 [default=on] ])
 dnl AC_ARG_ENABLE(dial,         [  --enable-dial           use dials instead of scales for effects [default=yes] ])
 dnl AC_ARG_ENABLE(bigdial,      [  --enable-bigdial        use BIG dials [default=yes] ])
 dnl AC_ARG_ENABLE(dga2,     [  --enable-dga2           use DGA2 instead of DGA1. (experimental) [default=no] ])
@@ -84,6 +84,10 @@ if test "$enable_xsetpointer" != "no"; then
 			AC_MSG_ERROR([** xsetpointer not found. **])
 		fi
 	fi
+fi
+
+if test "$enable_movqfix" == "no"; then
+	AC_DEFINE(OVERRIDE_MOVQ_AUTODETECT)
 fi
 
 using_alsa=no

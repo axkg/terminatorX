@@ -318,6 +318,10 @@ class vtt_class
 	
 	void set_mix_mute(int newstate);
 	void set_mix_solo(int newstate);
+	void calc_mute()
+	{
+		res_mute=((mute) || (mix_mute && (!mix_solo)) || ((solo_ctr>0)&&(!mix_solo)));
+	}
 };
 
 #endif
