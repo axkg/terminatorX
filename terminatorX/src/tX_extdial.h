@@ -22,7 +22,7 @@ class tX_extdial
 	void f2s() { sprintf(sval, "%3f", fval); sval[4]=0; /* printf("f2s(): s:%s, f%f\n", sval, fval); */ };
 	
 	public:
-	tX_extdial(const char *l, GtkAdjustment *a);
+	tX_extdial(const char *l, GtkAdjustment *a, bool text_below=false);
 	~tX_extdial();
 	GtkWidget *get_widget() { return mainbox; };
 	GtkWidget *get_dial() { return dial; }
