@@ -743,7 +743,9 @@ void gui_connect_signals(vtt_class *vtt)
 			G_CALLBACK(drop_file), (void *) vtt);
 	
 }
-	
+
+void vg_show_fx_menu(GtkWidget *, vtt_fx *effect);
+
 void build_vtt_gui(vtt_class *vtt)
 {
 	GtkWidget *tempbox;
@@ -935,6 +937,7 @@ void build_vtt_gui(vtt_class *vtt)
 	/* Lowpass Panel */
 
 	p=new tX_panel("Lowpass", g->control_subbox);
+	g_signal_connect(G_OBJECT(p->get_labelbutton()), "clicked", G_CALLBACK(vg_show_fx_menu), vtt->lp_fx);
 	g->lp_panel=p;
 		
 	g->lp_enable=gtk_check_button_new_with_label("Enable");
@@ -966,6 +969,7 @@ void build_vtt_gui(vtt_class *vtt)
 	/* Echo Panel */
 
 	p=new tX_panel("Echo", g->control_subbox);
+	g_signal_connect(G_OBJECT(p->get_labelbutton()), "clicked",  G_CALLBACK(vg_show_fx_menu), vtt->ec_fx);
 	g->ec_panel=p;
 
 	p->add_client_widget(vg_create_fx_bar(vtt, vtt->ec_fx, 0));
@@ -1170,6 +1174,44 @@ void vg_show_fx_info(GtkWidget *wid, vtt_fx *effect)
 	tx_l_note(effect->get_info_string());
 }
 
+void vg_toggle_drywet(GtkWidget *wid, vtt_fx *effect)
+{
+	effect->toggle_drywet();
+}
+
+void vg_show_fx_menu(GtkWidget *wid, vtt_fx *effect)
+{
+	GtkWidget *menu=gtk_menu_new();
+	GtkWidget *item=gtk_menu_item_new_with_label("Show Info");
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+	gtk_widget_set_sensitive(item, (effect->has_drywet_feature()!=NOT_DRYWET_CAPABLE));
+	gtk_widget_show(item);
+	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(vg_show_fx_info), effect);
+	
+	switch (effect->has_drywet_feature()) {
+		case (NOT_DRYWET_CAPABLE):
+			item=gtk_menu_item_new_with_label("Add Dry/Wet Control");
+			gtk_widget_set_sensitive(item, FALSE);
+			break;
+		case (DRYWET_ACTIVE):
+			item=gtk_menu_item_new_with_label("Remove Dry/Wet Control");
+			break;
+		case (DRYWET_AVAILABLE):
+			item=gtk_menu_item_new_with_label("Add Dry/Wet Control");
+			break;
+	}
+	
+	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(vg_toggle_drywet), effect);
+	
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+	gtk_widget_show(item);
+
+	gtk_menu_popup (GTK_MENU(menu), NULL, NULL, NULL, NULL, 0, 0);
+
+	/* gtk+ is really waiting for this.. */
+	g_signal_emit_by_name(G_OBJECT(wid), "released", effect);
+}
+
 void vg_create_fx_gui(vtt_class *vtt, vtt_fx_ladspa *effect, LADSPA_Plugin *plugin)
 {
 	char buffer[1024];
@@ -1197,8 +1239,8 @@ void vg_create_fx_gui(vtt_class *vtt, vtt_fx_ladspa *effect, LADSPA_Plugin *plug
 			p->add_client_widget((*sp)->get_widget());
 	}
 
-	g_signal_connect(G_OBJECT(p->get_labelbutton()), "clicked", (GtkSignalFunc) vg_show_fx_info, (void *) effect);
-	gui_set_tooltip(p->get_labelbutton(), "Click here to learn more about this plugin.");
+	g_signal_connect(G_OBJECT(p->get_labelbutton()), "clicked", (GtkSignalFunc) vg_show_fx_menu, (void *) effect);
+	gui_set_tooltip(p->get_labelbutton(), "Click here for menu");
 	effect->set_panel_widget(p->get_widget());
 	effect->set_panel(p);
 

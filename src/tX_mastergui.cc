@@ -222,8 +222,10 @@ void mg_update_status()
 				gtk_label_set_text(GTK_LABEL(used_mem), buffer);
 			}
 		}
+		fclose(procfs);	
+	} else {
+		gtk_label_set_text(GTK_LABEL(used_mem), "");
 	}
-	fclose(procfs);	
 	
 	sprintf(buffer, "%i", vtt_class::vtt_amount);
 	gtk_label_set_text(GTK_LABEL(no_of_vtts), buffer);
