@@ -64,7 +64,16 @@ fi
 if test "$enable_mpg123" != "no"; then
  	AC_CHECK_PROG(MPG123_PROG, mpg123, yes)
 	if test "$MPG123_PROG" = "yes"; then
-	 	AC_DEFINE(USE_MPG123_INPUT)
+		if test "$SOX_PROG" = "yes"; then	
+		 	AC_DEFINE(USE_MPG123_INPUT)
+		else
+		 	AC_CHECK_PROG(SOX_PROG, sox, yes)
+			if test "$SOX_PROG" = "yes"; then	
+			 	AC_DEFINE(USE_MPG123_INPUT)
+			else
+				AC_MSG_RESULT([** mpg123 support disabled: couldn't find sox! **])
+			fi
+		fi
 	fi
 fi
 

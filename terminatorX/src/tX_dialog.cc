@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999, 2000  Alexander K÷nig
+    Copyright (C) 1999-2002  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -581,8 +581,8 @@ void show_about(int nag)
 		
 		sep=gtk_hseparator_new();
 		add_about_wid(sep);
-		char about_prefix_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999, 2000 by Alexander König";
-		char about_prefix_broken_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999, 2000 by Alexander Ko\"nig";
+		char about_prefix_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999-2002 by Alexander König";
+		char about_prefix_broken_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999-2002 by Alexander Ko\"nig";
 		char about_rest[]="\n\nSend comments, patches and scratches to: alex@lisas.de\n"
 		"terminatorX-homepage: http://www.terminatorX.cx\n\nThis binary has been compiled with the following flags: "
 		"Sox support: "
