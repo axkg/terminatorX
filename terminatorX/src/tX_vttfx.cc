@@ -137,10 +137,10 @@ static void wrapstr(char *str)
 				if(strlen(target)) strcat(target, "\n");
 				if(strlen(temp)>12)
 				{
+					temp[9]='.';
+					temp[10]='.';
 					temp[11]='.';
-					temp[12]='.';
-					temp[13]='.';
-					temp[14]=0;
+					temp[12]=0;
 				}
 				strcat(target, temp);
 				strcpy(temp,token);
@@ -254,7 +254,7 @@ void vtt_fx_ladspa :: deactivate()
 
 void vtt_fx_ladspa :: run()
 {
-	plugin->getDescriptor()->run(instance, vtt_class :: samples_in_mix_buffer);
+	plugin->getDescriptor()->run(instance, (vtt_class :: samples_in_mix_buffer)/2);
 }
 
 int vtt_fx_ladspa :: isEnabled()
