@@ -41,7 +41,8 @@ extern "C" {
 #endif
 
 #define PL_SOX_STR "sox \"%s\" -t ossdsp -w -s \"%s\""
-#define PL_MPG123_STR "mpg123 -a \"%s\" %s"
+#define PL_MPG123_STR "mpg123 -a \"%s\" \"%s\""
+#define PL_OGG123_STR "ogg123 -d oss \"%s\" -o \"dsp:%s\""
 
 //FILE *player_handle=NULL;
 pid_t player_pid=0;
@@ -68,8 +69,10 @@ void prelis_start(char *name)
 	char *ext;
 	pid_t temp;
 	int usempg123=0;
+	int useogg123=0;
 	int res;
 	char dev[PATH_MAX];
+	char ogg123_dev[PATH_MAX];
 	char nm[PATH_MAX];
 	
 	if (!globals.prelis) return;
@@ -82,6 +85,13 @@ void prelis_start(char *name)
 		if (strlen(ext)>3)
 		{
 			ext++;
+#ifdef USE_OGG123_INPUT
+			strcpy(ogg123_dev, "dev:");
+			if (!strncasecmp("ogg", ext, 2))
+//          sprintf(buffer, PL_OGG123_STR, name, globals.audio_device);
+			useogg123=1;
+			else
+#endif
 #ifdef USE_MPG123_INPUT			
 			if (!strncasecmp("mp", ext, 2))			
 //			sprintf(buffer, PL_MPG123_STR, name, globals.audio_device);
@@ -106,7 +116,14 @@ void prelis_start(char *name)
 	else if (temp==0) /* CHILD */
 	{	
 		strcpy(dev, globals.audio_device);
+		strcat(ogg123_dev, dev);
 		strcpy(nm, name);
+#ifdef USE_OGG123_INPUT
+		if (useogg123)
+			res=execlp("ogg123", "ogg123", "-q", "-d", "oss", "-o", ogg123_dev,
+			nm, NULL);
+		else
+#endif
 #ifdef USE_MPG123_INPUT
 		if (usempg123)
 			res=execlp("mpg123", "mpg123", "-q", "-a", dev, nm, NULL);

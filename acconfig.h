@@ -9,6 +9,9 @@
 /* Define if you want UGLY mp3-input "support" - requires sox as well*/
 #undef USE_MPG123_INPUT
 
+/* Define if you want UGLY ogg-input "support" - also requires sox*/
+#undef USE_OGG123_INPUT
+
 /* Define if you want realtime scheduling when tX is run with root privileges*/
 #undef USE_SCHEDULER
 
