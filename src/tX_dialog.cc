@@ -84,6 +84,7 @@ void apply_options(GtkWidget *dialog) {
 	strcpy(globals.xinput_device, gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "xinput_device"))->entry)));
 	globals.mouse_speed=gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "mouse_speed")));
 	globals.sense_cycles=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "stop_sense_cycles")));
+	globals.vtt_inertia=gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "vtt_inertia")));
 	
 	/* User Interface */ 
 	globals.show_nag=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "startup_nagbox")))==TRUE);
@@ -102,7 +103,7 @@ void apply_options(GtkWidget *dialog) {
 	globals.update_delay=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "update_delay")));
 	globals.update_idle=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "update_idle")));
 	globals.flash_response=gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "vumeter_decay")));
-
+	
 	/* Misc */
 	strcpy(globals.file_editor, gtk_entry_get_text(GTK_ENTRY(lookup_widget(dialog, "soundfile_editor"))));
 	strcpy(globals.lrdf_path, gtk_entry_get_text(GTK_ENTRY(lookup_widget(dialog, "ladspa_rdf_path"))));
@@ -192,8 +193,7 @@ GList *get_oss_device_list() {
 	if (oss_devices) {
 		return oss_devices;
 	}
-	
-	
+		
     struct dirent **namelist;
     int n,i;
     n = scandir("/dev", &namelist, oss_select_dsp_only, alphasort);
@@ -281,7 +281,10 @@ void init_tx_options(GtkWidget *dialog) {
 #endif	
 	
 	/* Audio: OSS */
-	gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "oss_audio_device")), get_oss_device_list());
+	GList *oss_list=get_oss_device_list();
+	if (oss_list) {
+		gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "oss_audio_device")), oss_list);
+	}
 	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "oss_audio_device"))->entry), globals.oss_device);
 
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget(dialog, "oss_buffers")), globals.oss_buff_no);
@@ -294,7 +297,10 @@ void init_tx_options(GtkWidget *dialog) {
 	
 	
 	/* Audio: ALSA */
-	gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "alsa_audio_device")), get_alsa_device_list());
+	GList *alsa_list=get_alsa_device_list();
+	if (alsa_list) {
+		gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "alsa_audio_device")), get_alsa_device_list());
+	}
 	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "alsa_audio_device"))->entry), globals.alsa_device);
 
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "alsa_buffer_time")), globals.alsa_buffer_time/1000);
@@ -323,7 +329,10 @@ void init_tx_options(GtkWidget *dialog) {
 	
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "stop_sense_cycles")), globals.sense_cycles);
 	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "stop_sense_cycles"),"If there is no \"motion-event\" for x cycles, where x is the number of cycles you select here, terminatorX assumes mouse motion has stopped. For smaller buffer sizes (=> shorter cycle times) you might have to increase this value", NULL);	
-	
+
+	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "vtt_inertia")), globals.vtt_inertia);
+	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "vtt_inertia"),"This value defines how fast the turntables will adapt to the speed input - the higher this value, the longer it will take the turntable to actually reach the target speed.", NULL);	
+
 	/* User Interface */ 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "startup_nagbox")), globals.show_nag);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "mainwin_tooltips")), globals.tooltips);
