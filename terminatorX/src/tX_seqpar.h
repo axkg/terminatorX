@@ -108,9 +108,9 @@ class tX_seqpar
 	/* Make it so ;) */
 	static void materialize_forward_values();
 
-        /* info functions for the editor */
-        char *get_vtt_name();
-        virtual const char *get_name(); 
+	/* info functions for the editor */
+	char *get_vtt_name();
+	virtual const char *get_name(); 
 	
 	/* For Mouse and MIDI Mapping */
 	protected:
@@ -384,7 +384,9 @@ class tX_seqpar_vttfx : public tX_seqpar_update
 	
 	private:
 	virtual void create_widget();
-        virtual const char *get_name(); 	
+	
+	public:
+	virtual const char *get_name(); 	
 };
 
 class tX_seqpar_vttfx_float : public tX_seqpar_vttfx

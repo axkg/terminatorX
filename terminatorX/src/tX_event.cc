@@ -22,30 +22,28 @@
 */ 
 
 #include <tX_event.h>
+#include <tX_global.h>
 
-tX_event :: tX_event (FILE *input)
-{
-	unsigned int sp_persistence_id;
-
-	fread((void *) &sp_persistence_id, sizeof(sp_persistence_id), 1, input);
-	fread((void *) &timestamp, sizeof(timestamp), 1, input);
-	fread((void *) &value, sizeof(value), 1, input);
-
-	sp=tX_seqpar::get_sp_by_persistence_id(sp_persistence_id);
-	if (!sp)
-	{
-		fprintf(stderr, "oops: couldn't resolve sp by persistence id %i.\n", sp_persistence_id);
-	}
+void tX_event :: store (FILE *output, char *indent) {
+	fprintf(output, "%s<event pid=\"%i\" value=\"%lf\" time=\"%i\"/>\n", indent, sp->get_persistence_id(), value, timestamp);
 }
 
-void tX_event :: store (FILE *output)
-{
-	int res=0;
-	unsigned int persistence_id;
+tX_event :: tX_event (xmlDocPtr doc, xmlNodePtr node) {
+	unsigned int sp_persistence_id;
+	char *buffer;
 	
-	persistence_id=sp->get_persistence_id();
+	buffer=(char *) xmlGetProp(node, (xmlChar *) "pid");
+	if (buffer) sscanf(buffer, "%i", &sp_persistence_id);
+	
+	buffer=(char *) xmlGetProp(node, (xmlChar *) "value");
+	if (buffer) sscanf(buffer, "%f", &value);
+	
+	buffer=(char *) xmlGetProp(node, (xmlChar *) "time");
+	if (buffer) sscanf(buffer, "%i", &timestamp);
 
-	res+=fwrite((void *) &persistence_id, sizeof(persistence_id), 1, output)-1;	
-	res+=fwrite((void *) &timestamp, sizeof(timestamp), 1, output)-1;
-	res+=fwrite((void *) &value, sizeof(value), 1, output)-1;
+	sp=tX_seqpar::get_sp_by_persistence_id(sp_persistence_id);
+	
+	if (!sp) {
+		tX_error("fatal: couldn't resolve seq. parameter for event at %i.", timestamp);
+	}
 }

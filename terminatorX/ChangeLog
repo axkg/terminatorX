@@ -4,6 +4,11 @@ This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.74]
+- Enhanced audio data display - you can now zoom into the audio signal, which
+  should allow much more precise scratching with larger audio files (ie 
+  complete tracks). On playback terminatorX will scroll the displayed area
+  to ensure you always see the area of the sample in which you currently
+  scratch.
 - fixed a gcc 3.2 compilation bug - thanks to 
   Adam Duck <duck@informatik.uni-frankfurt.de>
 

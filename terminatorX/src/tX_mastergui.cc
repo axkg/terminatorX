@@ -286,59 +286,67 @@ void load_tt_part(char * buffer)
 	FILE *in;
 	char idbuff[256];
 	char wbuf[PATH_MAX];
-
+	xmlDocPtr doc;
+	
 	turn_audio_off();
 	
 	strcpy(globals.tables_filename, buffer);
-
-	in=fopen(buffer, "r");	
 	
-	if (in)
-	{
-		fread(idbuff, strlen(TX_SET_ID_10), 1, in);
-		if (strncmp(idbuff, TX_SET_ID_10, strlen(TX_SET_ID_10))==0)
-		{
-			if (vtt_class::load_all_10(in, buffer)) tx_note("Error while reading set.", true);
-		}
-		else if (strncmp(idbuff, TX_SET_ID_11, strlen(TX_SET_ID_11))==0)
-		{
-			if (vtt_class::load_all_11(in, buffer)) tx_note("Error while reading set.", true);			
-		}
-		else if (strncmp(idbuff, TX_SET_ID_12, strlen(TX_SET_ID_12))==0)
-		{
-			if (vtt_class::load_all_12(in, buffer)) tx_note("Error while reading set.", true);			
-		}
-		else if (strncmp(idbuff, TX_SET_ID_13, strlen(TX_SET_ID_13))==0)
-		{
-			if (vtt_class::load_all_13(in, buffer)) tx_note("Error while reading set.", true);			
-		}
-		else if (strncmp(idbuff, TX_SET_ID_14, strlen(TX_SET_ID_14))==0)
-		{
-			if (vtt_class::load_all_14(in, buffer)) tx_note("Error while reading set.", true);			
-		}
-		else
-		{
-			tx_note("This file is not a terminatorX set-file.", true);
-			fclose(in);
+	doc = xmlParseFile(buffer);
+	if (doc) {
+		vtt_class::load_all(doc, buffer);
+		xmlFreeDoc(doc);
+	} 
+	
+#ifdef ENABLE_TX_LEGACY
+	else {	
+		in=fopen(buffer, "r");	
+	
+		if (in) {
+			fread(idbuff, strlen(TX_SET_ID_10), 1, in);
+			if (strncmp(idbuff, TX_SET_ID_10, strlen(TX_SET_ID_10))==0) {
+				if (vtt_class::load_all_10(in, buffer)) tx_note("Error while reading set.", true);
+			} else if (strncmp(idbuff, TX_SET_ID_11, strlen(TX_SET_ID_11))==0)	{
+				if (vtt_class::load_all_11(in, buffer)) tx_note("Error while reading set.", true);			
+			} else if (strncmp(idbuff, TX_SET_ID_12, strlen(TX_SET_ID_12))==0) {
+				if (vtt_class::load_all_12(in, buffer)) tx_note("Error while reading set.", true);			
+			} else if (strncmp(idbuff, TX_SET_ID_13, strlen(TX_SET_ID_13))==0) {
+				if (vtt_class::load_all_13(in, buffer)) tx_note("Error while reading set.", true);			
+			} else if (strncmp(idbuff, TX_SET_ID_14, strlen(TX_SET_ID_14))==0) {
+				if (vtt_class::load_all_14(in, buffer)) tx_note("Error while reading set.", true);			
+			}	else {
+				tx_note("This file is not a terminatorX set-file.", true);
+				fclose(in);
+				return;
+			}
+			fclose(in);	
+		} else {
+			strcpy(idbuff, "Failed to access file: \"");	// I'm stealing the unrelated sting for a temp :)
+			strcat(idbuff, globals.tables_filename);
+			strcat(idbuff, "\"");
+			tx_note(idbuff, true);
+			
 			return;
 		}
-		fclose(in);
-		
-		tX_seqpar :: init_all_graphics();
-		vg_init_all_non_seqpars();
-		
-		gtk_adjustment_set_value(volume_adj, 2.0-globals.volume);
-		gtk_adjustment_set_value(pitch_adj, globals.pitch);
-		sprintf(wbuf,"terminatorX - %s", strip_path(buffer));
-		gtk_window_set_title(GTK_WINDOW(main_window), wbuf);		
 	}
-	else
-	{
+#else
+	else {
 		strcpy(idbuff, "Failed to access file: \"");	// I'm stealing the unrelated sting for a temp :)
 		strcat(idbuff, globals.tables_filename);
 		strcat(idbuff, "\"");
 		tx_note(idbuff, true);
+		
+		return;
 	}
+#endif	
+	
+	tX_seqpar :: init_all_graphics();
+	vg_init_all_non_seqpars();
+		
+	gtk_adjustment_set_value(volume_adj, 2.0-globals.volume);
+	gtk_adjustment_set_value(pitch_adj, globals.pitch);
+	sprintf(wbuf,"terminatorX - %s", strip_path(buffer));
+	gtk_window_set_title(GTK_WINDOW(main_window), wbuf);		
 }
 
 void do_load_tables(GtkWidget *wid)
@@ -423,7 +431,6 @@ void do_save_tables(GtkWidget *wid)
 	char buffer[PATH_MAX];
 	char wbuf[PATH_MAX];
 	char *ext;
-	char idbuffer[256];
 	
 	strcpy(buffer, gtk_file_selection_get_filename(GTK_FILE_SELECTION(save_dialog)));
 	strcpy(globals.tables_filename, buffer);
@@ -448,8 +455,6 @@ void do_save_tables(GtkWidget *wid)
 	
 	if (out)
 	{
-		strcpy(idbuffer, TX_SET_ID_14);
-		fwrite(idbuffer, strlen(idbuffer), 1, out);
 		if (vtt_class::save_all(out)) tx_note("Error while saving set.", true);
 		fclose(out);
 		sprintf(wbuf,"terminatorX - %s", strip_path(buffer));
@@ -715,6 +720,8 @@ GtkSignalFunc seq_stop(GtkWidget *w, void *)
 	gtk_widget_set_sensitive(seq_slider, 1);	
 	gtk_widget_set_sensitive(engine_btn, 1);
 	gtk_widget_set_sensitive(seq_rec_btn, 1);
+
+	return NULL;
 }
 
 GtkSignalFunc seq_rec(GtkWidget *w, void *)
@@ -727,6 +734,8 @@ GtkSignalFunc seq_rec(GtkWidget *w, void *)
 	gtk_widget_set_sensitive(engine_btn, 0);
 	gtk_widget_set_sensitive(seq_rec_btn, 0);
 	sequencer.trig_rec();
+	
+	return NULL;
 }
 
 void seq_update_entry(const guint32 timestamp)
@@ -1139,7 +1148,7 @@ void tx_note(const char *message, bool isError)
 	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window),
 		GTK_DIALOG_DESTROY_WITH_PARENT,
 		isError ? GTK_MESSAGE_ERROR : GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, message);
-	int result=gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);	
 #else	
 	
@@ -1193,7 +1202,7 @@ void tx_l_note(const char *message)
 	
 	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window),
 		GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, message);
-	int result=gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);	
 #else		
 	char buffer[4096]="\n   Plugin Info:  \n   ------------  \n\n";
