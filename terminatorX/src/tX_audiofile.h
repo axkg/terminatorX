@@ -57,27 +57,37 @@ but mpg321 doesn't support -m yet.
  * have that problem */
 #endif /* USE_OGG123_INPUT */
 
+enum tX_audio_error {
+	TX_AUDIO_SUCCESS,
+	TX_AUDIO_ERR_ALLOC,
+	TX_AUDIO_ERR_PIPE_READ,
+	TX_AUDIO_ERR_SOX,
+	TX_AUDIO_ERR_MPG123,
+	TX_AUDIO_ERR_WAV_NOTFOUND,
+	TX_AUDIO_ERR_NOT_16BIT,
+	TX_AUDIO_ERR_NOT_MONO,
+	TX_AUDIO_ERR_WAV_READ,
+	TX_AUDIO_ERR_NOT_SUPPORTED,
+	TX_AUDIO_ERR_OGG123,
+	TX_AUDIO_ERR_MAD_OPEN,
+	TX_AUDIO_ERR_MAD_STAT,
+	TX_AUDIO_ERR_MAD_DECODE,
+	TX_AUDIO_ERR_MAD_MMAP,
+	TX_AUDIO_ERR_MAD_MUNMAP
+};
 
-#define TX_AUDIO_SUCCESS 0
-#define TX_AUDIO_ERR_ALLOC 1
-#define TX_AUDIO_ERR_PIPE_READ 2
-#define TX_AUDIO_ERR_SOX 3
-#define TX_AUDIO_ERR_MPG123 4
-#define TX_AUDIO_ERR_WAV_NOTFOUND 5
-#define TX_AUDIO_ERR_NOT_16BIT 6
-#define TX_AUDIO_ERR_NOT_MONO 7
-#define TX_AUDIO_ERR_WAV_READ 8
-#define TX_AUDIO_ERR_NOT_SUPPORTED 9
-#define TX_AUDIO_ERR_OGG123 10
+enum tX_audio_storage_type {
+	TX_AUDIO_UNDEFINED,
+	TX_AUDIO_MMAP,
+	TX_AUDIO_LOAD
+};
 
-#define TX_AUDIO_UNDEFINED 0
-#define TX_AUDIO_MMAP 1
-#define TX_AUDIO_LOAD 2
-
-#define TX_FILE_UNDEFINED 0
-#define TX_FILE_WAV 1
-#define TX_FILE_MPG123 2
-#define TX_FILE_OGG123 3
+enum tX_audio_file_type {
+	TX_FILE_UNDEFINED,
+	TX_FILE_WAV,
+	TX_FILE_MPG123,
+	TX_FILE_OGG123
+};
 
 #include <limits.h>
 #include "tX_types.h"
@@ -86,8 +96,8 @@ but mpg321 doesn't support -m yet.
 class tx_audiofile
 {
 	private:
-	int mem_type;
-	int file_type;
+	tX_audio_storage_type mem_type;
+	tX_audio_file_type file_type;
 	
 	FILE *file;
 	char filename[PATH_MAX];
@@ -96,30 +106,38 @@ class tx_audiofile
 	long no_samples;	
 
 #ifdef USE_BUILTIN_WAV
-	int load_wav();
+	tX_audio_error load_wav();
 #endif
+	
 #ifdef USE_SOX_INPUT	
-	int load_sox();
+	tX_audio_error load_sox();
 #define NEED_PIPED 1	
 #endif
+
+#ifdef USE_MAD_INPUT
+	tX_audio_error load_mad();
+	int mad_decode(unsigned char const *start, unsigned long length);	
+#endif
+
 #ifdef USE_MPG123_INPUT	
-	int load_mpg123();
+	tX_audio_error load_mpg123();
 #define NEED_PIPED 1	
 #endif
+
 #ifdef USE_OGG123_INPUT
-	int load_ogg123();
+	tX_audio_error load_ogg123();
 #define NEED_PIPED 1
 #endif
 
 #ifdef NEED_PIPED
-	int load_piped();
+	tX_audio_error load_piped();
 #endif
 	void figure_file_type();
 	
 	public:
 	tx_audiofile();
 	
-	int load(char *p_file_name);
+	tX_audio_error load(char *p_file_name);
 	int16_t *get_buffer() { return mem; };
 	long get_no_samples() { return no_samples; };
 	

@@ -27,6 +27,7 @@
 		 to load the file through sox (if available)).
 */   
 
+
 #include "tX_audiofile.h"
 
 #include <string.h>
@@ -34,6 +35,18 @@
 #include "wav_file.h"
 #include "tX_loaddlg.h"
 #include "tX_endian.h"
+
+#ifdef USE_MAD_INPUT
+#	include <mad.h>
+#	include <sys/types.h>
+#	include <unistd.h>
+#	ifndef _POSIX_MAPPED_FILES
+#		define _POSIX_MAPPED_FILES
+#	endif
+#	include <sys/stat.h>
+#	include <fcntl.h>
+#	include <sys/mman.h>
+#endif
 
 tx_audiofile :: tx_audiofile()
 {
@@ -64,9 +77,9 @@ void tx_audiofile :: figure_file_type()
 	}
 }
 
-int tx_audiofile :: load(char *p_file_name)
+tX_audio_error tx_audiofile :: load(char *p_file_name)
 {
-	int load_err=TX_AUDIO_ERR_NOT_SUPPORTED;
+	tX_audio_error load_err=TX_AUDIO_ERR_NOT_SUPPORTED;
 	
 	strcpy(filename, p_file_name);
 	
@@ -75,31 +88,36 @@ int tx_audiofile :: load(char *p_file_name)
 	figure_file_type();
 	
 #ifdef USE_BUILTIN_WAV
-	if ((load_err) && (file_type==TX_FILE_WAV))
-		load_err=load_wav();
-	
-	if (!load_err) return(load_err);	
+	if ((load_err) && (file_type==TX_FILE_WAV)) {
+		load_err=load_wav();	
+		if (load_err==TX_AUDIO_SUCCESS) return(load_err);
+	}
 #endif	
 
+#ifdef USE_MAD_INPUT
+	if ((load_err) && (file_type==TX_FILE_MPG123)) {
+		load_err=load_mad();
+		if (load_err==TX_AUDIO_SUCCESS) return(load_err);
+	}
+#endif	
+
+	
 #ifdef USE_MPG123_INPUT
-	if ((load_err) && (file_type==TX_FILE_MPG123))
-	{
+	if ((load_err) && (file_type==TX_FILE_MPG123)) {
 		load_err=load_mpg123();
 		return(load_err);
 	}
 #endif	
 
 #ifdef USE_OGG123_INPUT
-	if ((load_err) && (file_type==TX_FILE_OGG123))
-	{
+	if ((load_err) && (file_type==TX_FILE_OGG123)) {
 		load_err=load_ogg123();
 		return(load_err);
 	}
 #endif
 
 #ifdef USE_SOX_INPUT
-	if (load_err)
-	{
+	if (load_err) {
 		load_err=load_sox();
 	}
 #endif	
@@ -159,7 +177,7 @@ static tempbuff *newbuff()
 
 #ifdef NEED_PIPED 
 
-int tx_audiofile :: load_piped()
+tX_audio_error tx_audiofile :: load_piped()
 {
 	int16_t *data;
 	int16_t *p;
@@ -242,7 +260,7 @@ int tx_audiofile :: load_piped()
 #endif
 	
 #ifdef USE_SOX_INPUT
-int tx_audiofile :: load_sox()
+tX_audio_error tx_audiofile :: load_sox()
 {
 	char command[PATH_MAX*2];
 
@@ -257,7 +275,7 @@ int tx_audiofile :: load_sox()
 #endif	
 
 #ifdef USE_MPG123_INPUT
-int tx_audiofile :: load_mpg123()
+tX_audio_error tx_audiofile :: load_mpg123()
 {
 	char command[PATH_MAX*2];
 	
@@ -271,7 +289,7 @@ int tx_audiofile :: load_mpg123()
 #endif	
 
 #ifdef USE_OGG123_INPUT
-int tx_audiofile :: load_ogg123()
+tX_audio_error tx_audiofile :: load_ogg123()
 {
 	char command[PATH_MAX*2];
 
@@ -286,7 +304,7 @@ int tx_audiofile :: load_ogg123()
 
 #ifdef USE_BUILTIN_WAV
 #define min(a,b) ((a) < (b) ? (a) : (b))
-int tx_audiofile :: load_wav()
+tX_audio_error tx_audiofile :: load_wav()
 {
 	wav_sig wav_in;
 	int16_t *data;
@@ -380,4 +398,198 @@ int tx_audiofile :: load_wav()
 	
 	return (TX_AUDIO_SUCCESS);
 }
+#endif
+
+#ifdef USE_MAD_INPUT
+tX_audio_error tx_audiofile::load_mad() {
+	struct stat stat_dat;
+	int fd;
+	int res;
+	void *mp3_file;
+	
+	fd=open(filename, O_RDONLY);
+	if (!fd) return TX_AUDIO_ERR_MAD_OPEN;
+	
+	if (fstat(fd, &stat_dat) == -1 ||
+      stat_dat.st_size == 0) {
+		return TX_AUDIO_ERR_MAD_STAT;
+	}
+	
+	mp3_file = mmap(0, stat_dat.st_size, PROT_READ, MAP_SHARED, fd, 0);
+	
+	if (mp3_file == MAP_FAILED) {
+		return TX_AUDIO_ERR_MAD_MMAP;
+	}
+	
+	res=mad_decode((const unsigned char *) mp3_file, stat_dat.st_size);
+	
+	if (res) {
+		return TX_AUDIO_ERR_MAD_DECODE;
+	}
+	
+	if (munmap(mp3_file, stat_dat.st_size) == -1) {
+		return TX_AUDIO_ERR_MAD_MUNMAP;
+	}
+}
+
+#define TX_MAD_BLOCKSIZE 8096
+
+typedef struct {
+	const unsigned char *start;
+	const unsigned char *end;
+	const unsigned char *last_frame;
+	bool first_call;
+	ssize_t size;
+	int16_t *target_buffer;
+	unsigned int target_samples;
+	unsigned int current_sample;
+} tX_mad_buffer;
+
+const unsigned char *last_current=NULL;
+
+static enum mad_flow tX_mad_input(void *data, struct mad_stream *stream) {
+	tX_mad_buffer *buffer = (tX_mad_buffer *) data;
+	ssize_t bs;
+	unsigned int pos;
+
+	if (buffer->first_call) {
+		bs=min(TX_MAD_BLOCKSIZE, buffer->size);
+		mad_stream_buffer(stream, buffer->start, bs);
+		buffer->first_call=false;
+		return MAD_FLOW_CONTINUE;
+	} else {
+		if (!stream->next_frame) return MAD_FLOW_STOP;
+		
+		pos=stream->next_frame-buffer->start;
+		bs=min(TX_MAD_BLOCKSIZE, buffer->size-pos);
+		//tX_debug("last: %08x, new %08x, bs: %i, pos: %i",  buffer->last_frame, stream->next_frame, bs, pos);
+		
+		mad_stream_buffer(stream, stream->next_frame, bs);
+		if (stream->next_frame==buffer->last_frame) {
+			//tX_debug("tX_mad_input(): No new frame? Stopping.");
+			return MAD_FLOW_STOP;
+		}
+		ld_set_progress((float) pos/(float) buffer->size);
+		buffer->last_frame=stream->next_frame;
+
+		return MAD_FLOW_CONTINUE;
+	}
+	
+	
+/*	if (buffer->next_block>=buffer->blocks)
+		return MAD_FLOW_STOP;
+	mad_stream_buffer(stream, buffer->start, buffer->size);
+	
+	buffer->next_block=buffer->blocks;
+	return MAD_FLOW_CONTINUE;
+	
+	current=&buffer->start[buffer->next_block*TX_MAD_BLOCKSIZE];
+	bs=min(TX_MAD_BLOCKSIZE, buffer->size-(buffer->next_block*TX_MAD_BLOCKSIZE));
+	tX_debug("tX_mad_input() current %08x, bs %i, diff %i\n", current, bs, current-last_current);
+	buffer->next_block++;
+	mad_stream_buffer(stream, current, bs);
+
+	ld_set_progress((float) buffer->next_block/(float) buffer->blocks);	
+	last_current=current;	
+	return MAD_FLOW_CONTINUE;*/
+}
+
+static enum mad_flow tX_mad_error(void *data, struct mad_stream *stream, struct mad_frame *frame) {
+	tX_mad_buffer *buffer = (tX_mad_buffer *) data;
+	tX_error("Error 0x%04x loading via mad: (%s)\n", stream->error, mad_stream_errorstr(stream));
+	return MAD_FLOW_CONTINUE;
+}
+
+/* From minimad.c of mad */
+static inline signed int scale(mad_fixed_t sample) {
+#ifdef BIG_ENDIAN_MACHINE
+	swap32_inline(&sample);
+#endif
+  /* round */
+  sample += (1L << (MAD_F_FRACBITS - 16));
+
+  /* clip */
+  if (sample >= MAD_F_ONE)
+    sample = MAD_F_ONE - 1;
+  else if (sample < -MAD_F_ONE)
+    sample = -MAD_F_ONE;
+
+  /* quantize */
+  return sample >> (MAD_F_FRACBITS + 1 - 16);
+}
+
+static enum mad_flow tX_mad_output(void *data, struct mad_header const *header, struct mad_pcm *pcm) {
+	tX_mad_buffer *buffer=(tX_mad_buffer *) data;
+	unsigned int nchannels, nsamples;
+	mad_fixed_t const *left_ch, *right_ch;	
+
+	nchannels = pcm->channels;
+	nsamples  = pcm->length;
+	left_ch   = pcm->samples[0];
+	right_ch  = pcm->samples[1];
+	
+	buffer->target_samples+=nsamples;
+
+	buffer->target_buffer=(int16_t *) realloc(buffer->target_buffer, buffer->target_samples<<1);
+	if (!buffer->target_buffer) { 
+			tX_error("Failed allocating sample memory!\n");
+			return MAD_FLOW_STOP;
+	}
+		
+	while (nsamples--) {
+		signed int sample;
+
+		if (nchannels==1) {
+			sample=scale(*left_ch++);
+		} else {
+			double sample_l=(double) (*left_ch++);
+			double sample_r=(double) (*right_ch++); 
+			double res=(sample_l+sample_r)/2.0;
+			mad_fixed_t mad_res=(mad_fixed_t) res;
+			
+			sample=scale(mad_res);
+		}
+		
+		buffer->target_buffer[buffer->current_sample]=sample;
+		buffer->current_sample++;
+	}
+
+	return MAD_FLOW_CONTINUE;
+}
+
+int tx_audiofile::mad_decode(unsigned char const *start, unsigned long length) {
+	tX_mad_buffer buffer;
+	struct mad_decoder decoder;
+	int result;
+
+	buffer.start  = start;
+	buffer.end = &start[length];
+	buffer.last_frame = NULL;
+	buffer.size = length;
+	//buffer.next_block = 0;  
+	//buffer.blocks = length/TX_MAD_BLOCKSIZE + (length%TX_MAD_BLOCKSIZE ? 1 : 0);
+	buffer.target_buffer = NULL;
+	buffer.target_samples = 0;
+	buffer.current_sample = 0;
+	buffer.first_call=true;
+
+	tX_debug("tx_audiofile::mad_decode() - start %08x, length %i", buffer.start, buffer.size);
+	/* configure input, output, and error functions */
+
+	mad_decoder_init(&decoder, &buffer, tX_mad_input, NULL, NULL, tX_mad_output, tX_mad_error, NULL);
+	result = mad_decoder_run(&decoder, MAD_DECODER_MODE_SYNC);
+
+	if (!result) {
+		this->mem=buffer.target_buffer;
+		this->no_samples=buffer.target_samples;
+	} else {
+		if (buffer.target_buffer) free(buffer.target_buffer);
+	}
+	
+	/* release the decoder */
+	mad_decoder_finish(&decoder);  
+
+  return result;
+}
+
 #endif
