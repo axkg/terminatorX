@@ -62,7 +62,7 @@ void prelis_start(char *name) {
 	int useogg123=0;
 	int res;
 	char dev[PATH_MAX];
-	char ogg123_dev[PATH_MAX];
+	char ogg123_dev[PATH_MAX]="dev:";
 	char nm[PATH_MAX];
 	
 	if (!globals.prelis) return;
@@ -76,7 +76,6 @@ void prelis_start(char *name) {
 		{
 			ext++;
 #ifdef USE_OGG123_INPUT
-			strcpy(ogg123_dev, "dev:");
 			if (!strncasecmp("ogg", ext, 2))
 			useogg123=1;
 			else
