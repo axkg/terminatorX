@@ -15,7 +15,7 @@
     <para>For a more detailed description on what it does and how to use it
     have a look the <dblink id='aseqjoy_man'>manpage</dblink>.</para>
     <para>If you want to test it yourself download the source: 
-    <link ref='aseqjoy-0.0.1.tar.gz'>aseqjoy-0.0.1.tar.gz</link> (Sorry no
+    <file>aseqjoy-0.0.1.tar.gz</file> (Sorry no
     binaries - but it's so small it only takes seconds to compile it yourself
     :) Compiling aseqjoy requires kernel and ALSA (asound library) headers to
     be installed.</para>
