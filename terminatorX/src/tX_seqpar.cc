@@ -254,6 +254,56 @@ char * tX_seqpar :: get_vtt_name()
         else return "Master Track";
 }
 
+void tX_seqpar :: restore_meta(xmlNodePtr node) {
+	char *buffer;
+	
+	buffer=(char *) xmlGetProp(node, (xmlChar *) "id");
+	if (buffer) { sscanf(buffer, "%i", &persistence_id); }
+	else { tX_error("no ID for seqpar %s", this->get_name()); }
+	
+	buffer=(char *) xmlGetProp(node, (xmlChar *) "midiType");
+	if (buffer) {
+		if (strcmp("cc", buffer)==0) {
+			bound_midi_event.type=tX_midievent::CC;
+		} else if (strcmp("note", buffer)==0) {
+			bound_midi_event.type=tX_midievent::NOTE;
+		} else if (strcmp("pitchbend", buffer)==0) {
+			bound_midi_event.type=tX_midievent::PITCHBEND;
+		} else {
+			tX_error("unknown midiType \"%s\" for seqpar %s", buffer, this->get_name());
+		}
+		
+		buffer=(char *) xmlGetProp(node, (xmlChar *) "midiChannel");
+		if (buffer) { sscanf(buffer, "%i", &bound_midi_event.channel); }
+		else { tX_error("no midiChannel for seqpar %s", this->get_name()); }
+			
+		buffer=(char *) xmlGetProp(node, (xmlChar *) "midiNumber");
+		if (buffer) { sscanf(buffer, "%i", &bound_midi_event.number); }
+		else { tX_error("no midiNumber for seqpar %s", this->get_name()); }
+	} 
+	/* else: no MIDI init.... */
+}
+
+void tX_seqpar :: store_meta(FILE *output) {
+	char buffer[256];
+	
+	if (bound_midi_event.type!=tX_midievent::NONE) {
+		char *type;
+		
+		switch (bound_midi_event.type) {
+			case tX_midievent::NOTE: type="note"; break;
+			case tX_midievent::CC: type="cc"; break;
+			case tX_midievent::PITCHBEND: type="pitchbend"; break;
+			default: type="error";
+		}
+		sprintf(buffer, "id=\"%i\" midiType=\"%s\" midiChannel=\"%i\" midiNumber=\"%i\"", persistence_id, type, bound_midi_event.channel, bound_midi_event.number);
+	} else {
+		sprintf(buffer, "id=\"%i\"", persistence_id);
+	}
+	fprintf(output, buffer);
+}
+
+
 const char * tX_seqpar :: get_name()
 {
         return "This string means trouble!";
