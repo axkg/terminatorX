@@ -122,7 +122,7 @@ tX_seqpar :: ~tX_seqpar()
 	pthread_mutex_lock(&update_lock);
 	update.remove(this);
 	pthread_mutex_unlock(&update_lock);
-	sequencer.delete_all_events_for_sp(this);
+	sequencer.delete_all_events_for_sp(this, tX_sequencer::DELETE_ALL);
 	all.remove(this);
 }
 

@@ -131,6 +131,7 @@ void set_global_defaults() {
 	
 	strcpy(globals.lrdf_path, "/usr/share/ladspa/rdf:/usr/local/share/ladspa/rdf");
 	globals.fullscreen_enabled=0;
+	globals.confirm_events=0;
 	globals.compress_set_files=0;
 }
 
@@ -208,6 +209,7 @@ int load_globals_xml() {
 			
 			restore_int("compress_set_files", globals.compress_set_files);
 			restore_int("fullscreen_enabled", globals.fullscreen_enabled);
+			restore_int("confirm_events", globals.confirm_events);
 
 			if (!elementFound) {
 				fprintf(stderr, "tX: Unhandled XML element: \"%s\"\n", cur->name);
@@ -293,6 +295,7 @@ void store_globals() {
 		store_string("lrdf_path", globals.lrdf_path);
 		store_int("compress_set_files", globals.compress_set_files);
 		store_int("fullscreen_enabled", globals.fullscreen_enabled);
+		store_int("confirm_events", globals.confirm_events);
 		
 		fprintf(rc,"</terminatorXrc>\n");
 	}

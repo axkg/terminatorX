@@ -648,7 +648,7 @@ int  vtt_class :: load_all_10(FILE* input, char *fname)
 		gtk_box_pack_start(GTK_BOX(audio_parent), newvtt->gui.audio_box, TRUE, TRUE, 0);
 	}
 	
-	sequencer.delete_all_events();
+	sequencer.delete_all_events(tX_sequencer::DELETE_ALL);
 	
 	ld_destroy();
 	
@@ -908,7 +908,7 @@ void tX_sequencer :: load(FILE *in)
 	guint32 i;
 	tX_event *new_event=NULL;
 	
-	delete_all_events();
+	delete_all_events(tX_sequencer::DELETE_ALL);
 	
 	fread ((void *) &event_count, sizeof(event_count), 1, in);
 	

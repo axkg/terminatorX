@@ -3,6 +3,25 @@ All changes were done by me (Alexander König) if not stated otherwise.
 This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
+[v3.81 pre-release]
+- often, you record events and mess things up - in this case I'd often prefer 
+  dropping the complete take instead of recording a bad perfomance - which is 
+  why you now can activate "Confirm Recorded Events" from the "Sequencer" menu.
+  When enabled terminatorX will ask whether to actually record or drop the 
+  events created for the last take. The setting for this flag is stored in your
+  ~/.terminatorXrc.
+- introduced a new "Sequencer" menu that allows to delete events of a specific
+  type (all, all for certain turntable, all for a certain parameter) from the
+  sequencer. Events can be deleted for the complete song, upto the current song
+  position or from the current song position. Yeah, I know, termintorX is 
+  lacking a proper event-editor here, so where's your patch? ;)
+- switching the X11 mouse cursor when the user has to wait for terminatorX to 
+  finish some operation
+- fixed a sequencer bug: the events for master pitch and volume weren't erased
+  correctly when another set was loaded
+- fixed FreeBSD issues with the configure script
+- fixed compilation issues for gcc 2.95.x
+
 [v3.80]
 - I've invested quite some time in valgrinding this release, among other things
   a major mem leak showed up - the sample memory wasn't being free'd correctly

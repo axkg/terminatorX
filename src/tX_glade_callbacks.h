@@ -23,3 +23,11 @@ on_pref_apply_clicked                  (GtkButton       *button,
 void
 on_pref_ok_clicked                     (GtkButton       *button,
                                         gpointer         user_data);
+
+void
+on_del_mode_cancel_clicked             (GtkButton       *button,
+                                        gpointer         user_data);
+
+void
+on_del_mode_ok_clicked                 (GtkButton       *button,
+                                        gpointer         user_data);

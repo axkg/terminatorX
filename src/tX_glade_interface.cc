@@ -835,3 +835,100 @@ create_tx_options (void)
   return tx_options;
 }
 
+GtkWidget*
+create_tx_del_mode (void)
+{
+  GtkWidget *tx_del_mode;
+  GtkWidget *dialog_vbox4;
+  GtkWidget *vbox2;
+  GtkWidget *delmode_label;
+  GtkWidget *hbox3;
+  GtkWidget *vbox3;
+  GtkWidget *all_events;
+  GSList *all_events_group = NULL;
+  GtkWidget *upto_current;
+  GtkWidget *from_current;
+  GtkWidget *dialog_action_area4;
+  GtkWidget *cancelbutton1;
+  GtkWidget *okbutton1;
+
+  tx_del_mode = gtk_dialog_new ();
+  gtk_window_set_title (GTK_WINDOW (tx_del_mode), "Choose Events to Delete");
+
+  dialog_vbox4 = GTK_DIALOG (tx_del_mode)->vbox;
+  gtk_widget_show (dialog_vbox4);
+
+  vbox2 = gtk_vbox_new (FALSE, 2);
+  gtk_widget_show (vbox2);
+  gtk_box_pack_start (GTK_BOX (dialog_vbox4), vbox2, TRUE, TRUE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (vbox2), 4);
+
+  delmode_label = gtk_label_new ("Select which events to delete.");
+  gtk_widget_show (delmode_label);
+  gtk_box_pack_start (GTK_BOX (vbox2), delmode_label, TRUE, FALSE, 0);
+  gtk_label_set_justify (GTK_LABEL (delmode_label), GTK_JUSTIFY_LEFT);
+
+  hbox3 = gtk_hbox_new (FALSE, 0);
+  gtk_widget_show (hbox3);
+  gtk_box_pack_start (GTK_BOX (vbox2), hbox3, TRUE, FALSE, 0);
+
+  vbox3 = gtk_vbox_new (FALSE, 0);
+  gtk_widget_show (vbox3);
+  gtk_box_pack_start (GTK_BOX (hbox3), vbox3, TRUE, FALSE, 0);
+
+  all_events = gtk_radio_button_new_with_mnemonic (NULL, "Complete song");
+  gtk_widget_show (all_events);
+  gtk_box_pack_start (GTK_BOX (vbox3), all_events, FALSE, FALSE, 0);
+  gtk_radio_button_set_group (GTK_RADIO_BUTTON (all_events), all_events_group);
+  all_events_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (all_events));
+
+  upto_current = gtk_radio_button_new_with_mnemonic (NULL, "Upto the current song position");
+  gtk_widget_show (upto_current);
+  gtk_box_pack_start (GTK_BOX (vbox3), upto_current, FALSE, FALSE, 0);
+  gtk_radio_button_set_group (GTK_RADIO_BUTTON (upto_current), all_events_group);
+  all_events_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (upto_current));
+
+  from_current = gtk_radio_button_new_with_mnemonic (NULL, "From the current song position");
+  gtk_widget_show (from_current);
+  gtk_box_pack_start (GTK_BOX (vbox3), from_current, FALSE, FALSE, 0);
+  gtk_radio_button_set_group (GTK_RADIO_BUTTON (from_current), all_events_group);
+  all_events_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (from_current));
+
+  dialog_action_area4 = GTK_DIALOG (tx_del_mode)->action_area;
+  gtk_widget_show (dialog_action_area4);
+  gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area4), GTK_BUTTONBOX_END);
+
+  cancelbutton1 = gtk_button_new_from_stock ("gtk-cancel");
+  gtk_widget_show (cancelbutton1);
+  gtk_dialog_add_action_widget (GTK_DIALOG (tx_del_mode), cancelbutton1, GTK_RESPONSE_CANCEL);
+  GTK_WIDGET_SET_FLAGS (cancelbutton1, GTK_CAN_DEFAULT);
+
+  okbutton1 = gtk_button_new_from_stock ("gtk-ok");
+  gtk_widget_show (okbutton1);
+  gtk_dialog_add_action_widget (GTK_DIALOG (tx_del_mode), okbutton1, GTK_RESPONSE_OK);
+  GTK_WIDGET_SET_FLAGS (okbutton1, GTK_CAN_DEFAULT);
+
+  g_signal_connect ((gpointer) cancelbutton1, "clicked",
+                    G_CALLBACK (on_del_mode_cancel_clicked),
+                    NULL);
+  g_signal_connect ((gpointer) okbutton1, "clicked",
+                    G_CALLBACK (on_del_mode_ok_clicked),
+                    NULL);
+
+  /* Store pointers to all widgets, for use by lookup_widget(). */
+  GLADE_HOOKUP_OBJECT_NO_REF (tx_del_mode, tx_del_mode, "tx_del_mode");
+  GLADE_HOOKUP_OBJECT_NO_REF (tx_del_mode, dialog_vbox4, "dialog_vbox4");
+  GLADE_HOOKUP_OBJECT (tx_del_mode, vbox2, "vbox2");
+  GLADE_HOOKUP_OBJECT (tx_del_mode, delmode_label, "delmode_label");
+  GLADE_HOOKUP_OBJECT (tx_del_mode, hbox3, "hbox3");
+  GLADE_HOOKUP_OBJECT (tx_del_mode, vbox3, "vbox3");
+  GLADE_HOOKUP_OBJECT (tx_del_mode, all_events, "all_events");
+  GLADE_HOOKUP_OBJECT (tx_del_mode, upto_current, "upto_current");
+  GLADE_HOOKUP_OBJECT (tx_del_mode, from_current, "from_current");
+  GLADE_HOOKUP_OBJECT_NO_REF (tx_del_mode, dialog_action_area4, "dialog_action_area4");
+  GLADE_HOOKUP_OBJECT (tx_del_mode, cancelbutton1, "cancelbutton1");
+  GLADE_HOOKUP_OBJECT (tx_del_mode, okbutton1, "okbutton1");
+
+  return tx_del_mode;
+}
+
