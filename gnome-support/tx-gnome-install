@@ -5,7 +5,7 @@ MIMEDIR=/usr/share/mime-info
 ICONDIR=/usr/share/pixmaps
 
 # You shouldn't have to edit these...
-ICONS="terminatorX-app.xpm terminatorX-mime.xpm"
+ICONS="terminatorX-app.png terminatorX-mime.png"
 MIMEFILES="terminatorX.keys terminatorX.mime"
 
 echo -n "Installing icons in [$ICONDIR] ... "

@@ -179,7 +179,7 @@ void ld_set_filename(char *name)
 
 void ld_set_progress(gfloat progress)
 {
-	progress=floor(progress*100.0)/100.0;
+	progress=floor(progress*1000.0)/1000.0;
 	
 	//printf("%f\n", progress);
 	
