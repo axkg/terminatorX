@@ -42,9 +42,9 @@
 #include "wav_file.h"
 
 #include "tX_endian.h"
+#include <string.h>
 
 void init_head(wav_sig *info){
-	int16_t tmp16;
 	int32_t tmp32;
 	
 	strcpy(info->head, "RIFF    WAVEfmt                     data    ");

@@ -89,10 +89,8 @@ GtkTooltips *opt_tips;
 
 int opt_hidden=0;
 
-void apply_options()
-{
+void apply_options() {
 	char *text;
-	int i;
 	
 	strcpy(globals.audio_device, gtk_entry_get_text(GTK_ENTRY(audio_device)));
 	globals.buff_no=(int)buff_no->value;	
@@ -540,8 +538,6 @@ void show_about(int nag)
 	GtkWidget *scroll;
 	GdkPixmap *pmap=NULL;
 	
-	int loop;
-	
 	if (about) 
 	{
 		gdk_window_raise(about->window);
@@ -642,7 +638,6 @@ void show_about(int nag)
 		" endian machine.\n";
 		
 		char buffer[4096];
-		char *str;
 		
 		strcpy(buffer, about_prefix_umlaut);
 		strcat(buffer, about_rest);

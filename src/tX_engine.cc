@@ -60,7 +60,7 @@ void tX_engine :: set_grab_request() {
 }
 
 void tX_engine :: loop() {
-	int16_t *temp;
+	int16_t *temp=NULL;
 	int result;
 	
 	while (!thread_terminate) {

@@ -35,8 +35,7 @@
 #define TX_MOUSE_SPEED_NORMAL 0.05
 #define TX_MOUSE_SPEED_WARP 250000
 
-tx_mouse :: tx_mouse()
-{
+tx_mouse :: tx_mouse() {
 	mask=PointerMotionMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask;
 	xmot=(XMotionEvent *) &xev;
 	xkey=(XKeyEvent *) &xev;
@@ -53,12 +52,10 @@ tx_mouse :: tx_mouse()
 }
 
 
-int tx_mouse :: grab()
-{	
+int tx_mouse :: grab() {	
 #ifdef USE_DGA2
 	XDGAMode *mode;
 #endif	
-	int i, num=0;
 
 	if (grabbed) return(0);
 

@@ -68,7 +68,6 @@ struct _GtkTxFlashClass
 
 GtkWidget*     gtk_tx_flash_new	();
 guint	       gtk_tx_flash_get_type (void);
-static void           gtk_tx_flash_prepare (GtkWidget *widget);
 void           gtk_tx_flash_set_level (GtkWidget *widget, f_prec new_value);
 void           gtk_tx_flash_clear (GtkWidget *widget);
 

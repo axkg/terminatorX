@@ -59,6 +59,7 @@ extern "C" {
 #endif
 	
 #define tX_error(fmt, args...); { fprintf(stderr, "* tX_error: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
+#define tX_warning(fmt, args...); { fprintf(stderr, "+ tX_warning: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
 
 typedef struct {
 	char	audio_device[PATH_MAX];
