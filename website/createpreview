@@ -1,5 +1,0 @@
-#!/bin/bash
-for file in $*;
-do 
-	jpegtopnm < $file | pnmscale -xsize=100 | jpegtopng > pre_$file
-done
