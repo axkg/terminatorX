@@ -47,6 +47,7 @@ extern "C" {
 #endif
 
 extern GdkPixmap *knob_pixmaps[MAX_KNOB_PIX];
+extern GdkBitmap *knob_mask;
 extern void load_knob_pixs(GtkWidget *);
 
 #ifdef __cplusplus
