@@ -110,7 +110,7 @@ void pitch_changed(GtkWidget *wid, vtt_class *vtt)
 GtkSignalFunc trigger_prelis(GtkWidget *w)
 {
 	GtkFileSelection *fs;
-	
+
 	fs=GTK_FILE_SELECTION(gtk_widget_get_toplevel(w));
 	
 	prelis_start((char *) gtk_file_selection_get_filename(GTK_FILE_SELECTION(fs)));
@@ -270,7 +270,11 @@ GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->ok_button), "clicked", GTK_SIGNAL_FUNC(do_load_file), vtt);
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->cancel_button), "clicked", GTK_SIGNAL_FUNC (cancel_load_file), vtt);	
 	gtk_signal_connect (GTK_OBJECT(vtt->gui.fs), "delete-event", GTK_SIGNAL_FUNC(quit_load_file), vtt);	
+#ifdef USE_GTK2
+	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->file_list), "cursor_changed", GTK_SIGNAL_FUNC(trigger_prelis), vtt->gui.fs);		
+#else
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->file_list), "select_row", GTK_SIGNAL_FUNC(trigger_prelis), vtt->gui.fs);
+#endif		
 }
 
 void delete_vtt(GtkWidget *wid, vtt_class *vtt)
