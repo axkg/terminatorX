@@ -25,7 +25,8 @@ Step 1: Configure terminatorX.
 	if use bash: > export CFLAGS="-O2"
 	with tcsh:   > setenv CFLAGS "-O2"
 
-	Optionally you might want to add your platform specific tunings (-m* stuff).
+	Optionally you might want to add your platform specific tunings (-m* 
+	stuff).
 
 	All of the following configure options can be either enabled with
 	--enable-option or disabled with --disable-option.
@@ -100,8 +101,9 @@ Step 1: Configure terminatorX.
 		
 		--with-docdir
 		
-		If you intend to package terminatorX this flag will allow terminatorX
-		to find the XML documentation in order to display it online.
+		If you intend to package terminatorX this flag will allow
+		terminatorX to find the XML documentation in order to display
+		it online.
 		
 		--disable-libxml2
 		
