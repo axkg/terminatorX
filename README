@@ -1,0 +1,254 @@
+terminatorX V3.2 README
+-----------------------
+
+Copyright (C) 1999 Alexander König
+eMail: alkoit00@fht-esslingen.de
+Homepage: http://termX.cjb.net
+
+This is free software see the COPYING file that came with this
+distribution for details.
+
+WARNING: TerminatorX comes with ABSOLUTELY NO WARRANTY. Version 3.0 introduces
+         some features that are not too heavily tested and a crashing
+	 terminatorX may now result in locked X-Pointer.
+
+Contens:
+--------
+
+	1.......What it is
+	2.......Quickstart
+	3.......Features
+	4.......Requirements
+	5.......Installation
+	6.......Operation
+	7.......Options/Configuration
+	7.......Further notes
+	8.......Contact/Homepage
+
+1. What it is
+-------------
+
+TerminatorX is a realtime audio synthesizer. It enables you to scratch
+on wavfiles like you might have heard HipHop-DJs scratch on vinyl records.
+This is BETA Software please help me fix bugs. See section Contact/Homepage.
+Please read this README and take a look at the homepage
+http://www.termX.cjb.net BEFORE you complain.
+
+2. Quickstart:
+----------------
+
+	o Install terminatorX (see INSTALL)
+	o Run terminatorX
+	o Load a scratch file (and a loop if you want)
+	o Click Start
+	o Press <SPACE> or left mouse button to scratch
+	o Release <SPAVE> or left mouse button to let the scratch-file run at
+	  the turntable's default speed
+	o Press ESC or middle (third) mouse button to stop
+	
+3. Features:
+------------
+
+	Pre-3.0 Features (still there):
+	-------------------------------
+	
+	o CD-Quality operation
+	o Audio aliasing
+	o Optional playback of an additional loop wavfile to
+	  enable rhythm based scratching
+	o Recording of your scratching in a memory buffer, customizable by user
+	o Save that buffer (as a wavfile) with or without the loop mixed to it,
+	  no matter whether you recorded it with our without a loop playback
+	o Visual feedback to "see" current position in scratch-wavfile
+	o Kernel-level audio latency configurable
+	o Run terminatorX on the hardware platform of your choice,
+	  this software is known to run on the following platforms	  
+		- X86 (i386) (Linux)
+		- PowerPC (Linux)
+		- SUN Sparcs (Linux)
+	  It should run on other Linux hardware as well, if you manage to
+	  run it on any other platform (or you have prolems) please contact
+	  me.	  
+	
+	New Features (3.0++):
+	---------------------
+	
+	o Easy to use GUI (gtk+)
+	o No more commandline switches - settings are now configurable via
+	  the options dialog and saved on exit.
+	o Better mouse handling (now requires DGA)
+	o Support for other (XInput) devices
+	o (If enabled) Support for .mp3, .wav, .au, .iff, .smp, .cdr ....
+	o Improved visual feedback for better scratching.
+	o Mouse-button support ;)
+	o Mouse Y-axis support (see Options)
+	o Time-display
+	o Heavily enhanced audio-rendering engine. It is now 100% click free.
+	  (Btw: if you hear clicks these may result either:
+	   - from a buffer underrun -> enlarge audio buffersize (Options)
+	   - from "dirty" samples (either loop or scratch)
+	   - from importing audiofiles with a samplerate != 44.1 kHz)
+	o You can now mute the scratch (try <M>, <STRG>, right mouse button
+	  or (different!) <ALT>)
+	
+	
+4. Requirements:
+----------------
+
+	o A Linux system with gcc/egcs and X-Windows installed. 	
+	  
+	  You now need pthreads (alias LinuxThreads an implementation of POSIX
+	  threads) and a threadsafe libc: glibc2(++) as terminatorX is 
+	  multithreaded again (Hi, Andy ;))
+	  
+	  For the GUI you now need: gtk+ >= 1.2.0
+	  
+	  If you want to use other devices than your main X-Pointer
+	  you proabably need: XFree86 >= 3.3.3.1
+	  
+	  For enhanced audiofile support you need sox (and mpg123 for mp3s)
+	  
+	o A soundcard that's supported either by OSS our ALSA.
+	o A good clean mouse and pad, a good X-Pointer setup. see the mouse
+	  section on the homepage.
+
+Notes: 	On performance the only thing I can say is this: it runs fine on my
+	P(I)233MMX with 98MB of RAM. On slower machines you might have to
+	enlarge the kernel-level audio buffer (see Options). Nobody ever
+	told me it didn't run (due to cpu-power) so if you think your machine's
+	to slow please tell me so I can specify machines to slow...
+	
+NEW:	Since Version 3.2 tX contains a lowpass filter which seems to eat quite
+	some CPU power. So a bigger machine wont hurt, I guess a 200MMX is sort
+	of the lower limit. Maybe I'll find ways to accelerate that stuff for
+	future versions...	
+	
+5. Installation:
+----------------
+
+For GNU-standards' sake this information is now located in the INSTALL file
+that came with your distribution of terminatorX.
+  
+6. Operation:
+-------------
+
+This chapter was heavily cut as terminatorX now has a very easy to handle
+GUI. This GUI btw features tooltips, so if you want to know what a button/slider
+is about leave your mouse above that widget for a second or two and a short
+explanation will pop up.
+
+Still if you're new to terminatorX (and not familiar with 3.0+) you should
+read the following.
+
+About Scratching:
+
+At first you have to select the operation Mode:
+
+- Free Scratch: 
+  This Mode enables scratching. The scratching is not recorded and therefore
+  the playback will only stop if you hit either the middle mouse button
+  or <ESC> ("Escape").
+  
+- Record Scratch:
+  This Mode enables scratching. The scratching will be recorded into the 
+  record buffer. Playback either stops when the record buffer is full or you
+  pressed one of buttons described above.
+  
+- Playback Scratch:
+  This mode disables scratching. For now your mouse will be locked anyway.
+  In this mode terminatorX will playback the record buffer. Playback will
+  either stop when all of the recorded data was played back or you pressed
+  on of the buttons described above.
+
+If you have a scratch-file (== a file to scratch on) loaded and maybe a loop
+as well you can hit the "Start" button to start Playback.
+
+Both samples (scratch and loop) will playback at normal speed. To actually
+scratch you will have to keep either <SPACE> or left mouse button. Now the
+scratch sample is played back at the same speed you move your mouse -> you
+scratch ;). If you want to temporarily mute the scratch-sample press either,
+<M>, right mouse button or <CTRL>. You can also use <ALT> but the "meaning"
+of this key is inverted: 
+	- ALT pressed  -> scratch NOT muted.
+	- ALT released -> scratch muted.
+This is of course not true when playback starts. The scratch will be unmuted
+then. Why there are multiple ways of muting? So you can use whatever you
+prefer.
+
+If you want to "move" through the sample a little faster you can keep <F> 
+(alias fast) pressed to accelerate by factor 10.
+
+To stop playback you either press middle mouse button, <ESC> or (for 
+compability with old versions) <RETURN>.
+
+Recorded scratches can be saved with one of the four "save"-buttons on the
+right side of terminatorX's main window. "Fast" means you wont have to enter
+a filename, terminatorX will generate the name from the prefix you set (if
+not default is "tX_scratch") in the Options dialog. "(mix)" means the saved
+file will contain your scratch mixed with the loop file at the currently
+selected ratio. 
+
+NEW: Since version 3.2 terminatorX comes with an additonal resonating lowpass
+filter. If enabled this effect will be applied to the scratch-signal. The
+resonance parameter can be set with the slider underneath the "LP Filter" 
+on/off button. The other parameter (cutoff frequency) can be modified in
+realtime while scratching. Depending on what mouse-axis you chose for scratching
+the other axis will be used for modifying the cutoff frequency of the lowpass
+filter. Now if you think this sounds somewhat complicated, simply run
+terminatorX, enable "LP Filter" and set the resonance-factor close to the max
+(~ pretty far to the right) and move your mouse up and down (or from left )
+while scratching and hear what happens...
+
+Althoug tX is trying to adjust the input volume according to the resonance 
+factor, you might get clipping with high resonance values and samples that
+contain loud high-frequent parts. The only way to get around this for now is to
+reduce resonance.
+
+7. Options/Configuration
+------------------------
+
+All configuration business now happens in the Options-dialog. The features
+that are not completely self-explaining do have tooltips. So in this document
+I will discuss the buffer settings and the sense-cycles-option only. 
+
+A word on the settings in general: your settings are stored in the file
+~/.terminatorXrc.bin so if you think you completely messed up your settings
+you will have to exit terminatorX - delete this file - and then re-run 
+terminatorX with the default settings.
+
+TerminatorX renders audio blockwise. If you want to have near-realtime operation
+you need to have really small blocks. The values of these blocks can be 
+influenced via the "buffer size" option. The setting you select actually results
+in a 2^x blocksize (size-setting == 8 -> true buffer size in bytes is 2^8=256).
+
+The problem is the smaller the value you select is the faster your machine has
+to be. So if you here "clicks", or "drops" in audio output that are not related
+to your sample-material you will have to increase the buffer size. On the 
+other hand if you believe terminatorX does not react fast enought you have to
+decrease this parameter. The default value is 9. IMHO I'd say 8 is close to
+perfect but this value causes clicks on my machine already (I still use 8
+though ;) ).
+
+Between rendering and outputing these blocks terminatorX checks for mouse 
+motion. The problem with mice is: they don´t report when they have stopped.
+This is why terminatorX assumes your mouse has stopped if there is no motion
+reported for certain amount of render/output-cycles. This value is configurable
+via the Stop-sense-cycles. If you decrease your buffsize of course you shorten
+the cycle time as well, therefore if you here strange stop/run behaviour of 
+the audio ouput while scratching after you decreased the buffersize you might 
+have to increase the stop-sense value too.
+
+8. Further notes:
+-----------------
+
+You can find more on terminatorX operation and especially the mouse
+configuration on the terminatorX homepage: http://termX.cjb.net
+
+9. Contact/Homepage:
+--------------------
+
+terminatorX's homepage:	http://termX.cjb.net
+
+If you wan't to send me comments, bug-reports, patches or scratches (see
+the users' scratches section on the terminatorX homepage) send a me
+an eMail to alkoit00@fht-esslingen.de 
