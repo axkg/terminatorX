@@ -251,7 +251,7 @@ void drop_file(GtkWidget *widget, GdkDragContext *context,
 		if (fn) fn++; else fn=(char *) selection_data->data;
 	}
 
-	load_part(realfn, vtt);
+	load_part(fn, vtt);
 
 	if (realfn) g_free(realfn);
 	if (host) g_free(host);
@@ -1276,6 +1276,14 @@ void delete_gui(vtt_class *vtt)
 	if (vtt->gui.ladspa_menu) gtk_widget_destroy(vtt->gui.ladspa_menu);
 }
 
+void cleanup_vtt(vtt_class *vtt)
+{
+	gtk_tx_cleanup_pos_display(GTK_TX(vtt->gui.display));	
+	gtk_tx_flash_set_level(vtt->gui.flash, 0.0);
+	gtk_tx_flash_clear(vtt->gui.flash);
+	vtt->cleanup_required=false;
+}
+
 void update_all_vtts()
 {
 	list <vtt_class *> :: iterator vtt;
@@ -1283,21 +1291,17 @@ void update_all_vtts()
 	
 	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++)
 	{
-		if ((*vtt)->is_playing)
-		{
+		if ((*vtt)->is_playing) {
 			gtk_tx_update_pos_display(GTK_TX((*vtt)->gui.display), (*vtt)->pos_i, (*vtt)->mute);
 			temp=(*vtt)->max_value*(*vtt)->res_volume*vtt_class::vol_channel_adjust;
 			(*vtt)->max_value=0;
 			gtk_tx_flash_set_level((*vtt)->gui.flash, temp);
 		}
+		
+		if ((*vtt)->needs_cleaning_up()) {
+			cleanup_vtt((*vtt));
+		}
 	}
-}
-
-void cleanup_vtt(vtt_class *vtt)
-{
-		gtk_tx_cleanup_pos_display(GTK_TX(vtt->gui.display));	
-		gtk_tx_flash_set_level(vtt->gui.flash, 0.0);
-		gtk_tx_flash_clear(vtt->gui.flash);
 }
 
 void cleanup_all_vtts()

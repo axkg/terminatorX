@@ -271,10 +271,13 @@ class vtt_class
 	static void focus_next();
 	static void unfocus();
 	static void set_sample_rate(int samplerate);
-	int trigger();
+	void retrigger();
+	int trigger(bool need_lock=true);
 	
 	int stop();
 	int stop_nolock();
+	bool cleanup_required;
+	bool needs_cleaning_up() { return cleanup_required; }
 	
 	int save(FILE *, gzFile rz, char *indent);
 	static int save_all(FILE *, gzFile rz);

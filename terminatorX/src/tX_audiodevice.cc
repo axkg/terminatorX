@@ -321,6 +321,7 @@ pcm_handle(NULL) {}
 
 void tX_audiodevice_alsa :: play(int16_t *buffer)
 {
+	int underrun_ctr=0;
 	snd_pcm_sframes_t pcmreturn;
 #ifdef BIG_ENDIAN_MACHINE
 	swapbuffer (buffer, samples_per_buffer);
@@ -340,6 +341,11 @@ void tX_audiodevice_alsa :: play(int16_t *buffer)
 #else	
 		pcmreturn = snd_pcm_mmap_writei(pcm_handle, buffer, samples_per_buffer >> 1);
 #endif
+		underrun_ctr++;
+		if (underrun_ctr>100) {
+			tX_error("tX_audiodevice_alsa::play() more than 10 EPIPE cycles. Giving up.");
+			break;
+		}
 		//tX_warning("ALSA: ** buffer underrun **");
 	}
 	
