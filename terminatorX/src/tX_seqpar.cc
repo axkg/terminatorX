@@ -679,7 +679,7 @@ const char * tX_seqpar_vtt_lp_reso :: get_name()
 
 tX_seqpar_vtt_lp_freq :: tX_seqpar_vtt_lp_freq()
 {
-	set_mapping_parameters(1.0, 0, TX_SEQPAR_DEFAULT_SCALE, 1);
+	set_mapping_parameters(0.99, 0, TX_SEQPAR_DEFAULT_SCALE, 1);
 }
 
 float tX_seqpar_vtt_lp_freq :: get_value() { return tt->lp_freq; }
