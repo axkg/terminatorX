@@ -1,0 +1,89 @@
+%define name terminatorX
+%define version @VERSION@
+%define release 1
+
+
+Summary: Realtime Audio Synthesizer
+Name: %{name}
+Version: %{version}
+Release: %{release}
+Group: Applications/Multimedia
+Copyright: GPL2
+URL: http://www.terminatorX.cx
+Source: %{name}-%{version}.tar.gz
+Buildroot: %{_tmppath}/%{name}-%{version}-root
+Requires: gtk+ >= 1.2.5
+
+%description
+terminatorX is a realtime audio synthesizer that allows you to "scratch" on
+digitally sampled audio data (*.wav, *.au, *.mp3, etc.) the way hiphop-DJs
+scratch on vinyl records. It features multiple turntables, realtime effects
+(buit-in as well as LADSPA plugin effects), a sequencer and an easy-to-use
+gtk+ GUI.
+
+%changelog
+* Tue Mar 20 2001 Adrian Reber <adrian@lisas.de>
+ - Updated to 3.71
+* Sat Dec 09 2000 Adrian Reber <adrian@lisas.de>
+ - Updated to 3.70
+* Wed Apr 12 2000 Adrian Reber <adrian@lisas.de>
+ - Updated to 3.60
+* Wed Feb 23 2000 Adrian Reber <adrian@42.fht-esslingen.de>
+ - Mandrake adaptations.
+* Thu Feb 14 2000 Adrian Reber <adrian@42.fht-esslingen.de>
+ - Updated to 3.55
+* Thu Dec 17 1999 Adrian Reber <adrian@42.fht-esslingen.de>
+ - Updated to 3.5
+* Thu Jul 29 1999 Adrian Reber <adrian@rhlx01.fht-esslingen.de>
+ - Updated to 3.2
+* Fri May 07 1999 Adrian Reber <adrian@rhlx01.fht-esslingen.de>
+ - Initial release
+
+%prep
+
+%setup -q
+
+%build
+%configure
+
+uname -a|grep SMP && make -j 2 || make
+
+%install
+
+%makeinstall
+
+MIMEDIR=$RPM_BUILD_ROOT%{_datadir}/mime-info
+ICONDIR=$RPM_BUILD_ROOT%{_datadir}/pixmaps
+ICONS="gnome-support/terminatorX-app.xpm gnome-support/terminatorX-mime.xpm"
+MIMEFILES="gnome-support/terminatorX.keys gnome-support/terminatorX.mime"
+
+mkdir -p $MIMEDIR
+mkdir -p $ICONDIR
+
+cp $ICONS $ICONDIR
+cp $MIMEFILES $MIMEDIR
+
+( cd $RPM_BUILD_ROOT%{_datadir}
+  mkdir -p ./gnome/apps/Multimedia
+  cat > ./gnome/apps/Multimedia/terminatorX.desktop <<EOF
+[Desktop Entry]
+Name=terminatorX
+Type=Application
+Comment=sophisticated scratching and audio tool
+Exec=terminatorX
+Icon=terminatorX-app.xpm
+EOF
+)
+
+#do some cleanup for the documentation
+find . -name "Makefile*" -print -exec rm -rf {} \;
+
+%files
+%defattr(0644,root,root,0755)
+%doc COPYING AUTHORS ChangeLog INSTALL NEWS README THANKS TODO README.GNOME README.PERFORMANCE doc
+%attr(0755,root,root) %{_bindir}/terminatorX
+%{_datadir}/mime-info/terminatorX.keys
+%{_datadir}/mime-info/terminatorX.mime
+%{_datadir}/pixmaps/terminatorX-app.xpm
+%{_datadir}/pixmaps/terminatorX-mime.xpm
+%{_datadir}/gnome/apps/Multimedia/terminatorX.desktop
