@@ -157,7 +157,7 @@ tX_engine :: tX_engine() {
 	thread_terminate=false;
 	
 	/* Creating the actual engine thread.. */
-	
+#ifdef USE_SCHEDULER	
 	if (!geteuid()) {
 		pthread_attr_t pattr;
 		struct sched_param sparm;
@@ -178,9 +178,11 @@ tX_engine :: tX_engine() {
 		result=pthread_create(&thread, &pattr, engine_thread_entry, (void *) this);
 	} else {
 		tX_debug("tX_engine() - Lacking root privileges - no realtime scheduling!");
-		
+#endif		
 		result=pthread_create(&thread, NULL, engine_thread_entry, (void *) this);
+#ifdef USE_SCHEDULER		
 	}
+#endif
 	
 	if (result!=0) {
 		tX_error("tX_engine() - Failed to create engine thread. Errno is %i.", errno);
