@@ -96,6 +96,7 @@ vtt_class * vtt_class::focused_vtt=NULL;
 f_prec vtt_class::mix_max_l=0;
 f_prec vtt_class::mix_max_r=0;
 f_prec vtt_class::vol_channel_adjust=1.0;
+int vtt_class::mix_buffer_size=0;
 
 #define GAIN_AUTO_ADJUST 0.8
 
@@ -869,6 +870,9 @@ int vtt_class :: set_mix_buffer_size(int no_samples)
 	}
 	
 	if ((!mix_buffer) || (!mix_out_buffer) || res) return(1);
+	
+	mix_buffer_size=no_samples;
+	
 	return(0);
 }
 
@@ -2004,4 +2008,8 @@ void vtt_class :: set_sample_rate(int samplerate) {
 		}
 		(*vtt)->recalc_pitch();
 	}
+	
+	int no_samples=(int) (sr*0.001); // Forcing 1 ms blocksize
+	
+	set_mix_buffer_size(no_samples);	
 }

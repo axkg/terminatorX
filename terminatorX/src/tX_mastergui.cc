@@ -532,7 +532,7 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 	{		
 		sequencer_ready=0;
 		mg_enable_critical_buttons(0);
-		res=engine->run();
+		res=tX_engine::get_instance()->run();
 		sequencer_ready=1;
 
 		if (res!=NO_ERROR)
@@ -564,11 +564,11 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 	{		
 		if (!sequencer_ready) return NULL;
 		gtk_widget_set_sensitive(grab_button, 0);
-		engine->stop();
+		tX_engine::get_instance()->stop();
 		stop_update=1;
 		audioon=0;
-		if (engine->get_recording_request()) {
-			engine->set_recording_request(false);
+		if (tX_engine::get_instance()->get_recording_request()) {
+			tX_engine::get_instance()->set_recording_request(false);
 			rec_dont_care=1;
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(rec_menu_item), 0);
 			rec_dont_care=0;
@@ -598,7 +598,7 @@ void do_rec(GtkWidget *wid)
 	if (strlen(buffer))
 	{
 		strcpy(globals.record_filename, buffer);		
-		engine->set_recording_request(true);
+		tX_engine::get_instance()->set_recording_request(true);
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(rec_menu_item), 1);
 	}
 	
@@ -650,7 +650,7 @@ GtkSignalFunc tape_on(GtkWidget *w, void *d)
 	}
 	else
 	{
-			engine->set_recording_request(false);
+			tX_engine::get_instance()->set_recording_request(false);
 	}
 	
 	return NULL;
@@ -659,7 +659,7 @@ GtkSignalFunc tape_on(GtkWidget *w, void *d)
 void grab_on(GtkWidget *w, void *d)
 {
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
-		engine->set_grab_request();
+		tX_engine::get_instance()->set_grab_request();
 	}
 	grab_status=1;
 }
