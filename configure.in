@@ -22,6 +22,8 @@ dnl AC_ARG_ENABLE(dial,         [  --enable-dial           use dials instead of 
 dnl AC_ARG_ENABLE(bigdial,      [  --enable-bigdial        use BIG dials (default=yes) ])
 dnl AC_ARG_ENABLE(dga2,     [  --enable-dga2           use DGA2 instead of DGA1. (experimental) (default=no) ])
 AC_ARG_ENABLE(libxml2,	    [  --disable-libxml2       use libxml even if verion 2 detected (default=auto) ])
+AC_ARG_ENABLE(libmad,		[  --disable-mad           disable mad for mp3 support (default=auto) ])
+AC_ARG_ENABLE(libvorbis,	[  --disable-vorbis        disable libvorbis support (default=auto) ])
 
 dnl Checks for programs.
 AC_PROG_AWK
@@ -173,6 +175,35 @@ if test "$enable_sox" != "no"; then
  	AC_CHECK_PROG(SOX_PROG, sox, yes)
 	if test "$SOX_PROG" = "yes"; then
 	 	AC_DEFINE(USE_SOX_INPUT)
+	fi
+fi
+
+if test "$enable_mad" != "no"; then
+	AC_CHECK_HEADERS(mad.h,madheader=yes,madheader=no)
+	if test "$madheader" = "yes"; then
+		AC_CHECK_LIB(mad,mad_decoder_init,madlib=yes,madlib=no)
+		if test "$madlib" = "yes"; then
+			LIBS="$LIBS -lmad"
+			AC_DEFINE(USE_MAD_INPUT)
+		fi
+	fi
+fi
+
+if test "$enable_vorbis" != "no"; then
+	AC_CHECK_HEADERS(vorbis/codec.h vorbis/vorbisfile.h,vorbis_headers=yes,vorbis_headers="no")
+	if test "$vorbis_headers" = "yes"; then
+		AC_CHECK_LIB(vorbis,vorbis_info_init,vorbis_libs=yes,vorbis_libs=no)
+		if test "$vorbis_libs" = "yes"; then
+			PREV_LIBS=LIBS
+			LIBS="$LIBS -lvorbis"
+			AC_CHECK_LIB(vorbisfile,ov_open_callbacks,vorbisfile_libs=yes,vorbisfile_libs=no)
+			if test "$vorbisfile_libs" = "yes"; then
+				LIBS="$LIBS -lvorbisfile"
+				AC_DEFINE(USE_VORBIS_INPUT)
+			else
+				LIBS=PREV_LIBS
+			fi
+		fi
 	fi
 fi
 

@@ -42,6 +42,12 @@
 /* Exec xsetpointer instead of using Xlib-calls. */
 #undef USE_XSETPOINTER
 
+/* Use MAD for mp3 support */
+#undef USE_MAD_INPUT
+
+/* Use libvorbis for ogg support */
+#undef USE_VORBIS_INPUT
+
 /* Use ALSA*/
 #undef USE_ALSA
 

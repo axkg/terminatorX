@@ -25,6 +25,14 @@
 		 the same time. (e.g. tx can now try to load a wavfile
 		 with the builtin routines and if that fails it'll try
 		 to load the file through sox (if available)).
+		 
+    Changes:
+	
+	13 Sept 2002 -	Wrote a seperate loading routine to be used with
+				libmad, which is significantly better then piping mpg?1?.
+				Rewrote load_piped to use realloc() instead - much easier,
+				faster and uses less memory - wish I'd known about realloc()
+				when coding load_piped() for the first time ;)
 */   
 
 
@@ -48,6 +56,12 @@
 #	include <sys/mman.h>
 #endif
 
+#ifdef USE_VORBIS_INPUT
+#	include <vorbis/codec.h>
+#	include <vorbis/vorbisfile.h>
+#	include <errno.h>
+#endif
+
 tx_audiofile :: tx_audiofile()
 {
 	mem_type=TX_AUDIO_UNDEFINED;
@@ -56,6 +70,7 @@ tx_audiofile :: tx_audiofile()
 	strcpy(filename,"");
 	mem=NULL;
 	no_samples=0;
+	sample_rate=44100;
 }
 
 void tx_audiofile :: figure_file_type()
@@ -64,7 +79,6 @@ void tx_audiofile :: figure_file_type()
 	
 	ext=strrchr(filename, (int) '.');
 	
-//	puts(ext);
 	if (ext)
 	{
 		if (strlen(ext) >3)
@@ -90,29 +104,35 @@ tX_audio_error tx_audiofile :: load(char *p_file_name)
 #ifdef USE_BUILTIN_WAV
 	if ((load_err) && (file_type==TX_FILE_WAV)) {
 		load_err=load_wav();	
-		if (load_err==TX_AUDIO_SUCCESS) return(load_err);
+//		if (load_err==TX_AUDIO_SUCCESS) return(load_err);
 	}
 #endif	
 
 #ifdef USE_MAD_INPUT
 	if ((load_err) && (file_type==TX_FILE_MPG123)) {
 		load_err=load_mad();
-		if (load_err==TX_AUDIO_SUCCESS) return(load_err);
+		//if (load_err==TX_AUDIO_SUCCESS) return(load_err);
 	}
 #endif	
-
 	
 #ifdef USE_MPG123_INPUT
 	if ((load_err) && (file_type==TX_FILE_MPG123)) {
 		load_err=load_mpg123();
-		return(load_err);
+		//return(load_err);
 	}
 #endif	
 
+#ifdef USE_VORBIS_INPUT
+	if ((load_err) && (file_type==TX_FILE_OGG123)) {
+		load_err=load_vorbis();
+		//if (load_err==TX_AUDIO_SUCCESS) return(load_err);
+	}
+#endif
+	
 #ifdef USE_OGG123_INPUT
 	if ((load_err) && (file_type==TX_FILE_OGG123)) {
 		load_err=load_ogg123();
-		return(load_err);
+		//return(load_err);
 	}
 #endif
 
@@ -122,139 +142,80 @@ tX_audio_error tx_audiofile :: load(char *p_file_name)
 	}
 #endif	
 
+	if (!load_err) {
+		printf("samplerate is :%i\n", sample_rate);
+	}
 	return(load_err);
 }
 
- tx_audiofile :: ~tx_audiofile()
- {
-
-	// clear mem
-
-	switch (mem_type)
-	{
-		case TX_AUDIO_MMAP:
-		{
-			// unmap stuff
-		}
-		
-		case TX_AUDIO_LOAD:
-		{
-			//munlock(void *mem, memsize);
+tx_audiofile :: ~tx_audiofile() {
+	switch (mem_type) {
+		case TX_AUDIO_MMAP: break;
+		case TX_AUDIO_LOAD: {
 			free(mem);
+			break;
 		}
-		
 	}	
 
-	// clear file
-
- 	if (file)
-	{
-		if (mem_type==TX_AUDIO_MMAP)
-		{
+ 	if (file) {
+		if (mem_type==TX_AUDIO_MMAP) {
 			// free mmap
 		}
 	}
-	
  }
  
-typedef struct tembpuff
-{
-	char buffer[SOX_BLOCKSIZE];
-	ssize_t used;
-	void *next; 
-} tempbuff;
-
-static tempbuff *newbuff()
-{
-	tempbuff *nwbf;
-	
-	nwbf=(tempbuff *) malloc(sizeof(tempbuff));
-	nwbf->next=NULL;
-	nwbf->used=0;
-	
-	return(nwbf);
-}
-
 #ifdef NEED_PIPED 
 
 tX_audio_error tx_audiofile :: load_piped()
 {
-	int16_t *data;
-	int16_t *p;
+	int16_t *data=NULL;
 	ssize_t allbytes=0;
+	ssize_t prev_bytes;
 	ssize_t bytes=1;
-	int i;
-	tempbuff* start=NULL;
-	tempbuff* w=NULL;
-	tempbuff* newb=NULL;
+	unsigned char buffer[SOX_BLOCKSIZE];
+	unsigned char *ptr;
 	
-	start=newbuff();
-	w=start;
-
-	mem_type=TX_AUDIO_LOAD;
-
+	/* Irritating the user... */
 	ld_set_progress(0.5);
+	mem_type=TX_AUDIO_LOAD;	
+	
+	while (bytes) {
+		bytes = fread(buffer, 1, SOX_BLOCKSIZE, file);
 		
-	while (bytes)
-	{	
-		bytes = fread(w->buffer, 1, SOX_BLOCKSIZE, file);
-		w->used=bytes;
-		
-		if (bytes)
-		{
-			newb=newbuff();
-			if (!newb) return (TX_AUDIO_ERR_ALLOC);
-			w->next=newb;
-			w=newb;
-		}				
-
-		allbytes+=bytes;			
+		if (bytes>0) {
+			prev_bytes=allbytes;
+			allbytes+=bytes;
+			int16_t *new_data=(int16_t *) realloc(data, allbytes);
+			//printf("All: %i, Bytes: %i, new: %08x, old: %08x\n", allbytes, bytes, new_data, data);
+			
+			if (!new_data) {
+				pclose(file); file=NULL;
+				if (data) free(data);
+				data=NULL;
+				return TX_AUDIO_ERR_ALLOC;
+			}
+			
+			data=new_data;
+			ptr=(unsigned char *) data;
+			memcpy((void *) &ptr[prev_bytes],(void *) buffer, bytes);
+		}
 	}
 	
 	pclose(file); file=NULL;
 	
-	if (!allbytes) 	// Nothing read from pipe -> error
-	{
-		free(start);
-		return (TX_AUDIO_ERR_PIPE_READ);
+	if (!allbytes) {
+		// If we get here we read zero Bytes...
+		if (data) free(data);
+		return TX_AUDIO_ERR_PIPE_READ;
 	}
-
+	
 	no_samples=allbytes/sizeof(int16_t);
-	memsize=allbytes;
-	data = (int16_t *) malloc (memsize);
-	
-	if (!data)
-	{
-		w=start;
-		while (w)
-		{
-			newb=(tempbuff*)w->next;
-			free(w);
-			w=newb;
-		}
-		return(TX_AUDIO_ERR_ALLOC);
-	}
-	
-	w=start;
-	p=data;
-
-	bytes=0;
-	
-	while(w)
-	{
-		memcpy(p, w->buffer, w->used);
-		bytes+=w->used;
-		newb=(tempbuff*) w->next;
-		free(w);
-		w=newb;
-		
-		ld_set_progress(0.5 + 0.5*((gfloat) bytes)/((gfloat) allbytes));
-		
-		p+=(ssize_t) SOX_BLOCKSIZE/sizeof(int16_t);
-	}
-
 	mem=data;
-	return (TX_AUDIO_SUCCESS);
+	
+	/* Irritating the user just a little more ;)*/
+	ld_set_progress(1.0);
+	
+	return TX_AUDIO_SUCCESS;
 }
 
 #endif
@@ -335,6 +296,8 @@ tX_audio_error tx_audiofile :: load_wav()
 		return(TX_AUDIO_ERR_NOT_MONO);
 	}
 
+	sample_rate=wav_in.srate;
+	
 #ifdef USE_CONSOLE	
 	if (wav_in.srate != 44100) 
 	{
@@ -427,9 +390,13 @@ tX_audio_error tx_audiofile::load_mad() {
 		return TX_AUDIO_ERR_MAD_DECODE;
 	}
 	
+	mem_type=TX_AUDIO_LOAD;
+	
 	if (munmap(mp3_file, stat_dat.st_size) == -1) {
 		return TX_AUDIO_ERR_MAD_MUNMAP;
 	}
+	
+	return TX_AUDIO_SUCCESS;
 }
 
 #define TX_MAD_BLOCKSIZE 8096
@@ -443,6 +410,7 @@ typedef struct {
 	int16_t *target_buffer;
 	unsigned int target_samples;
 	unsigned int current_sample;
+	unsigned int sample_rate;
 } tX_mad_buffer;
 
 const unsigned char *last_current=NULL;
@@ -474,24 +442,6 @@ static enum mad_flow tX_mad_input(void *data, struct mad_stream *stream) {
 
 		return MAD_FLOW_CONTINUE;
 	}
-	
-	
-/*	if (buffer->next_block>=buffer->blocks)
-		return MAD_FLOW_STOP;
-	mad_stream_buffer(stream, buffer->start, buffer->size);
-	
-	buffer->next_block=buffer->blocks;
-	return MAD_FLOW_CONTINUE;
-	
-	current=&buffer->start[buffer->next_block*TX_MAD_BLOCKSIZE];
-	bs=min(TX_MAD_BLOCKSIZE, buffer->size-(buffer->next_block*TX_MAD_BLOCKSIZE));
-	tX_debug("tX_mad_input() current %08x, bs %i, diff %i\n", current, bs, current-last_current);
-	buffer->next_block++;
-	mad_stream_buffer(stream, current, bs);
-
-	ld_set_progress((float) buffer->next_block/(float) buffer->blocks);	
-	last_current=current;	
-	return MAD_FLOW_CONTINUE;*/
 }
 
 static enum mad_flow tX_mad_error(void *data, struct mad_stream *stream, struct mad_frame *frame) {
@@ -527,6 +477,7 @@ static enum mad_flow tX_mad_output(void *data, struct mad_header const *header, 
 	nsamples  = pcm->length;
 	left_ch   = pcm->samples[0];
 	right_ch  = pcm->samples[1];
+	buffer->sample_rate = pcm->samplerate;
 	
 	buffer->target_samples+=nsamples;
 
@@ -572,6 +523,7 @@ int tx_audiofile::mad_decode(unsigned char const *start, unsigned long length) {
 	buffer.target_samples = 0;
 	buffer.current_sample = 0;
 	buffer.first_call=true;
+	buffer.sample_rate=0;
 
 	tX_debug("tx_audiofile::mad_decode() - start %08x, length %i", buffer.start, buffer.size);
 	/* configure input, output, and error functions */
@@ -589,7 +541,139 @@ int tx_audiofile::mad_decode(unsigned char const *start, unsigned long length) {
 	/* release the decoder */
 	mad_decoder_finish(&decoder);  
 
+	sample_rate=buffer.sample_rate;
   return result;
 }
 
+#endif
+
+/* AARG - OGG loading is not threadsafe !*/
+size_t tX_ogg_file_size;
+long tX_ogg_file_read;
+
+#ifdef USE_VORBIS_INPUT
+typedef struct {
+  size_t (*read_func) (void *, size_t, size_t, FILE *);
+  int  (*seek_func) (void *, long, int);
+  int (*close_func) (FILE *);
+  long (*tell_func) (FILE *);
+} tX_ov_callbacks;
+
+int ogg_seek(void *ptr, long offset, int whence) {
+	/* ogg shall not seek ! */
+	return -1;
+	errno=EBADF;
+}
+
+size_t ogg_read(void  *ptr, size_t size, size_t nmemb, FILE *stream) {
+	size_t ret_val;
+	ret_val=fread(ptr, size, nmemb, stream);
+	if (ret_val>0) {
+		tX_ogg_file_read+=ret_val*size;
+		ld_set_progress((double) tX_ogg_file_read/(double) tX_ogg_file_size);	
+	}
+	return ret_val;
+}
+
+#define VORBIS_BUFF_SIZE 4096 /*recommended*/
+
+tX_audio_error tx_audiofile::load_vorbis() {
+	/*  VORBIS Callbacks */
+	ov_callbacks org_callbacks;
+	/* evil casting - to make g++ shut up */
+	tX_ov_callbacks *callbacks=(tX_ov_callbacks *) &org_callbacks;
+	
+	/* buffer */
+	char pcmout[VORBIS_BUFF_SIZE];
+	char mono[VORBIS_BUFF_SIZE];
+	OggVorbis_File vf;
+	bool eof=false;
+	int current_section=0;
+	
+	struct stat stat_dat;
+		
+	callbacks->read_func=ogg_read;
+	callbacks->seek_func=ogg_seek;
+	callbacks->close_func=fclose;
+	callbacks->tell_func=ftell;
+	
+	file=fopen(filename, "r");
+	if (!file) {
+		return TX_AUDIO_ERR_WAV_NOTFOUND;		
+	}
+	
+	if (fstat(fileno(file), &stat_dat)  == -1 || stat_dat.st_size == 0) {
+		return TX_AUDIO_ERR_MAD_STAT;
+	}
+	
+	tX_ogg_file_size=stat_dat.st_size;
+	tX_ogg_file_read=0;
+	
+	int res=ov_open_callbacks((void *) file, &vf, NULL, 0, org_callbacks);
+	if (res<0) {
+		fclose(file); 
+		file=NULL;
+		return TX_AUDIO_ERR_VORBIS_OPEN;		
+	}
+	
+	vorbis_info *vi=ov_info(&vf,-1);
+	sample_rate=vi->rate;
+
+	unsigned int channels=vi->channels;	
+	unsigned int samples_read=0;
+	int16_t* data=NULL;
+	size_t bytes=0;
+	
+	while((!eof) && (!current_section)){
+#ifdef BIG_ENDIAN_MACHINE
+#	define ENDIANP 1
+#else
+#	define ENDIANP 0		
+#endif
+		long ret=ov_read(&vf,pcmout,VORBIS_BUFF_SIZE,ENDIANP,2,1,&current_section);
+		if (ret == 0) {
+			eof=true;
+		} else if (ret < 0) {
+		  /* ignore stream errors */
+		} else {
+			int16_t *new_data;
+			
+			bytes+=ret;
+			new_data=(int16_t *) realloc(data, bytes/channels);
+			if (!new_data) {
+				if (data) free(data);
+				return TX_AUDIO_ERR_ALLOC;
+			}
+			data=new_data;
+			
+			int mono_samples=(ret/2)/channels;
+			
+			int i=0;			
+			while (i<mono_samples) {
+				int16_t *src=(int16_t *) &pcmout;				
+				double value=0.0;
+				
+				for (int c=0; c<channels; c++) {
+					value+=(double) src[i*channels+c];
+				}
+				value/=(double) channels;
+				
+				data[samples_read+i]=(int16_t) value;
+				i++;
+			}
+			samples_read+=mono_samples;
+			
+			//memcpy(&data[last_pos], pcmout, ret);
+		}
+		//printf("current %i\n", current_section);
+    }
+	
+	ov_clear(&vf);
+	
+	mem=(int16_t *) data;
+	//no_samples=bytes>>1;
+	no_samples=samples_read;
+	
+	return TX_AUDIO_SUCCESS;
+}
 #endif

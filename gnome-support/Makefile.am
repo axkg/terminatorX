@@ -1,5 +1,5 @@
-SOURCES=terminatorX-app.xpm\
-	terminatorX-mime.xpm\
+SOURCES=terminatorX-app.png\
+	terminatorX-mime.png\
 	terminatorX.mime\
 	tx-gnome-install\
 	tx-gnome-uninstall\
@@ -15,7 +15,7 @@ mimetypedir=$(gnomedir)/mime-info
 mimetype_DATA=terminatorX.keys terminatorX.mime
 
 pixmapdir=$(gnomedir)/pixmaps
-pixmap_DATA=terminatorX-app.xpm terminatorX-mime.xpm
+pixmap_DATA=terminatorX-app.png terminatorX-mime.png
 
 endif
 
