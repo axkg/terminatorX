@@ -73,7 +73,8 @@ enum tX_audio_error {
 	TX_AUDIO_ERR_MAD_STAT,
 	TX_AUDIO_ERR_MAD_DECODE,
 	TX_AUDIO_ERR_MAD_MMAP,
-	TX_AUDIO_ERR_MAD_MUNMAP
+	TX_AUDIO_ERR_MAD_MUNMAP,
+	TX_AUDIO_ERR_VORBIS_OPEN
 };
 
 enum tX_audio_storage_type {
@@ -104,6 +105,7 @@ class tx_audiofile
 	int16_t *mem;
 	size_t memsize;
 	long no_samples;	
+	unsigned int sample_rate; //in HZ
 
 #ifdef USE_BUILTIN_WAV
 	tX_audio_error load_wav();
@@ -122,6 +124,10 @@ class tx_audiofile
 #ifdef USE_MPG123_INPUT	
 	tX_audio_error load_mpg123();
 #define NEED_PIPED 1	
+#endif
+
+#ifdef USE_VORBIS_INPUT
+	tX_audio_error load_vorbis();
 #endif
 
 #ifdef USE_OGG123_INPUT
