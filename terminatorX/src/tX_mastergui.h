@@ -55,4 +55,8 @@ extern GtkWidget *audio_parent;
 extern GtkTooltips *gui_tooltips;
 extern void gui_set_tooltip(GtkWidget *wid, char *tip);
 
+extern GtkWidget *panel_bar;
+
+void add_to_panel_bar(GtkWidget *);
+void remove_from_panel_bar(GtkWidget *);
 #endif

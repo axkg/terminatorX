@@ -51,6 +51,7 @@
 #define TX_SET_ID_11 "terminatorX turntable set file - version 1.1 - data:"
 #define TX_SET_ID_12 "terminatorX turntable set file - version 1.2 - data:"
 #define TX_SET_ID_13 "terminatorX turntable set file - version 1.3 - data:"
+#define TX_SET_ID_14 "terminatorX turntable set file - version 1.4 - data:"
 
 int audioon=0;
 int sequencer_ready=1;
@@ -71,6 +72,10 @@ GtkWidget *seq_stop_btn;
 GtkAdjustment *seq_adj;
 GtkWidget *seq_slider;
 GtkWidget *seq_entry;
+GtkWidget *panel_bar;
+
+int buttons_on_panel_bar=0;
+
 int seq_adj_care=1;
 int seq_stop_override=0;
 
@@ -315,6 +320,10 @@ void load_tt_part(char * buffer)
 		{
 			if (vtt_class::load_all_13(in, buffer)) tx_note("Error while reading set.");			
 		}
+		else if (strncmp(idbuff, TX_SET_ID_14, strlen(TX_SET_ID_14))==0)
+		{
+			if (vtt_class::load_all_14(in, buffer)) tx_note("Error while reading set.");			
+		}
 		else
 		{
 			tx_note("Sorry, this file is not a terminatorX set-file.");
@@ -447,7 +456,7 @@ void do_save_tables(GtkWidget *wid)
 	
 	if (out)
 	{
-		strcpy(idbuffer, TX_SET_ID_13);
+		strcpy(idbuffer, TX_SET_ID_14);
 		fwrite(idbuffer, strlen(idbuffer), 1, out);
 		if (vtt_class::save_all(out)) tx_note("Error while saving set.");
 		fclose(out);
@@ -691,11 +700,12 @@ void mplcfitx()
 
 GtkSignalFunc seq_play(GtkWidget *w, void *)
 {
-	if (sequencer.is_empty()) {
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
+	if ((sequencer.is_empty()) && 	(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(seq_rec_btn)))) {
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
+		 {
 			tx_note("Sequencer playback triggered - but no events\nrecorded yet - nothing to playback!\n\nTo perform live with terminatorX just activate the\naudio engine with the \"Power\" button.");
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w), 0);
-		}
+		 }
 	} else {
 		if (seq_stop_override) return NULL;
 			
@@ -941,7 +951,11 @@ void create_mastergui(int x, int y)
 	gtk_widget_show(dummy);
 	
 	tt_parent=dummy;
-	
+
+    panel_bar=gtk_hbox_new(TRUE,2);
+	gtk_box_pack_start(GTK_BOX(left_hbox), panel_bar, WID_FIX);
+	//gtk_widget_show(panel_bar);
+
 	control_parent=gtk_hbox_new(FALSE,0);
 	gtk_box_pack_start(GTK_BOX(tt_parent), control_parent, WID_FIX);
 	gtk_widget_show(control_parent);
@@ -1216,3 +1230,16 @@ void display_mastergui()
 	top=gtk_widget_get_toplevel(main_window);
 	xwindow=GDK_WINDOW_XWINDOW(top->window);
 }
+
+void add_to_panel_bar(GtkWidget *button) {
+	buttons_on_panel_bar++;
+	gtk_box_pack_start(GTK_BOX(panel_bar), button, WID_DYN);
+	gtk_widget_show(panel_bar);
+}
+
+void remove_from_panel_bar(GtkWidget *button) {
+	buttons_on_panel_bar--;
+	gtk_container_remove(GTK_CONTAINER(panel_bar), button);
+	if (buttons_on_panel_bar==0) gtk_widget_hide(panel_bar);
+}
+
