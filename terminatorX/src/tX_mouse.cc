@@ -49,13 +49,13 @@ tx_mouse :: tx_mouse()
 	warp=TX_MOUSE_SPEED_NORMAL;
 }
 
+
 int tx_mouse :: grab()
 {	
 #ifdef USE_DGA2
 	XDGAMode *mode;
 #endif	
 	int i, num=0;
-	
 
 	if (grabbed) return(0);
 
@@ -78,6 +78,10 @@ int tx_mouse :: grab()
 	}
 	XFree(mode);
 #endif	
+				
+	XSelectInput(dpy, xwindow, mask);	
+
+	XSetInputFocus(dpy, xwindow, None, CurrentTime);
 
 	if (globals.xinput_enable)
 	{
@@ -88,10 +92,6 @@ int tx_mouse :: grab()
 			return(ENG_ERR_XINPUT);
 		}
 	}
-				
-	XSelectInput(dpy, xwindow, mask);	
-
-	XSetInputFocus(dpy, xwindow, None, CurrentTime);
 
         if (GrabSuccess != XGrabPointer(dpy, xwindow, False, ButtonPressMask|ButtonReleaseMask|PointerMotionMask, GrabModeAsync,GrabModeAsync,None,None,CurrentTime))
 	{
@@ -152,23 +152,32 @@ void tx_mouse :: ungrab()
 	XUngrabKeyboard(dpy, CurrentTime);		
 	XUngrabPointer (dpy, CurrentTime);
 	XAutoRepeatOn(dpy);
-
-	reset_xinput();	
 	
 	XCloseDisplay(dpy);
+
+	if (globals.xinput_enable)
+	{
+		reset_xinput();	
+	}
 
 	vtt_class::unfocus();
 
 	grabbed=0;
 }
 
-
+void tx_mouse :: set_x_pointer(char *devname)
+{
+	char commandline[256];
+	
+	sprintf(commandline, "xsetpointer %s", devname);
+	system(commandline);
+	printf("ran: %s\n", commandline);
+}
 
 int tx_mouse :: set_xinput()
 {
 	XDeviceInfo *devlist;			
 	int listmax, i;
-	int match=-1;
 	
 	if (globals.xinput_enable)
 	{	
@@ -176,36 +185,29 @@ int tx_mouse :: set_xinput()
 	
 		for (i=0; i<listmax; i++)
 		{
-			if(!strcmp(globals.xinput_device,devlist[i].name))
-			{
-				match=i;
-			}
-		
 			if(devlist[i].use == IsXPointer)
 			{
 				OrgXPointer=devlist[i].id;
+				strcpy(OrgXPointerName, devlist[i].name);
 			}
 		}
 		
-		if (match>=0)
-		{
-			input_device=NULL;
-			input_device=XOpenDevice(dpy,devlist[match].id);
-/*			if (XChangePointerDevice(dpy,input_device, 0, 1)!=Success)
-			{
-				match=-1;
-			}*/
-			XCloseDevice(dpy, input_device);
-		}
-		
 		XFreeDeviceList(devlist);		
-	
-		if (match>=0) return(0); 
-		else return(1);
+		
+		set_x_pointer(globals.xinput_device);
 	}
-	
 	return(0);
 }
+
+
+void tx_mouse :: reset_xinput()
+{
+	if (globals.xinput_enable)
+	{
+		set_x_pointer(OrgXPointerName);
+	}
+}
+
 
 #define vtt vtt_class::focused_vtt
 
@@ -327,14 +329,4 @@ int tx_mouse :: check_event()
 		else {	puts("no vtt"); return(1); }
 	}
 	return(0);
-}
-
-void tx_mouse :: reset_xinput()
-{
-	/*	if (globals.xinput_enable)
-	{
-		input_device=XOpenDevice(dpy, OrgXPointer);
-		XChangePointerDevice(dpy, input_device, 0, 1);
-		XCloseDevice(dpy,input_device);	
-	}*/
 }
