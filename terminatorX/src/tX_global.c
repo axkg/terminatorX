@@ -126,6 +126,8 @@ void set_global_defaults() {
 	globals.current_path = NULL;
 	globals.pitch=1.0;
 	globals.volume=1.0;
+	
+	strcpy(globals.lrdf_path, "/usr/share/ladspa/rdf:/usr/local/share/ladspa/rdf");
 	globals.fullscreen_enabled=1;
 	
 	if (!globals.true_block_size) globals.true_block_size=1<globals.oss_buff_size;
@@ -201,6 +203,8 @@ int load_globals_xml() {
 			restore_string("tables_filename", globals.tables_filename);
 			restore_string("record_filename", globals.record_filename);
 			restore_string("file_editor", globals.file_editor);
+			restore_string("lrdf_path", globals.lrdf_path);
+			
 			restore_int("fullscreen_enabled", globals.fullscreen_enabled);
 
 			if (!elementFound) {
@@ -283,6 +287,7 @@ void store_globals() {
 		store_string("tables_filename", globals.tables_filename);
 		store_string("record_filename", globals.record_filename);
 		store_string("file_editor", globals.file_editor);
+		store_string("lrdf_path", globals.lrdf_path);
 		store_int("fullscreen_enabled", globals.fullscreen_enabled);
 		
 		fprintf(rc,"</terminatorXrc>\n");

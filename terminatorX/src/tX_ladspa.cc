@@ -25,13 +25,14 @@
 */
 
 #include <tX_ladspa.h>
+#include <tX_ladspa_class.h>
 #include <dirent.h>
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-list <LADSPA_Plugin *> LADSPA_Plugin :: plugin_list;
+std::list <LADSPA_Plugin *> LADSPA_Plugin :: plugin_list;
 
 void LADSPA_Plugin :: init ()
 {
@@ -39,14 +40,11 @@ void LADSPA_Plugin :: init ()
 	char ladspa_path[PATH_MAX];
 	char *start, *end, *buffer;
 
-	printf("tX: Looking for LADSPA plugins.\n");
-	
 	/* Finding the LADSPA Path */
 	ladspa_path_ptr=getenv("LADSPA_PATH");
 	
-	if (!ladspa_path_ptr) 
-	{
-		fprintf(stderr, "tX: Warning: LADSPA_PATH not set. Trying /usr/lib/ladspa:/usr/local/lib/ladspa.\n");
+	if (!ladspa_path_ptr)  {
+		tX_warning("LADSPA_PATH not set. Trying /usr/lib/ladspa:/usr/local/lib/ladspa");
 		strcpy(ladspa_path, "/usr/lib/ladspa:/usr/local/lib/ladspa");
 	}
 	else strcpy(ladspa_path, ladspa_path_ptr);
@@ -84,9 +82,8 @@ void LADSPA_Plugin :: handlelib(void *lib, LADSPA_Descriptor_Function desc_func,
 	
 	for (i=0; (descriptor = desc_func(i)) != NULL; i++)
 	{		
-		if (LADSPA_IS_INPLACE_BROKEN(descriptor->Properties))
-		{
-			fprintf(stderr, "tX: Plugin \"%s\" disabled. No in-place processing support.\n", descriptor->Name);
+		if (LADSPA_IS_INPLACE_BROKEN(descriptor->Properties)) {
+			tX_warning("Plugin \"%s\" disabled. No in-place processing support.", descriptor->Name);
 		}
 		else
 		{		
@@ -104,12 +101,10 @@ void LADSPA_Plugin :: handlelib(void *lib, LADSPA_Descriptor_Function desc_func,
 				if (LADSPA_IS_PORT_CONTROL(descriptor->PortDescriptors[port]) && LADSPA_IS_PORT_INPUT(descriptor->PortDescriptors[port])) in_ctrl++;			
 			}
 			
-			if ((in_audio == 1) && (out_audio == 1))
-			{
-				printf("tX: Plugin \"%s\" loaded.\n", descriptor->Name);
+			if ((in_audio == 1) && (out_audio == 1)) {
 				new LADSPA_Plugin(descriptor, filename);
 			}
-			else fprintf(stderr, "tX: Plugin \"%s\" disabled. Not a 1-in/1-out plugin.\n", descriptor->Name);
+			else { tX_warning("Plugin \"%s\" disabled. Not a 1-in/1-out plugin.", descriptor->Name); }
 		}
 	}
 }
@@ -123,16 +118,14 @@ void LADSPA_Plugin :: scandir(char *dirname)
 	char *filename;
 	void *handle;
 	LADSPA_Descriptor_Function desc_func;
-
-	printf("tX: Scanning %s for LADSPA plugins.\n", dirname);
 	
-	if (!dirlen) { fprintf(stderr, "tX: Error: empty directory name?\n"); return; };
+	if (!dirlen) { tX_error("tX: Error: empty directory name?"); return; };
 
 	if (dirname[dirlen - 1] != '/') needslash=1;
 	
 	dir = opendir(dirname);
 	
-	if (!dir) { fprintf(stderr, "tX: Error: couldn't access directory.\n"); return; };
+	if (!dir) { tX_error("tX: Error: couldn't access directory \"%s\".", dirname); return; };
 	
 	while (1)
 	{
@@ -156,14 +149,10 @@ void LADSPA_Plugin :: scandir(char *dirname)
 			/* check wether this is a LADSPA lib */
 			desc_func = (LADSPA_Descriptor_Function) dlsym(handle, "ladspa_descriptor");
 			
-			if (dlerror() == NULL && desc_func)
-			{
-				printf("tX: Analyzing LADSPA plugin library %s.\n", filename);
+			if (dlerror() == NULL && desc_func) {
 				LADSPA_Plugin :: handlelib(handle, desc_func, entry->d_name);
-			}
-			else
-			{
-				fprintf(stderr, "tX: Error: %s is not a LADSPA plugin library.", filename);
+			} else {
+				tX_error("tX: Error: %s is not a LADSPA plugin library.", filename);
 				dlclose(handle);
 			}
 		}
@@ -180,7 +169,7 @@ void LADSPA_Plugin :: status ()
 
 void LADSPA_Plugin :: debug_display()
 {
-	list <LADSPA_Plugin *> :: iterator plugin;
+	std::list <LADSPA_Plugin *> :: iterator plugin;
 	
 	for (plugin=plugin_list.begin(); plugin != plugin_list.end(); plugin++)
 	{
@@ -194,11 +183,12 @@ LADSPA_Plugin :: LADSPA_Plugin (const LADSPA_Descriptor *ld, char *filename)
 	plugin_list.push_back(this);
 	strcpy(file, filename);
 	sprintf (info_string, "   LADSPA-Plugin: %s   \n   Label: %s   \n   File: %s   \n   Unique ID: %li   \n   Maker: %s   \n   Copyright: %s   ", ld->Name, ld->Label, file, ld->UniqueID, ld->Maker, ld->Copyright);
+	LADSPA_Class::add_plugin(this);
 }
 
 LADSPA_Plugin * LADSPA_Plugin :: getPluginByIndex(int i)
 {
-	list <LADSPA_Plugin *> :: iterator plugin;
+	std::list <LADSPA_Plugin *> :: iterator plugin;
 	int p;
 	
 	plugin = plugin_list.begin();
@@ -211,7 +201,7 @@ LADSPA_Plugin * LADSPA_Plugin :: getPluginByIndex(int i)
 
 LADSPA_Plugin * LADSPA_Plugin :: getPluginByUniqueID(long ID)
 {
-	list <LADSPA_Plugin *> :: iterator plugin;
+	std::list <LADSPA_Plugin *> :: iterator plugin;
 	
 	for (plugin=plugin_list.begin(); plugin != plugin_list.end(); plugin++)
 	{

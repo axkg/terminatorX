@@ -131,6 +131,8 @@ typedef struct {
 	int alsa_buff_size; // In Samples
 	int alsa_samplerate;
 	
+	char lrdf_path[PATH_MAX];
+	
 	int fullscreen_enabled;
 } tx_global;
 
