@@ -110,6 +110,7 @@ typedef struct vtt_gui
 	GtkWidget *audio_label;
 	GtkWidget *audio_minimize;
 	GtkWidget *display;
+	GtkWidget *zoom;
 	GtkWidget *file;
 	GtkWidget *file_menu;
 
