@@ -4,8 +4,22 @@ This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.65]
-- new GUI
-- Plugins
+- this list may be incomplete
+- This release brings support for LADSPA plugins. These plugins can be inserted
+  into any turntable's effect chain at any position. You can edit the the
+  effect sequence with the two tiny blue arrows. The builtin effects reside in
+  the same effect chain as LADSPA plugins, but unlike LADSPA plugins they cannot
+  be removed (nor multi-instanciated).
+  The LADSPA plugins have to "fit" into the effect chain, which is why
+  terminatorX supports *mono* plugins (plugins that have one audio-in and one
+  audio-out port) only. For the plugin's control ports, termintatorX supports
+  all HINTS except for LADSPA_HINT_LOGARITHMIC. Some control ports might be 
+  hard to handle as LAPDSA control ports can have very wide value ranges. It is
+  possible to enter precise values though.
+  Get LADSPA and the CMT plugins from http://www.ladspa.org
+- GUI re-design to support dynamic plugin GUIs. The audiofile-display is now 
+  seperated from the turntable's controls. The groups are split in to panels
+  which can be minimized if not required (orange arrow).
 - setformat
 - mappable parameters
 
