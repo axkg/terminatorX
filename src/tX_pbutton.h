@@ -43,6 +43,6 @@
 #define TX_ICON_MIN_CONTROL 15
 
 extern GtkWidget *tx_pixmap_widget(int icon_id);
-extern GtkWidget *tx_xpm_label_box(int icon_id, gchar *label_text, GtkWidget **labelwidget=NULL);
-extern GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle, GtkWidget **labelwidget=NULL);
+extern GtkWidget *tx_xpm_label_box(int icon_id, gchar *label_text, GtkWidget **labelwidget=(GtkWidget **) NULL);
+extern GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle, GtkWidget **labelwidget=(GtkWidget **) NULL);
 #endif

@@ -233,11 +233,28 @@ void drop_file(GtkWidget *widget, GdkDragContext *context,
 
 	fn = strchr (filename, '\r');
 	*fn=0;	
+
+#ifdef USE_GTK2	
+	char *host=NULL;
+	char *realfn=NULL;
 	
-	fn = strchr (filename, ':');
-	if (fn) fn++; else fn=(char *) selection_data->data;
-	
-	load_part(fn, vtt);
+	realfn=g_filename_from_uri(filename, &host, NULL);
+	if (realfn) {
+		fn=realfn;
+	} else  {
+#endif		
+		fn = strchr (filename, ':');
+		if (fn) fn++; else fn=(char *) selection_data->data;
+#ifdef USE_GTK2			
+	}
+#endif	
+
+	load_part(realfn, vtt);
+
+#ifdef USE_GTK2	
+	if (realfn) g_free(realfn);
+	if (host) g_free(host);
+#endif		
 }
 
 
@@ -456,66 +473,6 @@ void unminimize_audio_panel(GtkWidget *wid, vtt_class *vtt)
 	vtt->hide_audio(false);
 }
 
-void vg_display_xcontrol(vtt_class *vtt)
-{
-	char buffer[2048];
-	
-	if (vtt->x_par)
-	{
-		strcpy(buffer, vtt->x_par->get_name());
-		if (strlen(buffer)>35) 
-		{
-			buffer[34] = '.';
-			buffer[35] = '.';
-			buffer[36] = '.';
-			buffer[37] = 0;			
-		}
-#ifdef  USE_GTK2
-        gtk_button_set_label(GTK_BUTTON(vtt->gui.x_control), buffer);
-#else           
-		gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.x_control)->child), buffer);		
-#endif  
-	}
-	else
-	{
-#ifdef  USE_GTK2
-        gtk_button_set_label(GTK_BUTTON(vtt->gui.x_control), "Nothing");
-#else           
-		gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.x_control)->child), "Nothing");
-#endif		
-	}
-}
-
-void vg_display_ycontrol(vtt_class *vtt)
-{
-	char buffer[2048];
-	
-	if (vtt->y_par)
-	{
-		strcpy(buffer, vtt->y_par->get_name());
-		if (strlen(buffer)>26) 
-		{
-			buffer[24] = '.';
-			buffer[25] = '.';
-			buffer[26] = '.';
-			buffer[27] = 0;			
-		}
-#ifdef  USE_GTK2
-        gtk_button_set_label(GTK_BUTTON(vtt->gui.y_control), buffer);
-#else           
-		gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.y_control)->child), buffer);		
-#endif  
-	}
-	else
-	{
-#ifdef  USE_GTK2
-        gtk_button_set_label(GTK_BUTTON(vtt->gui.y_control), "Nothing");
-#else           
-		gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.y_control)->child), "Nothing");
-#endif		
-	}
-}
-
 void vg_xcontrol_dis(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->set_x_input_parameter(NULL);
@@ -538,45 +495,118 @@ void vg_ycontrol_set(GtkWidget *wid, tX_seqpar *sp)
 	vtt->set_y_input_parameter(sp);
 }
 
-void vg_control_menu_popup(vtt_class *vtt, int axis)
-{
-	list <tX_seqpar *> :: iterator sp;
-	vtt_gui *g=&vtt->gui;
-	GtkWidget *item;
+void vg_mouse_mapping_pressed(GtkWidget *wid, vtt_class *vtt) {
+	if (vtt->gui.mouse_mapping_menu) {
+		gtk_widget_destroy(vtt->gui.mouse_mapping_menu);
+		vtt->gui.mouse_mapping_menu=NULL;
+	}
+	/* gtk+ seems to cleanup the submenus automatically */
+	
+	vtt->gui.mouse_mapping_menu=gtk_menu_new();
+	GtkWidget *x_item;
+	GtkWidget *y_item;
+	
+	x_item=gtk_menu_item_new_with_label("X-axis (Left <-> Right)");
+	gtk_menu_append(GTK_MENU(vtt->gui.mouse_mapping_menu), x_item);
+	gtk_widget_show(x_item);
 
-	if (g->par_menu) gtk_object_destroy(GTK_OBJECT(g->par_menu));
-	g->par_menu=gtk_menu_new();
+	y_item=gtk_menu_item_new_with_label("Y-axis (Up <-> Down)");
+	gtk_menu_append(GTK_MENU(vtt->gui.mouse_mapping_menu), y_item);
+	gtk_widget_show(y_item);
 	
-	item = gtk_menu_item_new_with_label("Nothing");
-	gtk_menu_append(GTK_MENU(g->par_menu), item);
+	vtt->gui.mouse_mapping_menu_x=gtk_menu_new();
+	vtt->gui.mouse_mapping_menu_y=gtk_menu_new();
+	
+	GtkWidget *item;
+	GtkWidget *item_to_activate=NULL;
+	
+	/* Filling the X menu */
+	item = gtk_check_menu_item_new_with_label("Disable");
+	gtk_menu_append(GTK_MENU(vtt->gui.mouse_mapping_menu_x), item);
 	gtk_widget_show(item);
-	if (axis) gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(vg_xcontrol_dis), vtt);
-	else gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(vg_ycontrol_dis), vtt);
-	
-	
-	for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++)
-	{
-		if (((*sp)->is_mappable) && ((*sp)->vtt) == (void*) vtt)
-		{
-			item = gtk_menu_item_new_with_label((*sp)->get_name());
-			gtk_menu_append(GTK_MENU(g->par_menu), item);
+	gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(vg_xcontrol_dis), vtt);
+	if (vtt->x_par==NULL) item_to_activate=item;
+
+	list <tX_seqpar *> :: iterator sp;
+
+	for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
+		if (((*sp)->is_mappable) && ((*sp)->vtt) == (void*) vtt) {
+			item=gtk_check_menu_item_new_with_label((*sp)->get_name());
+			gtk_menu_append(GTK_MENU(vtt->gui.mouse_mapping_menu_x), item);
 			gtk_widget_show(item);
-			if (axis) gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(vg_xcontrol_set), (void*) (*sp));
-			else gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(vg_ycontrol_set), (void*) (*sp));
+			gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(vg_xcontrol_set), (void*) (*sp));
+			
+			if (vtt->x_par==(*sp)) item_to_activate=item;
 		}
 	}
-	gtk_menu_popup (GTK_MENU(g->par_menu), NULL, NULL, NULL, NULL, 0, 0);
+
+	if (item_to_activate) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item_to_activate), TRUE);
+	
+	/* Filling the Y menu */
+	item_to_activate=NULL;
+	
+	item = gtk_check_menu_item_new_with_label("Disable");
+	gtk_menu_append(GTK_MENU(vtt->gui.mouse_mapping_menu_y), item);
+	gtk_widget_show(item);
+	gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(vg_ycontrol_dis), vtt);
+	if (vtt->y_par==NULL) item_to_activate=item;
+
+	for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
+		if (((*sp)->is_mappable) && ((*sp)->vtt) == (void*) vtt) {
+			item=gtk_check_menu_item_new_with_label((*sp)->get_name());
+			gtk_menu_append(GTK_MENU(vtt->gui.mouse_mapping_menu_y), item);
+			gtk_widget_show(item);
+			gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(vg_ycontrol_set), (void*) (*sp));
+			
+			if (vtt->y_par==(*sp)) item_to_activate=item;
+		}
+	}
+
+	if (item_to_activate) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item_to_activate), TRUE);
+	
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(x_item), vtt->gui.mouse_mapping_menu_x);
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(y_item), vtt->gui.mouse_mapping_menu_y);
+	
+	gtk_menu_popup (GTK_MENU(vtt->gui.mouse_mapping_menu), NULL, NULL, NULL, NULL, 0, 0);
+
+#ifdef USE_GTK2
+	/* gtk+ is really waiting for this.. */
+	gtk_signal_emit_by_name(GTK_OBJECT(wid), "released", vtt);
+#endif	
 }
 
-void vg_xcontrol_popup(GtkWidget *wid, vtt_class *vtt) 
-{
-	vg_control_menu_popup(vtt, 1);
+void vg_file_button_pressed(GtkWidget *wid, vtt_class *vtt) {
+	if (vtt->gui.file_menu==NULL) {
+		GtkWidget *item;
+		
+		vtt->gui.file_menu=gtk_menu_new();
+		item=gtk_menu_item_new_with_label("Load audio file");
+		gtk_menu_append(GTK_MENU(vtt->gui.file_menu), item);
+		gtk_widget_show(item);
+		
+		gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(load_file), vtt);
+		
+		item=gtk_menu_item_new_with_label("Edit audio file");
+		gtk_menu_append(GTK_MENU(vtt->gui.file_menu), item);
+		gtk_widget_show(item);
+
+		gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(edit_vtt_buffer), vtt);
+
+		item=gtk_menu_item_new_with_label("Reload current audio file");
+		gtk_menu_append(GTK_MENU(vtt->gui.file_menu), item);
+		gtk_widget_show(item);
+
+		gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(reload_vtt_buffer), vtt);
+	}
+	
+	gtk_menu_popup(GTK_MENU(vtt->gui.file_menu), NULL, NULL, NULL, NULL, 0,0);
+
+#ifdef USE_GTK2
+	/* gtk+ is really waiting for this.. */
+	gtk_signal_emit_by_name(GTK_OBJECT(wid), "released", vtt);
+#endif	
 }
 
-void vg_ycontrol_popup(GtkWidget *wid, vtt_class *vtt)
-{
-	vg_control_menu_popup(vtt, 0);
-}
 
 static vtt_class * fx_vtt;
 
@@ -620,12 +650,26 @@ void fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
 	}
 	
 	gtk_menu_popup (GTK_MENU(g->ladspa_menu), NULL, NULL, NULL, NULL, 0, 0);
+
+#ifdef USE_GTK2
+	/* gtk+ is really waiting for this.. */
+	gtk_signal_emit_by_name(GTK_OBJECT(wid), "released", vtt);
+#endif	
 }
 
 #define connect_entry(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "activate", (GtkSignalFunc) func, (void *) vtt);
 #define connect_adj(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "value_changed", (GtkSignalFunc) func, (void *) vtt);
 #define connect_button(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "clicked", (GtkSignalFunc) func, (void *) vtt);
+
+#ifdef USE_GTK2
 #define connect_press_button(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "pressed", (GtkSignalFunc) func, (void *) vtt);
+#else
+/* "pressed" then pop-up doesn't work with gtk 1.2 
+   and the well-known gdk hack doesn't support an additional vtt pointer..
+*/
+#define connect_press_button(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "clicked", (GtkSignalFunc) func, (void *) vtt);
+#endif
+
 #define connect_rel_button(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "released", (GtkSignalFunc) func, (void *) vtt);
 
 GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel);
@@ -636,11 +680,9 @@ void gui_connect_signals(vtt_class *vtt)
 
 	connect_entry(name, name_changed);
 	connect_adj(volume, volume_changed);
-/*	connect_button(edit, edit_vtt_buffer);
-	connect_button(reload, reload_vtt_buffer);*/
 	connect_adj(pitch, pitch_changed);
 	connect_adj(pan, pan_changed);
-	connect_button(file, load_file);
+	connect_press_button(file, vg_file_button_pressed);
 	
 	connect_button(del, delete_vtt);
 	connect_button(trigger, trigger_vtt);
@@ -650,7 +692,7 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_button(sync_master, master_setup);
 	connect_button(sync_client, client_setup);
 	connect_adj(cycles, client_setup_number);
-	connect_button(fx_button, fx_button_pressed);
+	connect_press_button(fx_button, fx_button_pressed);
 	
 	connect_button(lp_enable, lp_enabled);
 	connect_adj(lp_gain, lp_gain_changed);
@@ -662,9 +704,7 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_adj(ec_feedback, ec_feedback_changed);
 	connect_adj(ec_pan, ec_pan_changed);
 	connect_adj(ec_volume, ec_volume_changed);	
-	connect_button(x_control, vg_xcontrol_popup);
-	connect_button(y_control, vg_ycontrol_popup);
-
+	connect_press_button(mouse_mapping, vg_mouse_mapping_pressed);
 	connect_button(control_minimize, minimize_control_panel);
 	connect_button(audio_minimize, minimize_audio_panel);
 
@@ -726,53 +766,22 @@ void build_vtt_gui(vtt_class *vtt)
 
 
 	g->audio_label=gtk_label_new(vtt->name);
-	gtk_misc_set_alignment(GTK_MISC(g->audio_label), 0.1, 0.5);
+	gtk_misc_set_alignment(GTK_MISC(g->audio_label), 0.025, 0.5);
 	gtk_widget_show(g->audio_label);
 	gtk_box_pack_start(GTK_BOX(tempbox), g->audio_label, WID_DYN);
-
-	/*dummy=gtk_vseparator_new();
-	gtk_widget_show(dummy);
-	gtk_box_pack_start(GTK_BOX(tempbox), dummy, WID_FIX);*/
 
 	nicer_filename(nice_name, vtt->filename);
 	g->file = gtk_button_new_with_label(nice_name);
 	gtk_widget_show(g->file);
-	gui_set_tooltip(g->file, "Click here to load an audiofile into this turntable. As an alternative you may drop an audiofile over this button or the audio-data display.");
+	gui_set_tooltip(g->file, "Click to Load/Edit/Reload a sample for this turntable. To load you can also drag a file and drop it over this button or the sound data display below.");
 	gtk_box_pack_start(GTK_BOX(tempbox), g->file, WID_DYN);
 
-	/*g->edit=tx_xpm_button_new(TX_ICON_EDIT, "Edit", 0);
-	gtk_widget_show(g->edit);
-	gui_set_tooltip(g->edit, "Click this button to run the soundfile editor for the audiofile loaded into this turntable. You can configure which soundfile editor to use in the Options dialog.");
-	gtk_box_pack_start(GTK_BOX(tempbox), g->edit, WID_FIX);
-	
-	g->reload=tx_xpm_button_new(TX_ICON_RELOAD, "Reload", 0);
-	gtk_widget_show(g->reload);
-	gui_set_tooltip(g->reload, "Click here to reload the audiofile loaded into this turntable.");
-	gtk_box_pack_start(GTK_BOX(tempbox), g->reload, WID_FIX);*/
-	
-	/*dummy=gtk_vseparator_new();
-	gtk_widget_show(dummy);
-	gtk_box_pack_start(GTK_BOX(tempbox), dummy, WID_FIX);
-
-	dummy=gtk_label_new("X:");
-	gtk_widget_show(dummy);
-	gtk_box_pack_start(GTK_BOX(tempbox), dummy, WID_FIX);
-
-	g->x_control=gtk_button_new_with_label(vtt->x_par->get_name());
-	gtk_widget_show(g->x_control);
-	gui_set_tooltip(g->x_control, "Select which parameter should be controlled for this turntable (in grab mode) by mouse motion (x-axis: left <-> right).");
-	gtk_box_pack_start(GTK_BOX(tempbox), g->x_control, WID_DYN);
-
-	dummy=gtk_label_new("Y:");
-	gtk_widget_show(dummy);
-	gtk_box_pack_start(GTK_BOX(tempbox), dummy, WID_FIX);*/
-	
-	g->y_control=gtk_button_new_with_label(vtt->y_par->get_name());
-	gtk_widget_show(g->y_control);
-	gui_set_tooltip(g->y_control, "Select which parameter should be controlled for this turntable (in grab mode) by mouse motion (x-axis: up <-> down).");
-
-	gtk_box_pack_start(GTK_BOX(tempbox), g->y_control, WID_DYN);
-
+	g->mouse_mapping=gtk_button_new_with_label("Mouse Mapping");
+	gtk_widget_show(g->mouse_mapping);
+	gui_set_tooltip(g->mouse_mapping, "Determines what parameters should be affected on mouse moition in mouse grab mode.");
+   
+	gtk_box_pack_start(GTK_BOX(tempbox), g->mouse_mapping, WID_DYN);
+   
 	g->display=gtk_tx_new(vtt->buffer, vtt->samples_in_buffer);
 	gtk_box_pack_start(GTK_BOX(g->audio_box), g->display, WID_DYN);
 	gtk_widget_show(g->display);	
@@ -1000,6 +1009,10 @@ void build_vtt_gui(vtt_class *vtt)
 	
 	g->audio_minimized_panel_bar_button=NULL;
 	g->control_minimized_panel_bar_button=NULL;
+	g->file_menu=NULL;
+	g->mouse_mapping_menu=NULL;
+	g->mouse_mapping_menu_x=NULL;
+	g->mouse_mapping_menu_y=NULL;
 }
 
 void fx_up(GtkWidget *wid, vtt_fx *effect)
@@ -1222,9 +1235,12 @@ void delete_gui(vtt_class *vtt)
 	delete vtt->gui.ec_volumed;
 	delete vtt->gui.ec_pand;
 	delete vtt->gui.ec_panel;
-	
+
 	gtk_widget_destroy(vtt->gui.control_box);
 	gtk_widget_destroy(vtt->gui.audio_box);
+	if (vtt->gui.file_menu) gtk_widget_destroy(vtt->gui.file_menu);
+	if (vtt->gui.mouse_mapping_menu) gtk_widget_destroy(vtt->gui.mouse_mapping_menu);
+	if (vtt->gui.ladspa_menu) gtk_widget_destroy(vtt->gui.ladspa_menu);
 }
 
 void update_all_vtts()
