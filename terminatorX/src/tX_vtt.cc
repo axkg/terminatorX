@@ -562,7 +562,6 @@ void vtt_class :: calc_speed()
 		speed_target=speed;
 		speed_step=speed_target-speed_real;
 		speed_step/=globals.vtt_inertia;
-		tX_error("dingens - step: %lf", speed_step);
 	}
 			
 	if (speed_target != speed_real) {

@@ -303,7 +303,7 @@ int tX_audiodevice_alsa :: open()
 		return -1;
 	}
 	
-	snd_pcm_hw_params_free (hw_params);
+	//snd_pcm_hw_params_free (hw_params);
 	return 0; //snd_pcm_prepare(pcm_handle);
 }
 
