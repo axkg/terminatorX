@@ -37,10 +37,13 @@ changed.
 - Wrote support for gtk+'s new FileChooser widget - will be enabled 
   automatically when configure finds a gtk+ >= 2.4.0
 - Fixed the buffer overflows detected by c0wboy <c0wboy@tiscali.it> in his 
-  outsiders-terminatorX-001.txt advisory. 
-- merged parts of a patch from Adam King <aking@lgh.com.au>
-  - Simple min/maximization for the control panels
+  outsiders-terminatorX-001.txt advisory.
+- Support for gtk+ startup notification.
+- "README.GNOME" was outdated so it had to go.
+- merged parts of a patch graciously contributed by Adam King <aking@lgh.com.au>
+  - Simpler min/maximization for the control panels
   - Bugfix for sequencer menu crash
+  - The panel formally known as "Trigger" is now known as "Playback"
   - TODO: complete this entry?
 - created some new icons for the GUI with the cool inkscape. 
 - added cpu-overload detection - currently disabled
