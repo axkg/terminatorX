@@ -885,6 +885,7 @@ void tX_seqpar_vttfx_float :: create_widget()
 	float tmp=max_value - min_value/1000;
 
 	*fx_value=min_value;
+	//myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value+tmp/10, max_value-tmp/10, tmp, tmp, tmp));
 	myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value, max_value, tmp, tmp, tmp));
 	mydial=new tX_extdial(label_name, myadj);
 	gtk_signal_connect(GTK_OBJECT(myadj), "value_changed", (GtkSignalFunc) tX_seqpar_vttfx_float :: gtk_callback, this);
