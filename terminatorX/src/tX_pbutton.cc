@@ -42,11 +42,13 @@
 #include "gui_icons/tX_fx_up.xpm"
 #include "gui_icons/tX_fx_down.xpm"
 #include "gui_icons/tX_fx_close.xpm"
+#include "gui_icons/tX_minimize.xpm"
+#include "gui_icons/tX_min_control.xpm"
 
 gchar ** tx_icons[]={ tx_audioengine_xpm, tx_power_xpm, tx_grab_xpm, tx_smaller_logo_xpm,
 		      tx_sequencer_xpm, tx_play_xpm, tx_stop_xpm, tx_record_xpm, 
 		      tx_wave_xpm, tx_reload_xpm, tx_minimize_xpm,
-		      tX_fx_up_xpm, tX_fx_down_xpm, tX_fx_close_xpm };
+		      tX_fx_up_xpm, tX_fx_down_xpm, tX_fx_close_xpm, tX_minimize_xpm, tX_min_control_xpm };
 
 GtkWidget *tx_pixmap_widget(int icon_id)
 {
@@ -70,7 +72,7 @@ GtkWidget *tx_pixmap_widget(int icon_id)
     return pixmapwid;
 }
 
-GtkWidget *tx_xpm_label_box(int	icon_id, gchar *label_text )
+GtkWidget *tx_xpm_label_box(int	icon_id, gchar *label_text, GtkWidget **labelwidget=NULL)
 {
     GtkWidget *box1;
     GtkWidget *label;
@@ -88,17 +90,21 @@ GtkWidget *tx_xpm_label_box(int	icon_id, gchar *label_text )
 	    gtk_widget_show(pixmapwid);
     }
 
-    if (globals.button_type != BUTTON_TYPE_ICON)
+    if ((globals.button_type != BUTTON_TYPE_ICON) || (labelwidget!=NULL))
     {
 	    label = gtk_label_new (label_text);
 	    gtk_box_pack_start (GTK_BOX (box1), label, FALSE, FALSE, 3);
 	    gtk_widget_show(label); 
+		if (labelwidget!=NULL) {
+			*labelwidget=label;
+		}
     }
 
     return(box1);
 }
 
-GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle)
+//GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle)
+extern GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle, GtkWidget **labelwidget=NULL)
 {
 	GtkWidget *box;
 	GtkWidget *button;
@@ -106,7 +112,7 @@ GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle)
 	if (toggle) button=gtk_toggle_button_new();
 	else button=gtk_button_new();
 	
-	box=tx_xpm_label_box(icon_id, label);
+	box=tx_xpm_label_box(icon_id, label, labelwidget);
 	gtk_widget_show(box);
 	gtk_container_add (GTK_CONTAINER (button), box);		
 	

@@ -187,6 +187,9 @@ vtt_class :: vtt_class (int do_create_gui)
 	mix_mute=0;
 	res_mute=mute;
 	res_mute_old=0;
+	
+	audio_hidden=false;
+	control_hidden=false;
 }
 
 vtt_class :: ~vtt_class()
@@ -1614,6 +1617,9 @@ int  vtt_class :: save(FILE * output)
 	store(ec_feedback);
 	store(ec_pan);
 	store(ec_volume);
+	
+	store(audio_hidden);
+	store(control_hidden);
 
 	pid=sp_speed.get_persistence_id();
 	store(pid);
@@ -2115,6 +2121,168 @@ int vtt_class :: load_13(FILE * input)
 	return(res);
 }
 
+int vtt_class :: load_14(FILE * input)
+{
+	int res=0;
+	guint32 pid;
+	int32_t counter;
+	int32_t type;
+	long id;
+	int i,t;
+	LADSPA_Plugin *plugin;
+	char buffer[256];
+	vtt_fx_ladspa *ladspa_effect;
+	guint8 hidden;
+	
+	atload(buffer);
+	this->set_name(buffer);
+	atload(filename);
+	atload(is_sync_master);
+	atload(is_sync_client);
+	atload(sync_cycles);
+	atload(rel_volume);
+	atload(rel_pitch);
+	recalc_pitch();
+	
+	atload(autotrigger);
+	atload(loop);
+	
+	atload(mute);
+	atload(pan);
+	
+	atload(lp_enable);
+	atload(lp_gain);
+	atload(lp_reso);
+	atload(lp_freq);
+	lp_setup(lp_gain, lp_reso, lp_freq);
+	
+	atload(ec_enable);
+	atload(ec_length);
+	ec_set_length(ec_length);
+	atload(ec_feedback);
+	ec_set_feedback(ec_feedback);
+	atload(ec_pan);
+	ec_set_pan(ec_pan);
+	atload(ec_volume);
+	ec_set_volume(ec_volume);
+
+	atload(audio_hidden);
+	hide_audio(audio_hidden);
+	
+	atload(control_hidden);
+	hide_control(control_hidden);
+	
+	recalc_volume();
+
+	atload(pid);
+	sp_speed.set_persistence_id(pid);
+	atload(pid);
+	sp_volume.set_persistence_id(pid);
+	atload(pid);
+	sp_pitch.set_persistence_id(pid);
+	atload(pid);
+	sp_trigger.set_persistence_id(pid);
+	atload(pid);
+	sp_loop.set_persistence_id(pid);
+	atload(pid);
+	sp_sync_client.set_persistence_id(pid);
+	atload(pid);
+	sp_sync_cycles.set_persistence_id(pid);
+	atload(pid);
+	sp_lp_enable.set_persistence_id(pid);
+	atload(pid);
+	sp_lp_gain.set_persistence_id(pid);
+	atload(pid);
+	sp_lp_reso.set_persistence_id(pid);
+	atload(pid);
+	sp_lp_freq.set_persistence_id(pid);
+	atload(pid);
+	sp_ec_enable.set_persistence_id(pid);
+	atload(pid);
+	sp_ec_length.set_persistence_id(pid);
+	atload(pid);
+	sp_ec_feedback.set_persistence_id(pid);
+	atload(pid);
+	sp_ec_volume.set_persistence_id(pid);
+	atload(pid);
+	sp_ec_pan.set_persistence_id(pid);
+	atload(pid);
+	sp_mute.set_persistence_id(pid);
+	atload(pid);
+	sp_spin.set_persistence_id(pid);
+	atload(pid);
+	sp_pan.set_persistence_id(pid);
+		
+	atload(counter);
+	
+	for (i=0; i<counter; i++)
+	{
+		atload(type);
+		switch(type)
+		{
+			case TX_FX_BUILTINCUTOFF:
+				for (t=0; t<fx_list.size(); t++) effect_down(lp_fx);
+			break;
+			
+			case TX_FX_BUILTINECHO:
+				for (t=0; t<fx_list.size(); t++) effect_down(ec_fx);
+			break;
+			
+			case TX_FX_LADSPA:
+				atload(id);
+				plugin=LADSPA_Plugin::getPluginByUniqueID(id);
+				if (plugin)
+				{
+					ladspa_effect=add_effect(plugin);
+					ladspa_effect->load(input);
+				}
+				else
+				{
+					sprintf(buffer,"Fatal Error: Couldn't find required plugin with ID [%i].", id);
+					tx_note(buffer);
+					res++;
+				}
+			break;
+			
+			default:
+				tx_note("Fatal Error loading set: unknown effect type!");
+				res++;
+		}		
+	}
+
+	atload(pid);
+	
+	if (pid)
+	{
+		atload(pid);
+		set_x_input_parameter(tX_seqpar :: get_sp_by_persistence_id(pid));
+	}
+	else set_x_input_parameter(NULL);
+	
+	atload(pid);
+	
+	if (pid)
+	{
+		atload(pid);
+		set_y_input_parameter(tX_seqpar :: get_sp_by_persistence_id(pid));
+	}
+	else set_y_input_parameter(NULL);
+
+	atload(hidden);
+	gui.main_panel->hide(hidden);
+
+	atload(hidden);
+	gui.trigger_panel->hide(hidden);
+
+	atload(hidden);
+	gui.lp_panel->hide(hidden);
+
+	atload(hidden);
+	gui.ec_panel->hide(hidden);
+	
+	return(res);
+}
+
 
 int  vtt_class :: save_all(FILE* output)
 {
@@ -2363,6 +2531,63 @@ int  vtt_class :: load_all_13(FILE* input, char *fname)
 	return(res);
 }
 
+int  vtt_class :: load_all_14(FILE* input, char *fname)
+{
+	int res=0, restmp=0;
+	list <vtt_class *> :: iterator vtt;
+	unsigned int i, max, size;
+	int16_t *newbuffer;
+	vtt_class *newvtt;
+	char ftmp[PATH_MAX];
+	guint32 pid;
+	
+	while (main_list.size())
+	{
+		delete((*main_list.begin()));
+	}
+		
+	atload(max);
+	atload(master_volume);
+	set_master_volume(master_volume);
+	globals.volume=master_volume;
+	atload(globals.pitch);	
+	set_master_pitch(globals.pitch);
+	atload(pid);
+	sp_master_volume.set_persistence_id(pid);
+	atload(pid);
+	sp_master_pitch.set_persistence_id(pid);
+
+	ld_create_loaddlg(TX_LOADDLG_MODE_MULTI, max);
+	ld_set_setname(fname);
+
+	for (i=0; i<max; i++)
+	{
+		newvtt=new vtt_class(1);
+		res+=newvtt->load_14(input);
+		
+		if (strlen(newvtt->filename))
+		{
+			/* ftmp IS NECESSARY !!! */
+			strcpy(ftmp, newvtt->filename);
+			ld_set_filename(ftmp);
+			
+			//restmp=load_wav(newvtt->filename, &newbuffer, &size);
+			restmp=newvtt->load_file(ftmp);
+			res+=restmp;
+		}
+		gtk_box_pack_start(GTK_BOX(control_parent), newvtt->gui.control_box, TRUE, TRUE, 0);
+		gtk_box_pack_start(GTK_BOX(audio_parent), newvtt->gui.audio_box, TRUE, TRUE, 0);
+		
+	}
+	
+	sequencer.load(input);
+	
+	ld_destroy();
+	
+	return(res);
+}
+
+
 void add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn)
 {
 	vtt_class *hmmpg;
@@ -2453,3 +2678,15 @@ void vtt_class ::  effect_remove(vtt_fx_ladspa *effect)
 	delete effect;
 }
 
+extern void gui_hide_control_panel(vtt_class *vtt, bool hide);
+extern void gui_hide_audio_panel(vtt_class *vtt, bool hide);
+
+void vtt_class :: hide_audio(bool hide) {
+	audio_hidden=hide;
+	gui_hide_audio_panel(this, hide);
+}
+
+void vtt_class :: hide_control(bool hide) {
+	control_hidden=hide;
+	gui_hide_control_panel(this, hide);	
+}

@@ -46,6 +46,7 @@ typedef struct vtt_gui
 
 	/* Control Box Widgets */
 	GtkWidget *control_label;
+	GtkWidget *control_minimize;
 	GtkWidget *scrolled_win;
 	GtkWidget *control_subbox;
 	GtkWidget *ladspa_menu;
@@ -74,8 +75,8 @@ typedef struct vtt_gui
 	GtkAdjustment *pitch;
 	GtkAdjustment *pan;
 	GtkAdjustment *volume; 
-        GtkWidget *mute;
-        GtkWidget *solo;
+    GtkWidget *mute;
+    GtkWidget *solo;
 	GtkWidget *flash;
 
 	/* Widgets in Lowpass Panel */
@@ -107,12 +108,19 @@ typedef struct vtt_gui
 
 	/* Audio Box Widgets */
 	GtkWidget *audio_label;
+	GtkWidget *audio_minimize;
 	GtkWidget *display;
 	GtkWidget *file;
-	GtkWidget *edit;
-	GtkWidget *reload;
+//	GtkWidget *edit;
+//	GtkWidget *reload;
 	GtkWidget *x_control;
-	GtkWidget *y_control;	
+	GtkWidget *y_control;
+	
+	GtkWidget *audio_minimized_panel_bar_button;
+	GtkWidget *control_minimized_panel_bar_button;
+
+	GtkWidget *audio_minimized_panel_bar_label;
+	GtkWidget *control_minimized_panel_bar_label;
 };
 
 extern void cleanup_all_vtts();
