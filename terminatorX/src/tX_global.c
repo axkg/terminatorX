@@ -125,6 +125,7 @@ void load_globals()
 		globals.audiodevice_type=TX_AUDIODEVICE_TYPE_ALSA;
 #endif	
 #endif		
+		globals.audiodevice_buffersize=4096;
 		strcpy(globals.audiodevice_oss_devicename, "/dev/dsp");
 		globals.audiodevice_alsa_card=0;
 		globals.audiodevice_alsa_pcm=0;		
