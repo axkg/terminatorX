@@ -68,6 +68,7 @@ class vtt_fx
 	virtual int isEnabled()=NULL;
 	virtual void reconnect_buffer();
 	virtual void toggle_drywet();
+	virtual bool is_stereo();
 	virtual tX_drywet_type has_drywet_feature();
 	
 	virtual const char *get_info_string()=NULL;
@@ -117,7 +118,7 @@ class vtt_fx_ladspa : public vtt_fx
 {
 	public:
 	list <tX_seqpar_vttfx *> controls;
-	private:
+	protected:
 	tX_seqpar_vttfx *sp_enable;
 	tX_seqpar_vttfx *sp_wet;
 	f_prec *wet_buffer;
@@ -136,8 +137,8 @@ class vtt_fx_ladspa : public vtt_fx
 	virtual int isEnabled();
 	virtual void reconnect_buffer();
 	virtual const char *get_info_string();
-	void realloc_drywet();
-	void free_drywet();
+	virtual void realloc_drywet();
+	virtual void free_drywet();
 	virtual void toggle_drywet();
 	void add_drywet();
 	void remove_drywet();
@@ -150,4 +151,20 @@ class vtt_fx_ladspa : public vtt_fx
 	virtual void load(xmlDocPtr, xmlNodePtr);
 };
 
+class vtt_fx_stereo_ladspa : public vtt_fx_ladspa {
+	private:
+	f_prec *wet_buffer2;
+	int input2_port, output2_port;
+	
+	protected:
+	virtual void reconnect_buffer();	
+	virtual void realloc_drywet();
+	virtual void free_drywet();
+
+	public:
+	vtt_fx_stereo_ladspa(LADSPA_Stereo_Plugin *, void *);
+	virtual bool is_stereo();
+	virtual void run();
+	virtual ~vtt_fx_stereo_ladspa();
+};
 #endif

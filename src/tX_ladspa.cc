@@ -33,6 +33,7 @@
 #include <string.h>
 
 std::list <LADSPA_Plugin *> LADSPA_Plugin :: plugin_list;
+std::list <LADSPA_Stereo_Plugin *> LADSPA_Stereo_Plugin :: stereo_plugin_list;
 
 void LADSPA_Plugin :: init ()
 {
@@ -83,6 +84,8 @@ void LADSPA_Plugin :: handlelib(void *lib, LADSPA_Descriptor_Function desc_func,
 	for (i=0; (descriptor = desc_func(i)) != NULL; i++) {		
 		if (LADSPA_IS_INPLACE_BROKEN(descriptor->Properties)) {
 			tX_warning("Plugin \"%s\" disabled. No in-place processing support.", descriptor->Name);
+		} else if (!LADSPA_IS_HARD_RT_CAPABLE(descriptor->Properties)) {
+			tX_warning("Plugin \"%s\" disabled. Not realtime capable.", descriptor->Name);			
 		} else {		
 			in_audio=0; out_audio=0; in_ctrl=0;
 		
@@ -97,8 +100,10 @@ void LADSPA_Plugin :: handlelib(void *lib, LADSPA_Descriptor_Function desc_func,
 			
 			if ((in_audio == 1) && (out_audio == 1)) {
 				new LADSPA_Plugin(descriptor, filename);
+			} if ((in_audio == 2) && (out_audio == 2)) {
+				new LADSPA_Stereo_Plugin(descriptor, filename);
 			}
-			else { tX_warning("Plugin \"%s\" disabled. Not a 1-in/1-out plugin.", descriptor->Name); }
+			else { tX_warning("Plugin \"%s\" disabled. Neither mono nor stereo.", descriptor->Name); }
 		}
 	}
 }
@@ -200,3 +205,42 @@ LADSPA_Plugin * LADSPA_Plugin :: getPluginByUniqueID(long ID)
 
 	return NULL;
 }
+
+/* STEREO */
+
+LADSPA_Stereo_Plugin :: LADSPA_Stereo_Plugin (const LADSPA_Descriptor *ld, char *filename)
+{
+	ladspa_descriptor = ld;
+	
+	stereo_plugin_list.push_back(this);
+	strcpy(file, filename);
+	sprintf(info_string, "LADSPA-Stereo-Plugin: %s\nLabel: %s\nFile: %s\nUnique ID: %li\nMaker: %s\nCopyright: %s", ld->Name, ld->Label, file, ld->UniqueID, ld->Maker, ld->Copyright);
+	LADSPA_Class::add_stereo_plugin(this);
+}
+
+LADSPA_Stereo_Plugin * LADSPA_Stereo_Plugin :: getPluginByIndex(int i)
+{
+	std::list <LADSPA_Stereo_Plugin *> :: iterator plugin;
+	int p;
+	
+	plugin = stereo_plugin_list.begin();
+	for (p=0; (p<i) && (plugin != stereo_plugin_list.end()); p++, plugin++);
+	
+	if (plugin==stereo_plugin_list.end()) return NULL;
+	
+	else return (*plugin);
+}
+
+LADSPA_Stereo_Plugin * LADSPA_Stereo_Plugin :: getPluginByUniqueID(long ID)
+{
+	std::list <LADSPA_Stereo_Plugin *> :: iterator plugin;
+	
+	for (plugin=stereo_plugin_list.begin(); plugin != stereo_plugin_list.end(); plugin++) {
+		if ((*plugin)->getUniqueID()==ID) return (*plugin);
+	}
+
+	return NULL;
+}
+
+bool LADSPA_Stereo_Plugin::is_stereo() { return true; }
+bool LADSPA_Plugin::is_stereo() { return false; }

@@ -33,10 +33,16 @@
 #include <gtk/gtk.h>
 #include "tX_vtt.h"
 
+typedef enum {
+	MONO,
+	STEREO
+} LADSPA_Plugin_Type;
+
 class LADSPA_Class { // Yeah, I know "class" name for C++ class - but it just seems to fit best...
 	protected:
 	static LADSPA_Class *root;
 	static LADSPA_Class *unclassified;
+	
 	static std::list <char *> rdf_files;
 	static vtt_class *current_vtt;
 	static bool liblrdf_error;
@@ -46,22 +52,27 @@ class LADSPA_Class { // Yeah, I know "class" name for C++ class - but it just se
 	std::list <LADSPA_Class *> subclasses;
 	std::list <long> registered_ids;
 	std::list <LADSPA_Plugin *> plugins;
+	std::list <LADSPA_Stereo_Plugin *> stereo_plugins;
 	
 	static void scandir(char *dir);
-	bool add_plugin_instance(LADSPA_Plugin *);
+	bool add_plugin_instance(LADSPA_Plugin *, LADSPA_Plugin_Type);
 	void insert_class(LADSPA_Class *);
-	void insert_plugin(LADSPA_Plugin *);
+	void insert_plugin(LADSPA_Plugin *, LADSPA_Plugin_Type);
+	int plugins_in_class(LADSPA_Plugin_Type type);
 	void list(char *);
-	GtkWidget *get_menu();
+	GtkWidget *get_menu(LADSPA_Plugin_Type);
 	
 	public:
 	LADSPA_Class(char *uri);
 	LADSPA_Class(); // For the unclassified class;	
 	
 	static bool add_plugin(LADSPA_Plugin *plugin);
+	static bool add_stereo_plugin(LADSPA_Stereo_Plugin *plugin);
+	
 	static void init();
 	static void dump();
 	static GtkWidget *get_ladspa_menu();
+	static GtkWidget *get_stereo_ladspa_menu();
 	static void set_current_vtt(vtt_class *vtt) { current_vtt=vtt; }
 	static vtt_class *get_current_vtt() { return current_vtt; }
 };
