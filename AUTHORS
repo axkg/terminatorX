@@ -11,10 +11,5 @@ misc fixes and enhancements:
 			Adrian Reber <adrian@lisas.de>
 Ogg Vorbis support:	Matthew Evans <activesx@hotmail.com>
 			
-Authors of files not written for tX but included in this distribution:
-mmx.h README.MMX:	Hank Dietz <hankd@ecn.purdue.ed> and
-			Randy Fisher <rfisher@ecn.purdue.edu>
-3dnow.h:		Robert Dale <rob@nb.net>
-
-The lowpass filter is based on:
+The lowpass filter is based on a description:
 reso_lop.txt:		Paul Kellett <paul.kellett@maxim.abel.co.uk>

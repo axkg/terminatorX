@@ -39,10 +39,6 @@
 #include <config.h>
 #endif
 
-#ifdef USE_3DNOW
-#include "3dnow.h"
-#endif
-
 #ifdef DEBUG
 #define tX_freemem(ptr, varname, comment); fprintf(stderr, "** free() [%s] at %08x. %s.\n", varname, ptr, comment); free(ptr);
 #define tX_malloc(ptr, varname, comment, size, type); fprintf(stderr, "**[1/2] malloc() [%s]. Size: %i. %s.\n", varname, size, comment); ptr=type malloc(size); fprintf(stderr, "**[2/2] malloc() [%s]. ptr: %08x.\n", varname, ptr);
@@ -323,10 +319,6 @@ void vtt_class :: recalc_volume()
 		ec_volume_left=ec_volume_right=ec_res_volume;
 	}	
 //	printf("vtt_volume: %f, %f, l: %f, r: %f\n", rel_volume, res_volume, res_volume_left, res_volume_right);
-	
-#ifdef USE_3DNOW
-	mm_res_volume.s[0]=mm_res_volume.s[1]=res_volume;
-#endif	
 }
 
 void vtt_class :: set_pan(f_prec newpan)
@@ -882,60 +874,8 @@ int16_t * vtt_class :: render_all_turntables()
 	int sample;
 	int mix_sample;
 	f_prec temp;
-
-#ifdef USE_3DNOW
-	mmx_t *mix;
-	mmx_t *vtt_buffer;
-	int32_t *mix_int;
-#endif
-
-#ifdef USE_FLASH
 	f_prec max;
 	f_prec min;
-#ifdef USE_3DNOW
-	mmx_t mm_max;
-	mmx_t mm_min;
-	mmx_t mm_volume;
-	mmx_t mm_src1;
-	mmx_t mm_src2;
-
-#ifndef OVERRIDE_MOVQ_AUTODETECT
-#ifndef GCC_VERSION
-#define GCC_VERSION (__GNUC__ * 1000 + __GNUC_MINOR__)
-#endif /* GCC_VERSION */
-
-#if (GCC_VERSION < 2096)
-#warning "*************************"
-#warning "* gcc < 2.96            *"
-#warning "* assuming working movq *"
-#warning "*************************"
-#undef GCC_MOVQ_BUG_WORKAROUND
-#else
-#warning "*************************"
-#warning "* gcc >= 2.96           *"
-#warning "* using movq-workaround *"
-#warning "*************************"
-#define GCC_MOVQ_BUG_WORKAROUND 1
-#endif /* GCC < 2.96 */
-#endif /* OVERRIDE MOVQ AUTODETECVT */
-	
-#ifdef GCC_MOVQ_BUG_WORKAROUND
-	/* REQUIRED DUE TO GCC BUG (2.96-3.0.2) */
-	mmx_t *mm_src1_ptr=&mm_src1;
-	mmx_t *mm_src2_ptr=&mm_src2;
-	mmx_t *mm_volume_ptr=&mm_volume;
-	mmx_t *mm_max_ptr=&mm_max;
-	mmx_t *mm_min_ptr=&mm_min;
-	
-#define MM_VAR_ACC(var) (* var ## _ptr)
-#define MM_VAR_MOVQ(var) * var ## _ptr
-#else
-#define MM_VAR_ACC(var) var
-#define MM_VAR_MOVQ(var) var
-#endif	
-	int32_t *temp_int=&mm_max.d[1];
-#endif	
-#endif	
 	
 	pthread_mutex_lock(&render_lock);
 	
@@ -953,7 +893,6 @@ int16_t * vtt_class :: render_all_turntables()
 			max=(*vtt)->max_value;
 			min=max;
 
-#ifndef USE_3DNOW
 			for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
 			{				
 				temp=(*vtt)->output_buffer[sample];
@@ -965,65 +904,12 @@ int16_t * vtt_class :: render_all_turntables()
 				if (temp>max) max=temp;
 				else if (temp<min) min=temp;
 			}
-#else
-			MM_VAR_ACC(mm_volume).s[0]=(*vtt)->res_volume_left;
-			MM_VAR_ACC(mm_volume).s[1]=(*vtt)->res_volume_right;
-
-			MM_VAR_ACC(mm_max).s[1]=MM_VAR_ACC(mm_max).s[0]=max;
-			MM_VAR_ACC(mm_min).s[1]=MM_VAR_ACC(mm_min).s[0]=min;
-			
-			movq_m2r(MM_VAR_MOVQ(mm_max), mm1);
-			movq_m2r(MM_VAR_MOVQ(mm_min), mm2);
-							
-			movq_m2r(MM_VAR_MOVQ(mm_volume), mm0);
-			
-			mix=(mmx_t*)mix_buffer;
-			
-			for (f_prec* src=(*vtt)->output_buffer; mix < (mmx_t*) mix_buffer_end;)
-			{
-				/* first sample */
-				MM_VAR_ACC(mm_src1).s[0]=*src;
-				MM_VAR_ACC(mm_src1).s[1]=*src;
-					
-				/* sample * l/r volume */
-				movq_m2r(MM_VAR_MOVQ(mm_src1), mm3);
-				pfmul_r2r(mm0, mm3);
-				movq_r2m(mm3, *mix);
-					
-				/* next sample */
-				src++, mix++;
-				MM_VAR_ACC(mm_src2).s[0]=*src;
-				MM_VAR_ACC(mm_src2).s[1]=*src;
-					
-				/* sample * l/r volume */
-				movq_m2r(MM_VAR_MOVQ(mm_src2), mm3);
-				pfmul_r2r(mm0, mm3);
-				movq_r2m(mm3, *mix);
-					
-				/* calculating min/max */
-				MM_VAR_ACC(mm_src1).s[1]=MM_VAR_ACC(mm_src2).s[0];
-				movq_m2r(mm_src1, mm3);
-				pfmax_r2r(mm3, mm1);
-				pfmin_r2r(mm3, mm2);
-				
-				src++, mix++;
-			}
-
-			movq_r2m(mm1, MM_VAR_MOVQ(mm_max));
-			movq_r2m(mm2, MM_VAR_MOVQ(mm_min));
-			
-			femms();
-			
-			if (MM_VAR_ACC(mm_max).s[0]>MM_VAR_ACC(mm_max).s[1]) max=MM_VAR_ACC(mm_max).s[0]; else max=MM_VAR_ACC(mm_max).s[1];
-			if (MM_VAR_ACC(mm_min).s[0]<MM_VAR_ACC(mm_min).s[0]) min=MM_VAR_ACC(mm_min).s[0]; else min=MM_VAR_ACC(mm_min).s[1];
-#endif			
 			
 			min*=-1.0;
 			if (min>max) (*vtt)->max_value=min; else (*vtt)->max_value=max;
 
 			if ((*vtt)->ec_enable)
 			{
-#ifndef USE_3DNOW			
 				for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
 				{				
 					temp=(*vtt)->ec_output_buffer[sample];
@@ -1033,30 +919,6 @@ int16_t * vtt_class :: render_all_turntables()
 					mix_buffer[mix_sample]+=temp*(*vtt)->ec_volume_right;
 					mix_sample++;
 				}
-#else
-				MM_VAR_ACC(mm_volume).s[0]=(*vtt)->ec_volume_left;
-				MM_VAR_ACC(mm_volume).s[1]=(*vtt)->ec_volume_right;
-						
-				movq_m2r(MM_VAR_MOVQ(mm_volume), mm0);
-				mix =(mmx_t*)mix_buffer;
-
-				for (f_prec* src=(*vtt)->ec_output_buffer; mix < (mmx_t*) mix_buffer_end; src++, mix++)
-				{
-					/* first sample */
-					MM_VAR_ACC(mm_src1).s[0]=*src;
-					MM_VAR_ACC(mm_src1).s[1]=*src;
-				
-					/* sample * l/r volume */
-					movq_m2r(MM_VAR_MOVQ(mm_src1), mm3);
-					pfmul_r2r(mm0, mm3);
-				
-					/* accumulating complete mix */
-					movq_m2r(*mix, mm4);
-					pfadd_r2r(mm4, mm3);
-					movq_r2m(mm3, *mix);
-				}
-				femms();
-#endif				
 			}
 			
 			if (master_triggered)
@@ -1087,7 +949,6 @@ int16_t * vtt_class :: render_all_turntables()
 				max=(*vtt)->max_value;
 				min=max;
 
-#ifndef USE_3DNOW
 				for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
 				{				
 					temp=(*vtt)->output_buffer[sample];
@@ -1099,72 +960,12 @@ int16_t * vtt_class :: render_all_turntables()
 					if (temp>max) max=temp;
 					else if (temp<min) min=temp;
 				}
-#else
-				MM_VAR_ACC(mm_volume).s[0]=(*vtt)->res_volume_left;
-				MM_VAR_ACC(mm_volume).s[1]=(*vtt)->res_volume_right;
-
-				MM_VAR_ACC(mm_max).s[1]=MM_VAR_ACC(mm_max).s[0]=max;
-				MM_VAR_ACC(mm_min).s[1]=MM_VAR_ACC(mm_min).s[0]=min;
-			
-				movq_m2r(MM_VAR_MOVQ(mm_max), mm1);
-				movq_m2r(MM_VAR_MOVQ(mm_min), mm2);
-							
-				movq_m2r(MM_VAR_MOVQ(mm_volume), mm0);
-				mix=(mmx_t*)mix_buffer;
-
-				for (f_prec* src=(*vtt)->output_buffer; mix < (mmx_t*) mix_buffer_end;)
-				{
-					/* first sample */
-					MM_VAR_ACC(mm_src1).s[0]=*src;
-					MM_VAR_ACC(mm_src1).s[1]=*src;
-					
-					/* sample * l/r volume */
-					movq_m2r(MM_VAR_MOVQ(mm_src1), mm3);
-					pfmul_r2r(mm0, mm3);
-					
-					/* accumulating complete mix */
-					movq_m2r(*mix, mm4);
-					pfadd_r2r(mm4, mm3);
-					movq_r2m(mm3, *mix);
-					
-					/* next sample */
-					src++, mix++;
-					MM_VAR_ACC(mm_src2).s[0]=*src;
-					MM_VAR_ACC(mm_src2).s[1]=*src;
-					
-					/* sample * l/r volume */
-					movq_m2r(MM_VAR_MOVQ(mm_src2), mm3);
-					pfmul_r2r(mm0, mm3);
-
-					/* accumulating complete mix */
-					movq_m2r(*mix, mm4);
-					pfadd_r2r(mm4, mm3);
-					movq_r2m(mm3, *mix);
-					
-					/* calculating min/max */
-					MM_VAR_ACC(mm_src1).s[1]=MM_VAR_ACC(mm_src2).s[0];
-					movq_m2r(MM_VAR_MOVQ(mm_src1), mm3);
-					pfmax_r2r(mm3, mm1);
-					pfmin_r2r(mm3, mm2);
-					
-					src++, mix++;
-				}
-
-				movq_r2m(mm1, MM_VAR_MOVQ(mm_max));
-				movq_r2m(mm2, MM_VAR_MOVQ(mm_min));
-				
-				femms();
-	
-				if (MM_VAR_ACC(mm_max).s[0]>MM_VAR_ACC(mm_max).s[1]) max=MM_VAR_ACC(mm_max).s[0]; else max=MM_VAR_ACC(mm_max).s[1];
-				if (MM_VAR_ACC(mm_min).s[0]<MM_VAR_ACC(mm_min).s[0]) min=MM_VAR_ACC(mm_min).s[0]; else min=MM_VAR_ACC(mm_min).s[1];
-#endif
 				
 				min*=-1.0;
 				if (min>max) (*vtt)->max_value=min; else (*vtt)->max_value=max;
 				
 				if ((*vtt)->ec_enable)
 				{
-#ifndef USE_3DNOW
 					for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
 					{				
 						temp=(*vtt)->ec_output_buffer[sample];
@@ -1174,31 +975,6 @@ int16_t * vtt_class :: render_all_turntables()
 						mix_buffer[mix_sample]+=temp*(*vtt)->ec_volume_right;
 						mix_sample++;
 					}
-#else
-					MM_VAR_ACC(mm_volume).s[0]=(*vtt)->ec_volume_left;
-					MM_VAR_ACC(mm_volume).s[1]=(*vtt)->ec_volume_right;
-						
-					movq_m2r(MM_VAR_MOVQ(mm_volume), mm0);
-					mix =(mmx_t*)mix_buffer;
-
-					for (f_prec* src=(*vtt)->ec_output_buffer; mix < (mmx_t*) mix_buffer_end; src++, mix++)
-					{
-						/* first sample */
-						MM_VAR_ACC(mm_src1).s[0]=*src;
-						MM_VAR_ACC(mm_src1).s[1]=*src;
-				
-						/* sample * l/r volume */
-						movq_m2r(MM_VAR_MOVQ(mm_src1), mm3);
-						pfmul_r2r(mm0, mm3);
-				
-						/* accumulating complete mix */
-						movq_m2r(*mix, mm4);
-						pfadd_r2r(mm4, mm3);
-						movq_r2m(mm3, *mix);
-					}
-
-					femms();
-#endif					
 				}
 			}
 			
@@ -1337,10 +1113,7 @@ int vtt_class :: trigger()
 		(*effect)->activate();
 	}
 
-
-#ifdef USE_FLASH
 	max_value=0;
-#endif
 	
 	if (is_sync_master)
 	{
@@ -1378,10 +1151,8 @@ int vtt_class :: stop_nolock()
 	want_stop=0;
 
 	is_playing=0;
-
-#ifdef USE_FLASH
 	max_value=0;
-#endif
+
 	cleanup_vtt(this);
 	sync_countdown=0;
 	
