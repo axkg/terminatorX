@@ -530,31 +530,28 @@ GtkSignalFunc seq_stop(GtkWidget *w, void *);
 
 GtkSignalFunc audio_on(GtkWidget *w, void *d)
 {
-	int res;
+	tX_engine_error res;
 	
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
 	{		
 		sequencer_ready=0;
 		mg_enable_critical_buttons(0);
-		res=run_engine();
+		res=engine->run();
 		sequencer_ready=1;
 
-		if (res!=TX_ENG_OK)
+		if (res!=NO_ERROR)
 		{
 			mg_enable_critical_buttons(1);
 			switch(res)
 			{
-				case TX_ENG_ERR_BUSY:
+				case ERROR_BUSY:
 				tx_note("Error starting engine: engine is already running.");
 				break;
-				case TX_ENG_ERR_DEVICE:
+				case ERROR_AUDIO:
 				tx_note("Error starting engine: failed to access audiodevice.");
 				break;
-				case TX_ENG_ERR_TAPE:
+				case ERROR_TAPE:
 				tx_note("Error starting engine: failed to open the recording file.");
-				break;
-				case TX_ENG_ERR_THREAD:
-				tx_note("Error starting engine: failed to create the engine thread.");
 				break;
 				default:tx_note("Error starting engine: Unknown error.");
 			}
@@ -571,12 +568,11 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 	{		
 		if (!sequencer_ready) return NULL;
 		gtk_widget_set_sensitive(grab_button, 0);
-		stop_engine();
+		engine->stop();
 		stop_update=1;
 		audioon=0;
-		if ((want_recording) && (!globals.autoname))
-		{
-			want_recording=0;
+		if (engine->get_recording_request()) {
+			engine->set_recording_request(false);
 			rec_dont_care=1;
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rec_btn), 0);
 			rec_dont_care=0;
@@ -604,7 +600,7 @@ void do_rec(GtkWidget *wid)
 	if (strlen(buffer))
 	{
 		strcpy(globals.record_filename, buffer);		
-		want_recording=1;
+		engine->set_recording_request(true);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rec_btn), 1);
 	}
 	
@@ -654,13 +650,15 @@ GtkSignalFunc tape_on(GtkWidget *w, void *d)
 	}
 	else
 	{
-			want_recording=0;
+			engine->set_recording_request(false);
 	}
 }
 
 void grab_on(GtkWidget *w, void *d)
 {
-	grab_mouse(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)));
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
+		engine->set_grab_request();
+	}
 	grab_status=1;
 }
 

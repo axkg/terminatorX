@@ -64,6 +64,8 @@
 
 #include "tX_ladspa.h"
 
+#include "tX_engine.h"
+
 #ifdef CREATE_BENCHMARK 
 #include "tX_vtt.h"
 #endif
@@ -364,14 +366,10 @@ int main(int argc, char **argv)
 	FILE *gtk_rc_file;
 	
 	fprintf(stderr, "%s - Copyright (C) 1999-2002 by Alexander König\n", VERSIONSTRING);
-
-#ifdef WIN32
-        setenv ("CYGWIN", "binmode");
-#endif
-	
-
 	fprintf(stderr, "terminatorX comes with ABSOLUTELY NO WARRANTY - for details read the license.\n");
 
+	engine=new tX_engine();
+	
 #ifdef USE_3DNOW
 	if (tx_mm_support()!=5)
 	{
