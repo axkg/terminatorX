@@ -154,6 +154,9 @@ void set_global_defaults() {
 	globals.quit_confirm=1;
 	globals.use_realtime=1;
 	globals.auto_assign_midi=0;
+	
+	globals.verbose_plugin_loading=0;
+	globals.force_nonrt_plugins=0;	
 }
 
 int load_globals_xml() {
@@ -253,6 +256,8 @@ int load_globals_xml() {
 			restore_int("quit_confirm", globals.quit_confirm);
 			restore_int("use_realtime", globals.use_realtime);
 			restore_int("auto_assign_midi", globals.auto_assign_midi);
+			restore_int("force_nonrt_plugins", globals.force_nonrt_plugins);
+			restore_int("verbose_plugin_loading", globals.verbose_plugin_loading);
 
 #ifdef USE_ALSA_MIDI_IN
 			if (!elementFound && (xmlStrcmp(cur->name, (xmlChar *) "midi_connections")==0)) {
@@ -370,6 +375,9 @@ void store_globals() {
 		store_int("quit_confirm", globals.quit_confirm);
 		store_int("use_realtime", globals.use_realtime);
 		store_int("auto_assign_midi", globals.auto_assign_midi);
+		
+		store_int("verbose_plugin_loading", globals.verbose_plugin_loading);
+		store_int("force_nonrt_plugins", globals.force_nonrt_plugins);
 
 #ifdef USE_ALSA_MIDI_IN
 		tX_midiin_store_connections(rc, indent);

@@ -7,28 +7,22 @@
 <article id="index" lang="en">
   <articleinfo>
     <title>terminatorX - Manual</title>
-
     <author>
       <firstname>Alexander</firstname>
-
       <surname>König</surname>
     </author>
 
     <copyright>
       <year>1999</year>
-
       <year>2000</year>
-
       <year>2001</year>
-
       <year>2002</year>
-
       <year>2003</year>
 
       <holder role="mailto:alex@lisas.de">Alexander König</holder>
     </copyright>
 
-    <releaseinfo>Version 3.81</releaseinfo>
+    <releaseinfo>Version 3.82</releaseinfo>
 
     <legalnotice id="legalnotice">
       <para>Permission is granted to copy, distribute and/or modify this
@@ -893,7 +887,9 @@
 
         <para>With release 3.70 the effects are no longer hardcoded into the
         turntable. The effects are now arranged within an per-turntable
-        effect-queue. The effect sequence is configurable by the user. To move
+        effect-queue. Additionally Version 3.82 introduces a second effect-queue
+	that follows the first: the queue for stereo LADSPA plugin effects.
+	The effect sequence is configurable by the user. To move
         an effect to higher position within the queue, press the
         <emphasis>blue upward arrow button</emphasis>. This will cause the
         effect to be rendered <emphasis>before</emphasis> the following
@@ -933,16 +929,27 @@
         this setup you will not hear anything from the second LADSPA effect in
         the echo-signal.</para>
 
-        <para>For more information on a LADSPA plugin, press it&#39;s
-        panel&#39;s label and a small info box will pop up.</para>
+	<para>Release 3.82 introduces a menu for each LADSPA plugin. Simply
+	click on the Plugin's label to operate the menu. Aside of displaying
+	detailed information about a plugin, the menu also contains some new
+	functionality: <emphasis>Add Dry/Wet Control</emphasis>. When activated 
+	the effect receives an extra Dry/Wet control that allows you to
+	modify to what extent the effect will actually effect the turntable's
+	signal. The extra control doesn't differ from the other controls: 
+	you can record events for it, etc. The additional control can be 
+	removed via the very same menu item that adds the control.
+	</para>
 
         <itemizedlist>
           <listitem>
-            <para><emphasis>FX Button</emphasis></para>
+            <para><emphasis>FX</emphasis> and 
+	    <emphasis>Stereo FX Buttons</emphasis></para>
 
             <para>Press this button to load a LADSPA plugin into the effect
             queue of the turntable. A menu holding the available
-            (terminatorX-&#34;compatible&#34;) LADSPA-plugins will pop up. The
+            (terminatorX-&#34;compatible&#34;) LADSPA-plugins will pop up - mono
+	    plugins are available from the <emphasis>FX</emphasis> menu, stereo
+	    plugins from the <emphasis>Stereo FX</emphasis> menu. The
             plugins are grouped within submenus according to the modules the
             plugins are contained in. Simply select the plugin you want to
             load from this menu and a panel for it will pop up at the end of
@@ -1305,21 +1312,26 @@
 
       <para>Not every plugin is supported by terminatorX though. As the
       plugins are inserted into the per-turntable effect-queue, they have to
-      be mono plugins (as is that queue) for now. This is why terminatorX will
-      load plugins with <emphasis>one</emphasis> audio-in port and
-      <emphasis>one</emphasis> audio-out port only.</para>
+      be mono or (as of Version 3.82) stereo plugins. This is why terminatorX will
+      load plugins with <emphasis>one</emphasis> or <emphasis>two</emphasis>
+      audio-in ports and <emphasis>one</emphasis> or <emphasis>two</emphasis>
+      audio-out ports only.</para>
 
       <para>The decision on whether a plugin is terminatorX-suitable is made
       on terminatorX startup, so only plugins that fit into the effect queue
-      will be offered in the plugin-menu that pops up when the
-      <emphasis>FX</emphasis> button is clicked. Depending on whether the
+      will be offered in the mono plugin-menu that pops up when the
+      <emphasis>FX</emphasis> button is clicked or in the stereo plugin menu
+      when the <emphasis>Stereo FX</emphasis> button si clicked. Depending on 
+      whether the
       terminatorX binary you&#39;re using was built with or without liblrdf (<xref
       linkend="LIBLRDF" />) support the plugin menu will either contain
       sub-menus with plugin categories (with liblrdf) or just a single menu
       with the <emphasis>Unclassified</emphasis> category.</para>
 
       <para>On startup terminatorX will print some information on the
-      LADSPA-plugins analysis process to the standard output. Watch the
+      LADSPA-plugins analysis process to the standard output if you have
+      enabled &quot;Verbose Plugin Loading&quot; in the Preferences dialog. 
+      Watch the
       terminal you run terminatorX from for that info if you have problems
       loading a plugin.</para>
 

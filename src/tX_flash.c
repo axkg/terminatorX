@@ -347,6 +347,7 @@ void gtk_tx_flash_set_level(GtkWidget *widget, f_prec left_channel, f_prec right
 	g_return_if_fail (GTK_IS_TX_FLASH (widget));
 	
 	tx_flash = GTK_TX_FLASH (widget);
+	//printf("flash %08x: setting levels: %f, %f\n", tx_flash, left_channel, right_channel);	
 	
 	gtk_tx_flash_set_channel_level(tx_flash, left_channel, &tx_flash->channel[0]);
 	gtk_tx_flash_set_channel_level(tx_flash, right_channel, &tx_flash->channel[1]);

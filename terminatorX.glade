@@ -229,7 +229,7 @@
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
   <property name="has_separator">True</property>
-  <signal name="destroy" handler="on_tx_options_destroy" last_modification_time="Sat, 12 Apr 2003 20:20:31 GMT"/>
+  <signal name="destroy" handler="on_tx_options_destroy"/>
 
   <child internal-child="vbox">
     <widget class="GtkVBox" id="dialog-vbox3">
@@ -251,7 +251,7 @@
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="response_id">0</property>
-	      <signal name="clicked" handler="on_pref_reset_clicked" last_modification_time="Sat, 12 Apr 2003 19:47:22 GMT"/>
+	      <signal name="clicked" handler="on_pref_reset_clicked"/>
 	    </widget>
 	  </child>
 
@@ -264,7 +264,7 @@
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="response_id">-6</property>
-	      <signal name="clicked" handler="on_pref_cancel_clicked" last_modification_time="Sat, 12 Apr 2003 19:47:37 GMT"/>
+	      <signal name="clicked" handler="on_pref_cancel_clicked"/>
 	    </widget>
 	  </child>
 
@@ -277,7 +277,7 @@
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="response_id">-10</property>
-	      <signal name="clicked" handler="on_pref_apply_clicked" last_modification_time="Sat, 12 Apr 2003 19:47:47 GMT"/>
+	      <signal name="clicked" handler="on_pref_apply_clicked"/>
 	    </widget>
 	  </child>
 
@@ -290,7 +290,7 @@
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="response_id">-5</property>
-	      <signal name="clicked" handler="on_pref_ok_clicked" last_modification_time="Sat, 12 Apr 2003 19:47:56 GMT"/>
+	      <signal name="clicked" handler="on_pref_ok_clicked"/>
 	    </widget>
 	  </child>
 	</widget>
@@ -325,7 +325,7 @@
 	      <child>
 		<widget class="GtkLabel" id="label18">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Use Driver:</property>
+		  <property name="label" translatable="yes">Driver:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -423,8 +423,7 @@
 	      <child>
 		<widget class="GtkLabel" id="use_realtime_label">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Use realtime scheduling
-where available:</property>
+		  <property name="label" translatable="yes">Scheduling:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -449,7 +448,7 @@ where available:</property>
 		<widget class="GtkCheckButton" id="use_realtime">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">Enabled</property>
+		  <property name="label" translatable="yes">Use realtime scheduling where available</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="active">False</property>
@@ -504,7 +503,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label21">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Audio Device:</property>
+		  <property name="label" translatable="yes">Audio device:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -528,7 +527,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label22">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">No. of Buffers:</property>
+		  <property name="label" translatable="yes">No. of buffers:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -664,7 +663,7 @@ where available:</property>
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="draw_value">True</property>
-		  <property name="value_pos">GTK_POS_TOP</property>
+		  <property name="value_pos">GTK_POS_LEFT</property>
 		  <property name="digits">0</property>
 		  <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		  <property name="inverted">False</property>
@@ -910,7 +909,7 @@ where available:</property>
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="draw_value">True</property>
-		  <property name="value_pos">GTK_POS_TOP</property>
+		  <property name="value_pos">GTK_POS_LEFT</property>
 		  <property name="digits">0</property>
 		  <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		  <property name="inverted">False</property>
@@ -955,12 +954,12 @@ where available:</property>
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="draw_value">True</property>
-		  <property name="value_pos">GTK_POS_TOP</property>
+		  <property name="value_pos">GTK_POS_LEFT</property>
 		  <property name="digits">0</property>
 		  <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		  <property name="inverted">False</property>
-		  <property name="adjustment">50 10 500 1 10 10</property>
-		  <signal name="value_changed" handler="on_alsa_buffer_time_value_changed" object="alsa_period_time" last_modification_time="Tue, 08 Apr 2003 20:22:15 GMT"/>
+		  <property name="adjustment">69 10 500 1 10 10</property>
+		  <signal name="value_changed" handler="on_alsa_buffer_time_value_changed" object="alsa_period_time"/>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -1055,7 +1054,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label5">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">XInput Device:</property>
+		  <property name="label" translatable="yes">XInput device:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1079,7 +1078,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label6">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Mouse Speed:</property>
+		  <property name="label" translatable="yes">Mouse speed:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1103,7 +1102,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label7">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Stop-Sense-Cycles:</property>
+		  <property name="label" translatable="yes">Stop-sense-cycles:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1169,7 +1168,7 @@ where available:</property>
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="draw_value">True</property>
-		  <property name="value_pos">GTK_POS_TOP</property>
+		  <property name="value_pos">GTK_POS_LEFT</property>
 		  <property name="digits">1</property>
 		  <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		  <property name="inverted">False</property>
@@ -1190,8 +1189,8 @@ where available:</property>
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="draw_value">True</property>
-		  <property name="value_pos">GTK_POS_TOP</property>
-		  <property name="digits">0</property>
+		  <property name="value_pos">GTK_POS_LEFT</property>
+		  <property name="digits">1</property>
 		  <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		  <property name="inverted">False</property>
 		  <property name="adjustment">80 30 250 5 1 1</property>
@@ -1235,7 +1234,7 @@ where available:</property>
 		  <property name="visible">True</property>
 		  <property name="tooltip" translatable="yes">CAREFUL! Enable this *only* if you want to use an input device than your default X-Pointer (yes, your mouse ;). You have to select your desired device as well. Selecting the default mouse pointer will crash terminatorX so if you want to use that keep this option disabled.</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">Enabled</property>
+		  <property name="label" translatable="yes">Activate XInput support</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="active">False</property>
@@ -1255,7 +1254,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label37">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Turntable Inertia:</property>
+		  <property name="label" translatable="yes">Turntable inertia:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1281,11 +1280,11 @@ where available:</property>
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="draw_value">True</property>
-		  <property name="value_pos">GTK_POS_TOP</property>
+		  <property name="value_pos">GTK_POS_LEFT</property>
 		  <property name="digits">1</property>
 		  <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		  <property name="inverted">False</property>
-		  <property name="adjustment">10 1 310 0.01 1 10</property>
+		  <property name="adjustment">11 1 310 0.01 1 10</property>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -1335,7 +1334,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label8">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Main Window Tooltips:</property>
+		  <property name="label" translatable="yes">Tooltips:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1359,7 +1358,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label9">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Update Idle (ms):</property>
+		  <property name="label" translatable="yes">Update idle (ms):</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1383,7 +1382,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label10">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Update Delay (cycles):</property>
+		  <property name="label" translatable="yes">Update delay (cycles):</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1407,14 +1406,14 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label11">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">VU Meter Decay:</property>
+		  <property name="label" translatable="yes">VU meter decay:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
 		  <property name="wrap">False</property>
 		  <property name="selectable">False</property>
 		  <property name="xalign">0</property>
-		  <property name="yalign">0.5</property>
+		  <property name="yalign">0.49</property>
 		  <property name="xpad">0</property>
 		  <property name="ypad">0</property>
 		</widget>
@@ -1433,7 +1432,7 @@ where available:</property>
 		  <property name="visible">True</property>
 		  <property name="tooltip" translatable="yes">Enable tooltips for the terminatorX main window.</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">Enabled</property>
+		  <property name="label" translatable="yes">Activate tooltips for the main wnidow</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="active">False</property>
@@ -1455,11 +1454,11 @@ where available:</property>
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="draw_value">True</property>
-		  <property name="value_pos">GTK_POS_TOP</property>
+		  <property name="value_pos">GTK_POS_LEFT</property>
 		  <property name="digits">0</property>
 		  <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		  <property name="inverted">False</property>
-		  <property name="adjustment">11 2 100 1 10 10</property>
+		  <property name="adjustment">11 6 100 1 10 10</property>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -1476,8 +1475,8 @@ where available:</property>
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="draw_value">True</property>
-		  <property name="value_pos">GTK_POS_TOP</property>
-		  <property name="digits">0</property>
+		  <property name="value_pos">GTK_POS_LEFT</property>
+		  <property name="digits">1</property>
 		  <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		  <property name="inverted">False</property>
 		  <property name="adjustment">0 0 15 1 10 10</property>
@@ -1497,8 +1496,8 @@ where available:</property>
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="draw_value">True</property>
-		  <property name="value_pos">GTK_POS_TOP</property>
-		  <property name="digits">1</property>
+		  <property name="value_pos">GTK_POS_LEFT</property>
+		  <property name="digits">2</property>
 		  <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		  <property name="inverted">False</property>
 		  <property name="adjustment">0.8 0.8 0.99 0.01 0.01 0.001</property>
@@ -1516,7 +1515,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label14">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Startup-Nagbox:</property>
+		  <property name="label" translatable="yes">Nagbox:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1542,7 +1541,7 @@ where available:</property>
 		  <property name="visible">True</property>
 		  <property name="tooltip" translatable="yes">Display nagbox on startup while loading data.</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">Enabled</property>
+		  <property name="label" translatable="yes">Display nagbox on startup</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="active">False</property>
@@ -1657,7 +1656,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label38">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Filename Length:</property>
+		  <property name="label" translatable="yes">Filename length:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1884,7 +1883,7 @@ where available:</property>
 		  <property name="label" translatable="yes">button1</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <signal name="clicked" handler="color_clicked" object="wav_display_bg_focus" last_modification_time="Fri, 01 Aug 2003 14:30:29 GMT"/>
+		  <signal name="clicked" handler="color_clicked" object="wav_display_bg_focus"/>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -1902,7 +1901,7 @@ where available:</property>
 		  <property name="label" translatable="yes">button2</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <signal name="clicked" handler="color_clicked" object="wav_display_bg_no_focus" last_modification_time="Fri, 01 Aug 2003 14:30:58 GMT"/>
+		  <signal name="clicked" handler="color_clicked" object="wav_display_bg_no_focus"/>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -1920,7 +1919,7 @@ where available:</property>
 		  <property name="label" translatable="yes">button3</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <signal name="clicked" handler="color_clicked" object="wav_display_fg_focus" last_modification_time="Fri, 01 Aug 2003 14:31:26 GMT"/>
+		  <signal name="clicked" handler="color_clicked" object="wav_display_fg_focus"/>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -1938,7 +1937,7 @@ where available:</property>
 		  <property name="label" translatable="yes">button4</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <signal name="clicked" handler="color_clicked" object="wav_display_fg_no_focus" last_modification_time="Fri, 01 Aug 2003 14:31:38 GMT"/>
+		  <signal name="clicked" handler="color_clicked" object="wav_display_fg_no_focus"/>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -1956,7 +1955,7 @@ where available:</property>
 		  <property name="label" translatable="yes">button5</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <signal name="clicked" handler="color_clicked" object="wav_display_cursor" last_modification_time="Fri, 01 Aug 2003 14:31:52 GMT"/>
+		  <signal name="clicked" handler="color_clicked" object="wav_display_cursor"/>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -1974,7 +1973,7 @@ where available:</property>
 		  <property name="label" translatable="yes">button6</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <signal name="clicked" handler="color_clicked" object="wav_display_cursor_mute" last_modification_time="Fri, 01 Aug 2003 14:32:05 GMT"/>
+		  <signal name="clicked" handler="color_clicked" object="wav_display_cursor_mute"/>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -2143,7 +2142,7 @@ where available:</property>
 		  <property name="label" translatable="yes">button7</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <signal name="clicked" handler="color_clicked" object="vu_meter_bg" last_modification_time="Fri, 01 Aug 2003 14:32:23 GMT"/>
+		  <signal name="clicked" handler="color_clicked" object="vu_meter_bg"/>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -2162,7 +2161,7 @@ where available:</property>
 		  <property name="label" translatable="yes">button8</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <signal name="clicked" handler="color_clicked" object="vu_meter_normal" last_modification_time="Fri, 01 Aug 2003 14:32:39 GMT"/>
+		  <signal name="clicked" handler="color_clicked" object="vu_meter_normal"/>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -2181,7 +2180,7 @@ where available:</property>
 		  <property name="label" translatable="yes">button9</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <signal name="clicked" handler="color_clicked" object="vu_meter_loud" last_modification_time="Fri, 01 Aug 2003 14:32:54 GMT"/>
+		  <signal name="clicked" handler="color_clicked" object="vu_meter_loud"/>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -2222,7 +2221,7 @@ where available:</property>
 	    <widget class="GtkTable" id="table3">
 	      <property name="border_width">4</property>
 	      <property name="visible">True</property>
-	      <property name="n_rows">6</property>
+	      <property name="n_rows">8</property>
 	      <property name="n_columns">2</property>
 	      <property name="homogeneous">False</property>
 	      <property name="row_spacing">2</property>
@@ -2231,7 +2230,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label13">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Soundfile Editor:</property>
+		  <property name="label" translatable="yes">Soundfile editor:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -2277,7 +2276,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label26">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">&quot;Pre-Listen&quot; to soundfiles:</property>
+		  <property name="label" translatable="yes">Pre-listen:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -2303,7 +2302,7 @@ where available:</property>
 		  <property name="visible">True</property>
 		  <property name="tooltip" translatable="yes">When enabled soundfiles will be playedback when selected in a file dialog (before loading them).</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">Enabled</property>
+		  <property name="label" translatable="yes">Play audiofiles in file dialogs</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="active">False</property>
@@ -2323,7 +2322,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label31">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">LADSPA RDF Path:</property>
+		  <property name="label" translatable="yes">LADSPA RDF path:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -2368,7 +2367,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label33">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Compress set files:</property>
+		  <property name="label" translatable="yes">Compression:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -2393,7 +2392,7 @@ where available:</property>
 		<widget class="GtkCheckButton" id="compress_set_files">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">Enabled</property>
+		  <property name="label" translatable="yes">Compress terminatorX set files</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="active">False</property>
@@ -2413,7 +2412,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label40">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Restore MIDI connections:</property>
+		  <property name="label" translatable="yes">MIDI:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -2439,7 +2438,7 @@ where available:</property>
 		  <property name="visible">True</property>
 		  <property name="tooltip" translatable="yes">When enabled soundfiles will be playedback when selected in a file dialog (before loading them).</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">Enabled</property>
+		  <property name="label" translatable="yes">Restore MIDI connections on startup</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="active">False</property>
@@ -2459,7 +2458,7 @@ where available:</property>
 	      <child>
 		<widget class="GtkLabel" id="label57">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Ask for &quot;Quit&quot; confirmation:</property>
+		  <property name="label" translatable="yes">Quit:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -2484,7 +2483,7 @@ where available:</property>
 		<widget class="GtkCheckButton" id="quit_confirm">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">Enabled</property>
+		  <property name="label" translatable="yes">Ask for &quot;Quit&quot; confirmation</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="active">False</property>
@@ -2496,6 +2495,96 @@ where available:</property>
 		  <property name="right_attach">2</property>
 		  <property name="top_attach">5</property>
 		  <property name="bottom_attach">6</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options"></property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkLabel" id="label58">
+		  <property name="visible">True</property>
+		  <property name="label" translatable="yes">Plugins:</property>
+		  <property name="use_underline">False</property>
+		  <property name="use_markup">False</property>
+		  <property name="justify">GTK_JUSTIFY_LEFT</property>
+		  <property name="wrap">False</property>
+		  <property name="selectable">False</property>
+		  <property name="xalign">0</property>
+		  <property name="yalign">0.5</property>
+		  <property name="xpad">0</property>
+		  <property name="ypad">0</property>
+		</widget>
+		<packing>
+		  <property name="left_attach">0</property>
+		  <property name="right_attach">1</property>
+		  <property name="top_attach">6</property>
+		  <property name="bottom_attach">7</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options"></property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkLabel" id="label59">
+		  <property name="visible">True</property>
+		  <property name="label" translatable="yes"></property>
+		  <property name="use_underline">False</property>
+		  <property name="use_markup">False</property>
+		  <property name="justify">GTK_JUSTIFY_LEFT</property>
+		  <property name="wrap">False</property>
+		  <property name="selectable">False</property>
+		  <property name="xalign">0</property>
+		  <property name="yalign">0.5</property>
+		  <property name="xpad">0</property>
+		  <property name="ypad">0</property>
+		</widget>
+		<packing>
+		  <property name="left_attach">0</property>
+		  <property name="right_attach">1</property>
+		  <property name="top_attach">7</property>
+		  <property name="bottom_attach">8</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options"></property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkCheckButton" id="verbose_plugin_loading">
+		  <property name="visible">True</property>
+		  <property name="can_focus">True</property>
+		  <property name="label" translatable="yes">Verbose plugin loading</property>
+		  <property name="use_underline">True</property>
+		  <property name="relief">GTK_RELIEF_NORMAL</property>
+		  <property name="active">False</property>
+		  <property name="inconsistent">False</property>
+		  <property name="draw_indicator">True</property>
+		</widget>
+		<packing>
+		  <property name="left_attach">1</property>
+		  <property name="right_attach">2</property>
+		  <property name="top_attach">6</property>
+		  <property name="bottom_attach">7</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options"></property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkCheckButton" id="force_nonrt_plugins">
+		  <property name="visible">True</property>
+		  <property name="can_focus">True</property>
+		  <property name="label" translatable="yes">Force loading of &quot;non-RT&quot; plugins </property>
+		  <property name="use_underline">True</property>
+		  <property name="relief">GTK_RELIEF_NORMAL</property>
+		  <property name="active">False</property>
+		  <property name="inconsistent">False</property>
+		  <property name="draw_indicator">True</property>
+		</widget>
+		<packing>
+		  <property name="left_attach">1</property>
+		  <property name="right_attach">2</property>
+		  <property name="top_attach">7</property>
+		  <property name="bottom_attach">8</property>
 		  <property name="x_options">fill</property>
 		  <property name="y_options"></property>
 		</packing>
@@ -2566,7 +2655,7 @@ where available:</property>
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="response_id">-6</property>
-	      <signal name="clicked" handler="on_del_mode_cancel_clicked" last_modification_time="Sun, 18 May 2003 12:09:20 GMT"/>
+	      <signal name="clicked" handler="on_del_mode_cancel_clicked"/>
 	    </widget>
 	  </child>
 
@@ -2579,7 +2668,7 @@ where available:</property>
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="response_id">-5</property>
-	      <signal name="clicked" handler="on_del_mode_ok_clicked" last_modification_time="Sun, 18 May 2003 12:09:35 GMT"/>
+	      <signal name="clicked" handler="on_del_mode_ok_clicked"/>
 	    </widget>
 	  </child>
 	</widget>
@@ -2805,7 +2894,7 @@ where available:</property>
       <property name="can_default">True</property>
       <property name="can_focus">True</property>
       <property name="relief">GTK_RELIEF_NORMAL</property>
-      <signal name="clicked" handler="on_color_selection_cancel_clicked" last_modification_time="Fri, 01 Aug 2003 14:29:40 GMT"/>
+      <signal name="clicked" handler="on_color_selection_cancel_clicked"/>
     </widget>
   </child>
 
@@ -2815,7 +2904,7 @@ where available:</property>
       <property name="can_default">True</property>
       <property name="can_focus">True</property>
       <property name="relief">GTK_RELIEF_NORMAL</property>
-      <signal name="clicked" handler="on_color_selection_ok_clicked" last_modification_time="Fri, 01 Aug 2003 14:29:09 GMT"/>
+      <signal name="clicked" handler="on_color_selection_ok_clicked"/>
     </widget>
   </child>
 

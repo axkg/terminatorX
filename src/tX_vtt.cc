@@ -205,7 +205,6 @@ vtt_class :: ~vtt_class()
 
 	main_list.remove(this);
 	if (audiofile) delete audiofile;
-	//if (buffer) free(buffer);
 	if (output_buffer) tX_freemem(output_buffer, "output_buffer", "vtt Destructor");
 	if (output_buffer2) tX_freemem(output_buffer2, "output_buffer2", "vtt Destructor");
 		
@@ -213,8 +212,7 @@ vtt_class :: ~vtt_class()
 	
 	if (mix_solo) solo_ctr--;
 	
-	while (fx_list.size())
-	{ 
+	while (fx_list.size()) { 
 		effect=(*fx_list.begin());
 		fx_list.remove(effect);
 		delete effect;
@@ -240,7 +238,7 @@ tX_audio_error vtt_class :: load_file(char *fname)
 	
 	if (is_playing) stop();
 
-	if (audiofile) delete(audiofile);
+	if (audiofile) delete audiofile;
 	
 	buffer=NULL;
 	samples_in_buffer=0;
@@ -261,11 +259,9 @@ tX_audio_error vtt_class :: load_file(char *fname)
 		maxpos=audiofile->get_no_samples();
 		strcpy(filename, fname);
 		if (was_playing) trigger();
-//		printf("Successfully loaded %s, %08x, %i\n", fname, buffer, samples_in_buffer);
 	}
 	
-	if (have_gui)
-	{
+	if (have_gui) {
 		gui_update_display(this);
 	}
 	ec_set_length(ec_length);
@@ -290,8 +286,7 @@ int vtt_class :: set_output_buffer_size(int newsize)
 	samples_in_outputbuffer=newsize;
 	inv_samples_in_outputbuffer=1.0/samples_in_outputbuffer;
 
-	for (effect=fx_list.begin(); effect != fx_list.end(); effect++)
-	{
+	for (effect=fx_list.begin(); effect != fx_list.end(); effect++) {
 		(*effect)->reconnect_buffer();
 	}
 	
@@ -309,36 +304,25 @@ void vtt_class :: recalc_volume()
 	res_volume=rel_volume*res_master_volume;
 	f_prec ec_res_volume=res_volume*ec_volume;
 	
-	if (pan>0.0)
-	{
+	if (pan>0.0) {
 		res_volume_left=(1.0-pan)*res_volume;
 		res_volume_right=res_volume;
-	}
-	else if (pan<0.0)
-	{
+	} else if (pan<0.0) {
 		res_volume_left=res_volume;
 		res_volume_right=(1.0+pan)*res_volume;
-	}
-	else
-	{
+	} else {
 		res_volume_left=res_volume_right=res_volume;
 	}
 	
-	if (ec_pan>0.0)
-	{
+	if (ec_pan>0.0) {
 		ec_volume_left=(1.0-ec_pan)*ec_res_volume;
 		ec_volume_right=ec_res_volume;
-	}
-	else if (ec_pan<0.0)
-	{
+	} else if (ec_pan<0.0) {
 		ec_volume_left=ec_res_volume;
 		ec_volume_right=(1.0+ec_pan)*ec_res_volume;
-	}
-	else
-	{
+	} else {
 		ec_volume_left=ec_volume_right=ec_res_volume;
 	}	
-//	printf("vtt_volume: %f, %f, l: %f, r: %f\n", rel_volume, res_volume, res_volume_left, res_volume_right);
 }
 
 void vtt_class :: set_pan(f_prec newpan)
@@ -385,14 +369,11 @@ void vtt_class :: set_mix_mute(int newstate)
 
 void vtt_class :: set_mix_solo(int newstate)
 {
-	if (mix_solo && !newstate)
-	{
+	if (mix_solo && !newstate) {
 		/* turning it off */
 		mix_solo=0;
 		solo_ctr--;
-	}
-	else if (!mix_solo && newstate)
-	{
+	} else if (!mix_solo && newstate) {
 		/* turning it on */
 		mix_solo=1;
 		solo_ctr++;
@@ -475,19 +456,15 @@ void vtt_class :: ec_set_length(f_prec length)
 	int delay;
 
 	ec_length=length;
-	if (res_pitch==0) 
-	{
+	if (res_pitch==0) {
 		ec_res_length=length*samples_in_buffer;
-	}
-	else
-	{
+	} else {
 		ec_res_length=length*samples_in_buffer/res_pitch;	
 	}
 	
 	if (ec_res_length<0) ec_res_length*=-1;
 	
-	if (ec_res_length>=EC_MAX_BUFFER)
-	{
+	if (ec_res_length>=EC_MAX_BUFFER) {
 		ec_res_length=EC_MAX_BUFFER*length;
 	}
 	
@@ -510,20 +487,18 @@ void vtt_class :: ec_set_volume(f_prec volume)
 
 void vtt_class :: ec_clear_buffer()
 {
-/*	f_prec *ptr;
-	
-	for (ptr=ec_buffer; ptr<=ec_delay; ptr++) {
-		*ptr=0.0;
-	} */
-	
 	memset(ec_buffer, 0, sizeof(ec_buffer));
 	ec_ptr=ec_buffer; 
 }
 
 #ifdef BIG_ENDIAN_MACHINE
-#define vabs(x) fabs(x)
+#define fastabs(x) fabs(x)
 #else
-inline float vabs(float f)
+// found this on musicdsp.org
+// posted by <tobybear@web.de>
+// proabably wont work on bigendian so we
+// use fabs() instead.
+inline float fastabs(float f)
 {
 	int i=((*(int*)&f)&0x7fffffff);
 	return (*(float*)&i);
@@ -578,8 +553,8 @@ void vtt_class :: render()
 	
 	// find max signal for vu meters...
 	for (int sample=0; sample<samples_in_outputbuffer; sample++) {
-		f_prec lmax=vabs(output_buffer[sample]);
-		f_prec rmax=vabs(output_buffer2[sample]);
+		f_prec lmax=fastabs(output_buffer[sample]);
+		f_prec rmax=fastabs(output_buffer2[sample]);
 		
 		if (lmax>max_value) max_value=lmax;
 		if (rmax>max_value2) max_value2=rmax;
@@ -767,7 +742,6 @@ void vtt_class :: forward_turntable()
 
 	if ((speed_real==0) && (!fade_out)) return;
 	
-	
 	/* following code is problematic as adding speed_real*n is
 	  different from adding speed_real n times to pos_f.
 	  
@@ -862,31 +836,24 @@ int vtt_class :: set_mix_buffer_size(int no_samples)
 	list <vtt_class *> :: iterator vtt;
 	int res=0;
 	
-//	printf("vtt_class::set_mix_buffer_size(), mix_buffer: %12x, mix_out: %12x, samples: %i\n", mix_buffer, mix_out_buffer, no_samples);
-	
 	if (mix_buffer) tX_freemem(mix_buffer, "mix_buffer", "vtt set_mix_buffer_size()");
 	samples_in_mix_buffer=no_samples*2;
 
 	tX_malloc(mix_buffer, "mix_buffer", "vtt set_mix_buffer_size()", sizeof(float)*samples_in_mix_buffer, (float *));
 	mix_buffer_end=mix_buffer+samples_in_mix_buffer;
-
-//	printf("mix_buffer: %12x\n", mix_buffer);
-//	printf("mix_samples: %i, out_samples: %i", samples_in_mix_buffer, no_samples);
 	
 	if (mix_out_buffer) tX_freemem(mix_out_buffer, "mix_out_buffer", "vtt set_mix_buffer_size()");
 	tX_malloc(mix_out_buffer, "mix_out_buffer", "vtt set_mix_buffer_size()", sizeof(int16_t)*samples_in_mix_buffer + 4, (int16_t *));
-
-//	printf("mix_out_buffer: %12x\n", mix_out_buffer);
 	
 	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
 		res|=(*vtt)->set_output_buffer_size(no_samples);
 	}
 	
-	if ((!mix_buffer) || (!mix_out_buffer) || res) return(1);
+	if ((!mix_buffer) || (!mix_out_buffer) || res) return 1;
 	
 	mix_buffer_size=no_samples;
 	
-	return(0);
+	return 0;
 }
 
 int16_t * vtt_class :: render_all_turntables()
@@ -894,9 +861,6 @@ int16_t * vtt_class :: render_all_turntables()
 	list <vtt_class *> :: iterator vtt, next;
 	int sample;
 	int mix_sample;
-	f_prec temp;
-	f_prec max;
-	f_prec min;
 	
 	pthread_mutex_lock(&render_lock);
 	
@@ -907,82 +871,56 @@ int16_t * vtt_class :: render_all_turntables()
 		*/
 		memset((void *) mix_buffer, 0, sizeof(float)*samples_in_mix_buffer);
 	} else {
-			vtt=render_list.begin();
-			(*vtt)->render();			
-			
-			for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {
-				mix_buffer[mix_sample++]=(*vtt)->output_buffer[sample]*FL_SHRT_MAX;
-				mix_buffer[mix_sample++]=(*vtt)->output_buffer2[sample]*FL_SHRT_MAX;
-			}
+		vtt=render_list.begin();
+		(*vtt)->render();			
+		
+		for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {
+			mix_buffer[mix_sample++]=(*vtt)->output_buffer[sample]*FL_SHRT_MAX;
+			mix_buffer[mix_sample++]=(*vtt)->output_buffer2[sample]*FL_SHRT_MAX;
+		}
 
-			if (master_triggered) {
-				for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
-					if ((*vtt)->is_sync_client)	{
-						if ((*vtt)->sync_countdown)	{
-							(*vtt)->sync_countdown--;
-						} else {
-							(*vtt)->sync_countdown=(*vtt)->sync_cycles;
-							(*vtt)->trigger(false);
-						}
+		if (master_triggered) {
+			for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
+				if ((*vtt)->is_sync_client)	{
+					if ((*vtt)->sync_countdown)	{
+						(*vtt)->sync_countdown--;
+					} else {
+						(*vtt)->sync_countdown=(*vtt)->sync_cycles;
+						(*vtt)->trigger(false);
 					}
 				}
 			}
-			
-			vtt=render_list.begin();
-			
-			for (vtt++; vtt!=render_list.end(); vtt++) {
-				(*vtt)->render();					
+		}
+		
+		vtt=render_list.begin();
+		
+		for (vtt++; vtt!=render_list.end(); vtt++) {
+			(*vtt)->render();					
 
-				for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {
-					mix_buffer[mix_sample++]+=(*vtt)->output_buffer[sample]*FL_SHRT_MAX;
-					mix_buffer[mix_sample++]+=(*vtt)->output_buffer2[sample]*FL_SHRT_MAX;
-				}
+			for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {
+				mix_buffer[mix_sample++]+=(*vtt)->output_buffer[sample]*FL_SHRT_MAX;
+				mix_buffer[mix_sample++]+=(*vtt)->output_buffer2[sample]*FL_SHRT_MAX;
 			}
-			
-			/* left */
-			
-			max=mix_max_l;
-			min=max;
-
-			for (sample=0; sample<samples_in_mix_buffer; sample+=2) {				
-				temp=mix_buffer[sample];
-
+		}
+		
+		bool right=false;
+		
+		for (sample=0; sample<samples_in_mix_buffer; sample++) {
+			f_prec temp=mix_buffer[sample];
 #ifndef TX_DO_CLIP
-				if(temp < FL_SHRT_MIN) temp = FL_SHRT_MIN;
-				else if (temp > FL_SHRT_MAX) temp = FL_SHRT_MAX;
+			if(temp < FL_SHRT_MIN) temp = FL_SHRT_MIN;
+			else if (temp > FL_SHRT_MAX) temp = FL_SHRT_MAX;
 #endif					
-
-				mix_out_buffer[sample]=(int16_t) temp;
+			mix_out_buffer[sample]=(int16_t) temp;
 			
-				if (temp>max) max=temp;
-				else if (temp<min) min=temp;
+			temp=fastabs(temp);
+			if (right) {
+				if (temp>mix_max_r) mix_max_r=temp;
+			} else {
+				if (temp>mix_max_l) mix_max_l=temp;
 			}
-			
-			min*=-1.0;
-			if (min>max) mix_max_l=min; else mix_max_l=max;		
-			
-			/* right */
-			
-			max=mix_max_r;
-			min=max;
-
-			for (sample=1; sample<samples_in_mix_buffer; sample+=2) {				
-				temp=mix_buffer[sample];
-
-#ifndef TX_DO_CLIP
-				if(temp < FL_SHRT_MIN) temp = FL_SHRT_MIN;
-				else if (temp > FL_SHRT_MAX) temp = FL_SHRT_MAX;
-#endif
-				
-				mix_out_buffer[sample]=(int16_t) temp;
-			
-				if (temp>max) max=temp;
-				else if (temp<min) min=temp;
-			}
-			
-			min*=-1.0;
-			if (min>max) mix_max_r=min; else mix_max_r=max;		
-			
+			right=!right;
+		}
 	}
 	master_triggered=0;
 		
@@ -1003,41 +941,32 @@ void vtt_class :: forward_all_turntables()
 {
 	list <vtt_class *> :: iterator vtt, next;
 
-	if (render_list.size()>0)
-	{
- 		 vtt=render_list.begin();
- 		 (*vtt)->forward_turntable();			 
-
- 		 if (master_triggered)
- 		 {
- 			 for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++)
- 			 {
- 				 if ((*vtt)->is_sync_client)
- 				 {
- 					 if ((*vtt)->sync_countdown)
- 					 {
- 						 (*vtt)->sync_countdown--;
- 					 }
- 					 else
- 					 {
- 						 (*vtt)->sync_countdown=(*vtt)->sync_cycles;
- 						 (*vtt)->trigger();
- 					 }
- 				 }
- 			 }
- 		 }
-
- 		 vtt=render_list.begin();
- 		 for (vtt++; vtt!=render_list.end(); vtt++)
- 		 {
- 			 (*vtt)->forward_turntable();
- 		 }
- 		 
+	if (render_list.size()>0) {
+		vtt=render_list.begin();
+		(*vtt)->forward_turntable();			 
+		
+		if (master_triggered) {
+			for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
+				if ((*vtt)->is_sync_client){
+					if ((*vtt)->sync_countdown) {
+						(*vtt)->sync_countdown--;
+					} else {
+						(*vtt)->sync_countdown=(*vtt)->sync_cycles;
+						(*vtt)->trigger();
+					}
+				}
+			}
+		}
+	
+		vtt=render_list.begin();
+		for (vtt++; vtt!=render_list.end(); vtt++) {
+		 (*vtt)->forward_turntable();
+		}
 	}
+	
 	master_triggered=0;
 	vtt=render_list.begin();
-	while (vtt!=render_list.end())
-	{
+	while (vtt!=render_list.end()) {
 		next=vtt;
 		next++;
 		
@@ -1131,7 +1060,7 @@ int vtt_class :: stop()
 	res=stop_nolock();
 	pthread_mutex_unlock(&render_lock);
 
-	return(res);
+	return res;
 }
 
 void vtt_class :: set_sync_master(int master)
@@ -1320,7 +1249,6 @@ int  vtt_class :: save(FILE *rc, gzFile rz, char *indent) {
 	store_id("speed", sp_speed.get_persistence_id());
 	store_id("trigger", sp_trigger.get_persistence_id());
 	store_id("spin", sp_spin.get_persistence_id());
-
 	
 	if (x_par) {
 		store_int("x_axis_mapping", x_par->get_persistence_id());
@@ -1336,10 +1264,8 @@ int  vtt_class :: save(FILE *rc, gzFile rz, char *indent) {
 	store_bool("trigger_panel_hidden", gui.trigger_panel->is_hidden());
 	store_bool("lowpass_panel_hidden", gui.lp_panel->is_hidden());
 	store_bool("echo_panel_hidden", gui.ec_panel->is_hidden());
-	
 	store_bool("mix_mute", mix_mute);
 	store_bool("mix_solo", mix_solo);
-
 	store_float("audio_x_zoom", gui_get_audio_x_zoom(this));
 	
 	tX_store("%s<fx>\n", indent);
@@ -1379,8 +1305,6 @@ int  vtt_class :: save_all(FILE* rc, gzFile rz) {
 	tX_store("<terminatorXset version=\"%s\">\n", TX_XML_SETFILE_VERSION);
 	
 	strcpy(indent, "\t");
-
-	//store_int(vtt_amount); obsolete
 
 	store_float_sp("master_volume", master_volume, sp_master_volume);
 	store_float_sp("master_pitch", globals.pitch, sp_master_pitch);
@@ -1464,10 +1388,10 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 					if (cur->type == XML_ELEMENT_NODE) {
 						int elementFound=0;
 						
-						if (xmlStrcmp(cur->name, (xmlChar *) "cutoff")==0) {
+						if ((xmlStrcmp(cur->name, (xmlChar *) "cutoff")==0) && !stereo) {
 							for (unsigned int t=0; t<fx_list.size(); t++) effect_down(lp_fx);
 							elementFound=1;
-						} else if (xmlStrcmp(cur->name, (xmlChar *) "lowpass")==0) {
+						} else if ((xmlStrcmp(cur->name, (xmlChar *) "lowpass")==0) && !stereo) {
 							for (unsigned int t=0; t<fx_list.size(); t++) effect_down(ec_fx);
 							elementFound=1;								
 						} else if (xmlStrcmp(cur->name, (xmlChar *) "ladspa_plugin")==0) {
