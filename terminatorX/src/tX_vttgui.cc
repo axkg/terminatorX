@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2002  Alexander König
+    Copyright (C) 1999-2003  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -613,10 +613,8 @@ void vg_file_button_pressed(GtkWidget *wid, vtt_class *vtt) {
 
 void vg_adjust_zoom(GtkWidget *wid, vtt_class *vtt) {	
 	GtkAdjustment *adj=gtk_range_get_adjustment(GTK_RANGE(vtt->gui.zoom));
-	gdouble real_value=99-adj->value;
-	
-	real_value/=100;
-	gtk_tx_set_zoom(GTK_TX(vtt->gui.display),  real_value);
+	printf("setting zoom %lf.\n", adj->value);
+	gtk_tx_set_zoom(GTK_TX(vtt->gui.display), adj->value/100.0);
 }
 
 static gchar* vg_format_zoom(GtkScale *scale, gdouble   value) {
@@ -734,7 +732,7 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_adj(ec_pan, ec_pan_changed);
 	connect_adj(ec_volume, ec_volume_changed);	
 	connect_range(zoom, vg_adjust_zoom);
-	connect_scale_format(zoom, vg_format_zoom);
+	//connect_scale_format(zoom, vg_format_zoom);
 	connect_press_button(mouse_mapping, vg_mouse_mapping_pressed);
 	connect_button(control_minimize, minimize_control_panel);
 	connect_button(audio_minimize, minimize_audio_panel);
@@ -817,6 +815,10 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_widget_show(g->midi_mapping);
 	gui_set_tooltip(g->midi_mapping, "Determines what parameters should be bound to what MIDI events.");
 	gtk_box_pack_start(GTK_BOX(tempbox), g->midi_mapping, WID_DYN);
+	
+	if (!engine->get_midi()->get_is_open()) {
+		gtk_widget_set_sensitive(g->midi_mapping, FALSE);
+	}
 #endif
 
 	tempbox=gtk_hbox_new(FALSE, 2);
@@ -826,10 +828,12 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_widget_show(g->display);	
 	
 	g->zoom=gtk_vscale_new_with_range(0,99.0,1.0);
+	gtk_range_set_inverted(GTK_RANGE(g->zoom), TRUE);
 	gtk_scale_set_draw_value(GTK_SCALE(g->zoom), TRUE);
 	gtk_scale_set_digits(GTK_SCALE(g->zoom), 0);
 	gtk_scale_set_value_pos(GTK_SCALE(g->zoom), GTK_POS_BOTTOM);
-	gtk_adjustment_set_value(gtk_range_get_adjustment(GTK_RANGE(g->zoom)), 99);
+	gtk_adjustment_set_value(gtk_range_get_adjustment(GTK_RANGE(g->zoom)), 0);
+	
 	gui_set_tooltip(g->zoom, "Set the zoom-level for the audio data display.");
 	gtk_box_pack_start(GTK_BOX(tempbox), g->zoom, WID_FIX);
 	gtk_widget_show(g->zoom);
@@ -1352,12 +1356,13 @@ f_prec gui_get_audio_x_zoom(vtt_class *vtt) {
 	return gtk_tx_get_zoom(GTK_TX(vtt->gui.display));
 }
 
+/* Yes, this is yet another evil hack. Fix it :) */
 int vttgui_zoom_depth=0;
 
 extern void gui_set_audio_x_zoom(vtt_class *vtt, f_prec value) {
 	if (vttgui_zoom_depth==0) {
 		vttgui_zoom_depth=1;
-		gtk_range_set_value(GTK_RANGE(vtt->gui.zoom), value);
+		gtk_range_set_value(GTK_RANGE(vtt->gui.zoom), value*100.0);
 		vttgui_zoom_depth=0;
 	} else {
 		gtk_tx_set_zoom(GTK_TX(vtt->gui.display), value);

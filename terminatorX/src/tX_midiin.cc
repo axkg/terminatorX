@@ -43,7 +43,8 @@ tX_midiin::tX_midiin()
 {
 	
 	int portid;
-
+	is_open=false;
+	
 	if (snd_seq_open(&ALSASeqHandle, "default", SND_SEQ_OPEN_INPUT, 0) < 0) {
 		tX_error("tX_midiin(): failed to open the default sequencer device.");
 		return;
@@ -61,7 +62,9 @@ tX_midiin::tX_midiin()
 	}
 
 	snd_seq_nonblock( ALSASeqHandle, 1 );
-  
+	
+	is_open=true;
+
 	tX_debug("tX_midiin(): sequencer successfully opened."); 
 }
 
@@ -74,7 +77,7 @@ tX_midiin::~tX_midiin()
 int tX_midiin::check_event()
 {
 	snd_seq_event_t *ev;
-	
+		
 	while( snd_seq_event_input(ALSASeqHandle, &ev) != -EAGAIN )
 	{
 
