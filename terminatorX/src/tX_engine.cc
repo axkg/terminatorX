@@ -255,10 +255,11 @@ tX_engine_error tX_engine :: run() {
 		return ERROR_AUDIO;
 	}	
 
+	vtt_class::set_sample_rate(device->get_sample_rate());
 	vtt_class::set_mix_buffer_size(device->get_buffersize()/2); //mixbuffer is mono
 	
 	if (recording_request) {
-		if (tape->start_record(globals.record_filename, device->get_buffersize()*sizeof(int16_t))) {
+		if (tape->start_record(globals.record_filename, device->get_buffersize()*sizeof(int16_t), device->get_sample_rate())) {
 			device->close();
 			delete device;
 			device=NULL;			

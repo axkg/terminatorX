@@ -31,15 +31,15 @@ tx_tapedeck :: tx_tapedeck()
 	written_bytes=0;
 }
 
-int tx_tapedeck :: start_record (char *name, int bs)
+int tx_tapedeck :: start_record (char *name, int bs, int samplerate)
 {
 	if (is_recording) return 1;
 		
 	strcpy(file.name, name);
-	file.srate=44100;
+	file.srate=samplerate;
 	file.chans=2;
 	file.depth=16;
-	file.bps=88200;
+	file.bps=samplerate*2;
 	file.blkalign=2;
 	file.len=0;
 	file.sofar=0;
