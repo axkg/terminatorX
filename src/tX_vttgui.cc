@@ -266,7 +266,7 @@ GtkSignalFunc edit_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 	else
 	if (strlen(globals.file_editor)>0)
 	{
-		sprintf(command, "%s %s &", globals.file_editor, vtt->filename);
+		sprintf(command, "%s \"%s\" &", globals.file_editor, vtt->filename);
 		system(command); /*) tx_note("Failed to run the soundfile editor."); */
 	}
 	else
