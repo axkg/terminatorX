@@ -176,11 +176,6 @@ int tX_audiodevice_oss :: close()
 tX_audiodevice_oss :: tX_audiodevice_oss() : tX_audiodevice(),
 fd(0), blocksize(0) {}
 
-double tX_audiodevice_oss :: get_latency()
-{
-	return 0;
-}
-
 void tX_audiodevice_oss :: play(int16_t *buffer)
 {
 #ifdef BIG_ENDIAN_MACHINE
@@ -204,7 +199,15 @@ int tX_audiodevice_alsa :: open()
 	char pcm_name[64];
 	char foo[PATH_MAX];
 	
-	strcpy(pcm_name, globals.alsa_device_id);
+	/* Removing the device ID comment... */
+	for (int i=0; i<strlen(globals.alsa_device_id); i++) {
+		if (globals.alsa_device_id[i]!='#') {
+			pcm_name[i]=globals.alsa_device_id[i];
+		} else {
+			pcm_name[i]=0;
+			break;
+		}
+	}
 	
 	if (snd_pcm_open(&pcm_handle, pcm_name, stream, 0) < 0) {
 		tX_error("ALSA: Failed to access PCM device \"%s\"", pcm_name);
@@ -315,11 +318,6 @@ int tX_audiodevice_alsa :: close()
 	return 0;
 }
 
-double tX_audiodevice_alsa :: get_latency()
-{
-	return 0;
-}
-
 tX_audiodevice_alsa :: tX_audiodevice_alsa() : tX_audiodevice(),
 pcm_handle(NULL) {}
 
@@ -353,3 +351,191 @@ void tX_audiodevice_alsa :: play(int16_t *buffer)
 }
 
 #endif //USE_ALSA
+
+#ifdef USE_JACK
+
+tX_jack_client* tX_jack_client::instance=NULL;
+
+void tX_jack_client::init()
+{
+		tX_jack_client *test=new tX_jack_client();
+		
+		if (!instance) {
+			delete test;
+		}	
+}
+
+tX_jack_client::tX_jack_client():device(NULL)
+{
+	jack_set_error_function(tX_jack_client::error);
+	
+	if ((client=jack_client_new("terminatorX"))==0) {
+		tX_error("tX_jack_client() -> failed to connect to jackd.");
+		instance=NULL;
+	} else {
+		instance=this;
+		const char **ports;
+		
+		/* Setting up jack callbacks... */		
+		jack_set_process_callback(client, tX_jack_client::process, NULL);
+		jack_set_sample_rate_callback(client, tX_jack_client::srate, NULL);		
+		jack_on_shutdown (client, tX_jack_client::shutdown, NULL);
+		
+		/* Creating the port... */
+		left_port = jack_port_register (client, "output_1", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+		right_port = jack_port_register (client, "output_2", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+	
+		/* Action... */
+		jack_activate(client);
+		
+		/* Connect some ports... */
+		if ((ports = jack_get_ports (client, NULL, NULL, JackPortIsPhysical|JackPortIsInput)) == NULL) {
+			tX_error("tX_jack_client() no ports to connect to found. Connect manually.");
+		} else if (ports[0] && ports[1]) {
+			if (jack_connect (client, jack_port_name(left_port), ports[0])) {
+				tX_error("tX_jack_client() failed to connect left port.");
+			}
+			if (jack_connect (client, jack_port_name(right_port), ports[1])) {
+				tX_error("tX_jack_client() failed to connect right port.");
+			}
+			free (ports);
+		}
+	}
+}
+
+tX_jack_client::~tX_jack_client()
+{
+	instance=NULL;
+	if (client) jack_client_close(client);
+}
+
+void tX_jack_client::error(const char *desc)
+{
+	tX_error("tX_jack_client::error() jack error: %s.", desc);
+}
+
+int tX_jack_client::srate(jack_nframes_t nframes, void *arg)
+{
+	tX_error("tX_jack_client::srate() jack changed samplerate -> this is bad, stopping audio.");
+	return 0;
+}
+
+void tX_jack_client::shutdown(void *arg)
+{
+	/***AARGH how to handle this?***/
+}
+
+int tX_jack_client::process(jack_nframes_t nframes, void *arg)
+{
+	if (instance) {
+		return instance->play(nframes);
+	}
+	
+	/* Hmm, what to do in such a case? */
+	return 0;
+}
+
+int tX_jack_client::play(jack_nframes_t nframes)
+{
+	jack_default_audio_sample_t *left = (jack_default_audio_sample_t *) jack_port_get_buffer (left_port, nframes);
+	jack_default_audio_sample_t *right = (jack_default_audio_sample_t *) jack_port_get_buffer (right_port, nframes);
+
+	if (device) {
+		device->fill_frames(left, right, nframes);
+	} else {
+		memset(left, 0, sizeof (jack_default_audio_sample_t) * nframes);
+		memset(right, 0, sizeof (jack_default_audio_sample_t) * nframes);
+	}
+	
+	return 0;
+}
+
+int tX_jack_client::get_sample_rate() 
+{
+	return jack_get_sample_rate(client);
+}
+
+/* tX_audiodevice_jack */
+
+tX_audiodevice_jack::tX_audiodevice_jack():tX_audiodevice()
+{
+	client=NULL;
+}
+
+int tX_audiodevice_jack::open()
+{
+	tX_jack_client *jack_client=tX_jack_client::get_instance();
+	sample_rate=jack_client->get_sample_rate();
+	
+	if (jack_client) {
+		client=jack_client;
+		is_open=true;
+		
+		return 0;
+	}
+	
+	return 1;
+}
+
+int tX_audiodevice_jack::close()
+{
+	if (client) {
+		client->set_device(NULL);
+	}
+	
+	is_open=false;	
+	
+	return 0;
+}
+
+void tX_audiodevice_jack::play(int16_t *buffer)
+{
+	tX_error("tX_audiodevice_jack::play()");
+}
+
+void tX_audiodevice_jack::start()
+{
+	tX_debug("activating jack playback");
+	overrun_buffer=new f_prec[vtt_class::samples_in_mix_buffer];
+	
+	client->set_device(this);
+	while (!engine->is_stopped()) {
+		usleep(100);
+	}	
+	tX_debug("stopping jack playback");	
+	client->set_device(NULL);
+	
+	delete [] overrun_buffer;
+}
+
+void tX_audiodevice_jack::fill_frames(jack_default_audio_sample_t *left, jack_default_audio_sample_t *right, jack_nframes_t nframes)
+{
+	int outbuffer_pos=0;
+	int sample;
+	
+	if (samples_in_overrun_buffer) {
+		for (sample=0; ((sample<samples_in_overrun_buffer) && (outbuffer_pos<nframes));) {
+			left[outbuffer_pos]=overrun_buffer[sample++]/32767.0;
+			right[outbuffer_pos++]=overrun_buffer[sample++]/32767.0;
+		}
+	}
+	
+	while (outbuffer_pos<nframes) {
+		engine->render_cycle();
+		
+		for (sample=0; ((sample<vtt_class::samples_in_mix_buffer) && (outbuffer_pos<nframes));) {
+			left[outbuffer_pos]=vtt_class::mix_buffer[sample++]/32767.0;
+			right[outbuffer_pos++]=vtt_class::mix_buffer[sample++]/32767.0;
+		}
+		
+		if (sample<vtt_class::samples_in_mix_buffer) {
+			samples_in_overrun_buffer=vtt_class::samples_in_mix_buffer-sample;
+			/* There's more data in the mixbuffer... */
+			memcpy(overrun_buffer, &vtt_class::mix_buffer[sample], sizeof(f_prec) * samples_in_overrun_buffer);
+		} else {
+			samples_in_overrun_buffer=0;
+		}
+	}
+}
+
+#endif // USE_JACK
