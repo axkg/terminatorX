@@ -19,11 +19,14 @@ changed.
   for leak.
 - fixed a bug that caused turntable 1 to get the focus on entering Mouse Grab
   mode even when it's audio panel was minimized.
+- MIDI mappings can now have "borders", meaning that the incoming MIDI signals
+  can modify the parameter within the given range only.
 - introduced a new way of assigning MIDI controllers to parameters: simply 
   right-click on a parameter's control: a menu with "MIDI Learn" and 
   "Remove MIDI Binding" will pop up - select "MIDI Learn" and send the 
   corresponding MIDI event.
-- fixed a bug in the MIDI callback thanks to 
+- fixed a bug in the MIDI callback thanks to David Hamilton 
+  <daham2@student.monash.edu>
 - the realtime scheduling reproducibly stalled separate machines. Unluckily 
   an OS-stall situation is somewhat hard to debug. Additionally the new 2.5.*
   and the 2.4.*-ckX kernels have significantly improved scheduling that renders

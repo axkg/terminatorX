@@ -526,14 +526,21 @@ void show_about(int nag)
 	}
 	
 	/* Create the window... */
-	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);	
-	gtk_window_set_wmclass(GTK_WINDOW(window), "terminatorX", "tX_about");
+	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_container_set_border_width(GTK_CONTAINER(window), 5);
+	gtk_window_set_title(GTK_WINDOW (window), "terminatorX - About");
+	gtk_window_set_position(GTK_WINDOW (window), GTK_WIN_POS_CENTER);
+	gtk_window_set_modal(GTK_WINDOW (window), TRUE);
+	gtk_window_set_policy(GTK_WINDOW (window), TRUE, TRUE, FALSE);	
+	
+	/*
+	gtk_window_set_wmclass(GTK_WINDOW(window), "terminatorX", "tX_about");
 	g_object_set (G_OBJECT (window), "type", GTK_WINDOW_TOPLEVEL, NULL);
-	gtk_window_set_decorated(GTK_WINDOW(window), nag ? TRUE : FALSE);
 	gtk_window_set_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable (GTK_WINDOW (window), FALSE);
 	gtk_window_set_title(GTK_WINDOW(window), "terminatorX - About");
+	gtk_window_set_decorated(GTK_WINDOW(window), nag ? TRUE : FALSE);
+	*/
 	
 	GdkPixbuf *image=gdk_pixbuf_new_from_xpm_data((const char **)logo_xpm);
 	gdk_pixbuf_render_pixmap_and_mask(image, &pmap, &mask, 0);
@@ -562,7 +569,8 @@ void show_about(int nag)
 		gtk_widget_show(box2);
 		gtk_widget_show(box);
 		gtk_widget_show(pwid);
-		
+
+		gtk_window_set_decorated(GTK_WINDOW(window), FALSE);		
 		gtk_widget_show(window);
 	} else {
 		box=gtk_vbox_new(FALSE, 5);
@@ -663,7 +671,7 @@ void show_about(int nag)
 		gtk_signal_connect(GTK_OBJECT(btn), "clicked", (GtkSignalFunc) destroy_about, NULL);		
 		gtk_signal_connect(GTK_OBJECT(window), "delete-event", (GtkSignalFunc) destroy_about, NULL);		
 	}
-	gtk_widget_show(window);
+	gtk_widget_show(window);	
 	tX_set_icon(window, "tX About");
 	
 	while (gtk_events_pending()) gtk_main_iteration();
@@ -671,18 +679,14 @@ void show_about(int nag)
 	about=window;
 }
 
-GdkBitmap *tX_icon_mask=NULL;
-GdkPixmap *tX_icon_pmap=NULL;
-GtkWidget *tX_icon_widget=NULL;
+GdkPixbuf *tX_window_icon=NULL;
 
 void tX_set_icon(GtkWidget *widget, char *name)
-{
-	GtkStyle *style = gtk_widget_get_style(widget);
-
-	if (!tX_icon_pmap) {
-		tX_icon_pmap=gdk_pixmap_create_from_xpm_d(widget->window, &tX_icon_mask, &style->bg[GTK_STATE_NORMAL], (gchar **) tX_icon_xpm );
+{	
+	if (!tX_window_icon) {
+		tX_window_icon=gdk_pixbuf_new_from_inline(-1, tX_icon, FALSE, NULL);
 	}
 
-	gdk_window_set_icon(widget->window, NULL, tX_icon_pmap, tX_icon_mask);
+	gtk_window_set_icon(GTK_WINDOW(widget), tX_window_icon);
 	gdk_window_set_icon_name(widget->window, name);	
 }
