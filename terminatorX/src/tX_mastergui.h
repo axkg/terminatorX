@@ -90,5 +90,6 @@ class tX_cursor {
 	static GdkCursor *get_cursor();
 };
 
+extern GCallback menu_delete_all_events_for_sp(GtkWidget *, tX_seqpar *sp);
 extern bool tX_shutdown;
 #endif

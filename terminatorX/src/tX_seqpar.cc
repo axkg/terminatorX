@@ -887,7 +887,7 @@ void tX_seqpar_vttfx_float :: create_widget()
 	*fx_value=min_value;
 	//myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value+tmp/10, max_value-tmp/10, tmp, tmp, tmp));
 	myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value, max_value, tmp, tmp, tmp));
-	mydial=new tX_extdial(label_name, myadj);
+	mydial=new tX_extdial(label_name, myadj, this);
 	gtk_signal_connect(GTK_OBJECT(myadj), "value_changed", (GtkSignalFunc) tX_seqpar_vttfx_float :: gtk_callback, this);
 	widget = mydial->get_widget();	
 }
@@ -923,17 +923,25 @@ void tX_seqpar_vttfx_int :: create_widget()
 
 	*fx_value=min_value;
 	myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value, max_value, 1, 10, tmp));
-	widget=gtk_vbox_new(FALSE, 2);
-
+	GtkWidget *box=gtk_vbox_new(FALSE, 2);
+	
 	tmpwid=gtk_spin_button_new(myadj,1.0,0);
 	gtk_widget_show(tmpwid);
-	gtk_box_pack_start(GTK_BOX(widget), tmpwid, WID_DYN);
+	gtk_box_pack_start(GTK_BOX(box), tmpwid, WID_DYN);
+	gtk_signal_connect(GTK_OBJECT(tmpwid), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, this);
 	
 	gtk_signal_connect(GTK_OBJECT(myadj), "value_changed", (GtkSignalFunc) tX_seqpar_vttfx_int :: gtk_callback, this);
 
     tmpwid=gtk_label_new(label_name);
 	gtk_widget_show(tmpwid);
-	gtk_box_pack_start(GTK_BOX(widget), tmpwid, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(box), tmpwid, WID_FIX);
+	
+	gtk_widget_show(box);
+	
+	widget=gtk_event_box_new();
+	gtk_signal_connect(GTK_OBJECT(widget), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, this);
+	
+	gtk_container_add(GTK_CONTAINER(widget), box);
 }
 
 tX_seqpar_vttfx_int :: ~tX_seqpar_vttfx_int()
@@ -962,6 +970,7 @@ void tX_seqpar_vttfx_bool :: create_widget()
 	*fx_value=min_value;
 	widget=gtk_check_button_new_with_label(label_name);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), 0);
+	gtk_signal_connect(GTK_OBJECT(widget), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, this);
 	gtk_signal_connect(GTK_OBJECT(widget), "clicked", (GtkSignalFunc) tX_seqpar_vttfx_bool :: gtk_callback, this);
 }
 
@@ -984,4 +993,73 @@ GtkSignalFunc tX_seqpar_vttfx_bool :: gtk_callback(GtkWidget* w, tX_seqpar_vttfx
 void tX_seqpar_vttfx_bool :: do_update_graphics()
 {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), *fx_value==max_value);
+}
+
+gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gpointer data) {
+	tX_seqpar *sp=(tX_seqpar *) data;
+	
+	if (event->button==3) {
+		GtkWidget *menu=gtk_menu_new();
+		
+		GtkWidget *item=gtk_menu_item_new_with_label(sp->get_name());
+		gtk_widget_set_sensitive(item, FALSE);
+		gtk_menu_append(menu, item);
+		gtk_widget_show(item);
+		
+		item = gtk_menu_item_new();
+		gtk_menu_append(menu, item);
+		gtk_widget_set_sensitive (item, FALSE);
+		gtk_widget_show (item);
+		
+		item = gtk_menu_item_new_with_label("MIDI Learn");
+		gtk_menu_append(menu, item);
+		gtk_widget_show(item);
+		g_signal_connect(item, "activate", (GCallback) tX_seqpar::learn_midi_binding, sp);		
+
+		item = gtk_menu_item_new_with_label("Remove MIDI Binding");
+		gtk_menu_append(menu, item);
+		gtk_widget_show(item);		
+
+		if (sp->bound_midi_event.type!=tX_midievent::NONE) {
+			gtk_widget_set_sensitive(item, FALSE);
+		}
+		g_signal_connect(item, "activate", (GCallback) tX_seqpar::remove_midi_binding, sp);		
+		
+		item = gtk_menu_item_new();
+		gtk_menu_append(menu, item);
+		gtk_widget_set_sensitive (item, FALSE);
+		gtk_widget_show (item);
+		
+		item = gtk_menu_item_new_with_label("Delete Sequencer Events");
+		gtk_menu_append(menu, item);
+		gtk_widget_show(item);
+		g_signal_connect(item, "activate", (GCallback) menu_delete_all_events_for_sp, sp);		
+				
+		gtk_widget_show(menu);
+		
+		gtk_menu_popup (GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, event->time);
+		gtk_grab_remove(gtk_grab_get_current());
+
+		return TRUE;
+	} 
+	
+	return FALSE;
+}
+
+gboolean tX_seqpar::remove_midi_binding(GtkWidget *widget, gpointer data) {
+	tX_seqpar *sp=(tX_seqpar *) data;
+	
+	sp->bound_midi_event.type=tX_midievent::NONE;
+	sp->bound_midi_event.number=0;
+	sp->bound_midi_event.channel=0;
+	
+	return TRUE;
+}
+
+gboolean tX_seqpar::learn_midi_binding(GtkWidget *widget, gpointer data) {
+	tX_seqpar *sp=(tX_seqpar *) data;
+
+	/* THIS NEEDS CODE. */
+	
+	return TRUE;
 }

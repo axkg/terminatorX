@@ -1,4 +1,5 @@
 #include "tX_extdial.h"
+#include "tX_seqpar.h"
 #include <string.h>
 
 #define WID_DYN TRUE, TRUE, 0
@@ -21,7 +22,7 @@ GtkSignalFunc tX_extdial :: f_adjustment(GtkWidget *w, tX_extdial *ed)
 	return NULL;	
 }
 
-tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, bool text_below)
+tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, tX_seqpar * sp, bool text_below)
 {
 	adj=a;
 	fval=adj->value;
@@ -32,7 +33,10 @@ tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, bool text_below)
 	gtk_entry_set_text(GTK_ENTRY(entry), sval);
 	ignore_adj=0;
 	
+	eventbox=gtk_event_box_new();		
 	mainbox=gtk_vbox_new(FALSE, text_below ? 5 : 0);
+	gtk_container_add(GTK_CONTAINER(eventbox), mainbox);
+	
 	subbox=gtk_hbox_new(TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(subbox), dial, WID_FIX);
 	gtk_box_pack_start(GTK_BOX(mainbox), subbox, WID_FIX);
@@ -45,9 +49,17 @@ tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, bool text_below)
 	gtk_widget_show(dial);
 	gtk_widget_show(subbox);
 	gtk_widget_show(mainbox);
+	gtk_widget_show(eventbox);
 	
 	gtk_signal_connect(GTK_OBJECT(entry), "activate", (GtkSignalFunc) tX_extdial::f_entry, (void *) this);
 	gtk_signal_connect(GTK_OBJECT(adj), "value_changed", (GtkSignalFunc) tX_extdial::f_adjustment, (void *) this);
+	
+	if (sp) {
+		gtk_signal_connect(GTK_OBJECT(dial), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, sp);
+		gtk_signal_connect(GTK_OBJECT(entry), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, sp);			
+		gtk_signal_connect(GTK_OBJECT(eventbox), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, sp);			
+		//if (l) gtk_signal_connect(GTK_OBJECT(label), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, sp);	
+	}
 }
 
 tX_extdial :: ~tX_extdial()
@@ -58,4 +70,5 @@ tX_extdial :: ~tX_extdial()
 	gtk_widget_destroy(dial);
 	gtk_widget_destroy(subbox);
 	gtk_widget_destroy(mainbox);
+	gtk_widget_destroy(eventbox);	
 }

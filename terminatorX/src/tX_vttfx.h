@@ -111,6 +111,7 @@ class vtt_fx_ladspa : public vtt_fx
 	list <tX_seqpar_vttfx *> controls;
 	private:
 	tX_seqpar_vttfx *sp_enable;
+	tX_seqpar_vttfx *sp_outgain;
 	int input_port, output_port;
 	LADSPA_Handle *instance;
 	LADSPA_Plugin *plugin;

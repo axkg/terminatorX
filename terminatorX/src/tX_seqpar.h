@@ -133,6 +133,10 @@ class tX_seqpar
 	int is_mappable;	
 	void restore_meta(xmlNodePtr node);
 	void store_meta(FILE *rc, gzFile rz);
+	
+	static gboolean tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gpointer data);
+	static gboolean remove_midi_binding(GtkWidget *widget, gpointer data);
+	static gboolean learn_midi_binding(GtkWidget *widget, gpointer data);
 };
 
 class tX_seqpar_update : public tX_seqpar
@@ -446,4 +450,5 @@ class tX_seqpar_vttfx_int : public tX_seqpar_vttfx
 
 	static GtkSignalFunc gtk_callback(GtkWidget*, tX_seqpar_vttfx_int *);
 };
+
 #endif
