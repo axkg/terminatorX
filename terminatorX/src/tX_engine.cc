@@ -90,7 +90,7 @@ int16_t* tX_engine::render_cycle() {
 			/* Deactivating grab... */
 			mouse->ungrab();
 			grab_active=false;
-			grab_off(); // for the mastergui this is...
+			grab_off();
 		}
 	}
 
@@ -128,6 +128,8 @@ void tX_engine::loop() {
 	while (!thread_terminate) {
 		/* Waiting for the trigger */
 		pthread_mutex_lock(&start);
+		reset_cycles_ctr();
+		
 #ifdef USE_SCHEDULER
 		pid_t pid=getpid();
 		struct sched_param parm;
@@ -162,7 +164,7 @@ void tX_engine::loop() {
 		if (grab_active) {
 			mouse->ungrab();
 			grab_active=false;
-			grab_off(); // for the mastergui this is...
+			grab_off();
 		}
 		
 		if (!stop_flag) {
@@ -242,7 +244,6 @@ tX_engine_error tX_engine :: run() {
 	
 	runtime_error=false;
 	overload_error=false;
-	reset_cycles_ctr();
 	
 	if (loop_is_active) return ERROR_BUSY;
 	
