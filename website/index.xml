@@ -24,12 +24,131 @@
     </general>
     <news>
       <newsitem>
+        <newsheader date="August 22"><link ref="download.html#Current Version">terminatorX V3.81</link>
+          available</newsheader>
+        <newstext>
+          <para>The new release introduces the following features:
+            <itemizedlist>
+              <listitem><para>I've added a <bold>new audio back-end</bold> for the 
+                  <dblink id="jack">JACK Audio Connection Kit</dblink>. To make use of it
+                  the JACK Daemon has to run <italic>before</italic> starting terminatorX.
+                  <bold>Note:</bold> just before the release I noticed that JACK doesn't seem
+                  to like clients running with SCHED_FIFO (realtime scheduling). So, if you use
+                  the JACK back-end do not run terminatorX with realtime scheduling - the
+                  capabilities based approach in JACK itself works fine (for more details
+                  see the this 
+                  <link ref="http://jackit.sourceforge.net/docs/faq.php#a5">JACK FAQ entry</link>).
+                </para></listitem>
+              <listitem><para>A new <bold>Parameter Menu</bold>: simply right-click on the 
+                parameter of your choice and set the MIDI mappings, bounds or delete events.
+              </para></listitem>
+            </itemizedlist>
+            <screenshot filename="parameter_menu.png"/>            
+            <itemizedlist>
+              <listitem><para>The new <bold>MIDI Bounds</bold> let you modify the range
+                  within which a MIDI controller can effect a certain parameter.
+                </para>
+              </listitem>
+              <listitem>
+                <para>The new <bold>MIDI Learn</bold> mode provides a much simpler
+                  method of mapping MIDI events than the "regular" MIDI mappings dialog.
+                </para>
+              </listitem>
+              <listitem><para>terminatorX now tries to <bold>reconnect to previously connected MIDI 
+                  devices</bold> on startup. Might only work with hardware devices (and can
+                  therefor be disabled).</para>
+              </listitem>
+              <listitem>
+                <para>I finally got sick of green: you can now <bold>adjust the
+                colors</bold> of terminatorX' own widgets (audio signal display and 
+                vu meters).
+                </para>
+              </listitem>
+              <listitem>
+                <para>You can now <bold>erase events from the sequencer</bold> for 
+                  either a complete turntable or a specific parameter for either
+                  the complete song or from or upto the current song position.
+                </para>                
+              </listitem>
+              <listitem>
+                <para>
+                  There's a new <bold>Confirm Recorded Events</bold> mode that allows
+                  you to discard a take if you're not satisfied with it.
+                </para>
+              </listitem>
+              <listitem>
+                <para>Support for <bold>Linux' POSIX capabilities</bold> implementation
+                  brings a new, <italic>possibly safer</italic> way of running terminatorX 
+                  suid-root to achieve realtime scheduling (see the yet again updated 
+                  <link ref="faq.html#11">FAQ entry</link>).
+                </para>
+              </listitem>
+              <listitem>
+                <para>There's a new <bold>Default MIDI Mapping</bold> for the standard
+                  parameters, so you don't have to create too many mappings yourself (if the
+                  default map suits your needs of course). The defaults are documented
+                  in the terminatorX manual.
+                </para>
+              </listitem>
+            </itemizedlist>            
+          </para>
+          <para>
+            Additonally this release fixes a lot of bugs:
+            <itemizedlist>
+              <listitem>
+                <para>
+                  Fixed the problems that where found with the old suid-root approach.
+                  However there could be other ways to exploit this, so I recommend
+                  using the new capabilities based approach instead - if you really want to run 
+                  terminatorX suid-root. If you want to use the old approach you'll 
+                  have to run configure with <screen>--enable-suidroot</screen>.
+                </para>
+              </listitem>
+              <listitem>
+                <para>compiles with gcc flavours from 2.95 to 3.3.1 (tested)</para>
+              </listitem>
+              <listitem>
+                <para>setting <italic>Sync Client</italic> via MIDI now works
+                </para>
+              </listitem>
+              <listitem>
+                <para>lots of code cleanups, now compiles with 
+                <screen>G*_DISABLE_DEPRECATED</screen> macros enabled.
+                </para>
+              </listitem>
+              <listitem>
+                <para>fixed restoring of master volume setting
+                </para>
+              </listitem>
+              <listitem>
+                <para>introduced a workaround for 
+                  <link ref="http://www-stud.fht-esslingen.de/bugzilla/show_bug.cgi?id=4">Bug #4</link>, so
+                  if the ALSA back-end segfaults for you, check you have "Free HW Stats"
+                  disabled.
+                </para>
+              </listitem>
+              <listitem>
+                <para>corrected clearing of events for the master parameters
+                </para>
+              </listitem>
+              <listitem>
+                <para>fixed a FreeBSD issue with the configure script.
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+          <para>OK, I hope this release works for you, if you want to check it out
+              grab it from the <dblink id="download"/>.
+          </para>
+        </newstext>
+      </newsitem>
+      <newsitem>
         <newsheader date="August 05">Updates, 3.81 on the way</newsheader>
         <newstext>
           <para>As shown in this <link ref="http://www.securityfocus.com/archive/1/328469">bugtraq
             post</link> by <person>
-              <name>Andrew</name>
-              <email/>
+              <name>Andrew Griffiths</name>
+              <email>andrewg@felinemenace.org</email>
             </person> installing terminatorX suid root is <bold>exploitable</bold>. Although you had been
             warned before, I decided to change my <link ref="faq.html#11">recommendation</link>.
             To make bug tracking easier in the future I've setup a 
@@ -263,7 +382,7 @@
             the creation of your first scratch considerably.</para>
         </newstext>
       </newsitem>
-      <newsitem>
+      <!--<newsitem>
         <newsheader date="31 Jul">
           <dblink id="turntables">Turntable gallery</dblink> online and a fresh <dblink id="scratches">scratch</dblink>
         </newsheader>
@@ -370,7 +489,7 @@
             </itemizedlist>
           </para>
         </newstext>
-      </newsitem>
+      </newsitem>-->
     </news>
   </main>
 </section>
