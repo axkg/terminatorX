@@ -103,7 +103,6 @@ Window xwindow;
 #define WID_DYN TRUE, TRUE, 0
 #define WID_FIX FALSE, FALSE, 0
 extern void add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn);
-extern void recreate_gui(vtt_class *vtt, GtkWidget *daddy);
 extern void destroy_gui(vtt_class *vtt);
 extern void gui_show_frame(vtt_class *vtt, int show);
 
@@ -121,7 +120,6 @@ GtkWidget *used_mem=NULL;
 int stop_update=0;
 int update_delay;
 
-int mg_hide_gui=0;
 vtt_class *old_focus=NULL;
 
 int grab_status=0;
@@ -522,10 +520,6 @@ void mg_enable_critical_buttons(int enable)
 }
 
 
-#ifdef USE_SCHEDULER
-int mg_oldprio;
-#endif
-
 GtkSignalFunc seq_stop(GtkWidget *w, void *);
 
 GtkSignalFunc audio_on(GtkWidget *w, void *d)
@@ -665,18 +659,6 @@ void grab_on(GtkWidget *w, void *d)
 void grab_off()
 {
 	grab_status=0;
-}
-
-void hide_clicked(GtkWidget *w, void *d)
-{
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
-	{
-		mg_hide_gui=1;
-	}
-	else
-	{
-		mg_hide_gui=0;
-	}
 }
 
 void quit()
@@ -927,7 +909,7 @@ void create_mastergui(int x, int y)
 	
 	dummy=gtk_entry_new_with_max_length(12);
 	seq_entry=dummy;
-	gtk_widget_set_usize(dummy, 55, 20);
+	gtk_widget_set_usize(dummy, 65, 20);
 	gtk_entry_set_text(GTK_ENTRY(dummy), "00:00.00");
 	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
@@ -952,7 +934,6 @@ void create_mastergui(int x, int y)
 
     panel_bar=gtk_hbox_new(TRUE,2);
 	gtk_box_pack_start(GTK_BOX(left_hbox), panel_bar, WID_FIX);
-	//gtk_widget_show(panel_bar);
 
 	control_parent=gtk_hbox_new(FALSE,0);
 	gtk_box_pack_start(GTK_BOX(tt_parent), control_parent, WID_FIX);
@@ -1240,4 +1221,3 @@ void remove_from_panel_bar(GtkWidget *button) {
 	gtk_container_remove(GTK_CONTAINER(panel_bar), button);
 	if (buttons_on_panel_bar==0) gtk_widget_hide(panel_bar);
 }
-

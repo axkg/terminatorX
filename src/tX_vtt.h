@@ -51,12 +51,6 @@
 
 #define EC_MAX_BUFFER 256000
 
-#define CONTROL_NOTHING 0
-#define CONTROL_SCRATCH 1
-#define CONTROL_VOLUME 2
-#define CONTROL_CUTOFF 3
-#define CONTROL_FEEDBACK 4
-
 #define NEED_FADE_OUT 0
 #define NEED_FADE_IN 1
 
@@ -168,10 +162,6 @@ class vtt_class
 	int mix_solo;
 	int fade;
 	
-	/* input control vars */
-	int x_control;
-	int y_control;
-
 	/* seq par mapping for x/y axis */
 	tX_seqpar *x_par;
 	tX_seqpar *y_par;
@@ -251,7 +241,6 @@ class vtt_class
 	
 	void set_mute(int);
 	
-	void set_controls(int, int);
 	void set_y_input_parameter(tX_seqpar *);
 	void set_x_input_parameter(tX_seqpar *);
 	
@@ -275,7 +264,6 @@ class vtt_class
 	
 	void set_scratch(int);
 	void xy_input(f_prec, f_prec);
-	void handle_input(int, f_prec);
 
 	vtt_fx_ladspa * add_effect(LADSPA_Plugin *);
 	

@@ -347,15 +347,14 @@ int tx_audiofile :: load_wav()
 	{	
 		bytes = fread(p, 1, min(1024, wav_in.len-allbytes), wav_in.handle);
 
+		if (bytes<=0) {
+			free(data);
+			return (TX_AUDIO_ERR_WAV_READ);
+		}
+
 #ifdef BIG_ENDIAN_MACHINE
 		swapbuffer(p, bytes/sizeof(int16_t));
 #endif		
-		if (bytes<=0)
-		{
-			free(data);
-			//wav_progress_update(0);
-		      return (TX_AUDIO_ERR_WAV_READ);
-		}
 		allbytes+=bytes;
 		
 		ld_set_progress((float) allbytes/(float)wav_in.len);
@@ -368,8 +367,6 @@ int tx_audiofile :: load_wav()
 	mem=data;
 	no_samples=memsize/sizeof(int16_t);
 	
-//	printf("WAV: data: %08x, size %i, len: %i\n", data, memsize, no_samples);	
-
 	return (TX_AUDIO_SUCCESS);
 }
 #endif

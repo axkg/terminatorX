@@ -349,8 +349,6 @@ extern "C" {
 	GtkWidget *widget;
 	GdkWindow *window;
 	GdkGC *gc;
-//      GdkColor *fg;
-//      GdkColor *bg;
 
 	int current_x, x, y, yc, ymax;
 
