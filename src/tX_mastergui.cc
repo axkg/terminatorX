@@ -452,8 +452,8 @@ GtkSignalFunc load_tables()
 
 vtt_class* choose_vtt() {
 	GtkWidget *dialog = gtk_dialog_new_with_buttons("Select Turntable",
-		GTK_WINDOW(main_window), GTK_DIALOG_MODAL, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-		GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,  NULL);	
+		GTK_WINDOW(main_window), GTK_DIALOG_MODAL, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+		GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, NULL);	
 
 	GtkWidget *label = gtk_label_new ("Select turntable to load audio file to:");
 	gtk_widget_show(label);
@@ -786,7 +786,7 @@ void do_rec(GtkWidget *wid)
 		strcpy(globals.record_filename, buffer);		
 		tX_engine::get_instance()->set_recording_request(true);
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(rec_menu_item), 1);
-	}
+	} 
 	
 	rec_dont_care=0;
 	
@@ -798,6 +798,32 @@ void do_rec(GtkWidget *wid)
 
 GtkSignalFunc select_rec_file()
 {
+#ifdef USE_FILECHOOSER
+	GtkWidget * dialog = gtk_file_chooser_dialog_new ("Record To Disk",
+		GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_SAVE, 
+		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
+		GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,NULL);
+	
+	if (strlen(globals.record_filename)) {
+		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER (dialog), globals.record_filename);
+	}
+				      
+	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
+		char *filename=gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+		strncpy(globals.record_filename, filename, sizeof(globals.record_filename)-1);
+		g_free(filename);
+		
+		tX_engine::get_instance()->set_recording_request(true);
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(rec_menu_item), 1);
+	} else {
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(rec_menu_item), 0);
+	}
+	
+	rec_dont_care = 0;
+	
+	gtk_widget_destroy(dialog);
+	
+#else	
 	if (rec_dialog_win) {
 		gdk_window_raise(rec_dialog_win);
 		return 0;
@@ -817,6 +843,8 @@ GtkSignalFunc select_rec_file()
 	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(rec_dialog)->cancel_button), "clicked", G_CALLBACK (cancel_rec), NULL);	
 	g_signal_connect (G_OBJECT(rec_dialog), "delete-event", G_CALLBACK(cancel_rec), NULL);	
 	
+#endif
+
 	return NULL;
 }
 
@@ -1271,6 +1299,7 @@ void create_master_menu()
 
 	menu_item = gtk_check_menu_item_new_with_mnemonic("_Record Audio To Disk");
 	rec_menu_item = menu_item;
+	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) tape_on, NULL);
@@ -1807,7 +1836,7 @@ void display_help()
 	if (help_child==0) {
 		// child
 		// execlp("gnome-help","gnome-help","ghelp:/" INSTALL_PREFIX "/terminatorX/doc/terminatorX-manual/C/terminatorX-manual.xml", NULL);
-		execlp("gnome-help","gnome-help","ghelp:/" XML_MANUAL, NULL);		
+		execlp("gnome-help","gnome-help","ghelp://" XML_MANUAL, NULL);		
 		_exit(-1);
 	} else if (help_child==-1) {
 		tx_note("System error: couldn't fork() to run the help process.", true);

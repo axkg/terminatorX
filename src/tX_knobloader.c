@@ -27,9 +27,6 @@
 
 #ifdef USE_DIAL
 
-
-#include "icons/knobs.pixbuf"
-
 const guint8 * knob_pixs[MAX_KNOB_PIX]={
 	 knob0,
 	 knob1,
@@ -84,8 +81,7 @@ const guint8 * knob_pixs[MAX_KNOB_PIX]={
 	};
 
 GdkPixbuf *knob_pixmaps[MAX_KNOB_PIX];
-GdkBitmap *knob_mask;
-	
+
 void load_knob_pixs()
 {
 	int i;
@@ -94,8 +90,6 @@ void load_knob_pixs()
 	for (i=0; i<MAX_KNOB_PIX; i++) {
 		knob_pixmaps[i]=gdk_pixbuf_new_from_inline(-1, knob_pixs[i], TRUE, &error);
 	}
-	
-	gdk_pixbuf_render_pixmap_and_mask(knob_pixmaps[0], NULL, &knob_mask, 1);
 }
 
 #endif
