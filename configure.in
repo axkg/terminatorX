@@ -605,8 +605,7 @@ AC_OUTPUT(Makefile
 	src/Makefile 
 	gnome-support/Makefile 
 	gnome-support/terminatorX.keys 
-	src/gui_icons/Makefile 
-	src/smallknob/Makefile 
+	src/icons/Makefile 
 	doc/Makefile 
 	doc/terminatorX-manual/Makefile
 	doc/terminatorX-manual/C/Makefile	
