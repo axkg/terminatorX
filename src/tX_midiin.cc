@@ -109,10 +109,9 @@ int tX_midiin::check_event()
 		tX_midievent event;
 		event.is_noteon = false;
 		bool event_usable = true;
-		printf("type: %i\n", ev->type);
+
 		switch (ev->type) {
 			case SND_SEQ_EVENT_CONTROLLER: 
-				printf("ctrl: p: %i, v: %i, c: %i\n", ev->data.control.param, ev->data.control.value, ev->data.control.channel);
 				event.type = tX_midievent::CC;
 				event.number = ev->data.control.param;
 				event.value = ev->data.control.value / 127.0;
@@ -131,14 +130,12 @@ int tX_midiin::check_event()
 				event.channel = ev->data.control.channel;
 				break;
 			case SND_SEQ_EVENT_REGPARAM:
-				printf("rpn: p: %i, v: %i, c: %i\n", ev->data.control.param, ev->data.control.value, ev->data.control.channel);
 				event.type = tX_midievent::RPN;
 				event.number = ev->data.control.param;
 				event.value = ev->data.control.value / 16383.0;
 				event.channel = ev->data.control.channel;
 				break;
 			case SND_SEQ_EVENT_NONREGPARAM:
-				printf("nrpn: p: %i, v: %i, c: %i\n", ev->data.control.param, ev->data.control.value, ev->data.control.channel);
 				event.type = tX_midievent::NRPN;
 				event.number = ev->data.control.param;
 				event.value = ev->data.control.value / 16383.0;

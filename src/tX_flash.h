@@ -43,14 +43,11 @@ typedef struct _GtkTxFlashClass   GtkTxFlashClass;
 
 struct _GtkTxFlash
 {
-        GtkWidget widget;
+	GtkWidget widget;
+
+	GdkColor colors[5];	
 	
-	GdkColor black;
-	GdkColor red;
-	GdkColor green;
-	GdkColor lightgreen;
-	GdkColor redgreen;
-	
+	int colors_allocated;
 	int levels;
 	int last_level;
 	int red_level;
@@ -70,6 +67,7 @@ GtkWidget*     gtk_tx_flash_new	();
 guint	       gtk_tx_flash_get_type (void);
 void           gtk_tx_flash_set_level (GtkWidget *widget, f_prec new_value);
 void           gtk_tx_flash_clear (GtkWidget *widget);
+void 		   gtk_tx_flash_update_colors(GtkTxFlash *tx);
 
 #ifdef __cplusplus
 }
