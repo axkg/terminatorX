@@ -46,7 +46,7 @@ void vtt_fx :: run ()
 	fprintf(stderr, "tX: Oops: run() abstract vtt_fx?");
 }
 
-void vtt_fx :: save (FILE *output, char *indent) {
+void vtt_fx :: save(FILE *rc, gzFile rz, char *indent) {
 	fprintf(stderr, "tX: Oops: run() abstract vtt_fx?");
 }
 
@@ -75,8 +75,8 @@ void vtt_fx_lp :: deactivate() { /* NOP */ }
 void vtt_fx_lp :: run() { myvtt->render_lp(); }
 int vtt_fx_lp :: isEnabled() { return myvtt->lp_enable; }
 
-void vtt_fx_lp :: save (FILE *output, char *indent) { 
-	fprintf(output, "%s<cutoff/>\n", indent);
+void vtt_fx_lp :: save (FILE *rc, gzFile rz, char *indent) { 
+	tX_store("%s<cutoff/>\n", indent);
 }
 
 const char *vtt_fx_lp :: get_info_string()
@@ -91,8 +91,8 @@ void vtt_fx_ec :: deactivate() { myvtt->ec_clear_buffer(); }
 void vtt_fx_ec :: run() { myvtt->render_ec(); }
 int vtt_fx_ec :: isEnabled() { return myvtt->ec_enable; }
 
-void vtt_fx_ec :: save (FILE *output, char *indent) { 
-	fprintf(output, "%s<lowpass/>\n", indent);	
+void vtt_fx_ec :: save (FILE *rc, gzFile rz, char *indent) { 
+	tX_store("%s<lowpass/>\n", indent);	
 }
 
 const char *vtt_fx_ec :: get_info_string()
@@ -281,11 +281,11 @@ vtt_fx_ladspa :: ~vtt_fx_ladspa()
 }
 
 
-void vtt_fx_ladspa :: save (FILE *rc, char *indent) {
+void vtt_fx_ladspa :: save (FILE *rc, gzFile rz, char *indent) {
 	long ID=plugin->getUniqueID();
 	list <tX_seqpar_vttfx *> :: iterator sp;
 	
-	fprintf(rc, "%s<ladspa_plugin>\n", indent);
+	tX_store("%s<ladspa_plugin>\n", indent);
 	strcat (indent, "\t");
 	
 	store_int("ladspa_id", ID);
@@ -297,7 +297,7 @@ void vtt_fx_ladspa :: save (FILE *rc, char *indent) {
 	store_bool("panel_hidden", panel->is_hidden());
 	
 	indent[strlen(indent)-1]=0;
-	fprintf(rc, "%s</ladspa_plugin>\n", indent);
+	tX_store("%s</ladspa_plugin>\n", indent);
 }
 
 void vtt_fx_ladspa :: load(xmlDocPtr doc, xmlNodePtr node) {

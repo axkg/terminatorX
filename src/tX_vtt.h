@@ -279,8 +279,8 @@ class vtt_class
 	int stop();
 	int stop_nolock();
 	
-	int save(FILE *, char *indent);
-	static int save_all(FILE *);
+	int save(FILE *, gzFile rz, char *indent);
+	static int save_all(FILE *, gzFile rz);
 	int load(xmlDocPtr, xmlNodePtr);
 	static int load_all(xmlDocPtr doc, char *fname);
 	static void delete_all();

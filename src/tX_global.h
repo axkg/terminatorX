@@ -48,6 +48,8 @@ extern "C" {
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
+#include <zlib.h>
 	
 #ifdef ENABLE_DEBUG_OUTPUT	
 #define tX_debug(fmt, args...); { fprintf(stderr, "- tX_debug: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
@@ -133,6 +135,8 @@ typedef struct {
 	
 	char lrdf_path[PATH_MAX];
 	
+	int compress_set_files;
+	
 	int fullscreen_enabled;
 } tx_global;
 
@@ -161,19 +165,23 @@ extern char *decode_xml(char *dest, const char *src);
 //#define restore_float_id(s, i, sp, init); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if  (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {sscanf((char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%lf", &dvalue); i=dvalue; pid_attr=(char* ) xmlGetProp(cur, (xmlChar *) "id"); if (pid_attr) { sscanf(pid_attr, "%i",  &pid); sp.set_persistence_id(pid); } init; }}
 //#define restore_bool_id(s, i, sp, init); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {if (xmlStrcmp(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1),  (const xmlChar *) "true")==0) i=true; else i=false; pid_attr=(char* ) xmlGetProp(cur,  (xmlChar *)"id"); if (pid_attr) { sscanf(pid_attr, "%i",  &pid); sp.set_persistence_id(pid); } init; }}
 
-#define store_int(s, i); fprintf(rc, "%s<%s>%i</%s>\n", indent, s,(int) i, s);
-#define store_float(s, i); fprintf(rc, "%s<%s>%lf</%s>\n", indent, s,(double) i, s);
-#define store_string(s, i); fprintf(rc, "%s<%s>%s</%s>\n", indent, s, encode_xml(tmp_xml_buffer, i) , s);
-#define store_bool(s, i); fprintf(rc, "%s<%s>%s</%s>\n", indent, s, i ? "true" : "false", s);
+extern int _store_compress_xml;
 
-#define store_id(s, id); fprintf(rc, "%s<%s id=\"%i\"/>\n", indent, s, id);
-#define store_int_id(s, i, id); fprintf(rc, "%s<%s id=\"%i\">%i</%s>\n", indent, s, id, (int) i, s);
-#define store_float_id(s, i, id); fprintf(rc, "%s<%s id=\"%i\">%lf</%s>\n", indent, s, id, (double) i, s);
-#define store_bool_id(s, i, id); fprintf(rc, "%s<%s id=\"%i\">%s</%s>\n", indent, s, id, i ? "true" : "false", s);
+#define tX_store(fmt, args...); { _store_compress_xml ? gzprintf(rz, fmt , ## args) : fprintf(rc, fmt , ## args); }
 
-#define store_int_sp(name, i, sp); { fprintf(rc, "%s<%s ", indent, name); sp.store_meta(rc); fprintf(rc, ">%i</%s>\n", (int) i, name); }
-#define store_float_sp(name, i, sp); { fprintf(rc, "%s<%s ", indent, name); sp.store_meta(rc); fprintf(rc, ">%lf</%s>\n", (double) i, name); }
-#define store_bool_sp(name, i, sp); { fprintf(rc, "%s<%s ", indent, name); sp.store_meta(rc); fprintf(rc, ">%s</%s>\n", i ? "true" : "false", name); }
+#define store_int(s, i); tX_store("%s<%s>%i</%s>\n", indent, s,(int) i, s);
+#define store_float(s, i); tX_store("%s<%s>%lf</%s>\n", indent, s,(double) i, s);
+#define store_string(s, i); tX_store("%s<%s>%s</%s>\n", indent, s, encode_xml(tmp_xml_buffer, i) , s);
+#define store_bool(s, i); tX_store("%s<%s>%s</%s>\n", indent, s, i ? "true" : "false", s);
+
+#define store_id(s, id); tX_store("%s<%s id=\"%i\"/>\n", indent, s, id);
+#define store_int_id(s, i, id); tX_store("%s<%s id=\"%i\">%i</%s>\n", indent, s, id, (int) i, s);
+#define store_float_id(s, i, id); tX_store("%s<%s id=\"%i\">%lf</%s>\n", indent, s, id, (double) i, s);
+#define store_bool_id(s, i, id); tX_store("%s<%s id=\"%i\">%s</%s>\n", indent, s, id, i ? "true" : "false", s);
+
+#define store_int_sp(name, i, sp); { tX_store("%s<%s ", indent, name); sp.store_meta(rc, rz); tX_store(">%i</%s>\n", (int) i, name); }
+#define store_float_sp(name, i, sp); { tX_store("%s<%s ", indent, name); sp.store_meta(rc, rz); tX_store(">%lf</%s>\n", (double) i, name); }
+#define store_bool_sp(name, i, sp); { tX_store("%s<%s ", indent, name); sp.store_meta(rc, rz); tX_store(">%s</%s>\n", i ? "true" : "false", name); }
 
 #define restore_int_id(s, i, sp, init); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) { sscanf((char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%i", &i);  init; } sp.restore_meta(cur); }
 #define restore_float_id(s, i, sp, init); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if  (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {sscanf((char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%lf", &dvalue); i=dvalue; init; } sp.restore_meta(cur);}

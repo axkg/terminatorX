@@ -1,10 +1,12 @@
 terminatorX - ChangeLog
-All changes were done by me (Alexander König) if not stated otherwise.
+All changes were done by me (Alexander Kï¿½nig) if not stated otherwise.
 This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.80 - prerelease]
-
+- XML based set files can get rather huge when they contain a lot of sequencer
+  events - to solve this terminatorX now uses zlib to save compressed set
+  files if enabled in the preferences dialog.
 - I hacked support for Steve Harris' cool liblrdf - if you've got that library
   setup correctly and you use Steve's wonderful plugin collection with RDF 
   description you should get a nicely structured menu when clicking on the
@@ -50,7 +52,7 @@ changed.
 - terminatorX now stores set files as XML documents, too - so terminatorX has
   become terminatorXML finally. Note: for sets with a large number of events
   recorded into the sequencer - the XML based set files can grow significally
-  larger than the old ones.
+  larger than the old ones (see "compression" above)
 - The old code to support the obsolete binary tX file formats has now been
   scheduled for deletion. It's been moved into the tX_legacy* source files and 
   it will be built only when "--enable-legacy" was used on configuring
@@ -268,8 +270,8 @@ changed.
 - some gui redesign. The volume scales are now located near their corresponding
   "flash"-widget. This release fits into very small windows - so it should be
   usable on smaller displays as well.
-- Adrian told me configure doesn´t have to check for glib after checking for
-  gtk+ - I guess he´s right so the glib-test has gone.
+- Adrian told me configure doesnï¿½t have to check for glib after checking for
+  gtk+ - I guess heï¿½s right so the glib-test has gone.
 - more minor fixes
   
 [v3.55]
@@ -425,7 +427,7 @@ changed.
 [v2.4] (unreleased)
 - implemented a time counter
 - licmak now finally is what it should be: a perl script (licmak.pl)
-  it was contributed by: Adam Sjøgren <asjo@diku.dk>. Thanks!
+  it was contributed by: Adam Sjï¿½gren <asjo@diku.dk>. Thanks!
 
 [v2.3]
 - X-Window background fixed

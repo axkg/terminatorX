@@ -238,21 +238,21 @@ void tX_sequencer :: delete_all_events_for_sp(tX_seqpar *sp)
 #endif				
 }
 
-void tX_sequencer :: save(FILE *rc, char *indent) {
+void tX_sequencer :: save(FILE *rc, gzFile rz, char *indent) {
 	guint32 event_count;
 	list <tX_event *> :: iterator song_event;
 	
 	event_count=song_list.size();
 
-	fprintf(rc, "%s<sequencer>\n", indent);
+	tX_store("%s<sequencer>\n", indent);
 	strcat(indent, "\t");
 	
 	for (song_event=song_list.begin(); song_event!=song_list.end(); song_event++) {
-		(*song_event)->store(rc, indent);
+		(*song_event)->store(rc, rz, indent);
 	}
 	
 	indent[strlen(indent)-1]=0;
-	fprintf(rc, "%s</sequencer>\n", indent);
+	tX_store("%s</sequencer>\n", indent);
 }
 
 

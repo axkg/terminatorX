@@ -257,7 +257,7 @@ tX_engine_error tX_engine :: run() {
 	vtt_class::set_sample_rate(device->get_sample_rate());
 	
 	if (recording_request) {
-		if (tape->start_record(globals.record_filename, device->get_buffersize()*sizeof(int16_t), device->get_sample_rate())) {
+		if (tape->start_record(globals.record_filename, vtt_class::get_mix_buffer_size(), device->get_sample_rate())) {
 			device->close();
 			delete device;
 			device=NULL;			
