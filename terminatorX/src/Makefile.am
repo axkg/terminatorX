@@ -1,4 +1,4 @@
-LIBS=@GTK_LIBS@ -lXi -lXxf86dga -lpthread
+LIBS=@X_LIBS@ @GTK_LIBS@ @LIBS@
 
 SUBDIRS = gui_icons smallknob
 
