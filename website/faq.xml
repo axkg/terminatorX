@@ -21,7 +21,7 @@
     <qa>
       <question>What does it cost?</question>
       <answer>
-	<para>Nothing. TerminatorX is <link ref="http://fsf.org/free-software.html">free software</link>. Read the
+	<para>Nothing. TerminatorX is <link ref="http://www.fsf.org/philosophy/free-sw.html">free software</link>. Read the
 	  <link ref="COPYING">license</link> (GPL V2).
 	</para>
       </answer>
