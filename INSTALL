@@ -1,6 +1,9 @@
 terminatorX INSTALL:
 Copyright (C) 1999, 2000 by Alexander König <alkoit00@fht-esslingen.de>
 
+Note: As of Version 3.70 you need to have LADSPA installed to compile
+terminatorX.
+
 Quickstart:
 -----------
 
@@ -53,13 +56,6 @@ Step 1: Configure terminatorX.
 		I WARNED YOU! Anybody who can run this binary can completely
 		erase your hardisk. BE CAREFUL.
 		
-		--disable-flash
-		
-		This turns off the "flash"-widgets that display the current
-		signal of the turntables and the master out. This might help
-		fighting performance probs. Oh, If you have a better name
-		for the widget please tell me ;)		
-		
 		--enable-3dnow
 		
 		This enables EXPERIMENTAL 3DNow! support. It seems as if the
@@ -107,11 +103,6 @@ Step 1: Configure terminatorX.
 		
 		Misc options:
 		-------------
-		
-		--disable-dial
-		
-		The resulting binary will not use the new dial-widget, but
-		scales instead.
 
 		--enable-closedev
 		

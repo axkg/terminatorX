@@ -38,7 +38,7 @@ tX_event :: tX_event (FILE *input)
 	}
 }
 
-int tX_event :: store (FILE *output)
+void tX_event :: store (FILE *output)
 {
 	int res=0;
 	unsigned int persistence_id;

@@ -49,7 +49,7 @@ class audiodevice
 	
 	int getblocksize();
 	
-	int eat(int16_t*);
+	void eat(int16_t*);
 	
 	audiodevice();
 

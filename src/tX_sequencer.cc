@@ -96,7 +96,7 @@ int tX_sequencer :: trig_play()
 //#define SEQ_DEBUG 1
 //#define SEQ_DEBUG_MAX 1
 
-int tX_sequencer :: trig_stop()
+void tX_sequencer :: trig_stop()
 {
 	list <tX_event *> :: iterator song_event;
 	list <tX_event *> :: iterator temp_song_event;

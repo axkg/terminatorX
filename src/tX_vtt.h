@@ -266,7 +266,7 @@ class vtt_class
 	static int set_mix_buffer_size(int);
 	static void set_master_volume(f_prec);
 	static void set_master_pitch(f_prec);
-	static int enable_saturate(int);
+	static void enable_saturate(int);
 	static void focus_no(int);
 	static void focus_next();
 	static void unfocus();	

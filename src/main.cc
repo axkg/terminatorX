@@ -188,11 +188,10 @@ int parse_args(int *argc, char **argv)
 int main(int argc, char **argv)
 {
 	FILE *gtk_rc_file;
+	
+	fprintf(stderr, "%s - Copyright (C) 1999, 2000 by Alexander König\n", VERSIONSTRING);
 
-#ifndef WIN32
-	fprintf(stderr, "%s, Copyright(C)1999 Alexander König, alkoit00@fht-esslingen.de\n", VERSIONSTRING);
-#else
-        fprintf(stderr, "%s, Copyright(C)1999 Alexander König, alkoit00@fht-esslingen.de\n", VERSIONSTRING);
+#ifdef WIN32
         setenv ("CYGWIN", "binmode");
 #endif
 	

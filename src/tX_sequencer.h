@@ -65,7 +65,7 @@ class tX_sequencer
 	
 	int trig_rec();
 	int trig_play();
-	int trig_stop();
+	void trig_stop();
 	
 	tX_event *record_event(tX_seqpar *sp, float value);
 
