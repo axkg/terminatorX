@@ -42,7 +42,7 @@ extern tX_seqpar_master_pitch sp_master_pitch;
 extern void create_mastergui(int x, int y);
 extern void wav_progress_update(gfloat percent);
 extern void note_destroy(GtkWidget *widget, GtkWidget *mbox);
-extern void tx_note(const char *message);
+extern void tx_note(const char *message, bool isError=false);
 extern void tx_l_note(const char *message);
 extern void display_mastergui();
 extern void grab_off();
