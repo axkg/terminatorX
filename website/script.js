@@ -1,21 +1,17 @@
-rolloverImagesOn=new Array();
-rolloverImagesOff=new Array();
+imgOn=new Array();
+imgOff=new Array();
 
-function rolloverOn(id) {
-  if(rolloverImagesOn[id]){
-    document.images[id].src=rolloverImagesOn[id].src;
-  }
+function on(id) {
+  if(imgOn[id]) document.images[id].src=imgOn[id].src;
 }
 
-function rolloverOff(id) {
-  if(rolloverImagesOff[id]){
-      document.images[id].src=rolloverImagesOff[id].src;
-  }
+function off(id) {
+  if(imgOff[id]) document.images[id].src=imgOff[id].src;
 }
 
-function rolloverLoad(id,on,off) {
-  rolloverImagesOn[id]=new Image();
-  rolloverImagesOn[id].src=on;
-  rolloverImagesOff[id]=new Image();
-  rolloverImagesOff[id].src=off;
+function load(id,on,off) {
+  imgOn[id]=new Image();
+  imgOn[id].src=on;
+  imgOff[id]=new Image();
+  imgOff[id].src=off;
 }

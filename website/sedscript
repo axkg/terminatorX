@@ -3,6 +3,8 @@ s/REPLACERIGHT/>/
 s/CLOSE_DA_P/<\/p>/
 s/OPEN_DA_P/<p>/
 s/MAKE_THIS_MYOUML/\&ouml;/
+s/MAKE_THIS_OSLASH/\&oslash;/
 s/NEW_TT_ROW/<\/tr><tr>/
+s/MAKE_SPACE/ /g
 s/charset=UTF-8/charset=iso-8859-1/
 s/Sonar/S\&\#xf3\;nar/

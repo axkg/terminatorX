@@ -13,7 +13,7 @@
   <dlink id="turntables" text="turntable gallery" url="turntable.html"/>
   <dlink id="aseqjoy" text="aseqjoy" url="aseqjoy.html"/>
   <dlink id="alsa" text="ALSA" url="http://www.alsa-project.org"/>
-  <dlink id="changelog" text="ChangeLog" url="ChangeLog"/>
+  <dlink id="changelog" text="ChangeLog" url="changelog.html"/>
   <dlink id="install" text="INSTALL" url="INSTALL"/>
   <dlink id="oldtable" text="old turntable to tX device description" url="oldtable.html"/>
   <dlink id="aseqjoy_man" text="aseqjoy man page" url="aseqjoy-man.html"/>
