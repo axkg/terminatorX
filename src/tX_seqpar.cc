@@ -965,16 +965,17 @@ void tX_seqpar_vttfx_int :: create_widget()
 
 	*fx_value=min_value;
 	myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value, max_value, tmp, tmp, tmp));
-	widget=gtk_hbox_new(FALSE, 2);
-        tmpwid=gtk_label_new(label_name);
-	gtk_widget_show(tmpwid);
-	gtk_box_pack_start(GTK_BOX(widget), tmpwid, WID_FIX);
+	widget=gtk_vbox_new(FALSE, 2);
 
 	tmpwid=gtk_spin_button_new(myadj,1.0,0);
 	gtk_widget_show(tmpwid);
 	gtk_box_pack_start(GTK_BOX(widget), tmpwid, WID_DYN);
 	
 	gtk_signal_connect(GTK_OBJECT(myadj), "value_changed", (GtkSignalFunc) tX_seqpar_vttfx_int :: gtk_callback, this);
+
+    tmpwid=gtk_label_new(label_name);
+	gtk_widget_show(tmpwid);
+	gtk_box_pack_start(GTK_BOX(widget), tmpwid, WID_FIX);
 }
 
 tX_seqpar_vttfx_int :: ~tX_seqpar_vttfx_int()

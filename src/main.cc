@@ -63,7 +63,7 @@
 #include <glib.h>
 
 #include "tX_ladspa.h"
-
+#include "tX_ladspa_class.h"
 #include "tX_engine.h"
 
 #ifdef CREATE_BENCHMARK 
@@ -389,9 +389,11 @@ int main(int argc, char **argv)
 		idle_tag=gtk_idle_add((GtkFunction)idle, NULL);
 	}
 	
+	LADSPA_Class :: init();
 	LADSPA_Plugin :: init();
 //	LADSPA_Plugin :: status();
-			
+//	LADSPA_Class :: dump();
+	
 	create_mastergui(globals.width, globals.height);
 		
 	if (!globals.show_nag)	display_mastergui();
