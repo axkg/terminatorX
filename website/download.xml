@@ -4,7 +4,7 @@
     <index>
       <title>Available Downloads</title>
     </index>
-    <current havebz2="yes" version="3.80"/>
+    <current havebz2="yes" version="3.81"/>
     <subsection>
       <title>Requirements</title>
       <para>terminatorX requires: <itemizedlist>
@@ -28,6 +28,11 @@
           <listitem>
             <nopara>
               <link ref="http://www.libxml.org">LibXML</link> which comes installed with most distributions</nopara>
+          </listitem>
+          <listitem>
+            <nopara>If you want to use support for Linux' POSIX capabilities
+              <dblink id="libcap"/> is required.
+            </nopara>
           </listitem>
           <listitem>
             <nopara>terminatorX supports Steve Harris' <dblink id="liblrdf"/> which allows
@@ -82,6 +87,7 @@
     <subsection>
       <title>Old Sources</title>
       <tarfiles>
+        <tar havebz2="yes" version="3.81"/>
         <tar havebz2="yes" version="3.80"/>
         <tar havebz2="yes" version="3.73"/>
         <tar version="3.72"/>
@@ -100,6 +106,9 @@
     <subsection>
       <title>Old RPMs</title>
       <rpmfiles>
+        <!--<rpm distribution="RH 9"
+          note="without liblrdf, ALSA, MIDI libmad and JACK support" rpmsubversion="1"
+          type="i386" version="3.81"/>-->
         <rpm distribution="RH 8.0"
           note="without liblrdf, ALSA, MIDI and libmad support, works with RH9" rpmsubversion="1"
           type="i386" version="3.80"/>

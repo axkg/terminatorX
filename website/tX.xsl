@@ -318,7 +318,7 @@
     </i>
   </xsl:template>
   <xsl:template match="red">
-    <font color="#FF4444">
+    <font color="#FF0000">
       <xsl:apply-templates/>
     </font>
   </xsl:template>
@@ -547,7 +547,7 @@
                   <xsl:attribute name="name">
                     <xsl:value-of select="position() div 2"/>
                   </xsl:attribute>
-                  <font color="#FFCC33" size="+1">
+                  <font color="#FFEE88" size="+1">
                     <xsl:value-of select="question"/>
                   </font>
                 </a>

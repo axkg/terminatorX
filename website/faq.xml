@@ -118,7 +118,46 @@
     <qa>
       <question>Should I install terminatorX suid root?</question>
       <answer>
-        <para><bold>No</bold>. While I recommended installing terminatorX suid root before - I no 
+        <para>Like all audio applications terminatorX' performance improves significantly
+          from running with realtime scheduling priority. However current Linux or *BSD
+          systems don't allow regular users to achieve realtime priority, so you need
+          to install terminatorX suid-root if you want to allow regular users to run terminatorX
+          with realtime priority.
+        </para>
+        
+        <para><red><bold>Note:</bold></red> installing any program suid-root is potentially <bold>dangerous</bold>
+          and could be exploited - so if other people have access to this machine, too, you
+          should reduce the number of suid-root programs.
+        </para>
+        
+        <para>terminatorX provides two methods of running suid-root, via the following
+          configure switches:
+          <itemizedlist>
+            <listitem><para><screen>--enable-capabilities</screen>: this method (enabled
+              by default) drops root privileges very early (which is good) and only keeps
+              the capability of renice-ing processes. It is Linux-specific though and requires
+              a not-too-old 2.4.* kernel and the <dblink id="libcap"/> library.
+            </para></listitem>
+            <listitem><para><screen>--enable-suidroot</screen>: this method is now disabled
+              by default as it is potientially more dangerous. The problems discussed in this
+              <link ref="http://www.securityfocus.com/archive/1/328469">bugtraq post</link>
+              have been fixed - but there might be other problems. Note that exploiting this
+              makes only sense on current Linux systems that use an extra manager thread
+              for threaded applications.</para>
+              <para><bold>Note:</bold> RedHat 9 Kernels seem to not support this method
+                anymore which is probably related to their NPTL implementation. So, if you
+                want suid-root with RH 9 use the capabilities method.
+              </para>
+            </listitem>
+          </itemizedlist>          
+        </para>
+        
+        <para>
+          <red><bold>Again:</bold></red> both methods might have yet unknown flaws so if you 
+          want to be 100% sure that your terminatorX installation is no security
+          threat <bold>do not install terminatorX suid-root</bold>.
+        </para>
+        <!--<para><bold>No</bold>. While I recommended installing terminatorX suid root before - I no 
           longer do for two reasons:
           <itemizedlist>            
             <listitem><nopara>According to this
@@ -138,7 +177,7 @@
           </person>' <link ref="http://members.optusnet.com.au/ckolivas/kernel/">patches</link>
           against Linux 2.4.x. With these new scheduler tweaks terminatorX performs very well without
           extra privileges.</para>
-        <!--<para>Installing terminatorX <italic>suid root</italic> improves terminatorX' performance
+          <para>Installing terminatorX <italic>suid root</italic> improves terminatorX' performance
           significantly for non-root users - as terminatorX will use the suid-root privileges to
           create the engine thread with realtime-scheduling-priority. Immediately after the creation
           of the thread terminatorX drops root privileges before any files or devices are accessed.
@@ -150,9 +189,12 @@
           performance vs security.</para>-->
       </answer>
     </qa>
-    <!--<qa>
+    <qa>
       <question>How do I install terminatorX suid root?</question>
       <answer>
+        <para>Ensure that you have read the <link ref="#11">entry above</link> before you 
+           consider following the instructions below.
+        </para>
         <para>As root <italic>cd</italic> into the directory you installed terminatorX to (typically
           that is <italic>/usr/local/bin</italic> or <italic>/usr/bin</italic>) and run the
           following commandline:</para>
@@ -160,7 +202,7 @@
           <screen>chown root: ./terminatorX &amp;&amp; chmod u+s ./terminatorX</screen>
         </para>
       </answer>
-    </qa>-->
+    </qa>
     <qa>
       <question>Is there a Windows version of terminatorX?</question>
       <answer>

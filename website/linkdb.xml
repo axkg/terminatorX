@@ -41,4 +41,5 @@
   <dlink id="kover" text="kover" url="http://lisas.de/kover"/>
   <dlink id="mail"  text="mail" url="mailto:alex@lisas.de"/>
   <dlink id="bugs"  text="bugs section" url="bugs.html"/>
+  <dlink id="libcap" text="libcap" url="http://www.kernel.org/pub/linux/libs/security/linux-privs"/>
 </linkdb>
