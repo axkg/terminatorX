@@ -1,0 +1,25 @@
+# Makefile for cygwin
+
+# Location for the required includes/libs
+TXLIBS=//f/TXLIB
+
+# Inlcude path
+INCLUDES=-I/$(TXLIBS)/include -I$(TXLIBS)/include/gdk/win32
+
+# The objects
+OBJECTS=endian.o main.o turntable.o tX_dialog.o tX_engine.o \
+	tX_global.o tX_gui.o tX_logo.o tX_wavfunc.o tX_widget.o \
+	wav_read.o wav_write.o 
+
+# The libs
+LIBS=$(TXLIBS)/lib/libgtk.a $(TXLIBS)/lib/libglib.a $(TXLIBS)/lib/libgdk.a $(TXLIBS)/lib/libpthread.a
+
+CFLAGS=-D_REENTRANT -DWIN32 -DUSE_SOX_INPUT -O2 -g $(INCLUDES)
+
+all:	terminatorX.exe
+
+clean:	Makefile.cygwin
+	rm -f $(OBJECTS) terminatorX.exe
+			
+terminatorX.exe:        $(OBJECTS)
+			gcc -o terminatorX.exe $(OBJECTS) $(LIBS)
