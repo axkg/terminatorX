@@ -684,6 +684,7 @@
 		  <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		  <property name="inverted">False</property>
 		  <property name="adjustment">50 10 500 1 10 10</property>
+		  <signal name="value_changed" handler="on_alsa_buffer_time_value_changed" object="alsa_period_time" last_modification_time="Tue, 08 Apr 2003 20:22:15 GMT"/>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>

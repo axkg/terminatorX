@@ -79,12 +79,12 @@
     <sect2 id="WHATITIS">
       <title>What it is</title>
 
-      <para><application moreinfo="none">terminatorX</application> is a real
-      time audio synthesizer that allows you to &#34;scratch&#34; on digitally
-      sampled audio data (*.wav, *.au, *.mp3, *.ogg etc.) the way Hiphop DJs
-      scratch on vinyl records. It features multiple turntables, real time
-      effects (built-in as well as LADSPA plugin effects), a sequencer and an
-      easy-to-use gtk+ GUI.</para>
+      <para>terminatorX is a realtime audio synthesizer that allows you to
+      &#34;scratch&#34; on digitally sampled audio data (*.wav, *.au, *.ogg,
+      *.mp3, etc.) the way hiphop-DJs scratch on vinyl records. It features
+      multiple turntables, realtime effects (buit-in as well as <ulink
+      url="http://www.ladspa.org">LADSPA</ulink> plugin effects), a sequencer
+      and MIDI interface - all accessible through an easy-to-use gtk+ GUI.</para>
 
       <para>This is <emphasis>beta</emphasis> Software please help me fix
       bugs. See <xref linkend="CONTACT" /> (Contact/Download). Please read
@@ -278,6 +278,16 @@
                 <listitem>
                   <para><ulink url="http://www.xiph.org/ogg/vorbis/">libvorbis</ulink>
                   for loading ogg files.</para>
+                </listitem>
+
+                <listitem>
+                  <para><ulink url="http://xmlsoft.org/">libxml2</ulink> to
+                  read terminatorX set and rc files</para>
+                </listitem>
+
+                <listitem>
+                  <para><ulink url="http://www.gzip.org/zlib/">zlib</ulink> to
+                  create compressed XML set files to save diskspaces</para>
                 </listitem>
 
                 <listitem>
@@ -508,8 +518,8 @@
         <listitem>
           <para><emphasis>Sequencer Play / Record / Stop</emphasis></para>
 
-          <para>Please read the Sequencer-Section to find out more about the
-          sequencer.</para>
+          <para>Please read the <link linkend="SEQUENCER">sequencer</link>
+          section to find out more about the sequencer.</para>
         </listitem>
 
         <listitem>
@@ -656,6 +666,31 @@
               <para>Pressing this button remove the turntable from the current
               setup. Note that all sequencer events recorded for this
               turntable will be erased, too.</para>
+            </listitem>
+
+            <listitem>
+              <para><emphasis>Pitch Adj. Button</emphasis></para>
+
+              <para>Using two (or more) loops and terminatorX&#39;
+              synchronization facility usually requires adjusting the pitch of
+              the loops so that the turntables play in sync. For precisely cut
+              loops this usually means making them run equally fast or one
+              running twice as fast as the other etc. Manually finding the
+              necessary pitch values usually consumes a significant amount of
+              time so the feature <emphasis>Pitch Adjust</emphasis> helps
+              speeding up this process.</para>
+
+              <para>Clicking this button will cause the <emphasis>Compute
+              Pitch</emphasis> dialog to pop up. With this dialog it is
+              possible to specify how many loops of this turntable should be
+              played as fast as a certain amount of loops of the master
+              turntable. After pressing the <emphasis>Ok</emphasis> button
+              terminatorX will adjust the turntable&#39;s ptich accordingly in
+              order to match the given playback speed requirements.</para>
+
+              <para>Note that this feature is proabably useless when loading
+              complete songs into terminatorX - it&#39;s intended for use with
+              precisely cut loops.</para>
             </listitem>
           </itemizedlist>
         </sect4>
@@ -1316,7 +1351,10 @@
       <emphasis>Buffer Time</emphasis> option lets you set the size for the
       complete ring buffer, while the <emphasis>Period Time</emphasis>
       determines how many audio samples will be transferred to the audio
-      device per cycle.</para>
+      device per cycle. I&#39;m not really sure on what kind of settings to
+      recommend, however I had best results when setting the
+      <emphasis>Period Time</emphasis> to 3rd or half of the
+      <emphasis>Buffer Time</emphasis>. </para>
 
       <para>It&#39;s advisable to set the <emphasis>Buffer Time</emphasis> to
       at least the double of the <emphasis>Period Time</emphasis>, but for a
