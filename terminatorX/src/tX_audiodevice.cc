@@ -365,7 +365,7 @@ void tX_jack_client::init()
 		}	
 }
 
-tX_jack_client::tX_jack_client():device(NULL)
+tX_jack_client::tX_jack_client():device(NULL),jack_shutdown(false)
 {
 	jack_set_error_function(tX_jack_client::error);
 	
@@ -416,13 +416,14 @@ void tX_jack_client::error(const char *desc)
 
 int tX_jack_client::srate(jack_nframes_t nframes, void *arg)
 {
-	tX_error("tX_jack_client::srate() jack changed samplerate -> this is bad, stopping audio.");
+	tX_error("tX_jack_client::srate() jack changed samplerate - ignored.");
 	return 0;
 }
 
 void tX_jack_client::shutdown(void *arg)
 {
-	/***AARGH how to handle this?***/
+	tX_error("tX_jack_client::shutdown() jack daemon has shut down. Bad!");
+	if (instance) instance->jack_shutdown=true;
 }
 
 int tX_jack_client::process(jack_nframes_t nframes, void *arg)
@@ -495,14 +496,12 @@ void tX_audiodevice_jack::play(int16_t *buffer)
 
 void tX_audiodevice_jack::start()
 {
-	tX_debug("activating jack playback");
 	overrun_buffer=new f_prec[vtt_class::samples_in_mix_buffer];
 	
 	client->set_device(this);
-	while (!engine->is_stopped()) {
+	while ((!engine->is_stopped()) && !(client->get_jack_shutdown())) {
 		usleep(100);
 	}	
-	tX_debug("stopping jack playback");	
 	client->set_device(NULL);
 	
 	delete [] overrun_buffer;

@@ -83,8 +83,7 @@ int vtt_class::samples_in_mix_buffer=0;
 pthread_mutex_t vtt_class::render_lock=PTHREAD_MUTEX_INITIALIZER;
 f_prec vtt_class::master_volume=1.0;
 f_prec vtt_class::res_master_volume=1.0;
-f_prec vtt_class::saturate_fac=0.1;
-int vtt_class::do_saturate=0;
+
 vtt_class * vtt_class::sync_master=NULL;
 int vtt_class::master_triggered=0;
 int vtt_class::master_triggered_at=0;
@@ -1175,11 +1174,6 @@ void vtt_class :: set_master_pitch(f_prec new_pitch)
 	{
 		(*vtt)->recalc_pitch();
 	}
-}
-
-void vtt_class :: enable_saturate (int newstate)
-{
-	do_saturate=newstate;
 }
 
 void vtt_class :: focus_no(int no)
