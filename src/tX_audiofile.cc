@@ -69,6 +69,8 @@
 #	include <audiofile.h>
 #endif
 
+#define min(a,b) ((a) < (b) ? (a) : (b))
+
 tx_audiofile :: tx_audiofile()
 {
 	mem_type=TX_AUDIO_UNDEFINED;
@@ -272,7 +274,6 @@ tX_audio_error tx_audiofile :: load_ogg123() {
 #endif
 
 #ifdef USE_BUILTIN_WAV
-#define min(a,b) ((a) < (b) ? (a) : (b))
 tX_audio_error tx_audiofile :: load_wav() {
 	tX_debug("tx_audiofile::load_wav()");
 	

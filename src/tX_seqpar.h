@@ -155,6 +155,8 @@ class tX_seqpar
 	void reset_lower_midi_bound() { midi_lower_bound_set=false; }
 	
 	static gboolean tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gpointer data);
+	
+#ifdef USE_ALSA_MIDI_IN	
 	static gboolean remove_midi_binding(GtkWidget *widget, gpointer data);
 	static gboolean learn_midi_binding(GtkWidget *widget, gpointer data);	
 	
@@ -163,6 +165,7 @@ class tX_seqpar
 	
 	static gboolean set_midi_lower_bound(GtkWidget *widget, gpointer data);
 	static gboolean reset_midi_lower_bound(GtkWidget *widget, gpointer data);	
+#endif	
 };
 
 class tX_seqpar_update : public tX_seqpar

@@ -575,54 +575,123 @@ void show_about(int nag)
 		
 		sep=gtk_hseparator_new();
 		add_about_wid_fix(sep);
-		char about_prefix_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999-2003 by Alexander K\xC3\xB6nig";
-		char about_rest[]="\n\nSend comments, patches and scratches to: alex@lisas.de\n"
-		"terminatorX-homepage: http://www.terminatorX.cx\n\nThis binary has been compiled with the following flags: "
-		"Sox support: "
+		
+		label=gtk_label_new("This is "PACKAGE" release "VERSION" - Copyright (C) 1999-2003 by Alexander K\xC3\xB6nig"
+		"\nSend comments, patches and scratches to: alex@lisas.de\nterminatorX-homepage: http://www.terminatorX.cx");
+
+		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
+		add_about_wid_fix(label);
+
+		sep=gtk_hseparator_new();
+		add_about_wid_fix(sep);
+		
+		label=gtk_label_new(
+		"Compilation flags: "
+		"sox: "
 #ifdef USE_SOX_INPUT
 		"ON"
 #else
 	 	"OFF"
 #endif		
-		" - mpg123 support: "
+		" - mpg123: "
 #ifdef USE_MPG123_INPUT
 		"ON"
 #else
 		"OFF"
 #endif
-		" - \nogg123 support: "
+		" - ogg123: "
 #ifdef USE_OGG123_INPUT
 		"ON"
 #else
 		"OFF"
 #endif
+		" - libmad: "
+#ifdef USE_MAD_INPUT
+		"ON"
+#else
+		"OFF"
+#endif
 
-		" - enhanced scheduling: "
+		" - libvorbis: "
+#ifdef USE_VORBIS_INPUT
+		"ON"
+#else
+		"OFF"
+#endif
+
+		" - libaudiofile: "
+#ifdef USE_AUDIOFILE_INPUT
+		"ON"
+#else
+		"OFF"
+#endif
+
+		" - MIDI: "
+#ifdef USE_ALSA_MIDI_IN
+		"ON"
+#else
+		"OFF"
+#endif
+
+		" - OSS: "
+#ifdef USE_OSS
+		"ON"
+#else
+		"OFF"
+#endif
+
+		" - ALSA: "
+#ifdef USE_ALSA
+		"ON"
+#else
+		"OFF"
+#endif
+
+		" - JACK: "
+#ifdef USE_JACK
+		"ON"
+#else
+		"OFF"
+#endif
+
+		" - liblrdf: "
+#ifdef USE_LRDF
+		"ON"
+#else
+		"OFF"
+#endif
+
+		" - rt scheduling: "
 #ifdef USE_SCHEDULER
 		"ON"
 #else
 		"OFF"
 #endif
-		" - for a "
+
+		" - capabilities: "
+#ifdef USE_CAPABILITIES
+		"ON"
+#else
+		"OFF"
+#endif
+
+		" - "
 #ifdef WORDS_BIGENDIAN
 		"big"
-		
 #else
 		"little"
 #endif
-		" endian machine.\n";
-		
-		char buffer[4096];
-		
-		strcpy(buffer, about_prefix_umlaut);
-		strcat(buffer, about_rest);
-		
-		label=gtk_label_new(buffer);
-
+		" endian.");
+	
+		gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
 		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
 		add_about_wid_fix(label);
-		
+
 #ifdef 	USE_SCHEDULER
+		sep=gtk_hseparator_new();
+		add_about_wid_fix(sep);
+
+		char buffer[4096];
 		int prio=sched_getscheduler(tX_engine::get_instance()->get_pid());
 		char prio_str[32]="";
 		

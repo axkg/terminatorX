@@ -183,7 +183,7 @@ LADSPA_Plugin :: LADSPA_Plugin (const LADSPA_Descriptor *ld, char *filename)
 	
 	plugin_list.push_back(this);
 	strcpy(file, filename);
-	sprintf (info_string, "   LADSPA-Plugin: %s   \n   Label: %s   \n   File: %s   \n   Unique ID: %li   \n   Maker: %s   \n   Copyright: %s   ", ld->Name, ld->Label, file, ld->UniqueID, ld->Maker, ld->Copyright);
+	sprintf(info_string, "LADSPA-Plugin: %s\nLabel: %s\nFile: %s\nUnique ID: %li\nMaker: %s\nCopyright: %s", ld->Name, ld->Label, file, ld->UniqueID, ld->Maker, ld->Copyright);
 	LADSPA_Class::add_plugin(this);
 }
 

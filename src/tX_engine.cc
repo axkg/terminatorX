@@ -56,9 +56,9 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
-tX_engine *tX_engine :: engine=NULL;
+tX_engine *tX_engine::engine=NULL;
 
-tX_engine *tX_engine :: get_instance() {
+tX_engine *tX_engine::get_instance() {
 	if (!engine) {
 		engine=new tX_engine();
 	}
@@ -66,18 +66,18 @@ tX_engine *tX_engine :: get_instance() {
 	return engine;
 }
 
-void tX_engine :: set_grab_request() {
+void tX_engine::set_grab_request() {
 	grab_request=true;
 }
 
-int16_t* tX_engine :: render_cycle() {
+int16_t* tX_engine::render_cycle() {
 	/* Checking whether to grab or not  */
 	if (grab_request!=grab_active) {
 		if (grab_request) {
 			/* Activating grab... */
 			int result=mouse->grab(); 
 			if (result!=0) {
-				tX_error("tX_engine::loop(): failed to grab mouse - error %i", result);
+				tX_error("tX_engine::render_cycle(): failed to grab mouse - error %i", result);
 				grab_active=false;
 				/* Reseting grab_request, too - doesn't help keeping it, does it ? ;) */
 				grab_request=false;
@@ -114,7 +114,7 @@ int16_t* tX_engine :: render_cycle() {
 	return  data;
 }
 
-void tX_engine :: loop() {
+void tX_engine::loop() {
 	while (!thread_terminate) {
 		/* Waiting for the trigger */
 		pthread_mutex_lock(&start);
@@ -156,10 +156,9 @@ void *engine_thread_entry(void *engine_void) {
 		}
 	}
 
-	pid_t pid=getpid();
-	tX_engine::get_instance()->set_pid(pid);
-
 #ifdef USE_SCHEDULER
+	pid_t pid=getpid();
+
 #ifdef USE_CAPABILITIES
 	if (have_nice_capability()) {
 		if (globals.use_realtime) {
@@ -175,6 +174,7 @@ void *engine_thread_entry(void *engine_void) {
 		tX_warning("engine_thread_entry(): can't set SCHED_FIFO -> lacking capabilities.");
 	}
 #endif //USE_CAPABILITIES
+	engine->set_pid(pid);
 	
 	if (sched_getscheduler(pid)!=SCHED_FIFO) {
 		tX_warning("engine_thread_entry() - engine has no realtime priority scheduling.");
@@ -199,7 +199,9 @@ tX_engine :: tX_engine() {
 	pthread_mutex_init(&start, NULL);
 	pthread_mutex_lock(&start);
 	thread_terminate=false;
-	pid=0;
+#ifdef USE_SCHEDULER
+	pid=-1;
+#endif	
 	
 	/* Creating the actual engine thread.. */
 #ifdef USE_SCHEDULER	

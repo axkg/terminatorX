@@ -914,6 +914,8 @@ GCallback menu_delete_all_events(GtkWidget *, void *param)
 	
 	gtk_label_set_markup(GTK_LABEL(label), "Delete <b>all</b> events for <b>all</b> turntables.");
 	gtk_widget_show(del_dialog);
+	
+	return NULL;
 }
 
 GCallback menu_delete_all_events_for_vtt(GtkWidget *, vtt_class *vtt)

@@ -58,6 +58,7 @@
 #include "tX_dialog.h"
 #include <gtk/gtk.h>
 #include <glib.h>
+#include <string.h>
 
 #include "tX_ladspa.h"
 #include "tX_ladspa_class.h"
@@ -176,7 +177,11 @@ void checkenv(const char *name) {
 	
 	value=getenv(name);
 	if (value) {
-		length=strnlen(value, PATH_MAX+1);
+		length=strlen(value);
+		/*
+		 strnlen requires extra macros...
+		 length=strnlen(value, PATH_MAX+1);
+		*/
 		
 		if (length>=PATH_MAX) {
 			tX_error("Your \"%s\" environment variable seems malicious (%i chars).", name, length);
