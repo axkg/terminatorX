@@ -58,6 +58,8 @@
 int audioon=0;
 int sequencer_ready=1;
 
+bool tX_shutdown=false;
+
 GtkWidget *tt_parent;
 GtkWidget *control_parent;
 GtkWidget *audio_parent;
@@ -734,7 +736,7 @@ void grab_off()
 }
 
 gboolean quit()
-{
+{	
 	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window), 
 	GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
 	"Exit terminatorX and loose all unsaved data?");
@@ -746,6 +748,8 @@ gboolean quit()
 		return TRUE;
 	}
 
+	tX_shutdown=true;
+	
 	turn_audio_off();
 	vtt_class::delete_all();
 	

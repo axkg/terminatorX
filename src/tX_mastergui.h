@@ -59,4 +59,6 @@ extern GtkWidget *panel_bar;
 
 void add_to_panel_bar(GtkWidget *);
 void remove_from_panel_bar(GtkWidget *);
+
+extern bool tX_shutdown;
 #endif

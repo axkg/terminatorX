@@ -136,12 +136,16 @@ int tx_mouse :: grab() {
 	vtt_class::focus_no(0);
 	warp=TX_MOUSE_SPEED_NORMAL;
 	
+	tX_debug("tX_mouse::grab(): this: %08x, dpy: %08x", (int) this, (int) dpy);
+	
 	return(0);
 }
 
 void tx_mouse :: ungrab()
 {
 	if (!grabbed) return;
+
+	tX_debug("tX_mouse::ungrab(): this: %08x, dpy: %08x", (int) this, (int) dpy);
 	
 #ifdef USE_DGA2	
 	XDGASetMode(dpy, DefaultScreen(dpy), 0);
@@ -162,6 +166,8 @@ void tx_mouse :: ungrab()
 
 	vtt_class::unfocus();
 
+	tX_debug("tX_mouse::ungrab(): done");
+	
 	grabbed=0;
 }
 
