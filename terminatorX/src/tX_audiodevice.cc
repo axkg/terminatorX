@@ -415,7 +415,7 @@ tX_jack_client::~tX_jack_client()
 
 void tX_jack_client::error(const char *desc)
 {
-	tX_error("tX_jack_client::error() jack error: %s.", desc);
+	tX_error("jack error: %s.", desc);
 }
 
 int tX_jack_client::srate(jack_nframes_t nframes, void *arg)

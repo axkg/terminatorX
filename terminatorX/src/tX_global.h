@@ -63,6 +63,7 @@ extern "C" {
 #define tX_error(fmt, args...); { fprintf(stderr, "* tX_error: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
 #define tX_warning(fmt, args...); { fprintf(stderr, "+ tX_warning: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
 #define tX_msg(fmt, args...); { fprintf(stderr, "- tX_msg: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
+#define tX_plugin_warning(fmt, args...); { if (globals.verbose_plugin_loading) { fprintf(stderr, "+ tX_warning: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }}
 
 #ifdef MEM_DEBUG
 #define tX_freemem(ptr, varname, comment); fprintf(stderr, "** free() [%s] at %08x. %s.\n", varname, ptr, comment); free(ptr);
@@ -176,6 +177,9 @@ typedef struct {
 	int quit_confirm;
 	int use_realtime;
 	int auto_assign_midi;
+	
+	int verbose_plugin_loading;
+	int force_nonrt_plugins;
 } tx_global;
 
 extern tx_global globals;
