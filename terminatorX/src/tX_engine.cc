@@ -59,7 +59,7 @@ pthread_mutex_t pos_lock=PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t run_lock=PTHREAD_MUTEX_INITIALIZER;
 
 tx_mouse *mouse=new tx_mouse();
-audiodevice *device=new audiodevice();
+tX_audiodevice *device=NULL;
 tx_tapedeck *tape=new tx_tapedeck();
 
 int engine_quit=0;
@@ -154,7 +154,7 @@ void *engine(void *nil)
 			new_grab_mouse=0;
 		}
 		
-		device->eat(temp);
+		device->play(temp);
 		if (is_recording) tape->eat(temp);
 		sequencer.step();
 		temp=vtt_class::render_all_turntables();					
@@ -188,10 +188,33 @@ int run_engine()
 	}
 
 	pthread_mutex_lock(&run_lock);
-
-	if (device->dev_open(0))
+	
+	switch (globals.audiodevice_type)
 	{
-		device->dev_close();
+#ifdef USE_OSS	
+		case TX_AUDIODEVICE_TYPE_OSS:
+			device=new tX_audiodevice_oss();
+			break;
+#endif			
+
+#ifdef USE_ALSA			
+		case TX_AUDIODEVICE_TYPE_ALSA:
+			device=new tX_audiodevice_alsa();
+			break;
+#endif
+		
+		default:
+			device=NULL;
+			pthread_mutex_unlock(&run_lock);
+			pthread_mutex_unlock(&thread_lock);
+			return TX_ENG_ERR_DEVICE;
+	}
+	
+	if (device->open())
+	{
+		device->close();
+		delete device;
+		device=NULL;		
 		pthread_mutex_unlock(&run_lock);
 		pthread_mutex_unlock(&thread_lock);
 		return TX_ENG_ERR_DEVICE;
@@ -201,18 +224,20 @@ int run_engine()
 	
 	if (want_recording)
 	{
-		if (!tape->start_record(globals.record_filename, device->getblocksize()))
+		if (!tape->start_record(globals.record_filename, device->get_buffersize()*sizeof(int16_t)))
 			is_recording=1;
 		else
 		{
-			device->dev_close();
+			device->close();
+			delete device;
+			device=NULL;			
 			pthread_mutex_unlock(&run_lock);
 			pthread_mutex_unlock(&thread_lock);
 			return TX_ENG_ERR_TAPE;			
 		}
 	}
 
-	vtt_class::set_mix_buffer_size(device->getblocksize()/sizeof(int16_t)/2);
+	vtt_class::set_mix_buffer_size(device->get_buffersize()/2); //mixbuffer is mono
 	
 	engine_quit=0;
 #ifdef USE_SCHEDULER	
@@ -247,7 +272,9 @@ int run_engine()
 	
 	if (!engine_thread)
 	{
-		device->dev_close();
+		device->close();
+		delete device;		
+		device=NULL;
 		pthread_mutex_unlock(&run_lock);
 		pthread_mutex_unlock(&thread_lock);
 		return(TX_ENG_ERR_THREAD);
@@ -292,7 +319,9 @@ int stop_engine()
 	engine_thread=0;
 	
 	pthread_mutex_unlock(&thread_lock);
-	device->dev_close();
+	device->close();
+	delete device;
+	device=NULL;
 	
 	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++)
 	{

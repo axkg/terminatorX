@@ -32,7 +32,51 @@
 
 #include "tX_endian.h"
 
-int audiodevice :: dev_open(int dont_use_rt_buffsize)
+void tX_audiodevice :: init()
+{
+	samples_per_buffer=0;
+	set_buffersize_near(globals.audiodevice_buffersize);
+}
+
+
+void tX_audiodevice :: set_latency_near(int milliseconds)
+{
+	samples_per_buffer=(int) (((float) milliseconds) * 88.2);
+}
+
+int tX_audiodevice :: get_latency()
+{
+	return ((int) (((float) samples_per_buffer) / 88.2));
+}
+
+void tX_audiodevice :: set_buffersize_near(int samples)
+{
+	samples_per_buffer=samples;
+}
+
+int tX_audiodevice :: get_buffersize()
+{
+	return samples_per_buffer;
+}
+
+int tX_audiodevice :: open()
+{
+	fprintf(stderr, "tX: Error: tX_audiodevice::dev_open()\n");
+}
+
+int tX_audiodevice :: close()
+{
+	fprintf(stderr, "tX: Error: tX_audiodevice::dev_close()\n");
+}
+
+void tX_audiodevice :: play(int16_t* dummy)
+{
+	fprintf(stderr, "tX: Error: tX_audiodevice::play()\n");
+}
+
+#ifdef USE_OSS
+
+int tX_audiodevice_oss :: open(int dont_use_rt_buffsize)
 {
 	int i=0;
 	int p;
@@ -92,12 +136,7 @@ int audiodevice :: dev_open(int dont_use_rt_buffsize)
         return(i);	
 }
 
-int audiodevice :: getblocksize()
-{
-	return(blocksize);
-}
-
-int audiodevice :: dev_close()
+int tX_audiodevice_oss :: close()
 {
 	void *dummy;
 
@@ -116,16 +155,44 @@ int audiodevice :: dev_close()
 	return(0);	
 }
 
-audiodevice :: audiodevice()
+tX_audiodevice_oss :: tX_audiodevice_oss()
 {
 	fd=0;
-	blocksize=0;
+
+	init();
 }
 
-void audiodevice :: eat(int16_t *buffer)
+void tX_audiodevice_oss :: play(int16_t *buffer)
 {
 #ifdef BIG_ENDIAN_MACHINE
 	swapbuffer (buffer, samples);
 #endif
 	write(fd, buffer, blocksize);	
 }
+
+#endif //USE_OSS
+
+#ifdef USE_ALSA
+
+int tX_audiodevice_alsa :: open(int dont_use_rt_buffsize)
+{
+}
+
+int tX_audiodevice_alsa :: close()
+{
+}
+
+tX_audiodevice_alsa :: tX_audiodevice_alsa()
+{
+	init();
+}
+
+void tX_audiodevice_alsa :: play(int16_t *buffer)
+{
+#ifdef BIG_ENDIAN_MACHINE
+	swapbuffer (buffer, samples);
+#endif
+	/***/
+}
+
+#endif //USE_ALSA
