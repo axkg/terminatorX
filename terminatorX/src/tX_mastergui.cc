@@ -519,6 +519,8 @@ GtkSignalFunc load_audio() {
 	}
 	
 	if (vtt!=NULL) load_file(NULL, vtt);
+	
+	return NULL;
 }
 
 GtkSignalFunc drop_set(GtkWidget *widget, GdkDragContext *context,
@@ -1685,13 +1687,6 @@ void note_destroy(GtkWidget *widget, GtkWidget *mbox)
 
 void tx_note(const char *message, bool isError, GtkWindow *window)
 {
-	char buffer[4096]="terminatorX ";
-	if (isError) {
-		strcat(buffer, "note:\n\n");
-	} else {
-		strcat(buffer, "error:\n\n");
-	}
-	
 	if (!window) window==GTK_WINDOW(main_window);
 	
 	GtkWidget *dialog=gtk_message_dialog_new(window,

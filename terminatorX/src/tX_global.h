@@ -214,17 +214,17 @@ extern int _store_compress_xml;
 #define tX_store(fmt, args...); { _store_compress_xml ? gzprintf(rz, fmt , ## args) : fprintf(rc, fmt , ## args); }
 
 #define store_int(s, i); tX_store("%s<%s>%i</%s>\n", indent, s,(int) i, s);
-#define store_float(s, i); tX_store("%s<%s>%lf</%s>\n", indent, s,(double) i, s);
+#define store_float(s, i); tX_store((sizeof(i)>4) ? "%s<%s>%lf</%s>\n" : "%s<%s>%f</%s>\n", indent, s, i, s);
 #define store_string(s, i); tX_store("%s<%s>%s</%s>\n", indent, s, encode_xml(tmp_xml_buffer, i) , s);
 #define store_bool(s, i); tX_store("%s<%s>%s</%s>\n", indent, s, i ? "true" : "false", s);
 
 #define store_id(s, id); tX_store("%s<%s id=\"%i\"/>\n", indent, s, id);
 #define store_int_id(s, i, id); tX_store("%s<%s id=\"%i\">%i</%s>\n", indent, s, id, (int) i, s);
-#define store_float_id(s, i, id); tX_store("%s<%s id=\"%i\">%lf</%s>\n", indent, s, id, (double) i, s);
+#define store_float_id(s, i, id); tX_store((sizeof(i)>4) ? "%s<%s id=\"%i\">%lf</%s>\n" : "%s<%s id=\"%i\">%f</%s>\n", indent, s, id, i, s);
 #define store_bool_id(s, i, id); tX_store("%s<%s id=\"%i\">%s</%s>\n", indent, s, id, i ? "true" : "false", s);
 
 #define store_int_sp(name, i, sp); { tX_store("%s<%s ", indent, name); sp.store_meta(rc, rz); tX_store(">%i</%s>\n", (int) i, name); }
-#define store_float_sp(name, i, sp); { tX_store("%s<%s ", indent, name); sp.store_meta(rc, rz); tX_store(">%lf</%s>\n", (double) i, name); }
+#define store_float_sp(name, i, sp); { tX_store("%s<%s ", indent, name); sp.store_meta(rc, rz); tX_store((sizeof(i)>4) ? ">%lf</%s>\n" : ">%f</%s>\n" , i, name); }
 #define store_bool_sp(name, i, sp); { tX_store("%s<%s ", indent, name); sp.store_meta(rc, rz); tX_store(">%s</%s>\n", i ? "true" : "false", name); }
 
 #define restore_int_id(s, i, sp, init); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) { sscanf((char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%i", &i);  init; } sp.restore_meta(cur); }
