@@ -1,7 +1,7 @@
-terminatorX V3.71 README
+terminatorX V3.73 README
 ------------------------
 
-Copyright (C) 1999, 2000 Alexander König
+Copyright (C) 1999 - 2002 Alexander König
 eMail: alex@lisas.de
 Homepage: http://www.terminatorX.cx
 
@@ -12,13 +12,8 @@ WARNING: TerminatorX comes with ABSOLUTELY NO WARRANTY. This software is known
 to lockup X11 or cause other problems under rare conditions. Don't use
 it on production servers. You have been warned!
 
-NEW: As the previous README was a pain to read I decided to move the
-documentation to an SGML "manual". This distribution contains that manual (in
-the doc-directory) as a set of HTML files for easy browsing and a postscript
-version for printing.
-
-Documentation on terminatorX included:
---------------------------------------
+Read that fine Manual:
+----------------------
 
     o ./INSTALL             - Information on installing terminatorX
     o ./README.GNOME        - Some hints on GNOME-integration
