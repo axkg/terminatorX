@@ -1,6 +1,6 @@
 section = main download faq screenshots scratches turntable aseqjoy docs
 
-all: index.html aseqjoy.html download.html faq.html scratches.html docs.html turntable.html screenshots.html links.html
+all: index.html aseqjoy.html download.html faq.html scratches.html docs.html turntable.html screenshots.html links.html  bugs.html
 
 XMLFILES=$(wildcard *.xml) $(wildcard *.xsl)
 

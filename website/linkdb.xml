@@ -37,4 +37,8 @@
   <dlink id="unstable" text="unstable package" url="http://packages.debian.org/unstable/sound/terminatorx.html"/>
   <dlink id="jack" text="JACK" url="http://jackit.sourceforge.net"/>
   <dlink id="links" text="links section" url="links.html"/>
+  <dlink id="bug42" text="buzilla" url="http://www-stud.fht-esslingen.de/bugzilla/"/>
+  <dlink id="kover" text="kover" url="http://lisas.de/kover"/>
+  <dlink id="mail"  text="mail" url="mailto:alex@lisas.de"/>
+  <dlink id="bugs"  text="bugs section" url="bugs.html"/>
 </linkdb>

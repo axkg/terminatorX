@@ -15,7 +15,7 @@
           { text-align: left } p.fancy { text-align: justify } </style>
       </head>
       <body alink="#FF0000" bgcolor="#555555" link="#FFFF99"
-        onload="rolloverLoad('main','pix/vinyl-hover.gif','pix/vinyl.png');                rolloverLoad('download','pix/vinyl-hover.gif','pix/vinyl.png');         rolloverLoad('screenshots','pix/vinyl-hover.gif','pix/vinyl.png');         rolloverLoad('faq','pix/vinyl-hover.gif','pix/vinyl.png');         rolloverLoad('docs','pix/vinyl-hover.gif','pix/vinyl.png');         rolloverLoad('turntable','pix/vinyl-hover.gif','pix/vinyl.png');         rolloverLoad('scratches','pix/vinyl-hover.gif','pix/vinyl.png');         rolloverLoad('links','pix/vinyl-hover.gif','pix/vinyl.png');         rolloverLoad('aseqjoy','pix/vinyl-hover.gif','pix/vinyl.png');"
+        onload="rolloverLoad('main','pix/vinyl-hover.gif','pix/vinyl.png');                rolloverLoad('download','pix/vinyl-hover.gif','pix/vinyl.png');         rolloverLoad('screenshots','pix/vinyl-hover.gif','pix/vinyl.png');         rolloverLoad('faq','pix/vinyl-hover.gif','pix/vinyl.png');         rolloverLoad('docs','pix/vinyl-hover.gif','pix/vinyl.png');         rolloverLoad('turntable','pix/vinyl-hover.gif','pix/vinyl.png');         rolloverLoad('scratches','pix/vinyl-hover.gif','pix/vinyl.png');         rolloverLoad('links','pix/vinyl-hover.gif','pix/vinyl.png');        rolloverLoad('bugs','pix/vinyl-hover.gif','pix/vinyl.png');      rolloverLoad('aseqjoy','pix/vinyl-hover.gif','pix/vinyl.png');"
         text="#FFFFFF" vlink="#FFCC33">
         <!--new-->
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -115,6 +115,26 @@
                   </xsl:if>
                 </tr>
                 <tr>
+                  <xsl:if test="@name='bugs'">
+                    <td bgcolor="#777777">
+                      <img alt="-" border="0" src="pix/vinyl-highlight.png" vspace="0"/>
+                    </td>
+                    <td bgcolor="#777777">bugs</td>
+                    <td bgcolor="#777777">
+                      <img alt="-" border="0" src="pix/vinyl-spacer.png" vspace="0"/>
+                    </td>
+                  </xsl:if>
+                  <xsl:if test="@name!='bugs'">
+                    <td>
+                      <img alt="-" border="0" name="bugs" src="pix/vinyl.png" vspace="0"/>
+                    </td>
+                    <td>
+                      <a href="bugs.html" onMouseOut="rolloverOff('bugs');" onMouseOver="rolloverOn('bugs');">bugs</a>
+                    </td>
+                    <td/>
+                  </xsl:if>
+                </tr>                
+                <tr>
                   <xsl:if test="@name='faq'">
                     <td bgcolor="#777777">
                       <img alt="-" border="0" src="pix/vinyl-highlight.png" vspace="0"/>
@@ -133,7 +153,7 @@
                     </td>
                     <td/>
                   </xsl:if>
-                </tr>
+                </tr>                 
                 <tr>
                   <xsl:if test="@name='docs'">
                     <td bgcolor="#777777">

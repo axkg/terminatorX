@@ -18,16 +18,16 @@
             <dblink id="linuxsound"/>. IMHO it's the most complete collection of links to Linux
           audio projects and very well structured. </para>
       </ilink>
-      <!--<ilink>
+      <ilink>
         <banner filename="rezound.png"/>
         <dblink id="rezound"/>
-        <para>I don't really want to go into recommending other Linux software packages (as without
-          maintenance such a list will always seem unfair), but I'll make an exception for the cool
-            <dblink id="rezound"/> as I think it's the perfect tool to be used for terminatorX'
-          soundfile editor option. It is specifically well-suited for creating and modifying loops. </para>
-      </ilink>-->
+        <para>I wont list other Linux audio applications here, as Dave does a much better job 
+          at that, however I'll make one exception for <dblink id="rezound"/> as I think it's the perfect tool 
+          to be used as terminatorX'
+          soundfile editor. It is specifically well-suited for creating and modifying loops. </para>
+      </ilink>
       <ilink>
-        <banner filename="freshmeat.gif"/>
+        <banner filename="freshmeat.png"/>
         <dblink id="freshmeat"/>
         <para>I guess it's not necessary to introduce <dblink id="freshmeat"/>. If you want to be
           informed about new terminatorX releases you might want to subscribe to the terminatorX
@@ -103,7 +103,7 @@
       <ilink>
         <banner filename="sonar.png"/>
         <dblink id="sonar"/>
-        <para>The friendly people of <dblink id="sonar"/> invited me to do a terminatorX demo for
+        <para>The kind people of <dblink id="sonar"/> invited me to do a terminatorX demo for
             <link ref="http://www.sonar.es/2003/eng/festival/rama.cfm">Sonarama</link> at the 2003
           Sonar festival (Friday 13th). </para>
       </ilink>
@@ -114,7 +114,7 @@
           <dblink id="openjay"/> is a website for open source DJs. <person>
             <name>J_Zar</name>
             <email>contact@openjay.org</email>
-          </person> a very nice <link
+          </person> wrote a very nice <link
           ref="http://www.openjay.org/modules.php?op=modload&amp;name=Sections&amp;file=index&amp;req=viewarticle&amp;artid=13&amp;page=1">review</link>
           on terminatorX. </para>
       </ilink>
@@ -145,15 +145,25 @@
           freeware CDROM.</para>
       </ilink>
     </subsection>
-    <!--
     <subsection>
-      <title>Contributors (incomplete)</title>
+      <title>Collaborators</title>
       <ilink>
         <banner filename="kover.png"/>
-        <dblink id="ladspa"/>
-        <para/>
+        <dblink id="kover"/>
+        <para><person>
+          <name>Adrian</name>
+          <email>adrian@lisas.de</email>
+        </person>
+        is not only maintaining the machine terminatorX.cx is hosted on, he has
+        also contributed code to terminatorX. Additionally he maintains his own 
+        free software project: <dblink id="kover"/>. So if you want to create
+        CD covers for your terminatorX CDs go check it out.
+        </para>
       </ilink>
+      <para>
+        If you think there's something missing from this list, please 
+        <dblink id="mail">let me know</dblink>.
+      </para>
     </subsection>
-    -->
   </links>
 </section>

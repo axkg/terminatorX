@@ -8,7 +8,7 @@
           digitally sampled audio data (*.wav, *.au, *.ogg, *.mp3, etc.) the way hiphop-DJs scratch
           on vinyl records. It features multiple turntables, realtime effects (buit-in as well as
             <dblink id="ladspa"/> plugin effects), a sequencer and MIDI interface - all accessible
-          through an easy-to-use gtk+ GUI. <bold>This sofware is designed to run under Linux,
+          through an easy-to-use gtk+ GUI. <bold>This software is designed to run under Linux,
             FreeBSD and the like</bold>.</para>
       </answer>
     </qa>
@@ -23,7 +23,7 @@
       <question>What platforms does it run on?</question>
       <answer>
         <para>TerminatorX should run on any recent Linux or FreeBSD system. I develop terminatorX on
-          an X86-System, but the source contains support for bigendian machines (PowerPC for
+          an X86-System, but the source contains support for big endian machines (PowerPC for
           example). If you experience platform related troubles, please let me know.</para>
       </answer>
     </qa>
@@ -37,10 +37,10 @@
     <qa>
       <question>Why does it take terminatorX so long to load samples?</question>
       <answer>
-        <para>This depends on the file your loading. Wavfiles are loaded with the builtin wavloading
-          routines (if enabled on compiletime) and this happens very fast. For compressed audio
-          files the necessary decompression will consume quite some cpu time on loading.</para>
-        <para>Since Version 3.73 loading of audiofiles has been significantly accelerated with the
+        <para>This depends on the file your loading. Wavfiles are loaded with the buit-in wave loading
+          routines (if enabled on compile time) and this happens very fast. For compressed audio
+          files the necessary decompression will consume quite some CPU time on loading.</para>
+        <para>Since Version 3.73 loading of audio files has been significantly accelerated with the
           libaudiofile, libvorbis and mad methods.</para>
       </answer>
     </qa>
@@ -53,7 +53,7 @@
           </person> wrote a <link
             ref="http://www.gardena.net/benno/linux/terminatorX-3.2-mmap.patch"> patch</link>
           against 3.2 to support &quot;on-the-fly&quot; reading of wavfiles. The problem is the
-          patch wasn't applyable to later versions of terminatorX, nor would it work with sox/mpg123
+          patch wasn't applicable to later versions of terminatorX, nor would it work with sox/mpg123
           support. I still plan to port the patch to the newer releases sometime.</para>
       </answer>
     </qa>
@@ -101,7 +101,7 @@
               <para>
                 <screen>Option &quot;omit xfree86-dga&quot;</screen>
               </para>
-              <para>from your <screen>XF86Config</screen>. Check whether the Server loaded dga by
+              <para>from your <screen>XF86Config</screen>. Check whether the Server loaded DGA by
                 running <bold>xdpyinfo</bold> - if DGA is loaded one of the lines you get from
                 xdpyinfo should read <italic>XFree86-DGA</italic>. To check whether DGA actually
                 works run <bold>dga</bold> as root - <red>Warning:</red> the only way to exit this
@@ -112,7 +112,7 @@
             </listitem>
           </itemizedlist>
         </para>
-        <para>If all this doen't help let me know.</para>
+        <para>If all this doesn't help let me know.</para>
       </answer>
     </qa>
     <qa>
@@ -140,12 +140,12 @@
           extra privileges.</para>
         <!--<para>Installing terminatorX <italic>suid root</italic> improves terminatorX' performance
           significantly for non-root users - as terminatorX will use the suid-root privileges to
-          create the engine thread with realtime-scheduling-priority. Immediatley after the creation
+          create the engine thread with realtime-scheduling-priority. Immediately after the creation
           of the thread terminatorX drops root privileges before any files or devices are accessed.
           The problem is: the Linux pthreads manager thread can not be told to drop it's root
           privileges, which means that while the two threads executing terminatorX code run with the
           real user's privileges, the pthread manager thread still runs with root-privileges. While
-          I cannot see how a malicious user or software could utlize this thread to acquire root
+          I cannot see how a malicious user or software could utilize this thread to acquire root
           privileges it might still be possible, so you'll have to make your on decision on
           performance vs security.</para>-->
       </answer>
@@ -179,7 +179,7 @@
         <para>If you don't know find out a little something about <link
             ref="http://www.publicenemy.com">Public Enemy</link>. Learn who <link
             ref="http://www.publicenemy.com/soldiers/termx.php"> TerminatorX</link> is or <link
-            ref="http://www.publicenemy.com/gallery/images/txday.jpg">see him</link>do his work</para>
+            ref="http://www.publicenemy.com/gallery/images/txday.jpg">see him</link> do his work</para>
       </answer>
     </qa>
   </faq>
