@@ -1,0 +1,4 @@
+*.bal
+Makefile.in
+config.log
+terminatorX/src/license.c
