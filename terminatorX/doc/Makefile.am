@@ -1,3 +1,5 @@
+SUBDIRS=img
+
 SOURCES=configuration.html \
 contact.html \
 dragndrop.html \

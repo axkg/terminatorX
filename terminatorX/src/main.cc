@@ -96,14 +96,14 @@ void show_help()
 {
 			
 	fprintf(stderr, "\
-usage: terminatorX [options] [save file]\n\
+usage: terminatorX [options]n\
 \n\
   -h, --help 			Display help info\n\
   -f, --file			Load saved terminatorX set file\n\
   -r, --rc-file [file]		Load alternate rc file\n\
   -d, --dont-save		Do not save settings at exit\n\
   -s, --std-out                 Use stdout for sound output\n\
-   --device=[output device]  Use alternate device for sound output\n\
+  --device=[output device]      Use alternate device for sound output\n\
 \n");
 /*
   -n, --no-gui			Run terminatorX with no GUI\n\
