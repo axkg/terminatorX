@@ -1,48 +1,30 @@
-aseqjoy is a simple Joystick to ALSA MIDI Sequencer Converter
--------------------------------------------------------------
-
-Copyright 2003 by Alexander König - alex@lisas.de
-License: GPL V2 - see the file COPYING
+aseqjoy is a simple Joystick -> MIDI controller converter. 
 
 What it does: Each axis of the joystick device is mapped to a specific MIDI 
-controller. Moving the joystick along an axis will cause aseqjoy to emit
+Controller. Moving the joystick along an axis will cause aseqjoy to emit
 MIDI controller messages via ALSA's sequencer API. The value of the controller
 message represents the joystick's position along the axis (eg 'left' -> 0, 
 'middle' -> 63, 'right' -> 127).
 
 aseqjoy uses the ALSA sequencer API to emit the MIDI events. Therefor it
 creates and output port named after joystick used. You can then use for example
-aconnect (from alsa-utils) or Robert Ham's alsa-patch-bay to connect an aseqjoy
-instance to an input port of your choice. 
+the alsa-patch-bay to connect an aseqjoy instance to an input port of your
+choice. 
 
 Requirements:
--------------
-
 - Linux System with correctly configured Joystick support.
 - A working ALSA 0.9 installation.
 
 Links:
-------
-
 aseqjoy homepage: http://terminatorX.cx/aseqjoy
 ALSA homepage: http://www.alsa-project.org
-Joystick utils: http://atrey.karlin.mff.cuni.cz/~vojtech/joystick/
-ALSA-patch-bay: http://pkl.net/~node/alsa-patch-bay.html
+Input Utils: http://.cz
+ALSA-patch-bay: http://
 
 Howto:
-------
 
-In some cases the joystick may not utilize the full range of available 
-controller values - in this case you should use "jscal" from the joystick
-pacakge (most distributions feature this package) to calibrate your joystick 
-before running aseqjoy. Note: Analog PC joysticks are no high-precision 
-devices - so even after calibrating the device you might not always be able
-to reach "0" or "127" controller values - depending on the joystick you
-use.
-
-Start aseqjoy - if you have a working Joystick (Nr. 0 - use the -d switch to
-select other joysticks) aseqjoy will detect that and each axis to a controller
-from 10 on upwards:
+Start aseqjoy - if you have a working Joystick (Nr. 0) aseqjoy will detect
+that and each axis to a controller from 10 on upwards:
 
 Axis -> Controller
    0 -> 10

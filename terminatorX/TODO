@@ -1,45 +1,36 @@
-terminatorX TODO:
+TODO:
 
-DISCLAIMER: I might implement some of these features in random order. You can 
-accelerate development of a certain feature by sending me a patch ;)
+These are the things I´d like to implement IF I have the time.
+The position of an idea in this list represents it´s priority:
 
-High priority milestones:
--------------------------
+- correct getopt error handling.
 
-I'd like to have this in 4.0:
+- Enhance audio quality with -DHANDLE_STOP -> no clicks.
 
-- Write a JACK audio backend.
+- Accept wavfiles that contain additional information (e.g. loops)
 
-- Support stereo LADSPA plugins somehow.
+- Support Y-mouse-movement for scratching
 
-Low priority milestones:
-------------------------
+- add a marker feature: this will allow you to set 12 markers visually
+  in the wavfile-display. These will be available via the F1-F12 keys in
+  NORMAL and RECORD mode. If you press (and hold) one of these keys it will
+  have the same effect as pressing space but if you release it it will
+  jump to the position you marked in the wavfile. Easier scratching for people
+  like me who don´t have any scratching skills.
 
-This might come after 4.0:
+- implement licmak with either perl, awk or sed.
 
-- Implement a sequencer editor GUI to delete, copy & paste, edit event etc.
+- code cleanup: A lot of this code is ugly, e.g. writing to public member of
+  classes instead of calling a method. Or the position_update in render_block
+  I did this for easiness and speed. But it should be cleaned up I believe.
 
-- Find a replacement for DGA mouse grabbing as that has some problems and 
-  might be gone sometime from now.
-    
-- Support other languages.
+DONE:
 
---- Ok, the follownig points are already implemented:
+The following stuff has been on the list above and is now ipmlemented:
 
-- Rewrite the audio device layer, so that terminatorX operates at a fix block
-  size - this will allow correct playback of sequencer events even if played
-  back on a different soundcard then recorded.
+[V2.3] (use -DKEEP_DEV_OPEN in Makefile)
 
-- Support ALSA drivers and allow usage of multiple audio devices at the same 
-  time.
-  
-- Switch the terminatorX set file format to XML so that sets recorded on one
-  platform can be loaded on other platforms, too.
-  
-- Move the "main buttons" on the top right to a menu bar in order to get the
-  GUI even more flexible.
-
-- Provide a MIDI interface to terminatorX.
-
-- Use libaudiofile, libvorbis, etc. for file loading to get rid of "piped
-  loading" and accelerate loading of ogg and mp3 files this way.
+- add a "keep device open" option and implement it
+  (this would help if you have problems opening device very often
+  due to memory fragmentation). And it would help me ;) as my card (or better
+  driver) clicks awfully when device is opened!
