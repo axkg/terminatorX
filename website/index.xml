@@ -45,7 +45,7 @@
                 parameter of your choice and set the MIDI mappings, bounds or delete events.
               </para></listitem>
             </itemizedlist>
-            <screenshot filename="parameter_menu.png"/>            
+            <screenshot filename="parameter_menu.jpg"/>
             <itemizedlist>
               <listitem><para>The new <bold>MIDI Bounds</bold> let you modify the range
                   within which a MIDI controller can effect a certain parameter.
@@ -365,7 +365,7 @@
               <listitem>
                 <para>Many other fixes.</para>
               </listitem>
-            </itemizedlist>Have a look at the <link ref="ChangeLog">ChangeLog</link> for more
+            </itemizedlist>Have a look at the <dblink id="changelog"/> for more
             details and grab the tarball or the RPMs from the <link
               ref="download.html#Current Version">download section</link>.</para>
           <para>Aside of the release I'd like to bring to your attention that <person>

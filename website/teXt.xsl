@@ -5,287 +5,10 @@
       <head>
         <meta content="Alexander Koenig" name="Author"/>
         <meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type"/>
-        <link href="favicon.ico" rel="icon" type="image/x-icon"/>
-        <link href="favicon.ico" rel="shortcut icon" type="image/x-icon"/>
-        <title>terminatorX: <xsl:value-of select="@name"/>
-        </title>
-        <script language="Javascript" src="script.js" type="text/javascript"/>
-        <style type="text/css"> A:hover {text-decoration: none; color: #ff4444} A:active
-          {text-decoration: none; color: #ff4444} body { font-family: vera-sans, Verdana, sans-serif; } p.plain
-          { text-align: left } p.fancy { text-align: justify } </style>
-      </head>
-      <body alink="#FF0000" bgcolor="#555555" link="#FFFF99"
-        onload="load('main','pix/vinyl-hover.gif','pix/vinyl.png');load('download','pix/vinyl-hover.gif','pix/vinyl.png');load('screenshots','pix/vinyl-hover.gif','pix/vinyl.png');load('faq','pix/vinyl-hover.gif','pix/vinyl.png');load('docs','pix/vinyl-hover.gif','pix/vinyl.png');load('turntable','pix/vinyl-hover.gif','pix/vinyl.png');load('scratches','pix/vinyl-hover.gif','pix/vinyl.png');load('links','pix/vinyl-hover.gif','pix/vinyl.png');load('bugs','pix/vinyl-hover.gif','pix/vinyl.png');load('aseqjoy','pix/vinyl-hover.gif','pix/vinyl.png');"
-        text="#FFFFFF" vlink="#FFCC33">
-        <!--new-->
-        <table border="0" cellpadding="0" cellspacing="0" width="100%">
-          <tr>
-            <td bgcolor="#000000" colspan="2">
-              <table border="0" cellspacing="5px" width="100%">
-                <tr>
-                  <td>
-                    <center>
-                      <img ALT="terminatorX" src="pix/tX_logo.jpg"/>
-                    </center>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td align="left" bgcolor="#ffffff">
-              <font color="#ffffff" size="+2"> menu</font>
-            </td>
-            <td bgcolor="#ffffff" width="100%">
-              <table border="0" cellpadding="4px" cellspacing="0" width="100%">
-                <tr>
-                  <td align="right" bgcolor="#ffffff" width="100%">
-                    <font color="#000000" size="+2">
-                      <b>
-                        <xsl:value-of select="@name"/>
-                      </b>
-                    </font>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <!--menu-->
-            <td valign="top">
-              <table border="0" cellpadding="2px" cellspacing="0">
-                <tr>
-                  <xsl:if test="@name='main'">
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-highlight.png" vspace="0"/>
-                    </td>
-                    <td bgcolor="#777777">main</td>
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-spacer.png" vspace="0"/>
-                    </td>
-                  </xsl:if>
-                  <xsl:if test="@name!='main'">
-                    <td>
-                      <img alt="-" border="0" name="main" src="pix/vinyl.png" vspace="0"/>
-                    </td>
-                    <td>
-                      <a href="./" onMouseOut="off('main');" onMouseOver="on('main');">main</a>
-                    </td>
-                    <td/>
-                  </xsl:if>
-                </tr>
-                <tr>
-                  <xsl:if test="@name='download'">
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-highlight.png" vspace="0"/>
-                    </td>
-                    <td bgcolor="#777777">download</td>
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-spacer.png" vspace="0"/>
-                    </td>
-                  </xsl:if>
-                  <xsl:if test="@name!='download'">
-                    <td>
-                      <img alt="-" border="0" name="download" src="pix/vinyl.png" vspace="0"/>
-                    </td>
-                    <td>
-                      <a href="download.html" onMouseOut="off('download');" onMouseOver="on('download');">download</a>
-                    </td>
-                    <td/>
-                  </xsl:if>
-                </tr>
-                <tr>
-                  <xsl:if test="@name='screenshots'">
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-highlight.png" vspace="0"/>
-                    </td>
-                    <td bgcolor="#777777">screenshots</td>
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-spacer.png" vspace="0"/>
-                    </td>
-                  </xsl:if>
-                  <xsl:if test="@name!='screenshots'">
-                    <td>
-                      <img alt="-" border="0" name="screenshots" src="pix/vinyl.png" vspace="0"/>
-                    </td>
-                    <td>
-                      <a href="screenshots.html" onMouseOut="off('screenshots');" onMouseOver="on('screenshots');">screenshots</a>
-                    </td>
-                    <td/>
-                  </xsl:if>
-                </tr>
-                <tr>
-                  <xsl:if test="@name='bugs'">
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-highlight.png" vspace="0"/>
-                    </td>
-                    <td bgcolor="#777777">bugs</td>
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-spacer.png" vspace="0"/>
-                    </td>
-                  </xsl:if>
-                  <xsl:if test="@name!='bugs'">
-                    <td>
-                      <img alt="-" border="0" name="bugs" src="pix/vinyl.png" vspace="0"/>
-                    </td>
-                    <td>
-                      <a href="bugs.html" onMouseOut="off('bugs');" onMouseOver="on('bugs');">bugs</a>
-                    </td>
-                    <td/>
-                  </xsl:if>
-                </tr>                
-                <tr>
-                  <xsl:if test="@name='faq'">
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-highlight.png" vspace="0"/>
-                    </td>
-                    <td bgcolor="#777777">faq</td>
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-spacer.png" vspace="0"/>
-                    </td>
-                  </xsl:if>
-                  <xsl:if test="@name!='faq'">
-                    <td>
-                      <img alt="-" border="0" name="faq" src="pix/vinyl.png" vspace="0"/>
-                    </td>
-                    <td>
-                      <a href="faq.html" onMouseOut="off('faq');" onMouseOver="on('faq');">faq</a>
-                    </td>
-                    <td/>
-                  </xsl:if>
-                </tr>                 
-                <tr>
-                  <xsl:if test="@name='docs'">
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-highlight.png" vspace="0"/>
-                    </td>
-                    <td bgcolor="#777777">docs</td>
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-spacer.png" vspace="0"/>
-                    </td>
-                  </xsl:if>
-                  <xsl:if test="@name!='docs'">
-                    <td>
-                      <img alt="-" border="0" name="docs" src="pix/vinyl.png" vspace="0"/>
-                    </td>
-                    <td>
-                      <a href="docs.html" onMouseOut="off('docs');"
-                        onMouseOver="on('docs');"> docs</a>
-                    </td>
-                    <td/>
-                  </xsl:if>
-                </tr>
-                <tr>
-                  <xsl:if test="@name='scratches'">
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-highlight.png" vspace="0"/>
-                    </td>
-                    <td bgcolor="#777777">scratches</td>
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-spacer.png" vspace="0"/>
-                    </td>
-                  </xsl:if>
-                  <xsl:if test="@name!='scratches'">
-                    <td>
-                      <img alt="-" border="0" name="scratches" src="pix/vinyl.png" vspace="0"/>
-                    </td>
-                    <td>
-                      <a href="scratches.html" onMouseOut="off('scratches');" onMouseOver="on('scratches');">scratches</a>
-                    </td>
-                    <td/>
-                  </xsl:if>
-                </tr>
-                <tr>
-                  <xsl:if test="@name='turntable gallery'">
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-highlight.png" vspace="0"/>
-                    </td>
-                    <td bgcolor="#777777">turntables</td>
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-spacer.png" vspace="0"/>
-                    </td>
-                  </xsl:if>
-                  <xsl:if test="@name!='turntable gallery'">
-                    <td>
-                      <img alt="-" border="0" name="turntable" src="pix/vinyl.png" vspace="0"/>
-                    </td>
-                    <td>
-                      <a href="turntable.html" onMouseOut="off('turntable');" onMouseOver="on('turntable');">turntables</a>
-                    </td>
-                    <td/>
-                  </xsl:if>
-                </tr>
-                <tr>
-                  <xsl:if test="@name='aseqjoy'">
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-highlight.png" vspace="0"/>
-                    </td>
-                    <td bgcolor="#777777">aseqjoy</td>
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-spacer.png" vspace="0"/>
-                    </td>
-                  </xsl:if>
-                  <xsl:if test="@name!='aseqjoy'">
-                    <td>
-                      <img alt="-" border="0" name="aseqjoy" src="pix/vinyl.png" vspace="0"/>
-                    </td>
-                    <td>
-                      <a href="aseqjoy.html" onMouseOut="off('aseqjoy');"
-                        onMouseOver="on('aseqjoy');"> aseqjoy</a>
-                    </td>
-                    <td/>
-                  </xsl:if>
-                </tr>
-                <tr>
-                  <xsl:if test="@name='links'">
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-highlight.png" vspace="0"/>
-                    </td>
-                    <td bgcolor="#777777">links</td>
-                    <td bgcolor="#777777">
-                      <img alt="-" border="0" src="pix/vinyl-spacer.png" vspace="0"/>
-                    </td>
-                  </xsl:if>
-                  <xsl:if test="@name!='links'">
-                    <td>
-                      <img alt="-" border="0" name="links" src="pix/vinyl.png" vspace="0"/>
-                    </td>
-                    <td>
-                      <a href="links.html" onMouseOut="off('links');"
-                        onMouseOver="on('links');"> links</a>
-                    </td>
-                    <td/>
-                  </xsl:if>
-                </tr>
-              </table>
-            </td>
-            <!--contents-->
-            <td valign="top">
-              <table border="0" cellpadding="10px" cellspacing="0" width="100%">
-                <tr>
-                  <td bgcolor="#777777" width="100%">
-                    <xsl:apply-templates/>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-        <!-- bottom -->
-        <HR width="100%"/>
-        <table width="100%">
-          <tr>
-            <td align="left" valign="top" width="100%">
-              <font size="-1">Copyright (C) 1999-2004 by <A HREF="mailto:alex@lisas.de">Alexander KMAKE_THIS_MYOUMLnig</A>
-              </font>
-            </td>
-            <td>
-              <a href="http://validator.w3.org/check/referer">
-                <img alt="Valid HTML 4.01!" border="0" height="31" src="pix/valid-html401.png" width="88"/>
-              </a>
-            </td>
-          </tr>
-        </table>
+        <title><xsl:value-of select="@name"/></title>
+	  </head>
+      <body>
+         <xsl:apply-templates/>
       </body>
     </html>
   </xsl:template>
@@ -359,12 +82,7 @@
     </table>
   </xsl:template>
   <xsl:template match="link">
-    <a>
-      <xsl:attribute name="href">
-        <xsl:value-of select="@ref"/>
-      </xsl:attribute>
-      <xsl:apply-templates/>
-    </a>
+     <xsl:apply-templates/>
   </xsl:template>
   <xsl:template match="dblink">
     <xsl:variable name="search" select="@id"/>
@@ -399,13 +117,7 @@
     </li>
   </xsl:template>
   <xsl:template match="person">
-    <a>
-      <xsl:attribute name="href">mailto:<xsl:if test="email='alex@lisas.de'">alex@lisas.de</xsl:if>
-        <xsl:if test="email!='alex@lisas.de'">NOSPAM_<xsl:value-of
-            select="substring-before(email, '@')"/>_AT_<xsl:value-of select="substring-after(email, '@')"/>_NOSPAM</xsl:if>
-      </xsl:attribute>
-      <xsl:value-of select="name"/>
-    </a>
+	  <xsl:value-of select="name"/> &lt;<xsl:value-of select="email"/>&gt;
   </xsl:template>
   <xsl:template match="index">
     <p>
@@ -666,14 +378,15 @@
 
   <xsl:template match="changelog">
     <span style="font-family: monospace;">
-    <p><font size="+2">ChangeLog</font></p>
+    <p><font size="+2">terminatorX ChangeLog</font></p>
+	<p>Copyright (C) 1999-2004 Alexander KMAKE_THIS_MYOUMLnig</p>
       <xsl:apply-templates/>
 	  </span>
   </xsl:template>
 
   <xsl:template match="version">
     <p><font size="+1">Version <xsl:value-of select="@name"/> <xsl:if 
-	test="@unreleased='true'"><i> unreleased </i></xsl:if></font>
+	test="@unreleased='true'"><i> (unreleased) </i></xsl:if></font>
 	</p>
 	<ul>
       <xsl:apply-templates/>
