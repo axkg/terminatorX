@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Correct the following paths if necessary (should work for redhat)
+MIMEDIR=/usr/share/mime-info
+ICONDIR=/usr/share/pixmaps
+
+# You shouldn't have to edit these...
+ICONS="terminatorX-app.xpm terminatorX-mime.xpm"
+MIMEFILES="terminatorX.keys terminatorX.mime"
+
+echo -n "Removing icons from [$ICONDIR] ... "
+pushd . > /dev/null
+cd $ICONDIR
+rm -f $ICONS
+echo Done.
+
+echo -n "Removing mimetype from [$MIMEDIR] ... "
+cd $MIMEDIR
+rm -f $MIMEFILES
+popd > /dev/null
+echo Done.
+
