@@ -35,3 +35,16 @@
 
 /* Define for big dial knobs */
 #undef USE_BIG_BUTTONS
+
+/* Exec xsetpointer instead of using Xlib-calls. */
+#undef USE_XSETPOINTER
+
+/* Do we have the ALSA-Lib?
+#undef HAVE_ALSALIB
+
+/* Do we have the ALSA-Headers? 
+#undef HAVE_ALSAHEADER*/
+
+/* Use ALSA*/
+#undef USE_ALSA
+

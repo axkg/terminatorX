@@ -28,6 +28,7 @@
 #include "tX_global.h"
 #include "tX_engine.h"
 #include "tX_vtt.h"
+#include <sys/wait.h>
 
 #define TX_MOUSE_SPEED_NORMAL 0.05
 #define TX_MOUSE_SPEED_WARP 250000
@@ -165,19 +166,75 @@ void tx_mouse :: ungrab()
 	grabbed=0;
 }
 
+#ifdef USE_XSETPOINTER
+
 void tx_mouse :: set_x_pointer(char *devname)
 {
-	char commandline[256];
+	pid_t pid;
+	int status;
+		
+	pid = fork();
 	
-	sprintf(commandline, "xsetpointer %s", devname);
-	system(commandline);
-	printf("ran: %s\n", commandline);
+	if (pid==-1) 
+	{ 
+		/* OOPS. fork failed */
+		perror("tX: Error: Couldn't fork process!");
+		return; 
+	}
+	
+	if (pid==0) 
+	{
+		/* The child execlps xsetpointer */
+		execlp("xsetpointer", "xsetpointer", devname, NULL);
+		perror("tX: Error: Failed to execute xpointer!");
+		exit(0);
+	}
+	
+	/* parent waits for xsetpointer to finish */
+	waitpid(pid,  &status, WUNTRACED);
 }
+
+#else
+
+void tx_mouse :: set_x_pointer(char *devname)
+{
+	XDeviceInfo *devlist;			
+	XDevice *device;
+	int listmax, i;
+	
+	devlist=XListInputDevices(dpy, &listmax);
+	
+	for (i=0; i<listmax; i++)
+	{
+		if(strcmp(devlist[i].name, devname)==0)
+		{
+			device=XOpenDevice(dpy, devlist[i].id);
+			if (device)
+			{
+				if (XChangePointerDevice(dpy, device, 0, 1))
+				{
+					printf("tX: Error: failed to set pointer device.");			
+				}
+				XCloseDevice(dpy, device);
+			}
+			else
+			{
+				printf("tX: Error: failed to open XInput device.");
+			}		
+		}
+	}
+		
+	XFreeDeviceList(devlist);		
+}
+
+#endif
 
 int tx_mouse :: set_xinput()
 {
 	XDeviceInfo *devlist;			
 	int listmax, i;
+	
+	OrgXPointer=0;
 	
 	if (globals.xinput_enable)
 	{	
@@ -196,6 +253,8 @@ int tx_mouse :: set_xinput()
 		
 		set_x_pointer(globals.xinput_device);
 	}
+	
+	if (OrgXPointer==0) printf("tX: Error failed to detect core pointer.");
 	return(0);
 }
 
@@ -204,7 +263,7 @@ void tx_mouse :: reset_xinput()
 {
 	if (globals.xinput_enable)
 	{
-		set_x_pointer(OrgXPointerName);
+		if (OrgXPointer) set_x_pointer(OrgXPointerName);
 	}
 }
 

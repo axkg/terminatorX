@@ -32,57 +32,6 @@
 
 #include "tX_endian.h"
 
-#ifdef USE_WRITER_THREAD
-
-void* writer_thread(void *parm)
-{
-	audiodevice *audio=(audiodevice *) parm;
-	int16_t *buffer;
-
-	puts("writer thread");
-
-	pthread_mutex_lock(&audio->write_mutex);
-	
-	while (pthread_mutex_trylock(&audio->stop_mutex))
-	{
-	
-		pthread_mutex_lock(&audio->buffer_read_mutex);
-		pthread_mutex_unlock(&audio->write_mutex);
-		pthread_mutex_lock(&audio->buffer_ready_mutex);
-		buffer=audio->current_buffer;
-		pthread_mutex_unlock(&audio->buffer_read_mutex);
-		pthread_mutex_unlock(&audio->buffer_ready_mutex);
-		pthread_mutex_lock(&audio->write_mutex);
-		
-		write(audio->fd, buffer, audio->blocksize);	
-	}
-	pthread_mutex_unlock(&audio->stop_mutex);
-	pthread_mutex_unlock(&audio->write_mutex);
-	
-	puts("wt quits");
-	return NULL;
-}
-
-void audiodevice :: eat(int16_t *buffer)
-{
-	if (pthread_mutex_trylock(&stop_mutex))
-	{
-		pthread_mutex_lock(&write_mutex);
-
-		current_buffer=buffer;
-		pthread_mutex_unlock(&buffer_ready_mutex);	
-	
-		pthread_mutex_lock(&buffer_read_mutex);
-	
-		pthread_mutex_lock(&buffer_ready_mutex);
-	
-		pthread_mutex_unlock(&buffer_read_mutex);
-		pthread_mutex_unlock(&write_mutex);	
-	}
-}
-
-#endif
-
 int audiodevice :: dev_open(int dont_use_rt_buffsize)
 {
 	int i=0;
@@ -140,15 +89,6 @@ int audiodevice :: dev_open(int dont_use_rt_buffsize)
 //	printf("bs: %i, samples: %i, tbs: %i\n", blocksize,samples,globals.true_block_size);
         ioctl(fd, SNDCTL_DSP_SYNC, 0);
 
-#ifdef USE_WRITER_THREAD
-	
-	puts("A");
-	pthread_mutex_lock(&stop_mutex);
-	puts("A");
-	pthread_mutex_trylock(&buffer_ready_mutex);
-	puts("A");
-	pthread_create(&writer, NULL, writer_thread, (void *) this);
-#endif	
         return(i);	
 }
 
@@ -160,14 +100,6 @@ int audiodevice :: getblocksize()
 int audiodevice :: dev_close()
 {
 	void *dummy;
-
-#ifdef USE_WRITER_THREAD
-	pthread_mutex_unlock(&buffer_ready_mutex);
-	pthread_mutex_unlock(&stop_mutex);
-	
-	pthread_join(writer, &dummy);	
-	puts("okidoki");
-#endif	
 
 	if (!fd)
 	{	
@@ -188,15 +120,8 @@ audiodevice :: audiodevice()
 {
 	fd=0;
 	blocksize=0;
-#ifdef USE_WRITER_THREAD	
-	pthread_mutex_init(&stop_mutex, NULL);
-	pthread_mutex_init(&write_mutex, NULL);
-	pthread_mutex_init(&buffer_read_mutex, NULL);
-	pthread_mutex_init(&buffer_ready_mutex, NULL);
-#endif	
 }
 
-#ifndef USE_WRITER_THREAD
 void audiodevice :: eat(int16_t *buffer)
 {
 #ifdef BIG_ENDIAN_MACHINE
@@ -204,4 +129,3 @@ void audiodevice :: eat(int16_t *buffer)
 #endif
 	write(fd, buffer, blocksize);	
 }
-#endif
