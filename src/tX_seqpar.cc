@@ -1076,6 +1076,20 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gp
 		gtk_widget_set_sensitive(item, FALSE);
 #endif
 
+		
+		item = gtk_menu_item_new_with_label("Remove MIDI Binding");
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+		gtk_widget_show(item);		
+
+		if (sp->bound_midi_event.type==tX_midievent::NONE) {
+			gtk_widget_set_sensitive(item, FALSE);
+		}
+#ifdef USE_ALSA_MIDI_IN
+		g_signal_connect(item, "activate", (GCallback) tX_seqpar::remove_midi_binding, sp);		
+#else
+		gtk_widget_set_sensitive(item, FALSE);
+#endif
+
 		item = gtk_check_menu_item_new_with_label("Map MIDI Reversed");
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 		gtk_widget_show(item);		
@@ -1092,19 +1106,6 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gp
 		gtk_widget_set_sensitive(item, FALSE);
 #endif
 
-		
-		item = gtk_menu_item_new_with_label("Remove MIDI Binding");
-		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-		gtk_widget_show(item);		
-
-		if (sp->bound_midi_event.type==tX_midievent::NONE) {
-			gtk_widget_set_sensitive(item, FALSE);
-		}
-#ifdef USE_ALSA_MIDI_IN
-		g_signal_connect(item, "activate", (GCallback) tX_seqpar::remove_midi_binding, sp);		
-#else
-		gtk_widget_set_sensitive(item, FALSE);
-#endif
 		if (!sp->is_boolean) {
 			item = gtk_menu_item_new();
 			gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
