@@ -835,9 +835,11 @@ int16_t * vtt_class :: render_all_turntables()
 	pthread_mutex_lock(&render_lock);
 	
 	if (render_list.size()==0) {
-		for (sample=0; sample<samples_in_mix_buffer; sample++) {
-			mix_out_buffer[sample]=0;
-		}
+		memset((void *) mix_out_buffer, 0, sizeof(int16_t)*samples_in_mix_buffer);
+		/* We need to memset mix_buffer, too, as the JACK backend
+		   acesses this directly.
+		*/
+		memset((void *) mix_buffer, 0, sizeof(float)*samples_in_mix_buffer);
 	} else {
 			vtt=render_list.begin();
 			(*vtt)->render();			
