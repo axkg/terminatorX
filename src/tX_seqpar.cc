@@ -38,7 +38,7 @@ pthread_mutex_t tX_seqpar :: update_lock = PTHREAD_MUTEX_INITIALIZER;
 
 #define tt ((vtt_class *) vtt)
 
-void tX_seqpar :: default_constructor()
+tX_seqpar :: tX_seqpar () : bound_midi_event()
 {
 	touched=0;
 	gui_active=1;
@@ -52,27 +52,6 @@ void tX_seqpar :: default_constructor()
 	last_event_recorded=NULL;
 }
 
-tX_seqpar :: tX_seqpar ()
-{
-	default_constructor();
-}
-
-/*
-tX_seqpar :: tX_seqpar (void * mytt)
-{
-	default_constructor();
-	vtt=mytt;
-}
-
-tX_seqpar :: tX_seqpar (float max, float min, float scale, int mappable)
-{
-	default_constructor();
-	max_value=max;
-	min_value=min;
-	scale_value=scale;
-	is_mappable=mappable;
-}*/
-
 void tX_seqpar :: set_mapping_parameters(float max, float min, float scale, int mappable)
 {
 	max_value=max;
@@ -80,18 +59,6 @@ void tX_seqpar :: set_mapping_parameters(float max, float min, float scale, int 
 	scale_value=scale;
 	is_mappable=mappable;
 }
-
-/*
-tX_seqpar :: tX_seqpar (void *mytt, float max, float min, float scale, int mappable)
-{
-	default_constructor();
-	vtt=mytt;
-	max_value=max;
-	min_value=min;
-	scale_value=scale;
-	is_mappable=mappable;	
-}
-*/
 
 void tX_seqpar :: handle_mouse_input(float adjustment)
 {
@@ -129,14 +96,19 @@ void tX_seqpar :: handle_midi_input( const tX_midievent& event )
 		}
 
 		if (tmpvalue>max_value) tmpvalue=max_value;
-		if (tmpvalue<min_value) tmpvalue=min_value;
+		else if (tmpvalue<min_value) tmpvalue=min_value;
 	}
 	else
 	{
 		tmpvalue=event.value;
 	}
-		
-	receive_input_value(tmpvalue);
+	
+	touch();
+
+	/* Not using receive() as we want immediate GUI update... */
+	do_exec(tmpvalue);
+	record_value(tmpvalue);
+	do_update_graphics();
 }
 #endif
 
@@ -409,7 +381,7 @@ void tX_seqpar_update_active_forward :: receive_forward_value(const float value)
 
 /**** Sequencable Parameter: MASTER VOLUME ****/
 
-tX_seqpar_master_volume :: tX_seqpar_master_volume()
+tX_seqpar_master_volume :: tX_seqpar_master_volume() 
 {
 	set_mapping_parameters(2.5, 0, 0.1, 0);
 }

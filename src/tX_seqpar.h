@@ -60,8 +60,6 @@ class tX_seqpar
 	guint32 persistence_id;
 	guint32 touch_timestamp;		
 	void *last_event_recorded;
-
-	void default_constructor();
 	
 	public:
 	/* default constructor */

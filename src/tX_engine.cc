@@ -171,7 +171,7 @@ int16_t* tX_engine :: render_cycle() {
 	}
 
 #ifdef USE_ALSA_MIDI_IN			
-	if (midi->get_is_open()) midi->check_event();
+//	if (midi->get_is_open()) midi->check_event();
 #endif			
 	/* Forward the sequencer... */
 	sequencer.step();
@@ -195,7 +195,7 @@ void tX_engine :: loop() {
 		loop_is_active=true;
 		pthread_mutex_unlock(&start);
 
-		device->start(); // Hand flow control over to the device
+		if (!stop_flag) device->start(); // Hand flow control over to the device
 		
 		/* Stopping engine... */
 		loop_is_active=false;
@@ -285,6 +285,7 @@ tX_engine :: tX_engine() {
 	midi=new tX_midiin();
 #endif	
 	tape=new tx_tapedeck();
+
 	device=NULL;
 	recording=false;
 	recording_request=false;
