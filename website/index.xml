@@ -43,7 +43,7 @@
             compositions. I've
             added three of his compositions to the <dblink id="scratches"/> to find out more about
             the author and his music check out his <link ref="http://infinitybox.net">site</link>.</para>
-          <para>The friendly people of <dblink id="sonar"/> invited me to do a demonstration at this
+          <para>The kind people of <dblink id="sonar"/> invited me to do a demonstration at this
             year's festival. As a side effect I was actually forced to <bold>use</bold> terminatorX,
             so I found and fixed quite some annoying bugs with the upcoming 3.81 release.
             Additionally it will feature MIDI and sequencer improvements and a <dblink id="jack"/> 

@@ -11,7 +11,7 @@
         </title>
         <script language="Javascript" src="script.js" type="text/javascript"/>
         <style type="text/css"> A:hover {text-decoration: none; color: #ff4444} A:active
-          {text-decoration: none; color: #ff4444} body { font-family: Verdana, sans-serif; } p.plain
+          {text-decoration: none; color: #ff4444} body { font-family: vera-sans, Verdana, sans-serif; } p.plain
           { text-align: left } p.fancy { text-align: justify } </style>
       </head>
       <body alink="#FF0000" bgcolor="#555555" link="#FFFF99"
@@ -34,13 +34,13 @@
           </tr>
           <tr>
             <td align="left" bgcolor="#ffffff">
-              <font color="#ffffff" face="Arial,Helvetica" size="+2"> menu</font>
+              <font color="#ffffff" size="+2"> menu</font>
             </td>
             <td bgcolor="#ffffff" width="100%">
               <table border="0" cellpadding="4px" cellspacing="0" width="100%">
                 <tr>
                   <td align="right" bgcolor="#ffffff" width="100%">
-                    <font color="#000000" face="Arial,Helvetica" size="+2">
+                    <font color="#000000" size="+2">
                       <b>
                         <xsl:value-of select="@name"/>
                       </b>
