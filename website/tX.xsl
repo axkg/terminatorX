@@ -360,12 +360,20 @@
     </table>
   </xsl:template>
   <xsl:template match='link'>
-    <A>
-      <xsl:attribute name='HREF'>
-        <xsl:value-of select='@ref' />
-      </xsl:attribute>
-      <xsl:apply-templates />
-    </A>
+    <a><xsl:attribute name='href'><xsl:value-of select='@ref' /></xsl:attribute><xsl:apply-templates /></a>
+  </xsl:template>
+  <xsl:template match='dblink'>
+    <xsl:variable name="search" select="@id"/>
+    <a><xsl:attribute name='href'><xsl:value-of select='//dlink[@id=$search]/@url'/></xsl:attribute><xsl:choose
+	><xsl:when test="./text()"><xsl:apply-templates /></xsl:when
+	><xsl:otherwise><xsl:value-of select='//dlink[@id=$search]/@text'/></xsl:otherwise
+	></xsl:choose
+    ></a>
+    <xsl:if test="sum(//dlink[@id=$search])=0">
+    <font color='#FF0000'>
+      <blink>broken dblink &quot;<xsl:value-of select="$search"/>&quot;</blink>
+    </font>    
+    </xsl:if>
   </xsl:template>
   <xsl:template match='newline'>
     <br />
@@ -492,12 +500,7 @@
     </ul>
   </xsl:template>
   <xsl:template match='file'>
-    <a>
-      <xsl:attribute name='href'>
-        <xsl:apply-templates />
-      </xsl:attribute>
-      <xsl:apply-templates />
-    </a>
+    <a><xsl:attribute name='href'><xsl:apply-templates /></xsl:attribute><xsl:apply-templates /></a>
   </xsl:template>
   <xsl:template match='faq'>
     <a name='index'>
@@ -506,11 +509,7 @@
     <ul>
       <xsl:for-each select='qa'>
         <li>
-          <a>
-            <xsl:attribute name='href'># 
-            <xsl:value-of select='position()' /></xsl:attribute>
-            <xsl:value-of select='question' />
-          </a>
+          <a><xsl:attribute name='href'>#<xsl:value-of select='position()' /></xsl:attribute><xsl:value-of select='question' /></a>
         </li>
       </xsl:for-each>
     </ul>
@@ -527,9 +526,7 @@
             <tr>
               <td>
                 <a>
-                  <xsl:attribute name='name'>
-                    <xsl:value-of select='position() div 2' />
-                  </xsl:attribute>
+                  <xsl:attribute name='name'><xsl:value-of select='position() div 2' /></xsl:attribute>
                   <font color='#FFCC33' size='+1'>
                     <xsl:value-of select='question' />
                   </font>
@@ -654,14 +651,10 @@
           <td>
             <center>
               <a>
-                <xsl:attribute name='href'>pix/ 
-                <xsl:value-of select='@filename' /></xsl:attribute>
+                <xsl:attribute name='href'>pix/<xsl:value-of select='@filename' /></xsl:attribute>
                 <img border='0'>
-                  <xsl:attribute name='alt'>
-                    <xsl:value-of select='name(.)' />
-                  </xsl:attribute>
-                  <xsl:attribute name='src'>pix/pre_ 
-                  <xsl:value-of select='@filename' /></xsl:attribute>
+		  <xsl:attribute name='alt'><xsl:value-of select='name(.)' /></xsl:attribute>
+                  <xsl:attribute name='src'>pix/pre_<xsl:value-of select='@filename' /></xsl:attribute>
                 </img>
               </a>
             </center>
@@ -687,15 +680,10 @@
         <tr>
           <td>
             <center>
-              <a>
-                <xsl:attribute name='href'>pix/ 
-                <xsl:value-of select='@filename' /></xsl:attribute>
-                <img border='0'>
-                  <xsl:attribute name='alt'>
-                    <xsl:value-of select='name(.)' />
-                  </xsl:attribute>
-                  <xsl:attribute name='src'>pix/pre_ 
-                  <xsl:value-of select='@filename' /></xsl:attribute>
+              <a><xsl:attribute name='href'
+	        >pix/<xsl:value-of select='@filename' /></xsl:attribute><img 
+		  border='0'><xsl:attribute name='alt'><xsl:value-of select='name(.)' /></xsl:attribute
+		  ><xsl:attribute name='src'>pix/pre_<xsl:value-of select='@filename' /></xsl:attribute>
                 </img>
               </a>
             </center>

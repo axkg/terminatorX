@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='iso-8859-1'?>
 <!DOCTYPE section SYSTEM "./tX.dtd">
 <section name='download'>
+  &db;
   <download>
     <index>
       <title>Available Downloads</title>
@@ -37,7 +38,7 @@
         </listitem>
         <listitem>
           <nopara>
-          <link ref='http://www.ladspa.org'>LADSPA</link> The Linux Audio
+          <dblink id='ladspa'/> The Linux Audio
           Developer's Simple Plugin API</nopara>
         </listitem>
         <listitem>
@@ -47,7 +48,7 @@
         </listitem>
         <listitem>
           <nopara>terminatorX supports Steve Harris' 
-          <link ref='http://plugin.org.uk/lrdf/'>liblrdf</link> which allows
+          <dblink id='liblrdf'/> which allows
           categorizing LADSPA plugins. Although terminatorX can be built
           without liblrdf support I strongly recommend installing it when you
           plan on using Steve Harris' wonderful 
@@ -57,7 +58,7 @@
         <listitem>
           <nopara>terminatorX' MIDI interface is based on the ALSA sequencer
           API and therefor requires a working 
-          <link ref='http://www.alsa-project.org'>ALSA</link> setup</nopara>
+          <dblink id='alsa'/> setup</nopara>
         </listitem>
         <listitem>
           <para>To enhance audiofile support I strongly recommend installing: 
@@ -102,12 +103,11 @@
       <link ref='http://packages.debian.org/unstable/sound/terminatorx.html'>
       terminatorX Debian package</link> via 
       <italic>apt-get</italic>.</para>
-      <para>Mandrake users may be pleased to here that 
+      <para>Mandrake users may want to check out
       <person>
-        <name>Some</name>
-        <email>email@email.de</email>
-      </person> has created RPMs for their distribution 
-      <link ref=''>here</link>.</para>
+        <name>Thac</name>
+        <email>tobbe@nyvalls.com</email>
+      </person>'s RPMs <link ref='http://rpm.nyvalls.se/sound9.0.html'>here</link>.</para>
     </subsection>
     <subsection>
       <title>Old Sources</title>

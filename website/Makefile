@@ -10,8 +10,8 @@ pretty:
 clean:	Makefile
 	rm -rf *.html *.tmp
 
-%.html:	 %.xml tX.xsl tX.dtd sedscript
-	xsltproc  tX.xsl $*.xml > $*.tmp && sed -f sedscript < $*.tmp | (echo  '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/REC-html401/loose.dtd">'; cat) > $*.html ; rm $*.tmp
+%.html:	 %.xml tX.xsl tX.dtd sedscript linkdb.xml
+	xsltproc tX.xsl $*.xml > $*.tmp && sed -f sedscript < $*.tmp | (echo  '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/REC-html401/loose.dtd">'; cat) > $*.html ; rm $*.tmp
 #	java org.apache.xalan.xslt.Process -in $*.xml -xsl tX.xsl -out $*.tmp && sed -f sedscript < $*.tmp | (echo  '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/REC-html401/loose.dtd">'; cat) > $*.html ; rm $*.tmp
 
 dist: 	all

@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='iso-8859-1'?>
 <!DOCTYPE section SYSTEM "./tX.dtd">
 <section name='docs'>
+  &db;
   <docs>
     <para>The following documentation is available: 
     <itemizedlist>
@@ -17,31 +18,30 @@
         <person>
           <name>Brian</name>
           <email>bredfern@calarts.edu</email>
-        </person>wrote a nice 
+        </person> wrote a nice 
         <italic>QuickToot</italic> tutorial on terminatorX. Check it out 
-        <link ref='tutorial.html'>here</link> or have look at all the other 
-        <link ref='http://dcdj.com'>QuickToots</link> available.</para>
+        <dblink id='tutorial'>here</dblink> or have look at all the other 
+        <dblink id='quicktoots'>QuickToots</dblink> available.</para>
       </listitem>
       <listitem>
         <para>If you're stuck on installing terminatorX I recommend having a
-        look at the 
-        <link ref='INSTALL'>INSTALL</link> file.</para>
+        look at the <dblink id='install'/> file.</para>
       </listitem>
       <listitem>
         <para>I also maintain a 
-        <link ref='faq.html'>Frequently Asked Questions</link> document.</para>
+        <dblink id='faq'>Frequently Asked Questions</dblink> document.</para>
       </listitem>
     </itemizedlist></para>
     <para>Additionally there's a 
     <itemizedlist>
       <listitem>
         <para>HTML version of the 
-        <link ref='aseqjoy.html'>aseqjoy</link>
-        <link ref='aseqjoy-man.html'>man page</link>.</para>
+        <dblink id='aseqjoy'/>
+        <dblink id='aseqjoy_man'>man page</dblink>.</para>
       </listitem>
       <listitem>
         <para>And a rather old 
-        <link ref='oldturntable.html'>description</link> on how I turned my
+        <dblink id='oldtable'>description</dblink> on how I turned my
         broken turntable into terminatorX device.</para>
       </listitem>
     </itemizedlist></para>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE section SYSTEM "./tX.dtd"[ ]>
 <section name='scratches'>
+  &db;
   <scratches>
     <para>
     <bold>Yeah, Boy!</bold>(talking 
@@ -44,7 +45,7 @@
           <nopara>Aint no DJ but love to scratch!</nopara>
           <tinycomment>
             <nopara>created with his 
-            <link ref='turntable.html'>own turntable</link>.</nopara>
+            <dblink id='turntables'>own turntable</dblink>.</nopara>
           </tinycomment>
         </comment>
       </scratch>
@@ -218,7 +219,7 @@
       <listitem>
         <nopara>
         <italic>mp3</italic> or 
-        <italic>ogg</italic> it. If you don't have an encoder go and get, 
+        <italic>ogg</italic> it. If you don't have an encoder go and get 
         <link ref='http://www.mp3dev.org/mp3//'>LAME</link>, 
         <link ref='http://bladeenc.mp3.no/'>BladeEnc</link> or 
         <link ref='http://www.xiph.org/ogg/vorbis/'>OggVorbis</link>.</nopara>

@@ -1,0 +1,20 @@
+<linkdb>
+	<dlink id="license" url="COPYING" text="license"/>
+	<dlink id="tutorial" url="http://www.djcj.org/LAU/quicktoots/toots/tx_toot/tx_toot1.html" text="tutorial"/>
+	<dlink id="quicktoots" url="http://www.djcj.org/LAU/quicktoots/" text="QuickToots"/>
+	<dlink id="ladspa" url="http://www.ladspa.org" text="LADSPA"/>
+	<dlink id="download" url="download.html" text="download section"/>
+	<dlink id="main" url="./" text="main section"/>
+	<dlink id="screenshots" url="screenshots.html" text="screenshots section"/>
+	<dlink id="faq" url="faq.html" text="FAQ"/>
+	<dlink id="docs" url="docs.html" text="documentation section"/>
+	<dlink id="scratches" url="scratches.html" text="user's scratches section"/>
+	<dlink id="turntables" url="turntable.html" text="turntable gallery"/>
+	<dlink id="aseqjoy" url="aseqjoy.html" text="aseqjoy"/>
+	<dlink id="alsa" url="http://www.alsa-project.org" text="ALSA"/>
+	<dlink id="changelog" url="ChangeLog" text="ChangeLog"/>
+	<dlink id="install" url="INSTALL" text="INSTALL"/>
+	<dlink id="oldtable" url="oldturntable.html" text="old turntable to tX device description"/>
+	<dlink id="aseqjoy_man" url="aseqjoy-man.html" text="aseqjoy man page"/>
+	<dlink id="liblrdf" url="http://plugin.org.uk/releases/lrdf/" text="liblrdf"/>
+</linkdb>
