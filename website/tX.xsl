@@ -732,7 +732,7 @@
     <table bgcolor="#999999" border="0" cellspacing="5px" width="100%">
       <tr>
         <xsl:if test="banner">
-          <td halign="center" valign="top" width="90px">
+          <td align="center" valign="top" width="90px">
             <a>
               <xsl:attribute name="href">
                 <xsl:if test="link">
