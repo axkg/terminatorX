@@ -32,10 +32,10 @@
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#define VERSIONSTRING PACKAGE " V" VERSION
+#define VERSIONSTRING PACKAGE " Release " VERSION
 #else 
-#define VERSION "3.55"
-#define VERSIONSTRING "terminatorX V3.55"
+#define VERSION "3.70"
+#define VERSIONSTRING "terminatorX Release 3.70"
 #endif
 
 

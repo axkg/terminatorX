@@ -25,6 +25,8 @@ class tX_extdial
 	tX_extdial(const char *l, GtkAdjustment *a);
 	~tX_extdial();
 	GtkWidget *get_widget() { return mainbox; };
+	GtkWidget *get_dial() { return dial; }
+	GtkWidget *get_entry() { return entry; }
 	
 	static GtkSignalFunc f_entry(GtkWidget *w, tX_extdial *ed);
 	static GtkSignalFunc f_adjustment(GtkWidget *w, tX_extdial *ed);

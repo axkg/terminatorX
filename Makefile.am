@@ -1,3 +1,3 @@
 AUTOMAKE_OPTIONS = foreign 
-SUBDIRS = src gnome-support
+SUBDIRS = src gnome-support doc
 SOURCES = README.GNOME README.PERFORMANCE

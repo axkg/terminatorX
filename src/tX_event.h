@@ -44,7 +44,7 @@ class tX_event
 			sp=sp_in;
 		}
 	tX_event(FILE *input);
-	int store(FILE *output);
+	void store(FILE *output);
 
 	tX_seqpar *get_sp() { return sp; }
 	u_int32_t get_timestamp() { return timestamp; }

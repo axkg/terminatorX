@@ -63,7 +63,7 @@ void* writer_thread(void *parm)
 	return NULL;
 }
 
-int audiodevice :: eat(int16_t *buffer)
+void audiodevice :: eat(int16_t *buffer)
 {
 	if (pthread_mutex_trylock(&stop_mutex))
 	{
@@ -195,7 +195,7 @@ audiodevice :: audiodevice()
 }
 
 #ifndef USE_WRITER_THREAD
-int audiodevice :: eat(int16_t *buffer)
+void audiodevice :: eat(int16_t *buffer)
 {
 #ifdef BIG_ENDIAN_MACHINE
 	swapbuffer (buffer, samples);
