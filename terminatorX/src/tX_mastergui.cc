@@ -240,7 +240,7 @@ void mg_update_status()
 
 GtkSignalFunc new_table(GtkWidget *, char *fn)
 {
-	turn_audio_off();
+	//turn_audio_off();
 		
 	if (fn) {
 		ld_create_loaddlg(TX_LOADDLG_MODE_SINGLE, 1);
@@ -1509,6 +1509,9 @@ void create_mastergui(int x, int y)
 	seq_entry=dummy;
 	//gtk_widget_set_usize(dummy, 65, 20);
 	gtk_entry_set_text(GTK_ENTRY(dummy), "00:00.00");
+#if GTK_CHECK_VERSION(2,4,0)
+	gtk_entry_set_alignment(GTK_ENTRY(dummy), 0.5);
+#endif	
 	gtk_entry_set_width_chars(GTK_ENTRY(dummy), 9);
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);

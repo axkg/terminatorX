@@ -54,6 +54,9 @@ tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, tX_seqpar * sp, bool t
 	entry=gtk_entry_new();
 	gtk_entry_set_max_length(GTK_ENTRY(entry), 5);
 	gtk_entry_set_text(GTK_ENTRY(entry), sval);
+#if GTK_CHECK_VERSION(2,4,0)
+	gtk_entry_set_alignment(GTK_ENTRY(entry), 0.5);
+#endif
 	ignore_adj=0;
 	
 	eventbox=gtk_event_box_new();		
