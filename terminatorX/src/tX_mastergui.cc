@@ -190,11 +190,14 @@ gint pos_update(gpointer data)
 			update_delay=globals.update_delay;
 		}
 		
-		if (tX_engine::get_instance()->get_runtime_error()) {
+		if (tX_engine::get_instance()->check_error()) {
 			tX_error("ouch - error while playback...");
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(engine_btn), 0);			
 			return FALSE;
 		}		
+		
+		// let the audio engine we got the chance to do something
+		tX_engine::get_instance()->reset_cycles_ctr();
 		
 		return TRUE;
 	}
@@ -619,6 +622,9 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 		if (tX_engine::get_instance()->get_runtime_error()) {
 			tx_note("Fatal: The audio device broke down while playing\nback audio. Note that that some audio devices can not\nrecover from such a breakdown.", true);
 		}
+		if (tX_engine::get_instance()->get_overload_error()) {
+			tx_note("Fatal: The audio engine was stopped due to an overload\ncondition. Try reducing the amount of plugins or\nturntables.", true);
+		}
 	}
 	
 	return NULL;
@@ -919,7 +925,7 @@ GCallback menu_delete_all_events_for_sp(GtkWidget *, tX_seqpar *sp)
 	
 	menu_del_mode=ALL_EVENTS_FOR_SP;
 	del_sp=sp;
-	sprintf(label_str, "Delete all <b>%s</b> events for turntable <b>%s</b>.", sp->get_name(), ((vtt_class *) sp->vtt)->name);
+	sprintf(label_str, "Delete all <b>%s</b> events for turntable '%s'.", sp->get_name(), sp->get_vtt_name());
 	gtk_label_set_markup(GTK_LABEL(label), label_str);
 	gtk_widget_show(del_dialog);
 
@@ -1255,18 +1261,18 @@ void create_mastergui(int x, int y)
 
     /* control_box contents */
 
-	dummy=tx_xpm_label_box(TX_ICON_AUDIOENGINE, "Audio");
+	dummy=tx_xpm_label_box(AUDIOENGINE, "Audio");
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 	
-	dummy=tx_xpm_button_new(TX_ICON_POWER,"Power ", 1);
+	dummy=tx_xpm_button_new(POWER,"Power ", 1);
 	connect_button(dummy,audio_on, NULL);
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gui_set_tooltip(dummy, "Turn the audio engine on/off.");
 	gtk_widget_show(dummy);
 	engine_btn=dummy;
 	
-	grab_button=tx_xpm_button_new(TX_ICON_GRAB, "Mouse Grab ", 1);
+	grab_button=tx_xpm_button_new(GRAB, "Mouse Grab ", 1);
 	gtk_box_pack_start(GTK_BOX(control_box), grab_button, WID_FIX);
 	connect_button(grab_button, grab_on, NULL);
 	gui_set_tooltip(grab_button, "Enter the mouse grab mode operation. Press <ESCAPE> to exit grab mode.");
@@ -1276,25 +1282,25 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
     
-	dummy=tx_xpm_label_box(TX_ICON_SEQUENCER, "Seq.");
+	dummy=tx_xpm_label_box(SEQUENCER, "Seq.");
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
-	dummy=tx_xpm_button_new(TX_ICON_PLAY,"Play ", 1);
+	dummy=tx_xpm_button_new(PLAY,"Play ", 1);
 	connect_button(dummy, seq_play, NULL);
 	seq_play_btn=dummy;
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gui_set_tooltip(dummy, "Playback previously recorded events from the sequencer. This will turn on the audio engine automagically.");
 	gtk_widget_show(dummy);
 
-	dummy=tx_xpm_button_new(TX_ICON_STOP,"Stop ", 0);
+	dummy=tx_xpm_button_new(STOP,"Stop ", 0);
 	seq_stop_btn=dummy;
 	connect_button(dummy, seq_stop, NULL);	
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gui_set_tooltip(dummy, "Stop the playback of sequencer events.");
 	gtk_widget_show(dummy);
 
-	dummy=tx_xpm_button_new(TX_ICON_RECORD,"Record ", 1);
+	dummy=tx_xpm_button_new(RECORD,"Record ", 1);
 	connect_button(dummy, seq_rec, NULL);
 	seq_rec_btn=dummy;
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
@@ -1378,7 +1384,7 @@ void create_mastergui(int x, int y)
 	pitch_adj=dumadj;
 	connect_adj(dumadj, master_pitch_changed, NULL);
 	
-	tX_extdial *pdial=new tX_extdial("Pitch", pitch_adj, &sp_master_pitch, true);
+	tX_extdial *pdial=new tX_extdial("Pitch", pitch_adj, &sp_master_pitch);
 	gtk_box_pack_start(GTK_BOX(right_hbox), pdial->get_widget(), WID_FIX);
 	gui_set_tooltip(pdial->get_entry(), "Use this dial to adjust the master pitch (affecting *all* turntables).");
 	
@@ -1391,7 +1397,7 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_start(GTK_BOX(right_hbox), master_vol_box, WID_DYN);
 	gtk_widget_show(master_vol_box);	
 	
-	dumadj=(GtkAdjustment*) gtk_adjustment_new(globals.volume, 0, 2, 0.01, 0.05, 0.005);
+	dumadj=(GtkAdjustment*) gtk_adjustment_new(globals.volume, 0, 2, 0.01, 0.05, 0.000);
 	volume_adj=dumadj;
 
 	connect_adj(dumadj, master_volume_changed, NULL);	
@@ -1473,7 +1479,7 @@ void create_mastergui(int x, int y)
 
 	new_table(NULL, NULL); // to give the user something to start with ;)
 
-	g_signal_connect (G_OBJECT(main_window), "delete-event", (GtkSignalFunc) quit, NULL);	
+	g_signal_connect (G_OBJECT(main_window), "delete-event", (GtkSignalFunc) quit, NULL);
 	
 	if (globals.tooltips) gtk_tooltips_enable(gui_tooltips);
 	else gtk_tooltips_disable(gui_tooltips);
@@ -1516,7 +1522,6 @@ void tx_l_note(const char *message)
 	gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);	
 }
-
 
 void add_to_panel_bar(GtkWidget *button) 
 {

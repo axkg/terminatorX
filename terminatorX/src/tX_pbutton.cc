@@ -24,45 +24,53 @@
 */
 
 #include <gtk/gtk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 #include <stdio.h>
 #include "tX_mastergui.h"
+#include "tX_pbutton.h"
 #include "tX_global.h"
 
-#include "gui_icons/tx_audioengine.xpm"
-#include "gui_icons/tx_power.xpm"
-#include "gui_icons/tx_grab.xpm"
-#include "gui_icons/tx_sequencer.xpm"
-#include "gui_icons/tx_play.xpm"
-#include "gui_icons/tx_stop.xpm"
-#include "gui_icons/tx_record.xpm"
-#include "gui_icons/tx_wave.xpm"
-#include "gui_icons/tx_reload.xpm"
-#include "gui_icons/tx_minimize.xpm"
-#include "gui_icons/tX_fx_up.xpm"
-#include "gui_icons/tX_fx_down.xpm"
-#include "gui_icons/tX_fx_close.xpm"
-#include "gui_icons/tX_minimize_panel.xpm"
-#include "gui_icons/tX_min_control.xpm"
+#include "gui_icons/icons.pixbuf"
 
-gchar ** tx_icons[]={ tx_audioengine_xpm, tx_power_xpm, tx_grab_xpm, 
-		      tx_sequencer_xpm, tx_play_xpm, tx_stop_xpm, tx_record_xpm, 
-		      tx_wave_xpm, tx_reload_xpm, tx_minimize_xpm,
-		      tX_fx_up_xpm, tX_fx_down_xpm, tX_fx_close_xpm, tX_minimize_panel_xpm, tX_min_control_xpm };
+const guint8* tx_icons[ALL_ICONS];
+long tx_icon_sizes[ALL_ICONS];
 
-GtkWidget *tx_pixmap_widget(int icon_id)
+#define icon_init(id, data) { tx_icons[id]=data; tx_icon_sizes[id]=sizeof(data); }
+
+void tx_icons_init() 
 {
-	GdkPixbuf *pixbuf=gdk_pixbuf_new_from_xpm_data((const char **) tx_icons[icon_id]);
-    GtkWidget *widget=gtk_image_new();
+	icon_init(AUDIOENGINE, audioengine);
+	icon_init(POWER, power);
+	icon_init(GRAB, grab);
+	icon_init(SEQUENCER, sequencer);
+	icon_init(PLAY, play);
+	icon_init(STOP, stop);
+	icon_init(RECORD, record);
+	icon_init(MIN_AUDIO, wave);
+	icon_init(MIN_CONTROL, min_control);
+	icon_init(MINIMIZE, minimize);
+	icon_init(MAXIMIZE, maximize);
+	icon_init(FX_UP, fx_up);
+	icon_init(FX_DOWN, fx_down);
+	icon_init(FX_CLOSE, fx_close);
+	icon_init(MINIMIZE_PANEL, minimize_panel);
+}
+
+GtkWidget *tx_pixmap_widget(tX_icon id)
+{
+	GError *error;
+	GdkPixbuf *pixbuf=gdk_pixbuf_new_from_inline(tx_icon_sizes[id], tx_icons[id], TRUE, &error);
+	GtkWidget *widget=gtk_image_new();
 	gtk_image_set_from_pixbuf(GTK_IMAGE(widget), pixbuf);
 
     return widget;
 }
 
-GtkWidget *tx_xpm_label_box(int	icon_id, gchar *label_text, GtkWidget **labelwidget=(GtkWidget **) NULL)
+GtkWidget *tx_xpm_label_box(tX_icon id, gchar *label_text, GtkWidget **labelwidget)
 {
-    GtkWidget *box1;
-    GtkWidget *label;
-    GtkWidget *pixmapwid;
+	GtkWidget *box1;
+	GtkWidget *label;
+	GtkWidget *pixmapwid;
 	
 	switch (globals.button_type) {
 		case BUTTON_TYPE_TEXT:
@@ -72,13 +80,14 @@ GtkWidget *tx_xpm_label_box(int	icon_id, gchar *label_text, GtkWidget **labelwid
 			return label;
 			break;
 		case BUTTON_TYPE_ICON:
-			pixmapwid=tx_pixmap_widget(icon_id);
+			pixmapwid=tx_pixmap_widget(id);
 			gtk_widget_show(pixmapwid);
 			return pixmapwid;
 			break;
 		default:
-			box1 = gtk_hbox_new (FALSE, 2);
-			pixmapwid=tx_pixmap_widget(icon_id);
+			box1 = gtk_hbox_new (FALSE, 5);
+			gtk_container_set_border_width (GTK_CONTAINER (box1), 2);
+			pixmapwid=tx_pixmap_widget(id);
 			gtk_box_pack_start (GTK_BOX (box1), pixmapwid, FALSE, FALSE, 0);
 			gtk_widget_show(pixmapwid);
 			label = gtk_label_new (label_text);
@@ -89,8 +98,7 @@ GtkWidget *tx_xpm_label_box(int	icon_id, gchar *label_text, GtkWidget **labelwid
 	}    
 }
 
-//GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle)
-extern GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle, GtkWidget **labelwidget=(GtkWidget **) NULL)
+extern GtkWidget *tx_xpm_button_new(tX_icon id, char *label, int toggle, GtkWidget **labelwidget)
 {
 	GtkWidget *box;
 	GtkWidget *button;
@@ -98,9 +106,8 @@ extern GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle, GtkWid
 	if (toggle) button=gtk_toggle_button_new();
 	else button=gtk_button_new();
 	
-	box=tx_xpm_label_box(icon_id, label, labelwidget);
+	box=tx_xpm_label_box(id, label, labelwidget);
 	gtk_widget_show(box);
-    gtk_container_set_border_width (GTK_CONTAINER (button), 0);
 	gtk_container_add (GTK_CONTAINER (button), box);		
 	
 	return(button);

@@ -24,23 +24,27 @@
 #ifndef _tx_pbutton_h_
 #define _tx_pbutton_h_ 1
 
-#define TX_ICON_AUDIOENGINE 0
-#define TX_ICON_POWER 1
-#define TX_ICON_GRAB 2
-#define TX_ICON_SEQUENCER 3
-#define TX_ICON_PLAY 4
-#define TX_ICON_STOP 5
-#define TX_ICON_RECORD 6
-#define TX_ICON_MIN_AUDIO 7
-#define TX_ICON_RELOAD 8
-#define TX_ICON_MINIMIZE 9
-#define TX_ICON_FX_UP 10
-#define TX_ICON_FX_DOWN 11
-#define TX_ICON_FX_CLOSE 12
-#define TX_ICON_MINIMIZE_PANEL 13
-#define TX_ICON_MIN_CONTROL 14
+typedef enum {
+	AUDIOENGINE,
+	POWER,
+	GRAB,
+	SEQUENCER,
+	PLAY,
+	STOP,
+	RECORD,
+	MIN_AUDIO,
+	MIN_CONTROL,
+	MINIMIZE,
+	MAXIMIZE,
+	FX_UP,
+	FX_DOWN,
+	FX_CLOSE,
+	MINIMIZE_PANEL,
+	ALL_ICONS
+} tX_icon;
 
-extern GtkWidget *tx_pixmap_widget(int icon_id);
-extern GtkWidget *tx_xpm_label_box(int icon_id, gchar *label_text, GtkWidget **labelwidget=(GtkWidget **) NULL);
-extern GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle, GtkWidget **labelwidget=(GtkWidget **) NULL);
+extern GtkWidget *tx_pixmap_widget(tX_icon id);
+extern void tx_icons_init();
+extern GtkWidget *tx_xpm_label_box(tX_icon id, gchar *label_text, GtkWidget **labelwidget=(GtkWidget **) NULL);
+extern GtkWidget *tx_xpm_button_new(tX_icon id, char *label, int toggle, GtkWidget **labelwidget=(GtkWidget **) NULL);
 #endif
