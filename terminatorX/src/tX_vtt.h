@@ -110,6 +110,9 @@ class vtt_class
 	
 	f_prec *output_buffer; 
 	f_prec *end_of_outputbuffer;
+	
+	f_prec *output_buffer2; // 2nd audio channel
+	
 	f_prec samples_in_outputbuffer;
 	f_prec inv_samples_in_outputbuffer;
 	
@@ -206,6 +209,7 @@ class vtt_class
 	f_prec audiofile_pitch_correction;
 
 	list <vtt_fx *> fx_list;
+	list <vtt_fx_stereo_ladspa *> stereo_fx_list;
 		
 	public:
 	/* Methods */		
@@ -256,6 +260,7 @@ class vtt_class
 	void xy_input(f_prec, f_prec);
 
 	vtt_fx_ladspa * add_effect(LADSPA_Plugin *);
+	vtt_fx_stereo_ladspa * add_stereo_effect (LADSPA_Stereo_Plugin *plugin);
 	
 	void calc_speed();
 	void render();
