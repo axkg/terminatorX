@@ -1,0 +1,53 @@
+.TH aseqjoy "1" "March 2003" "aseqjoy @VERSION@" "User Commands"
+.SH NAME
+aseqjoy \- Joystick to ALSA MIDI Sequencer Converter
+.SH SYNOPSIS
+.B aseqjoy
+[\fIoptions\fR]
+.SH DESCRIPTION
+Aseqjoy maps each axis of the joystick device to a specific MIDI 
+controller. Moving the joystick along an axis will cause aseqjoy to emit
+MIDI controller messages via ALSA's sequencer API. The value of the controller
+message represents the joystick's position along the axis (eg \'left\' \-> 0, 
+\'middle\' \-> 63, \'right\' \-> 127).
+
+Aseqjoy uses the ALSA sequencer API to emit the MIDI events. Therefor it
+creates and output port named after joystick used. You can then use for example
+the \fBalsa-patch-bay\fR to connect an aseqjoy instance to an input port of your
+choice.
+
+\fBNote:\fR Some joysticks may have to be calibrated (with \fBjscal\fR) before 
+they can be used efficently. 
+.SH OPTIONS
+.TP
+\fB\-h\fR
+Display help info
+.TP
+\fB\-d [joystick]\fR
+Select the joystick to use for aseqjoy, where \fB[joystick]\fR is an integer value
+from from 0 to 3 effectivley selecting devices js0 to js3.
+.TP
+\fB\-v\fR
+Verbose mode - aseqjoy will output information about the MIDI events
+sent.
+.TP
+\fB\-0 [controller]\fR
+Select the MIDI controller ID for axis 0. As a default value aseqjoy will use
+10 + the axis ID, so for axis 0 that would be 10 + 0 = 10.
+.TP
+\fB\-1 [controller]\fR, \fB\-2 [controller]\fR, \fB\-3 [controller]\fR,
+Just like \fB\-0\fR this will set the controller IDs for axes 1, 2, 3.
+.SH OPERATION
+After aseqjoy has started successfully all motion detected by the selected 
+joystick device will cause MIDI controller messages to be emitted via the 
+corresponding ALSA sequencer output port. The controller IDs are either the
+default values (10, 11, 12 ...) or the ones given as commandline options.
+
+Pressing a joystick button will cause aseqjoy to switch the MIDI channel. On
+startup channel '1' is selected. Pressing joystick button 2 will cause channel
+2 to be selected. Other buttons work accordingly.
+.SH AUTHOR
+Man page and software by Alexander König <alex@lisas.de>.
+.SH "SEE ALSO"
+.LP 
+jscal(1)

@@ -27,4 +27,4 @@ else
     AC_MSG_ERROR([** Coulnd'f find ALSA library libasound. **])
 fi
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(Makefile aseqjoy.1)
