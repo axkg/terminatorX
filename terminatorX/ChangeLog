@@ -9,11 +9,19 @@ changed.
 - Ported terminatorX to gtk+ Version 2. The code for gtk2 will be enabled
   when gtk2 is detected by configure. To force terminatorX to use the good
   old gtk 1.2.x (x>=5) run configure with the '--disable-gtk2' switch.
+  WARNING: gdkxft-users: gtk2 applications segfault when preloading
+  libgdk_xft.so! So unset LD_PRELOAD and set GDK_USE_XFT=1 instead.
 - Applied a patch from Adrian that brings lots of new stuff:
   - Debian package support  
   - enhanced GNOME integration
   - a manpage for terminatorX
 - Included another gcc3 fix thanks to Gregor Riepl <seto-kun@freesurf.ch>
+- Improved configure's compatibilty - it should detect pthreads more reliably
+  and it should detect ladspa.h when located in /usr/local/include without
+  /usr/local/include being contained in the include path.
+- This release should compile and run on FreeBSD systems and possibly
+  OpenBSD, too. Thanks for help and testing this goes to 
+  Tilman Linneweh <tilman@arved.de>.
 
 [v3.72]
 - Applied a patch from Matthew Evans <activesx@hotmail.com> that introduces 
