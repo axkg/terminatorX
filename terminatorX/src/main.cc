@@ -92,17 +92,111 @@ int idle()
 	return TRUE;
 }
 
+void show_help()
+{
+			
+	fprintf(stderr, "\
+usage: terminatorX [options] [save file]\n\
+\n\
+  -h, --help 			Display help info\n\
+  -f, --file			Load saved terminatorX set file\n\
+  -r, --rc-file [file]		Load alternate rc file\n\
+  -d, --dont-save		Do not save settings at exit\n\
+\n");
+/*
+  -n, --no-gui			Run terminatorX with no GUI\n\
+  -m, --midi-in [file]		Use [file] for midi input\n\
+  -o, --midi-out [file]		Use [file] for midi input\n\
+  -s, --std-out			Use stdout for sound output\n\
+\n");
+*/
+}
+
+
+int parse_args(int *argc, char **argv)
+{
+	// pass over argv once to see if we need to load an alternate_rc file
+	for (int i = 1 ; i != *argc ; ++i )
+	{
+		if ((strcmp(argv[i], "-r") == 0) || (strcmp(argv[i], "--rc-file") == 0)) 
+		{
+			if (argv[i+1] )
+			{	
+				++i;
+				fprintf(stderr, "tX: Loading alternate rc file %s\n", argv[i]);
+				globals.alternate_rc = argv[i];
+			}
+			else
+			{
+				show_help();	
+				exit(1);
+			}
+			break;
+		}
+	}
+	
+	// load up the global values
+	load_globals();
+
+	// default the flag options, or they'll be set from last execution... (think globals.no_gui ;)
+	globals.no_gui = 0;
+	globals.alternate_rc = 0;
+	globals.store_globals = 1;
+	globals.startup_set = 0;
+		
+	// then pass over again, this time setting passed values
+	for (int i = 1 ; i < *argc ; ++i )
+	{
+		if ((strcmp(argv[i], "-f") == 0) || (strcmp(argv[i], "--file") == 0))
+		{
+			++i;
+			globals.startup_set = argv[i];
+		}	
+		else if (((strcmp(argv[i], "-r") == 0) || (strcmp(argv[i], "--rc-file") == 0)) && (argv[i+1]))
+		{
+			++i;
+			globals.alternate_rc = argv[i];
+		}
+		else if ((strcmp(argv[i], "-d") == 0) || (strcmp(argv[i], "--dont-save") == 0))
+		{
+			fprintf(stderr, "tX: Do not save settings on exit\n");
+			globals.store_globals = 0;
+
+		}
+/*		
+		else if ((strcmp(argv[i], "-m") == 0) || (strcmp(argv[i], "--midi-in") == 0))
+		{
+		}
+		else if ((strcmp(argv[i], "-s") == 0) || (strcmp(argv[i], "--std-out") == 0))
+		{
+		}	
+		else if ((strcmp(argv[i], "-n") == 0) || (strcmp(argv[i], "--no-gui") == 0))
+		{
+			globals.no_gui = 1;
+			fprintf(stderr, "tX: Run without a GUI\n");
+		}
+*/
+		else
+		{
+			show_help();
+			exit(1);
+		}
+	}
+	return 1;
+}
+
 int main(int argc, char **argv)
 {
-	char *startup_set=NULL;
 	FILE *gtk_rc_file;
-	
+
 #ifndef WIN32
 	fprintf(stderr, "%s, Copyright(C)1999 Alexander König, alkoit00@fht-esslingen.de\n", VERSIONSTRING);
 #else
         fprintf(stderr, "%s, Copyright(C)1999 Alexander König, alkoit00@fht-esslingen.de\n", VERSIONSTRING);
         setenv ("CYGWIN", "binmode");
 #endif
+	
+
 	fprintf(stderr, "terminatorX comes with ABSOLUTELY NO WARRANTY - for details read the license.\n");
 
 #ifdef USE_3DNOW
@@ -124,10 +218,8 @@ int main(int argc, char **argv)
 		fclose(gtk_rc_file);
 		gtk_rc_parse(TX_GTKRC);
 	}
-	
-	if (argc >1) startup_set=argv[1];
 
-	load_globals();		
+	parse_args(&argc, argv); 
 
 	if (globals.show_nag)
 	{	
@@ -146,10 +238,10 @@ int main(int argc, char **argv)
 		
 	if (!globals.show_nag)	display_mastergui();
 		
-	if (startup_set)
+	if (globals.startup_set)
 	{
 		while (gtk_events_pending()) gtk_main_iteration(); gdk_flush();	
-		load_tt_part(startup_set);
+		load_tt_part(globals.startup_set);
 	}
 		
 #ifndef CREATE_BENCHMARK
