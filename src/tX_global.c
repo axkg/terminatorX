@@ -81,7 +81,7 @@ void set_global_defaults() {
 	globals.oss_buff_size=9;
 	globals.oss_samplerate=44100;
 
-	strcpy(globals.alsa_device, "00-00: Default");	
+	strcpy(globals.alsa_device_id, "hw:0,0");	
 	globals.alsa_buffer_time=80000;
 	globals.alsa_period_time=20000;
 	globals.alsa_samplerate=44100;
@@ -185,7 +185,7 @@ int load_globals_xml() {
 			restore_int("oss_buff_size", globals.oss_buff_size);
 			restore_int("oss_samplerate", globals.oss_samplerate);
 
-			restore_string("alsa_device", globals.alsa_device);
+			restore_string("alsa_device_id", globals.alsa_device_id);
 			restore_int("alsa_buffer_time", globals.alsa_buffer_time);
 			restore_int("alsa_period_time", globals.alsa_period_time);
 			restore_int("alsa_samplerate", globals.alsa_samplerate);
@@ -236,7 +236,7 @@ int load_globals_xml() {
 }
 
 void store_globals() {
-	char rc_name[PATH_MAX]="";
+	char rc_name[PATH_MAX+256]="";
 	char device_type[16];
 	char indent[]="\t";
 	FILE *rc=NULL;
@@ -275,7 +275,7 @@ void store_globals() {
 		store_int("oss_buff_size", globals.oss_buff_size);
 		store_int("oss_samplerate", globals.oss_samplerate);
 
-		store_string("alsa_device", globals.alsa_device);
+		store_string("alsa_device_id", globals.alsa_device_id);
 		store_int("alsa_buffer_time", globals.alsa_buffer_time);
 		store_int("alsa_period_time", globals.alsa_period_time);
 		store_int("alsa_samplerate", globals.alsa_samplerate);		

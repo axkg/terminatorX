@@ -121,9 +121,27 @@ int tX_midiin::check_event()
 			case SND_SEQ_EVENT_PITCHBEND:
 				event.type = tX_midievent::PITCHBEND;
 				event.number = ev->data.control.param;
-				event.value = ev->data.control.value / 127.0;
+				event.value = (ev->data.control.value + 8191.0) / 16382.0; // 127.0;
 				event.channel = ev->data.control.channel;
 				break;
+			case SND_SEQ_EVENT_CONTROL14:
+				event.type = tX_midievent::CC14;
+				event.number = ev->data.control.param;
+				event.value = ev->data.control.value / 16383.0;
+				event.channel = ev->data.control.channel;
+				break;
+			case SND_SEQ_EVENT_REGPARAM:
+				event.type = tX_midievent::RPN;
+				event.number = ev->data.control.param;
+				event.value = ev->data.control.value / 16383.0;
+				event.channel = ev->data.control.channel;
+				break;
+			case SND_SEQ_EVENT_NONREGPARAM:
+				event.type = tX_midievent::NRPN;
+				event.number = ev->data.control.param;
+				event.value = ev->data.control.value / 16383.0;
+				event.channel = ev->data.control.channel;
+				break;						
 			case SND_SEQ_EVENT_NOTEON:
 				event.type = tX_midievent::NOTE;
 				event.number = ev->data.note.note;

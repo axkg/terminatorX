@@ -43,6 +43,9 @@ class tX_midievent
 		CC=1,
 		NOTE,
 		PITCHBEND,
+		CC14,
+		RPN,
+		NRPN
 	} type;
 	int number; // note # or controller #
 	
