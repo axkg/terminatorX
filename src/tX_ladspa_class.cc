@@ -99,16 +99,15 @@ void LADSPA_Class::init() {
 		if (lrdf_read_files((const char **) uris)) {
 			tX_error("liblrdf had problems reading the rdf files - cannot provide structured menu");
 			liblrdf_error=true;
-        }
-#endif
-		root=new LADSPA_Class("http://ladspa.org/ontology#Plugin");
-#ifdef USE_LRDF		
+		}
+
 		lrdf_cleanup();
 	} else {
 		tX_error("No RDF files found");
 	}
 #endif
 	
+	root=new LADSPA_Class("http://ladspa.org/ontology#Plugin");
 	unclassified=new LADSPA_Class();
 	/* This is the last class to accpet all plugins not accepted by other classes. */
 	root->subclasses.push_back(unclassified);
