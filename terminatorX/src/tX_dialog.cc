@@ -147,6 +147,8 @@ void apply_options(GtkWidget *dialog) {
 	globals.prelis=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "prelisten_enabled")))==TRUE);
 	globals.restore_midi_connections=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "reconnect_enabled")))==TRUE);
 	globals.quit_confirm=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "quit_confirm")))==TRUE);
+	globals.verbose_plugin_loading=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "verbose_plugin_loading")))==TRUE);
+	globals.force_nonrt_plugins=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "force_nonrt_plugins")))==TRUE);
 	
 	/* update colors */
 	std::list<vtt_class *>::iterator vtt;
@@ -477,6 +479,8 @@ void init_tx_options(GtkWidget *dialog) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "prelisten_enabled")), globals.prelis);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "reconnect_enabled")), globals.restore_midi_connections);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "quit_confirm")), globals.quit_confirm);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "force_nonrt_plugins")), globals.force_nonrt_plugins);	
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "verbose_plugin_loading")), globals.verbose_plugin_loading);	
 }
 
 void create_options()
