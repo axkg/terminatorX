@@ -25,7 +25,7 @@
 		 
     08 Dec 1999 - Switched to the new audiofile class		 
 */    
-   
+
 #include "tX_vtt.h"
 #include "tX_global.h"
 #include <stdio.h>
@@ -42,7 +42,6 @@
 #ifdef USE_3DNOW
 #include "3dnow.h"
 #endif
-
 
 #ifdef DEBUG
 #define tX_freemem(ptr, varname, comment); fprintf(stderr, "** free() [%s] at %08x. %s.\n", varname, ptr, comment); free(ptr);
@@ -72,6 +71,9 @@ extern void gui_update_display(vtt_class *vtt);
 extern void gui_clear_master_button(vtt_class *vtt);
 extern void cleanup_vtt(vtt_class *vtt);
 extern int vg_get_current_page(vtt_class *vtt);
+extern f_prec gui_get_audio_x_zoom(vtt_class *vtt);
+extern void gui_set_audio_x_zoom(vtt_class *vtt, f_prec);
+
 
 int vtt_class::vtt_amount=0;
 list <vtt_class *> vtt_class::main_list;
@@ -335,7 +337,6 @@ void vtt_class :: set_pan(f_prec newpan)
 void vtt_class :: set_pitch(f_prec newpitch)
 {
 	rel_pitch=newpitch;
-//	res_pitch=fabs(globals.pitch)*rel_pitch;
 	res_pitch=globals.pitch*rel_pitch;
 	speed=res_pitch;
 	ec_set_length(ec_length);
@@ -343,7 +344,6 @@ void vtt_class :: set_pitch(f_prec newpitch)
 
 void vtt_class :: recalc_pitch()
 {
-//	res_pitch=fabs(globals.pitch)*rel_pitch;
 	res_pitch=globals.pitch*rel_pitch;
 	res_pitch*=audiofile_pitch_correction;
 	speed=res_pitch;
@@ -1548,1001 +1548,327 @@ void vtt_class :: xy_input(f_prec x_value, f_prec y_value)
 
 #define store(data); if (fwrite((void *) &data, sizeof(data), 1, output)!=1) res+=1;
 
-int  vtt_class :: save(FILE * output)
-{
+int  vtt_class :: save(FILE *rc, char *indent) {
 	list <vtt_fx *> :: iterator effect;
 
 	int res=0;
-	guint32 pid;
-	int32_t counter;
-	guint8 hidden;
-	
-	store(name);
-	store(filename);
-	store(is_sync_master);
-	store(is_sync_client);
-	store(sync_cycles);
-	store(rel_volume);
-	store(rel_pitch);
-	
-	store(autotrigger);
-	store(loop);
-	
-	store(mute);
-	store(pan);
-	
-	store(lp_enable);
-	store(lp_gain);
-	store(lp_reso);
-	store(lp_freq);
-	
-	store(ec_enable);
-	store(ec_length);
-	store(ec_feedback);
-	store(ec_pan);
-	store(ec_volume);
-	
-	store(audio_hidden);
-	store(control_hidden);
 
-	pid=sp_speed.get_persistence_id();
-	store(pid);
-	pid=sp_volume.get_persistence_id();
-	store(pid);
-	pid=sp_pitch.get_persistence_id();
-	store(pid);
-	pid=sp_trigger.get_persistence_id();
-	store(pid);
-	pid=sp_loop.get_persistence_id();
-	store(pid);
-	pid=sp_sync_client.get_persistence_id();
-	store(pid);
-	pid=sp_sync_cycles.get_persistence_id();
-	store(pid);
-	pid=sp_lp_enable.get_persistence_id();
-	store(pid);
-	pid=sp_lp_gain.get_persistence_id();
-	store(pid);
-	pid=sp_lp_reso.get_persistence_id();
-	store(pid);
-	pid=sp_lp_freq.get_persistence_id();
-	store(pid);
-	pid=sp_ec_enable.get_persistence_id();
-	store(pid);
-	pid=sp_ec_length.get_persistence_id();
-	store(pid);
-	pid=sp_ec_feedback.get_persistence_id();
-	store(pid);
-	pid=sp_ec_volume.get_persistence_id();
-	store(pid);
-	pid=sp_ec_pan.get_persistence_id();
-	store(pid);
-	pid=sp_mute.get_persistence_id();
-	store(pid);
-	pid=sp_spin.get_persistence_id();
-	store(pid);
-	pid=sp_pan.get_persistence_id();
-	store(pid);
-		
-	counter=fx_list.size();
-	store(counter);
+	fprintf(rc, "%s<turntable>\n", indent);
+	strcat(indent, "\t");
+	
+	store_string("name", name);
+	if (buffer) {
+		store_string("audiofile", filename);
+	} else {
+		store_string("audiofile", "");
+	}
+	store_bool("sync_master", is_sync_master);
+	store_bool("autotrigger", autotrigger);
+	store_bool_id("loop", loop, sp_loop.get_persistence_id());
 
-	for (effect=fx_list.begin(); effect!=fx_list.end(); effect++)
-	{
-		(*effect)->save(output);
+	store_bool_id("sync_client", is_sync_client, sp_sync_client.get_persistence_id());
+	store_int_id("sync_cycles", sync_cycles, sp_sync_cycles.get_persistence_id());
+
+	store_float_id("volume", rel_volume, sp_volume.get_persistence_id());
+	store_float_id("pitch", rel_pitch, sp_pitch.get_persistence_id());	
+	store_bool_id("mute", mute, sp_mute.get_persistence_id());
+	store_float_id("pan", pan, sp_pan.get_persistence_id());
+	
+	store_bool_id("lowpass_enable", lp_enable, sp_lp_enable.get_persistence_id());
+	store_float_id("lowpass_gain", lp_gain, sp_lp_gain.get_persistence_id());
+	store_float_id("lowpass_reso", lp_reso, sp_lp_reso.get_persistence_id());
+	store_float_id("lowpass_freq", lp_freq, sp_lp_freq.get_persistence_id());
+
+	store_bool_id("echo_enable", ec_enable, sp_ec_enable.get_persistence_id());
+	store_float_id("echo_length", ec_length, sp_ec_length.get_persistence_id());
+	store_float_id("echo_feedback", ec_feedback, sp_ec_feedback.get_persistence_id());
+	store_float_id("echo_pan", ec_pan, sp_ec_pan.get_persistence_id());
+	store_float_id("echo_volume", ec_volume, sp_ec_volume.get_persistence_id());
+	
+	store_id("speed", sp_speed.get_persistence_id());
+	store_id("trigger", sp_trigger.get_persistence_id());
+	store_id("spin", sp_spin.get_persistence_id());
+
+	
+	if (x_par) {
+		store_int("x_axis_mapping", x_par->get_persistence_id());
 	}
 	
-	if (x_par)
-	{
-		pid=1;
-		store(pid);
-		pid=x_par->get_persistence_id();
-		store(pid);
-	}
-	else
-	{
-		pid=0;
-		store(pid);
+	if (y_par) {
+		store_int("y_axis_mapping", y_par->get_persistence_id());
 	}
 
-	if (y_par)
-	{
-		pid=1;
-		store(pid);
-		pid=y_par->get_persistence_id();
-		store(pid);
+	store_bool("audio_panel_hidden", audio_hidden);
+	store_bool("control_panel_hidden", control_hidden);
+	store_bool("main_panel_hidden", gui.main_panel->is_hidden());
+	store_bool("trigger_panel_hidden", gui.trigger_panel->is_hidden());
+	store_bool("lowpass_panel_hidden", gui.lp_panel->is_hidden());
+	store_bool("echo_panel_hidden", gui.ec_panel->is_hidden());
+
+	store_float("audio_x_zoom", gui_get_audio_x_zoom(this));
+	
+	fprintf(rc, "%s<fx>\n", indent);
+	strcat(indent, "\t");
+	
+	for (effect=fx_list.begin(); effect!=fx_list.end(); effect++) {
+		(*effect)->save(rc, indent);
 	}
-	else
-	{
-		pid=0;
-		store(pid);
-	}
-		
-	hidden=gui.main_panel->is_hidden();
-	store(hidden);
-
-	hidden=gui.trigger_panel->is_hidden();
-	store(hidden);
-
-	hidden=gui.lp_panel->is_hidden();
-	store(hidden);
-
-	hidden=gui.ec_panel->is_hidden();
-	store(hidden);
+	indent[strlen(indent)-1]=0;
+	fprintf(rc, "%s</fx>\n", indent);
+	
+	indent[strlen(indent)-1]=0;
+	fprintf(rc, "%s</turntable>\n", indent);
 	
 	return(res);
 }
 
-#define atload(data); if (fread((void *) &data, sizeof(data), 1, input)!=1) res+=1;
+#define TX_XML_SETFILE_VERSION "1.0"
 
-int vtt_class :: load_10(FILE * input)
-{
-	int res=0;
-	int obsolete_int;
-	
-	atload(name);
-	atload(filename);
-	atload(is_sync_master);
-	atload(is_sync_client);
-	atload(sync_cycles);
-	atload(rel_volume);
-	recalc_volume();
-	atload(rel_pitch);
-	recalc_pitch();
-	
-	atload(autotrigger);
-	atload(loop);
-	
-	atload(mute);
-	atload(obsolete_int); //x_control
-	atload(obsolete_int); //y_control
-	
-	atload(lp_enable);
-	atload(lp_gain);
-	atload(lp_reso);
-	atload(lp_freq);
-	lp_setup(lp_gain, lp_reso, lp_freq);
-	
-	atload(ec_enable);
-	atload(ec_length);
-	ec_set_length(ec_length);
-	atload(ec_feedback);
-	ec_set_feedback(ec_feedback);
-	
-	return(res);
-}
-
-
-int vtt_class :: load_11(FILE * input)
-{
-	int res=0;
-	guint32 pid;
-	int32_t gui_page;
-	int obsolete_int;
-	
-	atload(name);
-	atload(filename);
-	atload(is_sync_master);
-	atload(is_sync_client);
-	atload(sync_cycles);
-	atload(rel_volume);
-	recalc_volume();
-	atload(rel_pitch);
-	recalc_pitch();
-	
-	atload(autotrigger);
-	atload(loop);
-	
-	atload(mute);
-	atload(obsolete_int); //x_control
-	atload(obsolete_int); //y_control
-	
-	atload(lp_enable);
-	atload(lp_gain);
-	atload(lp_reso);
-	atload(lp_freq);
-	lp_setup(lp_gain, lp_reso, lp_freq);
-	
-	atload(ec_enable);
-	atload(ec_length);
-	ec_set_length(ec_length);
-	atload(ec_feedback);
-	ec_set_feedback(ec_feedback);
-
-	atload(pid);
-	sp_speed.set_persistence_id(pid);
-	atload(pid);
-	sp_volume.set_persistence_id(pid);
-	atload(pid);
-	sp_pitch.set_persistence_id(pid);
-	atload(pid);
-	sp_trigger.set_persistence_id(pid);
-	atload(pid);
-	sp_loop.set_persistence_id(pid);
-	atload(pid);
-	sp_sync_client.set_persistence_id(pid);
-	atload(pid);
-	sp_sync_cycles.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_enable.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_gain.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_reso.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_freq.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_enable.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_length.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_feedback.set_persistence_id(pid);
-	atload(pid);
-	sp_mute.set_persistence_id(pid);
-	atload(pid);
-	sp_spin.set_persistence_id(pid);
-	
-	atload(gui_page);
-	
-	return(res);
-}
-
-int vtt_class :: load_12(FILE * input)
-{
-	int res=0;
-	guint32 pid;
-	int32_t counter;
-	int32_t type;
-	long id;
-	int i;
-	unsigned int t;
-	LADSPA_Plugin *plugin;
-	char buffer[256];
-	vtt_fx_ladspa *ladspa_effect;
-	guint8 hidden;
-	
-	atload(buffer);
-	this->set_name(buffer);
-	atload(filename);
-	atload(is_sync_master);
-	atload(is_sync_client);
-	atload(sync_cycles);
-	atload(rel_volume);
-	recalc_volume();
-	atload(rel_pitch);
-	recalc_pitch();
-	
-	atload(autotrigger);
-	atload(loop);
-	
-	atload(mute);
-	
-	atload(lp_enable);
-	atload(lp_gain);
-	atload(lp_reso);
-	atload(lp_freq);
-	lp_setup(lp_gain, lp_reso, lp_freq);
-	
-	atload(ec_enable);
-	atload(ec_length);
-	ec_set_length(ec_length);
-	atload(ec_feedback);
-	ec_set_feedback(ec_feedback);
-
-	atload(pid);
-	sp_speed.set_persistence_id(pid);
-	atload(pid);
-	sp_volume.set_persistence_id(pid);
-	atload(pid);
-	sp_pitch.set_persistence_id(pid);
-	atload(pid);
-	sp_trigger.set_persistence_id(pid);
-	atload(pid);
-	sp_loop.set_persistence_id(pid);
-	atload(pid);
-	sp_sync_client.set_persistence_id(pid);
-	atload(pid);
-	sp_sync_cycles.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_enable.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_gain.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_reso.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_freq.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_enable.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_length.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_feedback.set_persistence_id(pid);
-	atload(pid);
-	sp_mute.set_persistence_id(pid);
-	atload(pid);
-	sp_spin.set_persistence_id(pid);
-		
-	atload(counter);
-	
-	for (i=0; i<counter; i++)
-	{
-		atload(type);
-		switch(type)
-		{
-			case TX_FX_BUILTINCUTOFF:
-				for (t=0; t<fx_list.size(); t++) effect_down(lp_fx);
-			break;
-			
-			case TX_FX_BUILTINECHO:
-				for (t=0; t<fx_list.size(); t++) effect_down(ec_fx);
-			break;
-			
-			case TX_FX_LADSPA:
-				atload(id);
-				plugin=LADSPA_Plugin::getPluginByUniqueID(id);
-				if (plugin)
-				{
-					ladspa_effect=add_effect(plugin);
-					ladspa_effect->load(input);
-				}
-				else
-				{
-					sprintf(buffer,"Couldn't find required plugin with ID [%li].", id);
-					tx_note(buffer, true);
-					res++;
-				}
-			break;
-			
-			default:
-				tx_note("Fatal error loading set: unknown effect type!", true);
-				res++;
-		}		
-	}
-
-	atload(pid);
-	
-	if (pid)
-	{
-		atload(pid);
-		set_x_input_parameter(tX_seqpar :: get_sp_by_persistence_id(pid));
-	}
-	else set_x_input_parameter(NULL);
-	
-	atload(pid);
-	
-	if (pid)
-	{
-		atload(pid);
-		set_y_input_parameter(tX_seqpar :: get_sp_by_persistence_id(pid));
-	}
-	else set_y_input_parameter(NULL);
-
-	atload(hidden);
-	gui.main_panel->hide(hidden);
-
-	atload(hidden);
-	gui.trigger_panel->hide(hidden);
-
-	atload(hidden);
-	gui.lp_panel->hide(hidden);
-
-	atload(hidden);
-	gui.ec_panel->hide(hidden);
-	
-	return(res);
-}
-
-int vtt_class :: load_13(FILE * input)
-{
-	int res=0;
-	guint32 pid;
-	int32_t counter;
-	int32_t type;
-	long id;
-	int i;
-	unsigned int t;
-	LADSPA_Plugin *plugin;
-	char buffer[256];
-	vtt_fx_ladspa *ladspa_effect;
-	guint8 hidden;
-	
-	atload(buffer);
-	this->set_name(buffer);
-	atload(filename);
-	atload(is_sync_master);
-	atload(is_sync_client);
-	atload(sync_cycles);
-	atload(rel_volume);
-	atload(rel_pitch);
-	recalc_pitch();
-	
-	atload(autotrigger);
-	atload(loop);
-	
-	atload(mute);
-	atload(pan);
-	
-	atload(lp_enable);
-	atload(lp_gain);
-	atload(lp_reso);
-	atload(lp_freq);
-	lp_setup(lp_gain, lp_reso, lp_freq);
-	
-	atload(ec_enable);
-	atload(ec_length);
-	ec_set_length(ec_length);
-	atload(ec_feedback);
-	ec_set_feedback(ec_feedback);
-	atload(ec_pan);
-	ec_set_pan(ec_pan);
-	atload(ec_volume);
-	ec_set_volume(ec_volume);
-
-	recalc_volume();
-
-	atload(pid);
-	sp_speed.set_persistence_id(pid);
-	atload(pid);
-	sp_volume.set_persistence_id(pid);
-	atload(pid);
-	sp_pitch.set_persistence_id(pid);
-	atload(pid);
-	sp_trigger.set_persistence_id(pid);
-	atload(pid);
-	sp_loop.set_persistence_id(pid);
-	atload(pid);
-	sp_sync_client.set_persistence_id(pid);
-	atload(pid);
-	sp_sync_cycles.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_enable.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_gain.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_reso.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_freq.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_enable.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_length.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_feedback.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_volume.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_pan.set_persistence_id(pid);
-	atload(pid);
-	sp_mute.set_persistence_id(pid);
-	atload(pid);
-	sp_spin.set_persistence_id(pid);
-	atload(pid);
-	sp_pan.set_persistence_id(pid);
-		
-	atload(counter);
-	
-	for (i=0; i<counter; i++)
-	{
-		atload(type);
-		switch(type)
-		{
-			case TX_FX_BUILTINCUTOFF:
-				for (t=0; t<fx_list.size(); t++) effect_down(lp_fx);
-			break;
-			
-			case TX_FX_BUILTINECHO:
-				for (t=0; t<fx_list.size(); t++) effect_down(ec_fx);
-			break;
-			
-			case TX_FX_LADSPA:
-				atload(id);
-				plugin=LADSPA_Plugin::getPluginByUniqueID(id);
-				if (plugin)
-				{
-					ladspa_effect=add_effect(plugin);
-					ladspa_effect->load(input);
-				}
-				else
-				{
-					sprintf(buffer,"Couldn't find required plugin with ID [%li].", id);
-					tx_note(buffer, true);
-					res++;
-				}
-			break;
-			
-			default:
-				tx_note("Fatal error loading set: unknown effect type!", true);
-				res++;
-		}		
-	}
-
-	atload(pid);
-	
-	if (pid)
-	{
-		atload(pid);
-		set_x_input_parameter(tX_seqpar :: get_sp_by_persistence_id(pid));
-	}
-	else set_x_input_parameter(NULL);
-	
-	atload(pid);
-	
-	if (pid)
-	{
-		atload(pid);
-		set_y_input_parameter(tX_seqpar :: get_sp_by_persistence_id(pid));
-	}
-	else set_y_input_parameter(NULL);
-
-	atload(hidden);
-	gui.main_panel->hide(hidden);
-
-	atload(hidden);
-	gui.trigger_panel->hide(hidden);
-
-	atload(hidden);
-	gui.lp_panel->hide(hidden);
-
-	atload(hidden);
-	gui.ec_panel->hide(hidden);
-	
-	return(res);
-}
-
-int vtt_class :: load_14(FILE * input)
-{
-	int res=0;
-	guint32 pid;
-	int32_t counter;
-	int32_t type;
-	long id;
-	int i;
-	unsigned int t;
-	LADSPA_Plugin *plugin;
-	char buffer[256];
-	vtt_fx_ladspa *ladspa_effect;
-	guint8 hidden;
-	
-	atload(buffer);
-	this->set_name(buffer);
-	atload(filename);
-	atload(is_sync_master);
-	atload(is_sync_client);
-	atload(sync_cycles);
-	atload(rel_volume);
-	atload(rel_pitch);
-	recalc_pitch();
-	
-	atload(autotrigger);
-	atload(loop);
-	
-	atload(mute);
-	atload(pan);
-	
-	atload(lp_enable);
-	atload(lp_gain);
-	atload(lp_reso);
-	atload(lp_freq);
-	lp_setup(lp_gain, lp_reso, lp_freq);
-	
-	atload(ec_enable);
-	atload(ec_length);
-	ec_set_length(ec_length);
-	atload(ec_feedback);
-	ec_set_feedback(ec_feedback);
-	atload(ec_pan);
-	ec_set_pan(ec_pan);
-	atload(ec_volume);
-	ec_set_volume(ec_volume);
-
-	atload(audio_hidden);
-	atload(control_hidden);
-	
-	recalc_volume();
-
-	atload(pid);
-	sp_speed.set_persistence_id(pid);
-	atload(pid);
-	sp_volume.set_persistence_id(pid);
-	atload(pid);
-	sp_pitch.set_persistence_id(pid);
-	atload(pid);
-	sp_trigger.set_persistence_id(pid);
-	atload(pid);
-	sp_loop.set_persistence_id(pid);
-	atload(pid);
-	sp_sync_client.set_persistence_id(pid);
-	atload(pid);
-	sp_sync_cycles.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_enable.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_gain.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_reso.set_persistence_id(pid);
-	atload(pid);
-	sp_lp_freq.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_enable.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_length.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_feedback.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_volume.set_persistence_id(pid);
-	atload(pid);
-	sp_ec_pan.set_persistence_id(pid);
-	atload(pid);
-	sp_mute.set_persistence_id(pid);
-	atload(pid);
-	sp_spin.set_persistence_id(pid);
-	atload(pid);
-	sp_pan.set_persistence_id(pid);
-		
-	atload(counter);
-	
-	for (i=0; i<counter; i++)
-	{
-		atload(type);
-		switch(type)
-		{
-			case TX_FX_BUILTINCUTOFF:
-				for (t=0; t<fx_list.size(); t++) effect_down(lp_fx);
-			break;
-			
-			case TX_FX_BUILTINECHO:
-				for (t=0; t<fx_list.size(); t++) effect_down(ec_fx);
-			break;
-			
-			case TX_FX_LADSPA:
-				atload(id);
-				plugin=LADSPA_Plugin::getPluginByUniqueID(id);
-				if (plugin)
-				{
-					ladspa_effect=add_effect(plugin);
-					ladspa_effect->load(input);
-				}
-				else
-				{
-					sprintf(buffer,"Couldn't find required plugin with ID [%li].", id);
-					tx_note(buffer, true);
-					res++;
-				}
-			break;
-			
-			default:
-				tx_note("Fatal error loading set: unknown effect type!", true);
-				res++;
-		}		
-	}
-
-	atload(pid);
-	
-	if (pid)
-	{
-		atload(pid);
-		set_x_input_parameter(tX_seqpar :: get_sp_by_persistence_id(pid));
-	}
-	else set_x_input_parameter(NULL);
-	
-	atload(pid);
-	
-	if (pid)
-	{
-		atload(pid);
-		set_y_input_parameter(tX_seqpar :: get_sp_by_persistence_id(pid));
-	}
-	else set_y_input_parameter(NULL);
-
-	atload(hidden);
-	gui.main_panel->hide(hidden);
-
-	atload(hidden);
-	gui.trigger_panel->hide(hidden);
-
-	atload(hidden);
-	gui.lp_panel->hide(hidden);
-
-	atload(hidden);
-	gui.ec_panel->hide(hidden);
-	
-	return(res);
-}
-
-
-int  vtt_class :: save_all(FILE* output)
-{
+int  vtt_class :: save_all(FILE* rc) {
 	int res=0;
 	list <vtt_class *> :: iterator vtt;
-	guint32 pid;
+	char indent[256];
 	
 	tX_seqpar :: create_persistence_ids();
-	
-	store(vtt_amount);
-	store(master_volume);
-	store(globals.pitch);
-	pid=sp_master_volume.get_persistence_id();
-	store(pid);
-	pid=sp_master_pitch.get_persistence_id();
-	store(pid);
 
-	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++)
-	{
-		res+=(*vtt)->save(output);
+	fprintf(rc, "<?xml version=\"1.0\" encoding=\"US-ASCII\"?>\n\n");
+	fprintf(rc, "<terminatorXset version=\"%s\">\n", TX_XML_SETFILE_VERSION);
+	
+	strcpy(indent, "\t");
+
+	//store_int(vtt_amount); obsolete
+
+	store_float_id("master_volume", master_volume, sp_master_volume.get_persistence_id());
+	store_float_id("master_pitch", globals.pitch, sp_master_pitch.get_persistence_id());
+
+	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
+		res+=(*vtt)->save(rc, indent);
 	}
 	
-	sequencer.save(output);
+	sequencer.save(rc, indent);
+	
+	fprintf(rc, "</terminatorXset>\n");
 	
 	return(res);
 }
 
-int  vtt_class :: load_all_10(FILE* input, char *fname)
-{
-	int res=0, restmp=0;
-	unsigned int i, max;
-	vtt_class *newvtt;
-	char ftmp[PATH_MAX];
+int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
+	char buffer[1024];
+	bool hidden;
+	int xpar_id=-1;
+	int ypar_id=-1;
+	int elementFound;
+	char *pid_attr;
+	int pid;
+	double dvalue;
+	double tmp;
 	
-	while (main_list.size())
-	{
+	for (xmlNodePtr cur=node->xmlChildrenNode; cur != NULL; cur = cur->next) {
+		if (cur->type == XML_ELEMENT_NODE) {
+			elementFound=0;
+			
+			restore_string_ac("name", buffer, set_name(buffer));
+			restore_string("audiofile", filename);
+			restore_bool("sync_master", is_sync_master);
+			restore_bool("autotrigger", autotrigger);
+			restore_bool_id("loop", loop, sp_loop, nop);
+			restore_bool_id("sync_client", is_sync_client, sp_sync_client, set_sync_client(is_sync_client, sync_cycles));
+			restore_int_id("sync_cycles", sync_cycles, sp_sync_cycles, set_sync_client(is_sync_client, sync_cycles));
+			restore_float_id("volume", rel_volume, sp_volume, recalc_volume());
+			restore_float_id("pitch", rel_pitch, sp_pitch, recalc_pitch());
+			restore_bool_id("mute", mute, sp_mute, set_mute(mute));
+			restore_float_id("pan", pan, sp_pan, set_pan(pan));
+	
+			restore_bool_id("lowpass_enable", lp_enable, sp_lp_enable, lp_set_enable(lp_enable));
+			restore_float_id("lowpass_gain", lp_gain, sp_lp_gain, lp_set_gain(lp_gain)); 
+			restore_float_id("lowpass_reso", lp_reso, sp_lp_reso, lp_set_reso(lp_reso));
+			restore_float_id("lowpass_freq", lp_freq, sp_lp_freq, lp_set_freq(lp_freq));
+	
+			restore_bool_id("echo_enable", ec_enable, sp_ec_enable, ec_set_enable(ec_enable));	
+			restore_float_id("echo_length", ec_length, sp_ec_length, ec_set_length(ec_length));
+			restore_float_id("echo_feedback", ec_feedback, sp_ec_feedback, ec_set_feedback(ec_feedback));
+			restore_float_id("echo_pan", ec_pan, sp_ec_pan, ec_set_pan(ec_pan));
+			restore_float_id("echo_volume", ec_volume, sp_ec_volume, ec_set_volume(ec_volume));		
+		
+			restore_id("speed", sp_speed);	
+			restore_id("trigger", sp_trigger);
+			restore_id("spin", sp_spin);
+	
+			restore_int("x_axis_mapping", xpar_id);
+			restore_int("y_axis_mapping", ypar_id);
+	
+			restore_bool("audio_panel_hidden", audio_hidden);
+			restore_bool("control_panel_hidden", control_hidden);
+			restore_bool_ac("main_panel_hidden", hidden, gui.main_panel->hide(hidden));
+			restore_bool_ac("trigger_panel_hidden", hidden, gui.trigger_panel->hide(hidden));
+			restore_bool_ac("lowpass_panel_hidden", hidden, gui.lp_panel->hide(hidden));			
+			restore_bool_ac("echo_panel_hidden", hidden, gui.ec_panel->hide(hidden));
+			restore_float_ac("audio_x_zoom", tmp, gui_set_audio_x_zoom(this,tmp));
+			
+			if (xmlStrcmp(cur->name, (xmlChar *) "fx")==0) {
+				xmlNodePtr fx=cur;
+				elementFound=1;
+				
+				for (xmlNodePtr cur=fx->xmlChildrenNode; cur != NULL; cur = cur->next) {
+					if (cur->type == XML_ELEMENT_NODE) {
+						int elementFound=0;
+						
+						if (xmlStrcmp(cur->name, (xmlChar *) "cutoff")==0) {
+							for (unsigned int t=0; t<fx_list.size(); t++) effect_down(lp_fx);
+							elementFound=1;
+						} else if (xmlStrcmp(cur->name, (xmlChar *) "lowpass")==0) {
+							for (unsigned int t=0; t<fx_list.size(); t++) effect_down(ec_fx);
+							elementFound=1;								
+						} else if (xmlStrcmp(cur->name, (xmlChar *) "ladspa_plugin")==0) {
+							xmlNodePtr pluginNode=cur;
+							int ladspa_id=-1;
+							elementFound=1;
+							
+							for (xmlNodePtr cur=pluginNode->xmlChildrenNode; cur!=NULL; cur = cur->next) {
+								int elementFound;
+								if (cur->type == XML_ELEMENT_NODE) {
+									elementFound=0;
+
+									restore_int("ladspa_id", ladspa_id);
+									if (elementFound) break;
+								}
+							}
+							
+							if (ladspa_id!=-1) {
+								LADSPA_Plugin *plugin=LADSPA_Plugin::getPluginByUniqueID(ladspa_id);
+								if (plugin) {
+									vtt_fx_ladspa *ladspa_effect=add_effect(plugin);
+									ladspa_effect->load(doc, pluginNode);
+								} else {
+									sprintf(buffer,"The terminatorX set file you are loading makes use of a LADSPA plugin that is not installed on this machine. The plugin's ID is [%i].", ladspa_id);
+									tx_note(buffer, true);							
+								}
+							} else {
+								tX_warning("ladspa_plugin section without a ladspa_id element.");
+							}
+							
+						} else {
+							tX_warning("unhandled element %s in fx section.", cur->name);
+						}
+					}
+				}
+			}
+			
+			if(!elementFound) {
+				tX_warning("unhandled element %s in turntable secion.", cur->name);
+			}
+		}
+	}
+
+	recalc_volume();
+
+	if (xpar_id>=0) {
+		set_x_input_parameter(tX_seqpar :: get_sp_by_persistence_id(xpar_id));
+	}
+	else set_x_input_parameter(NULL);
+	
+	if (ypar_id) {
+		set_y_input_parameter(tX_seqpar :: get_sp_by_persistence_id(ypar_id));
+	}
+	else set_y_input_parameter(NULL);
+		
+	return 0;
+}
+
+
+int vtt_class :: load_all(xmlDocPtr doc, char *fname) {
+	xmlNodePtr root=xmlDocGetRootElement(doc);
+	int elementFound=0;
+	char fn_buff[4096];
+	double dvalue;
+	int res=0;
+	int restmp=0;
+	char *pid_attr;
+	int pid;
+
+	
+	if (!root) {
+		tX_error("no root element? What kind of XML document is this?");
+		return 1;
+	}
+	
+	if (xmlStrcmp(root->name, (const xmlChar *) "terminatorXset")) {
+		tX_error("this is not a terminatorXset file.")
+		return 2;
+	}
+	
+	if (xmlGetProp(root,(xmlChar *) "version")==NULL) {
+		tX_error("the set file lacks a version attribute.");
+		return 3;
+	}
+	
+	if (xmlStrcmp(xmlGetProp(root, (xmlChar *) "version"), (xmlChar *) TX_XML_SETFILE_VERSION)) {
+		tX_warning("this set file is version %s - while this releases uses version %s - trying to load anyway.", xmlGetProp(root, (xmlChar *) "version"), TX_XML_SETFILE_VERSION);
+	}
+	
+	/* delete current tables... */
+	while (main_list.size()) {
 		delete((*main_list.begin()));
 	}
-		
-	atload(max);
-	atload(master_volume);
-	set_master_volume(master_volume);
-	globals.volume=master_volume;
-	atload(globals.pitch);	
-	set_master_pitch(globals.pitch);
 
-	ld_create_loaddlg(TX_LOADDLG_MODE_MULTI, max);
+	int table_ctr=0;
+	
+	/* counting turntables.. */
+	for (xmlNodePtr cur=root->xmlChildrenNode; cur != NULL; cur = cur->next) {
+		if (cur->type == XML_ELEMENT_NODE) {	
+			if (xmlStrcmp(cur->name, (xmlChar *) "turntable")==0) {
+				table_ctr++;
+			}
+		}
+	}
+
+	tX_debug("Found %i turntables in set.",  table_ctr);
+
+	ld_create_loaddlg(TX_LOADDLG_MODE_MULTI, table_ctr);
 	ld_set_setname(fname);
 
-	for (i=0; i<max; i++)
-	{
-		newvtt=new vtt_class(1);
-		res+=newvtt->load_10(input);
+	/* parsing all */
+	for (xmlNodePtr cur=root->xmlChildrenNode; cur != NULL; cur = cur->next) {
+		if (cur->type == XML_ELEMENT_NODE) {			
+			elementFound=0;
 		
-		if (strlen(newvtt->filename))
-		{
-			/* ftmp IS NECESSARY !!! */
-			strcpy(ftmp, newvtt->filename);
-			ld_set_filename(ftmp);
+			restore_float_id("master_volume", master_volume, sp_master_volume, set_master_volume(master_volume));
+			restore_float_id("master_pitch", globals.pitch, sp_master_pitch, set_master_pitch(globals.pitch));
 			
-			//restmp=load_wav(newvtt->filename, &newbuffer, &size);
-			restmp=(int) newvtt->load_file(ftmp);
-			res+=restmp;
-		}
-		gtk_box_pack_start(GTK_BOX(control_parent), newvtt->gui.control_box, TRUE, TRUE, 0);
-		gtk_box_pack_start(GTK_BOX(audio_parent), newvtt->gui.audio_box, TRUE, TRUE, 0);
-	}
+			if ((!elementFound) && (xmlStrcmp(cur->name, (xmlChar *) "turntable")==0)) {
+				elementFound=1;
+				vtt_class *vtt=new vtt_class(1);
+				vtt->load(doc, cur);
+				
+				tX_debug("loading a turntable..");
+
+				if (strlen(vtt->filename)) {
+					strcpy(fn_buff, vtt->filename);
+					ld_set_filename(fn_buff);
+				
+					restmp=(int) vtt->load_file(fn_buff);
+					res+=restmp;
+				}
 	
-	sequencer.clear();
+				gtk_box_pack_start(GTK_BOX(control_parent), vtt->gui.control_box, TRUE, TRUE, 0);
+				gtk_box_pack_start(GTK_BOX(audio_parent), vtt->gui.audio_box, TRUE, TRUE, 0);
+				if (vtt->audio_hidden) vtt->hide_audio(vtt->audio_hidden);
+				if (vtt->control_hidden) vtt->hide_control(vtt->control_hidden);
+			}
+			if ((!elementFound) && (xmlStrcmp(cur->name, (xmlChar *) "sequencer")==0)) {
+				elementFound=1;
+				sequencer.load(doc, cur);
+			}
+			if (!elementFound) {
+				tX_warning("unhandled element %s in setfile %s", cur->name, fname);
+			}
+		}
+	}
 	
 	ld_destroy();
 	
 	return(res);
 }
-
-
-int  vtt_class :: load_all_11(FILE* input, char *fname)
-{
-	int res=0, restmp=0;
-	unsigned int i, max;
-	vtt_class *newvtt;
-	char ftmp[PATH_MAX];
-	guint32 pid;
-	
-	while (main_list.size())
-	{
-		delete((*main_list.begin()));
-	}
-		
-	atload(max);
-	atload(master_volume);
-	set_master_volume(master_volume);
-	globals.volume=master_volume;
-	atload(globals.pitch);	
-	set_master_pitch(globals.pitch);
-	atload(pid);
-	sp_master_volume.set_persistence_id(pid);
-	atload(pid);
-	sp_master_pitch.set_persistence_id(pid);
-
-	ld_create_loaddlg(TX_LOADDLG_MODE_MULTI, max);
-	ld_set_setname(fname);
-
-	for (i=0; i<max; i++)
-	{
-		newvtt=new vtt_class(1);
-		res+=newvtt->load_11(input);
-		
-		if (strlen(newvtt->filename))
-		{
-			/* ftmp IS NECESSARY !!! */
-			strcpy(ftmp, newvtt->filename);
-			ld_set_filename(ftmp);
-			
-			//restmp=load_wav(newvtt->filename, &newbuffer, &size);
-			restmp=(int) newvtt->load_file(ftmp);
-			res+=restmp;
-		}
-		gtk_box_pack_start(GTK_BOX(control_parent), newvtt->gui.control_box, TRUE, TRUE, 0);
-		gtk_box_pack_start(GTK_BOX(audio_parent), newvtt->gui.audio_box, TRUE, TRUE, 0);
-		
-	}
-	
-	sequencer.load(input);
-	
-	ld_destroy();
-	
-	return(res);
-}
-
-
-int  vtt_class :: load_all_12(FILE* input, char *fname)
-{
-	int res=0, restmp=0;
-	unsigned int i, max;
-	vtt_class *newvtt;
-	char ftmp[PATH_MAX];
-	guint32 pid;
-	
-	while (main_list.size())
-	{
-		delete((*main_list.begin()));
-	}
-		
-	atload(max);
-	atload(master_volume);
-	set_master_volume(master_volume);
-	globals.volume=master_volume;
-	atload(globals.pitch);	
-	set_master_pitch(globals.pitch);
-	atload(pid);
-	sp_master_volume.set_persistence_id(pid);
-	atload(pid);
-	sp_master_pitch.set_persistence_id(pid);
-
-	ld_create_loaddlg(TX_LOADDLG_MODE_MULTI, max);
-	ld_set_setname(fname);
-
-	for (i=0; i<max; i++)
-	{
-		newvtt=new vtt_class(1);
-		res+=newvtt->load_12(input);
-		
-		if (strlen(newvtt->filename))
-		{
-			/* ftmp IS NECESSARY !!! */
-			strcpy(ftmp, newvtt->filename);
-			ld_set_filename(ftmp);
-			
-			//restmp=load_wav(newvtt->filename, &newbuffer, &size);
-			restmp=(int) newvtt->load_file(ftmp);
-			res+=restmp;
-		}
-		gtk_box_pack_start(GTK_BOX(control_parent), newvtt->gui.control_box, TRUE, TRUE, 0);
-		gtk_box_pack_start(GTK_BOX(audio_parent), newvtt->gui.audio_box, TRUE, TRUE, 0);
-		
-	}
-	
-	sequencer.load(input);
-	
-	ld_destroy();
-	
-	return(res);
-}
-
-int  vtt_class :: load_all_13(FILE* input, char *fname)
-{
-	int res=0, restmp=0;
-	unsigned int i, max;
-	vtt_class *newvtt;
-	char ftmp[PATH_MAX];
-	guint32 pid;
-	
-	while (main_list.size())
-	{
-		delete((*main_list.begin()));
-	}
-		
-	atload(max);
-	atload(master_volume);
-	set_master_volume(master_volume);
-	globals.volume=master_volume;
-	atload(globals.pitch);	
-	set_master_pitch(globals.pitch);
-	atload(pid);
-	sp_master_volume.set_persistence_id(pid);
-	atload(pid);
-	sp_master_pitch.set_persistence_id(pid);
-
-	ld_create_loaddlg(TX_LOADDLG_MODE_MULTI, max);
-	ld_set_setname(fname);
-
-	for (i=0; i<max; i++)
-	{
-		newvtt=new vtt_class(1);
-		res+=newvtt->load_13(input);
-		
-		if (strlen(newvtt->filename))
-		{
-			/* ftmp IS NECESSARY !!! */
-			strcpy(ftmp, newvtt->filename);
-			ld_set_filename(ftmp);
-			
-			//restmp=load_wav(newvtt->filename, &newbuffer, &size);
-			restmp=(int) newvtt->load_file(ftmp);
-			res+=restmp;
-		}
-		gtk_box_pack_start(GTK_BOX(control_parent), newvtt->gui.control_box, TRUE, TRUE, 0);
-		gtk_box_pack_start(GTK_BOX(audio_parent), newvtt->gui.audio_box, TRUE, TRUE, 0);
-		
-	}
-	
-	sequencer.load(input);
-	
-	ld_destroy();
-	
-	return(res);
-}
-
-int  vtt_class :: load_all_14(FILE* input, char *fname)
-{
-	int res=0, restmp=0;
-	unsigned int i, max;
-	vtt_class *newvtt;
-	char ftmp[PATH_MAX];
-	guint32 pid;
-	
-	while (main_list.size())
-	{
-		delete((*main_list.begin()));
-	}
-		
-	atload(max);
-	atload(master_volume);
-	set_master_volume(master_volume);
-	globals.volume=master_volume;
-	atload(globals.pitch);	
-	set_master_pitch(globals.pitch);
-	atload(pid);
-	sp_master_volume.set_persistence_id(pid);
-	atload(pid);
-	sp_master_pitch.set_persistence_id(pid);
-
-	ld_create_loaddlg(TX_LOADDLG_MODE_MULTI, max);
-	ld_set_setname(fname);
-
-	for (i=0; i<max; i++)
-	{
-		newvtt=new vtt_class(1);
-		res+=newvtt->load_14(input);
-		
-		if (strlen(newvtt->filename))
-		{
-			/* ftmp IS NECESSARY !!! */
-			strcpy(ftmp, newvtt->filename);
-			ld_set_filename(ftmp);
-			
-			//restmp=load_wav(newvtt->filename, &newbuffer, &size);
-			restmp=(int) newvtt->load_file(ftmp);
-			res+=restmp;
-		}
-		gtk_box_pack_start(GTK_BOX(control_parent), newvtt->gui.control_box, TRUE, TRUE, 0);
-		gtk_box_pack_start(GTK_BOX(audio_parent), newvtt->gui.audio_box, TRUE, TRUE, 0);
-	    if (newvtt->audio_hidden) newvtt->hide_audio(newvtt->audio_hidden);
-	    if (newvtt->control_hidden) newvtt->hide_control(newvtt->control_hidden);
-	}
-	
-	sequencer.load(input);
-	
-	ld_destroy();
-	
-	return(res);
-}
-
 
 void add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn)
 {

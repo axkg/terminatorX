@@ -57,6 +57,8 @@
 #define SAMPLE_MAX    32760.0
 #define SAMPLE_BORDER 30000.0
 
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
 
 class vtt_class
 {
@@ -90,18 +92,18 @@ class vtt_class
 	
 	/* the gui */
 	vtt_gui gui;
-	int have_gui;
+	bool have_gui;
 	
 	/* main object vars */
 	char name[256]; // Turntable's name
 	char filename[PATH_MAX]; // The corresponding audiofile
 	
 	int is_playing;
-	int is_sync_master;
-	int is_sync_client;
+	bool is_sync_master;
+	bool is_sync_client;
 	int sync_cycles;
 	int sync_countdown;
-	int want_stop;
+	bool want_stop;
 	int sense_cycles;
 	
 	bool control_hidden;
@@ -148,18 +150,18 @@ class vtt_class
 	d_prec speed_last;
 	int fade_in;
 	int fade_out;
-	int do_mute;
+	bool do_mute;
 		
 	d_prec pos_f;
 	unsigned int pos_i;
 	d_prec maxpos;
 	
-	int mute;
-	int res_mute;
-	int res_mute_old;
+	bool mute;
+	bool res_mute;
+	bool res_mute_old;
 	
-	int mix_mute;
-	int mix_solo;
+	bool mix_mute;
+	bool mix_solo;
 	int fade;
 	
 	/* seq par mapping for x/y axis */
@@ -287,7 +289,12 @@ class vtt_class
 	int stop();
 	int stop_nolock();
 	
-	int save(FILE *);
+	int save(FILE *, char *indent);
+	static int save_all(FILE *);
+	int load(xmlDocPtr, xmlNodePtr);
+	static int load_all(xmlDocPtr doc, char *fname);
+
+#ifdef ENABLE_TX_LEGACY
 	int load_10(FILE *);
 	int load_11(FILE *);
 	int load_12(FILE *);
@@ -299,7 +306,8 @@ class vtt_class
 	static int load_all_12(FILE *, char *fname); /* fname is for display only*/
 	static int load_all_13(FILE *, char *fname); /* fname is for display only*/
 	static int load_all_14(FILE *, char *fname); /* fname is for display only*/
-	static int save_all(FILE *);
+#endif	
+	
 	tX_audio_error load_file(char *name);	
 
 	void render_scratch();
