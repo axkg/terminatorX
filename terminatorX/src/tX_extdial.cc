@@ -21,25 +21,25 @@ GtkSignalFunc tX_extdial :: f_adjustment(GtkWidget *w, tX_extdial *ed)
 	return NULL;	
 }
 
-tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a)
+tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, bool text_below)
 {
 	adj=a;
 	fval=adj->value;
 	f2s();
-	label=gtk_label_new(l);
+	if (l) label=gtk_label_new(l);
 	dial=gtk_tx_dial_new(adj);
 	entry=gtk_entry_new_with_max_length(5);
 	gtk_entry_set_text(GTK_ENTRY(entry), sval);
 	ignore_adj=0;
 	
-	mainbox=gtk_vbox_new(FALSE, 0);
+	mainbox=gtk_vbox_new(FALSE, text_below ? 5 : 0);
 	subbox=gtk_hbox_new(TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(subbox), dial, WID_FIX);
-	gtk_box_pack_start(GTK_BOX(subbox), entry, WID_DYN);
 	gtk_box_pack_start(GTK_BOX(mainbox), subbox, WID_FIX);
-	gtk_box_pack_start(GTK_BOX(mainbox), label, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(text_below ? mainbox : subbox), entry, WID_DYN);
+	if (l) gtk_box_pack_start(GTK_BOX(mainbox), label, WID_FIX);
 	
-	gtk_widget_show(label);
+	if (l) gtk_widget_show(label);
 	gtk_widget_show(entry);
 	gtk_entry_set_width_chars(GTK_ENTRY(entry), 4);
 	gtk_widget_show(dial);
