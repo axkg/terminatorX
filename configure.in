@@ -43,6 +43,7 @@ OPTION_AUDIOFILE="no"
 OPTION_WAV="no"
 OPTION_GTK_VERSION="none"
 OPTION_GNOME="no"
+OPTION_SCHEDULER="no"
 
 dnl Checks for libraries.
 AC_CHECK_LIB(m, floor,, AC_MSG_ERROR([** math-lib not installed or broken **]))
@@ -353,6 +354,7 @@ if test "$enable_3dnow" = "yes"; then
 fi 
 
 if test "$enable_scheduler" != "no"; then
+	OPTION_SCHEDULER="yes";
 	AC_DEFINE(USE_SCHEDULER)
 fi
 
@@ -473,18 +475,46 @@ if test "$enable_dga2" = yes; then
 fi
 AC_OUTPUT(Makefile src/Makefile gnome-support/Makefile gnome-support/terminatorX.keys src/gui_icons/Makefile src/smallknob/Makefile doc/Makefile doc/img/Makefile terminatorX.spec terminatorX.1)
 
+function option_info() {
+	echo "$option support: $option_val"
+	if test "$option_val" != "yes"; then
+		echo "	- If you want $option support get $option from"
+		echo "	-	$option_url"
+		echo "	- and reconfigure terminatorX"
+	fi
+}
+
 echo
 echo configured terminatorX for:
 echo ---------------------------
 echo
-echo "sox support: 		$OPTION_SOX"
-echo "mpg123 support:		$OPTION_MPG123"
-echo "mad support:		$OPTION_MAD"
-echo "ogg123 support:		$OPTION_OGG123"
-echo "vorbis support:		$OPTION_VORBIS"
-echo "audiofile support:	$OPTION_AUDIOFILE"
-echo "builtin-wav support:	$OPTION_WAV"
-echo "gtk+ Version:		$OPTION_GTK_VERSION"
-echo "GNOME support:		$OPTION_GNOME"
+
+option=sox; option_val=$OPTION_SOX; option_url=http://sox.sourceforge.net/
+option_info;
+
+echo "mpg123 support: $OPTION_MPG123"
+if test "$OPTION_MPG123" = "no"; then
+echo "	- If you want mpg123 support get either mpg321 from"
+echo "	-	http://mpg321.sourceforge.net/ or mpg123 from"
+echo "	-	http://www.mpg123.de/"
+echo "	- and reconfigure terminatorX"
+fi
+
+option=mad; option_val=$OPTION_MAD; option_url=http://www.mars.org/home/rob/proj/mpeg/
+option_info;
+
+option=ogg123; option_val=$OPTION_OGG123; option_url=http://www.xiph.org/ogg/vorbis/
+option_info;
+
+option=libvorbis; option_val=$OPTION_VORBIS; option_url=http://www.xiph.org/ogg/vorbis/
+option_info;
+
+option=audiofile; option_val=$OPTION_AUDIOFILE; option_url=http://www.68k.org/~michael/audiofile/
+option_info;
+
+echo "builtin-wav support: $OPTION_WAV"
+echo "enhanced scheduling support: $OPTION_SCHEDULER"
+echo "gtk+ Version: $OPTION_GTK_VERSION"
+echo "GNOME support: $OPTION_GNOME"
 echo
 echo You can now run \'make\' to compile terminatorX
