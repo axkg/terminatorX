@@ -41,6 +41,16 @@
 #include "3dnow.h"
 #endif
 
+#define DEBUG 1
+
+#ifdef DEBUG
+#define tX_freemem(ptr, varname, comment); fprintf(stderr, "** free() [%s] at %08x. %s.\n", varname, ptr, comment); free(ptr);
+#define tX_malloc(ptr, varname, comment, size, type); fprintf(stderr, "**[1/2] malloc() [%s]. Size: %i. %s.\n", varname, size, comment); ptr=type malloc(size); fprintf(stderr, "**[2/2] malloc() [%s]. ptr: %08x.\n", varname, ptr);
+#else
+#define tX_freemem(ptr, varname, comment); free(ptr);
+#define tX_malloc(ptr, varname, comment, size, type); ptr=type malloc(size);
+#endif
+
 #include "tX_loaddlg.h"
 
 #define USE_PREFETCH 1
@@ -82,7 +92,8 @@ vtt_class * vtt_class::sync_master=NULL;
 int vtt_class::master_triggered=0;
 int vtt_class::master_triggered_at=0;
 vtt_class * vtt_class::focused_vtt=NULL;
-f_prec vtt_class::mix_max=0;
+f_prec vtt_class::mix_max_l=0;
+f_prec vtt_class::mix_max_r=0;
 f_prec vtt_class::vol_channel_adjust=1.0;
 
 #define GAIN_AUTO_ADJUST 0.8
@@ -121,6 +132,7 @@ vtt_class :: vtt_class (int do_create_gui)
 	ec_feedback=0.3;
 	ec_clear_buffer();
 	ec_set_length(0.5);
+	ec_set_pan(0);
 	
 //	pthread_mutex_lock(&main_lock);
 	main_list.push_back(this);
@@ -132,6 +144,7 @@ vtt_class :: vtt_class (int do_create_gui)
 	sp_speed.set_vtt((void *) this);
 	sp_volume.set_vtt((void *) this);	
 	sp_pitch.set_vtt((void *) this);	
+	sp_pan.set_vtt((void *) this);
 	sp_trigger.set_vtt((void *) this);	
 	sp_loop.set_vtt((void *) this);	
 	sp_sync_client.set_vtt((void *) this);	
@@ -141,7 +154,8 @@ vtt_class :: vtt_class (int do_create_gui)
 	sp_lp_reso.set_vtt((void *) this);	
 	sp_lp_freq.set_vtt((void *) this);	
 	sp_ec_enable.set_vtt((void *) this);	
-	sp_ec_length.set_vtt((void *) this);	
+	sp_ec_length.set_vtt((void *) this);
+	sp_ec_pan.set_vtt((void *) this);
 	sp_ec_feedback.set_vtt((void *) this);		
 	sp_mute.set_vtt((void *) this);
 	sp_spin.set_vtt((void *) this);
@@ -165,8 +179,9 @@ vtt_class :: vtt_class (int do_create_gui)
 	}
 	else have_gui=0;
 		
+	set_pan(0);	
 	set_master_volume(globals.volume);
-	set_output_buffer_size(samples_in_mix_buffer);
+	set_output_buffer_size(samples_in_mix_buffer/2);
 	
 	audiofile = NULL;	
 }
@@ -180,7 +195,7 @@ vtt_class :: ~vtt_class()
 //	pthread_mutex_unlock(&main_lock);
 	if (audiofile) delete audiofile;
 	//if (buffer) free(buffer);
-	if (output_buffer) free(output_buffer);
+	if (output_buffer) tX_freemem(output_buffer, "output_buffer", "vtt Destructor");
 	vtt_amount--;
 	
 	while (fx_list.size())
@@ -239,8 +254,12 @@ int vtt_class :: set_output_buffer_size(int newsize)
 {
 	list <vtt_fx *> :: iterator effect;
 
-	if (output_buffer) free(output_buffer);
-	output_buffer = (float *) malloc (sizeof(float)*newsize);
+	if (ec_output_buffer) tX_freemem(ec_output_buffer, "ec_output_buffer", "vtt set_output_buffer_size()");
+	tX_malloc(ec_output_buffer, "ec_output_buffer", "vtt set_output_buffer_size()", sizeof(float)*newsize, (float *));
+
+	if (output_buffer) tX_freemem(output_buffer, "output_buffer", "vtt set_output_buffer_size()");
+	//output_buffer = (float *) malloc (sizeof(float)*newsize);
+	tX_malloc(output_buffer, "output_buffer", "vtt set_output_buffer_size()", sizeof(float)*newsize, (float *));
 	end_of_outputbuffer = output_buffer + newsize; //size_t(sizeof(float)*(newsize));
 	
 	samples_in_outputbuffer=newsize;
@@ -264,9 +283,47 @@ void vtt_class :: set_volume(f_prec newvol)
 void vtt_class :: recalc_volume()
 {
 	res_volume=rel_volume*res_master_volume;
+	
+	if (pan>0.0)
+	{
+		res_volume_left=(1.0-pan)*res_volume;
+		res_volume_right=res_volume;
+	}
+	else if (pan<0.0)
+	{
+		res_volume_left=res_volume;
+		res_volume_right=(1.0+pan)*res_volume;
+	}
+	else
+	{
+		res_volume_left=res_volume_right=res_volume;
+	}
+	
+	if (ec_pan>0.0)
+	{
+		ec_volume_left=(1.0-ec_pan)*res_volume;
+		ec_volume_right=res_volume;
+	}
+	else if (ec_pan<0.0)
+	{
+		ec_volume_left=res_volume;
+		ec_volume_right=(1.0+ec_pan)*res_volume;
+	}
+	else
+	{
+		ec_volume_left=ec_volume_right=res_volume;
+	}	
+//	printf("vtt_volume: %f, %f, l: %f, r: %f\n", rel_volume, res_volume, res_volume_left, res_volume_right);
+	
 #ifdef USE_3DNOW
 	mm_res_volume.s[0]=mm_res_volume.s[1]=res_volume;
 #endif	
+}
+
+void vtt_class :: set_pan(f_prec newpan)
+{
+	pan=newpan;
+	recalc_volume();
 }
 
 void vtt_class :: set_pitch(f_prec newpitch)
@@ -352,6 +409,14 @@ void vtt_class :: lp_setup(f_prec gain, f_prec reso, f_prec freq)
 void vtt_class :: ec_set_enable(int newstate)
 {
 	ec_enable=newstate;
+}
+
+
+void vtt_class :: ec_set_pan(f_prec pan)
+{
+	ec_pan=pan;
+
+	recalc_volume();
 }
 
 /* Max length is 1.0 */
@@ -719,51 +784,16 @@ void vtt_class :: render_lp()
 
 void vtt_class :: render_ec()
 {
-#ifdef USE_3DNOW
-	mmx_t *sample;
-	mmx_t feed;
-	
-/*	my_prefetchw(ec_ptr, 0);
-	my_prefetchw(ec_ptr, 8);
-	my_prefetchw(ec_ptr, 16);
-	my_prefetchw(ec_ptr, 32);*/
-
-	feed.s[0]=ec_feedback;
-	feed.s[1]=ec_feedback;
-	
-	movq_m2r(feed, mm0);
-	
-	for (sample = (mmx_t*) output_buffer; sample<(mmx_t*) end_of_outputbuffer; sample++, ec_ptr+=2)
-	{
-	
-		if (ec_ptr>ec_delay) ec_ptr=ec_buffer;
-		
-		movq_m2r(*sample, mm1);
-		movq_m2r(*ec_ptr, mm2);
-		
-		pfmul_r2r(mm0, mm2);
-		pfadd_r2r(mm1, mm2);
-		
-		movq_r2m(mm2, *sample);
-		movq_r2m(mm2, *ec_ptr);	
-	}	
-	
-	femms();
-#else
 	f_prec *sample;
-	f_prec temp;
+	f_prec *ec_sample;
 	int i;
 
-
-	for (i=0, sample = output_buffer; i<samples_in_outputbuffer; i++, sample++, ec_ptr++)
+	for (i=0, sample = output_buffer, ec_sample=ec_output_buffer; i<samples_in_outputbuffer; i++, ec_sample++,sample++, ec_ptr++)
 	{
 		if (ec_ptr>ec_delay) ec_ptr=ec_buffer;
-		
-		temp= *sample + (*ec_ptr) *ec_feedback;
-		*sample=temp;
-		*ec_ptr=temp;
+		*ec_sample=(*ec_ptr) *ec_feedback;
+		*ec_ptr=*sample+*ec_sample;
 	}	
-#endif
 }
 
 int vtt_class :: set_mix_buffer_size(int no_samples)
@@ -771,13 +801,21 @@ int vtt_class :: set_mix_buffer_size(int no_samples)
 	list <vtt_class *> :: iterator vtt;
 	int res=0;
 	
-	if (mix_buffer) free(mix_buffer);
-	mix_buffer=(float *) malloc (sizeof(float)*no_samples);
-	mix_buffer_end=mix_buffer+no_samples;
+	printf("vtt_class::set_mix_buffer_size(), mix_buffer: %12x, mix_out: %12x, samples: %i\n", mix_buffer, mix_out_buffer, no_samples);
 	
-	if (mix_out_buffer) free(mix_out_buffer);
-	mix_out_buffer=(int16_t *) malloc (sizeof(int16_t)*no_samples + 4); /* extra 4 for 3DNow! */
-	samples_in_mix_buffer=no_samples;
+	if (mix_buffer) tX_freemem(mix_buffer, "mix_buffer", "vtt set_mix_buffer_size()");
+	samples_in_mix_buffer=no_samples*2;
+	//mix_buffer=(float *) malloc (sizeof(float)*samples_in_mix_buffer);
+	tX_malloc(mix_buffer, "mix_buffer", "vtt set_mix_buffer_size()", sizeof(float)*samples_in_mix_buffer, (float *));
+	mix_buffer_end=mix_buffer+samples_in_mix_buffer;
+	printf("mix_buffer: %12x\n", mix_buffer);
+	
+	printf("mix_samples: %i, out_samples: %i", samples_in_mix_buffer, no_samples);
+	
+	if (mix_out_buffer) tX_freemem(mix_out_buffer, "mix_out_buffer", "vtt set_mix_buffer_size()");
+	//mix_out_buffer=(int16_t *) malloc (sizeof(int16_t)*samples_in_mix_buffer + 4); /* extra 4 for 3DNow! */
+	tX_malloc(mix_out_buffer, "mix_out_buffer", "vtt set_mix_buffer_size()", sizeof(int16_t)*samples_in_mix_buffer + 4, (int16_t *));
+	printf("mix_out_buffer: %12x\n", mix_out_buffer);
 	
 	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++)
 	{
@@ -792,6 +830,7 @@ int16_t * vtt_class :: render_all_turntables()
 {
 	list <vtt_class *> :: iterator vtt, next;
 	int sample;
+	int mix_sample;
 	f_prec temp;
 
 #ifdef USE_3DNOW
@@ -812,94 +851,48 @@ int16_t * vtt_class :: render_all_turntables()
 	
 	pthread_mutex_lock(&render_lock);
 	
-	switch (render_list.size())
+	if (render_list.size()==0)
 	{
-		case 0: for (sample=0; sample<samples_in_mix_buffer; sample++)
-			{
-				mix_out_buffer[sample]=0;
-			}
-			break;
-/*		case 1:	vtt=render_list.begin();
-			(*vtt)->render();
-			
-			if (do_saturate)
-			for (sample=0; sample<samples_in_mix_buffer; sample++)
-			{
-				temp=((*vtt)->output_buffer[sample]*(*vtt)->res_volume);
-				if (temp>SAMPLE_BORDER)
-				{
-					temp*=saturate_fac;
-					temp+=SAMPLE_BORDER;
-				}
-				else
-				{
-					if (temp<-SAMPLE_BORDER)
-					{
-						temp*=saturate_fac;
-						temp-=SAMPLE_BORDER;
-					}
-				}
-				mix_out_buffer[sample]=(int16_t) temp;
-			}
-			else
-			for (sample=0; sample<samples_in_mix_buffer; sample++)
-			{
-				mix_out_buffer[sample]=(int16_t) ((*vtt)->output_buffer[sample]*(*vtt)->res_volume);
-			}
-			break;*/
-		default:
+		for (sample=0; sample<samples_in_mix_buffer; sample++)
+		{
+			mix_out_buffer[sample]=0;
+		}
+	}
+	else
+	{
 			vtt=render_list.begin();
 			(*vtt)->render();			
-#ifdef USE_FLASH
 			max=(*vtt)->max_value;
 			min=max;
 
-#ifndef USE_3DNOW			
-			for (sample=0; sample<samples_in_mix_buffer; sample++)
+			for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
 			{				
 				temp=(*vtt)->output_buffer[sample];
-				mix_buffer[sample]=temp*(*vtt)->res_volume;
+				mix_buffer[mix_sample]=temp*(*vtt)->res_volume_left;
+				mix_sample++;
+				mix_buffer[mix_sample]=temp*(*vtt)->res_volume_right;
+				mix_sample++;
 				
 				if (temp>max) max=temp;
 				else if (temp<min) min=temp;
-			}
-#else
-			mm_max.s[1]=mm_max.s[0]=max;
-			mm_min.s[1]=mm_min.s[0]=min;
-			
-			movq_m2r(mm_max, mm1);
-			movq_m2r(mm_min, mm2);
-			movq_m2r((*vtt)->mm_res_volume, mm0);
-						
-			for(mix=(mmx_t *)mix_buffer, vtt_buffer=(mmx_t*)(*vtt)->output_buffer; mix < (mmx_t*) mix_buffer_end; mix++, vtt_buffer++)
-			{
-				movq_m2r(*vtt_buffer, mm3);
-				pfmul_r2r(mm0, mm3);
-				
-				pfmax_r2r(mm3, mm1);				
-				pfmin_r2r(mm3, mm2);
-				
-				movq_r2m(mm3, *mix);
-			}
-			
-			movq_r2m(mm1, mm_max);
-			movq_r2m(mm2, mm_min);
-			
-			femms();
-			
-			if (mm_max.s[0]>mm_max.s[1]) max=mm_max.s[0]; else max=mm_max.s[1];
-			if (mm_min.s[0]<mm_min.s[0]) min=mm_min.s[0]; else min=mm_min.s[1];
-#endif			
+			}		
 			
 			min*=-1.0;
 			if (min>max) (*vtt)->max_value=min; else (*vtt)->max_value=max;
 
-#else		
-			for (sample=0; sample<samples_in_mix_buffer; sample++)
-			{				
-				mix_buffer[sample]=(*vtt)->output_buffer[sample]*(*vtt)->res_volume;
+			if ((*vtt)->ec_enable)
+			{
+				for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
+				{				
+					temp=(*vtt)->ec_output_buffer[sample];
+					
+					mix_buffer[mix_sample]+=temp*(*vtt)->ec_volume_left;
+					mix_sample++;
+					mix_buffer[mix_sample]+=temp*(*vtt)->ec_volume_right;
+					mix_sample++;
+				}		
 			}
-#endif			
+			
 			if (master_triggered)
 			{
 				pthread_mutex_unlock(&render_lock);
@@ -922,69 +915,49 @@ int16_t * vtt_class :: render_all_turntables()
 //				pthread_mutex_unlock(&main_lock);
 				pthread_mutex_lock(&render_lock);
 			}
+			
 			vtt=render_list.begin();
 			for (vtt++; vtt!=render_list.end(); vtt++)
 			{
 				(*vtt)->render();					
-#ifdef USE_FLASH
 				max=(*vtt)->max_value;
 				min=max;
 
-#ifndef USE_3DNOW				
-				for (sample=0; sample<samples_in_mix_buffer; sample++)
+				for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
 				{				
 					temp=(*vtt)->output_buffer[sample];
-					mix_buffer[sample]+=temp*(*vtt)->res_volume;
+					mix_buffer[mix_sample]+=temp*(*vtt)->res_volume_left;
+					mix_sample++;					
+					mix_buffer[mix_sample]+=temp*(*vtt)->res_volume_right;
+					mix_sample++;
 				
 					if (temp>max) max=temp;
 					else if (temp<min) min=temp;
 				}
-#else
-			mm_max.s[1]=mm_max.s[0]=max;
-			mm_min.s[1]=mm_min.s[0]=min;
-			
-			movq_m2r(mm_max, mm1);
-			movq_m2r(mm_min, mm2);
-			movq_m2r((*vtt)->mm_res_volume, mm0);
-						
-			for(mix=(mmx_t *)mix_buffer, vtt_buffer=(mmx_t*)(*vtt)->output_buffer; mix < (mmx_t*) mix_buffer_end; mix++, vtt_buffer++)
-			{
-				movq_m2r(*vtt_buffer, mm3);
-				pfmul_r2r(mm0, mm3);
-				
-				pfmax_r2r(mm3, mm1);				
-				pfmin_r2r(mm3, mm2);
-			
-				movq_m2r(*mix, mm4);
-				pfadd_r2r(mm4, mm3);
-				movq_r2m(mm3, *mix);
-			}
-			
-			movq_r2m(mm1, mm_max);
-			movq_r2m(mm2, mm_min);
-			
-			femms();
-			
-			if (mm_max.s[0]>mm_max.s[1]) max=mm_max.s[0]; else max=mm_max.s[1];
-			if (mm_min.s[0]<mm_min.s[0]) min=mm_min.s[0]; else min=mm_min.s[1];
-#endif				
 				
 				min*=-1.0;
 				if (min>max) (*vtt)->max_value=min; else (*vtt)->max_value=max;
-#else				
-				for (sample=0; sample<samples_in_mix_buffer; sample++)
+				
+				if ((*vtt)->ec_enable)
 				{
-					mix_buffer[sample]+=(*vtt)->output_buffer[sample]*(*vtt)->res_volume;
+					for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
+					{				
+						temp=(*vtt)->ec_output_buffer[sample];
+						
+						mix_buffer[mix_sample]+=temp*(*vtt)->ec_volume_left;
+						mix_sample++;
+						mix_buffer[mix_sample]+=temp*(*vtt)->ec_volume_right;
+						mix_sample++;
+					}		
 				}
-#endif				
 			}
 			
-#ifdef 	USE_FLASH		
-			max=mix_max;
+			/* left */
+			
+			max=mix_max_l;
 			min=max;
 
-#ifndef USE_3DNOW			
-			for (sample=0; sample<samples_in_mix_buffer; sample++)
+			for (sample=0; sample<samples_in_mix_buffer; sample+=2)
 			{				
 				temp=mix_buffer[sample];
 				mix_out_buffer[sample]=(int16_t) temp;
@@ -992,52 +965,27 @@ int16_t * vtt_class :: render_all_turntables()
 				if (temp>max) max=temp;
 				else if (temp<min) min=temp;
 			}
-#else
-			mm_max.s[1]=mm_max.s[0]=max;
-			mm_min.s[1]=mm_min.s[0]=min;
-			
-			movq_m2r(mm_max, mm1);
-			movq_m2r(mm_min, mm2);
-						
-			for(mix_int=(int32_t*) mix_out_buffer, mix=(mmx_t *)mix_buffer; mix < (mmx_t*) mix_buffer_end; mix++, mix_int++)
-			{
-				movq_m2r(*mix, mm3);
-				
-				pfmax_r2r(mm3, mm1);				
-				pfmin_r2r(mm3, mm2);
-				
-				pf2id_r2r(mm3, mm4);
-				
-				packssdw_r2r(mm4, mm0);
-
-				movq_r2m(mm0, mm_max);
-				
-				*mix_int=*temp_int;
-			}
-			
-			movq_r2m(mm1, mm_max);
-			movq_r2m(mm2, mm_min);
-			
-			femms();
-			
-			if (mm_max.s[0]>mm_max.s[1]) max=mm_max.s[0]; else max=mm_max.s[1];
-			if (mm_min.s[0]<mm_min.s[0]) min=mm_min.s[0]; else min=mm_min.s[1];
-
-/*			for (sample=0, mix_int=(int32_t*) mix_buffer; sample<samples_in_mix_buffer; sample++, mix_int++)
-			{
-				mix_out_buffer[sample]=(int16_t) *mix_int;
-			}*/			
-#endif			
 			
 			min*=-1.0;
-			if (min>max) mix_max=min; else mix_max=max;
-#else
-			for (sample=0; sample<samples_in_mix_buffer; sample++)
-			{
-				mix_out_buffer[sample]=(int16_t)mix_buffer[sample];
+			if (min>max) mix_max_l=min; else mix_max_l=max;		
+			
+			/* right */
+			
+			max=mix_max_r;
+			min=max;
+
+			for (sample=1; sample<samples_in_mix_buffer; sample+=2)
+			{				
+				temp=mix_buffer[sample];
+				mix_out_buffer[sample]=(int16_t) temp;
+			
+				if (temp>max) max=temp;
+				else if (temp<min) min=temp;
 			}
-#endif				
-		
+			
+			min*=-1.0;
+			if (min>max) mix_max_r=min; else mix_max_r=max;		
+			
 	}
 	master_triggered=0;
 		
@@ -1415,6 +1363,7 @@ int  vtt_class :: save(FILE * output)
 	store(loop);
 	
 	store(mute);
+	store(pan);
 	
 	store(lp_enable);
 	store(lp_gain);
@@ -1424,6 +1373,7 @@ int  vtt_class :: save(FILE * output)
 	store(ec_enable);
 	store(ec_length);
 	store(ec_feedback);
+	store(ec_pan);
 
 	pid=sp_speed.get_persistence_id();
 	store(pid);
@@ -1453,9 +1403,13 @@ int  vtt_class :: save(FILE * output)
 	store(pid);
 	pid=sp_ec_feedback.get_persistence_id();
 	store(pid);
+	pid=sp_ec_pan.get_persistence_id();
+	store(pid);
 	pid=sp_mute.get_persistence_id();
 	store(pid);
 	pid=sp_spin.get_persistence_id();
+	store(pid);
+	pid=sp_pan.get_persistence_id();
 	store(pid);
 		
 	counter=fx_list.size();
@@ -1764,6 +1718,158 @@ int vtt_class :: load_12(FILE * input)
 	return(res);
 }
 
+int vtt_class :: load_13(FILE * input)
+{
+	int res=0;
+	u_int32_t pid;
+	int32_t counter;
+	int32_t type;
+	long id;
+	int i,t;
+	LADSPA_Plugin *plugin;
+	char buffer[256];
+	vtt_fx_ladspa *ladspa_effect;
+	u_int8_t hidden;
+	
+	atload(buffer);
+	this->set_name(buffer);
+	atload(filename);
+	atload(is_sync_master);
+	atload(is_sync_client);
+	atload(sync_cycles);
+	atload(rel_volume);
+	atload(rel_pitch);
+	recalc_pitch();
+	
+	atload(autotrigger);
+	atload(loop);
+	
+	atload(mute);
+	atload(pan);
+	recalc_volume();
+	
+	atload(lp_enable);
+	atload(lp_gain);
+	atload(lp_reso);
+	atload(lp_freq);
+	lp_setup(lp_gain, lp_reso, lp_freq);
+	
+	atload(ec_enable);
+	atload(ec_length);
+	ec_set_length(ec_length);
+	atload(ec_feedback);
+	ec_set_feedback(ec_feedback);
+	atload(ec_pan);
+	ec_set_pan(ec_pan);
+
+	atload(pid);
+	sp_speed.set_persistence_id(pid);
+	atload(pid);
+	sp_volume.set_persistence_id(pid);
+	atload(pid);
+	sp_pitch.set_persistence_id(pid);
+	atload(pid);
+	sp_trigger.set_persistence_id(pid);
+	atload(pid);
+	sp_loop.set_persistence_id(pid);
+	atload(pid);
+	sp_sync_client.set_persistence_id(pid);
+	atload(pid);
+	sp_sync_cycles.set_persistence_id(pid);
+	atload(pid);
+	sp_lp_enable.set_persistence_id(pid);
+	atload(pid);
+	sp_lp_gain.set_persistence_id(pid);
+	atload(pid);
+	sp_lp_reso.set_persistence_id(pid);
+	atload(pid);
+	sp_lp_freq.set_persistence_id(pid);
+	atload(pid);
+	sp_ec_enable.set_persistence_id(pid);
+	atload(pid);
+	sp_ec_length.set_persistence_id(pid);
+	atload(pid);
+	sp_ec_feedback.set_persistence_id(pid);
+	atload(pid);
+	sp_ec_pan.set_persistence_id(pid);
+	atload(pid);
+	sp_mute.set_persistence_id(pid);
+	atload(pid);
+	sp_spin.set_persistence_id(pid);
+	atload(pid);
+	sp_pan.set_persistence_id(pid);
+		
+	atload(counter);
+	
+	for (i=0; i<counter; i++)
+	{
+		atload(type);
+		switch(type)
+		{
+			case TX_FX_BUILTINCUTOFF:
+				for (t=0; t<fx_list.size(); t++) effect_down(lp_fx);
+			break;
+			
+			case TX_FX_BUILTINECHO:
+				for (t=0; t<fx_list.size(); t++) effect_down(ec_fx);
+			break;
+			
+			case TX_FX_LADSPA:
+				atload(id);
+				plugin=LADSPA_Plugin::getPluginByUniqueID(id);
+				if (plugin)
+				{
+					ladspa_effect=add_effect(plugin);
+					ladspa_effect->load(input);
+				}
+				else
+				{
+					sprintf(buffer,"Fatal Error: Couldn't find required plugin with ID [%i].", id);
+					tx_note(buffer);
+					res++;
+				}
+			break;
+			
+			default:
+				tx_note("Fatal Error loading set: unknown effect type!");
+				res++;
+		}		
+	}
+
+	atload(pid);
+	
+	if (pid)
+	{
+		atload(pid);
+		set_x_input_parameter(tX_seqpar :: get_sp_by_persistence_id(pid));
+	}
+	else set_x_input_parameter(NULL);
+	
+	atload(pid);
+	
+	if (pid)
+	{
+		atload(pid);
+		set_y_input_parameter(tX_seqpar :: get_sp_by_persistence_id(pid));
+	}
+	else set_y_input_parameter(NULL);
+
+	atload(hidden);
+	gui.main_panel->hide(hidden);
+
+	atload(hidden);
+	gui.trigger_panel->hide(hidden);
+
+	atload(hidden);
+	gui.lp_panel->hide(hidden);
+
+	atload(hidden);
+	gui.ec_panel->hide(hidden);
+	
+	return(res);
+}
+
+
 int  vtt_class :: save_all(FILE* output)
 {
 	int res=0;
@@ -1932,6 +2038,62 @@ int  vtt_class :: load_all_12(FILE* input, char *fname)
 	{
 		newvtt=new vtt_class(1);
 		res+=newvtt->load_12(input);
+		
+		if (strlen(newvtt->filename))
+		{
+			/* ftmp IS NECESSARY !!! */
+			strcpy(ftmp, newvtt->filename);
+			ld_set_filename(ftmp);
+			
+			//restmp=load_wav(newvtt->filename, &newbuffer, &size);
+			restmp=newvtt->load_file(ftmp);
+			res+=restmp;
+		}
+		gtk_box_pack_start(GTK_BOX(control_parent), newvtt->gui.control_box, TRUE, TRUE, 0);
+		gtk_box_pack_start(GTK_BOX(audio_parent), newvtt->gui.audio_box, TRUE, TRUE, 0);
+		
+	}
+	
+	sequencer.load(input);
+	
+	ld_destroy();
+	
+	return(res);
+}
+
+int  vtt_class :: load_all_13(FILE* input, char *fname)
+{
+	int res=0, restmp=0;
+	list <vtt_class *> :: iterator vtt;
+	unsigned int i, max, size;
+	int16_t *newbuffer;
+	vtt_class *newvtt;
+	char ftmp[PATH_MAX];
+	u_int32_t pid;
+	
+	while (main_list.size())
+	{
+		delete((*main_list.begin()));
+	}
+		
+	atload(max);
+	atload(master_volume);
+	set_master_volume(master_volume);
+	globals.volume=master_volume;
+	atload(globals.pitch);	
+	set_master_pitch(globals.pitch);
+	atload(pid);
+	sp_master_volume.set_persistence_id(pid);
+	atload(pid);
+	sp_master_pitch.set_persistence_id(pid);
+
+	ld_create_loaddlg(TX_LOADDLG_MODE_MULTI, max);
+	ld_set_setname(fname);
+
+	for (i=0; i<max; i++)
+	{
+		newvtt=new vtt_class(1);
+		res+=newvtt->load_13(input);
 		
 		if (strlen(newvtt->filename))
 		{

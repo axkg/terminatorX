@@ -102,6 +102,8 @@ usage: terminatorX [options] [save file]\n\
   -f, --file			Load saved terminatorX set file\n\
   -r, --rc-file [file]		Load alternate rc file\n\
   -d, --dont-save		Do not save settings at exit\n\
+  -s, --std-out                 Use stdout for sound output\n\
+   --device=[output device]  Use alternate device for sound output\n\
 \n");
 /*
   -n, --no-gui			Run terminatorX with no GUI\n\
@@ -162,6 +164,21 @@ int parse_args(int *argc, char **argv)
 			fprintf(stderr, "tX: Do not save settings on exit\n");
 			globals.store_globals = 0;
 
+		}
+		else if ((strcmp(argv[i], "-s") == 0) || (strcmp(argv[i], "--std-out") == 0))
+		{
+			globals.use_stdout_cmdline = 1;
+			globals.use_stdout = 1;
+		}
+		else if ((strncmp(argv[i], "--device",8) == 0))
+		{
+			if (strlen(argv[i]+9)<=PATH_MAX)
+				strcpy(globals.audio_device,argv[i]+9);
+			else
+			{
+				show_help();
+                                exit(1);
+			}
 		}
 /*		
 		else if ((strcmp(argv[i], "-m") == 0) || (strcmp(argv[i], "--midi-in") == 0))

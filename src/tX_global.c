@@ -97,6 +97,7 @@ void load_globals()
 		globals.tooltips=1;
 	
 		globals.use_stdout=0;
+		globals.use_stdout_from_conf_file=0;
 	
 		globals.show_nag=1;
 		globals.prelis=1;
@@ -122,6 +123,8 @@ void load_globals()
           everywhere but I think it doesn't make sense resetting
 	  to old values on startup....
 	*/
+	globals.use_stdout_cmdline=0;
+	globals.current_path = NULL;
 	globals.pitch=1.0;
 	globals.volume=1.0;	
 	if (!globals.true_block_size) globals.true_block_size=1<globals.buff_size;
@@ -140,6 +143,13 @@ void store_globals()
 		rc=fopen(rc_name, "w");
 		if (rc)
 		{
+			// doesn't really make sense to save pointers...
+			globals.startup_set = NULL;
+			globals.alternate_rc = NULL;
+			globals.current_path = NULL; 
+			
+			if (globals.use_stdout_cmdline)
+				globals.use_stdout = globals.use_stdout_from_conf_file;
 			fwrite(&globals, sizeof(tx_global), 1, rc);
 			fclose(rc);
 		}

@@ -77,17 +77,22 @@ void nicer_filename(char *dest, char *source)
 		strcpy (dest, temp);
 }
 
-GtkSignalFunc name_changed(GtkWidget *wid, vtt_class *vtt)
+void name_changed(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->set_name(gtk_entry_get_text(GTK_ENTRY(wid)));
 }
 
-GtkSignalFunc volume_changed(GtkWidget *wid, vtt_class *vtt)
+void volume_changed(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->sp_volume.receive_gui_value(2.0-GTK_ADJUSTMENT(wid)->value);
 }
 
-GtkSignalFunc pitch_changed(GtkWidget *wid, vtt_class *vtt)
+void pan_changed(GtkWidget *wid, vtt_class *vtt)
+{
+      vtt->sp_pan.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
+}
+
+void pitch_changed(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->sp_pitch.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
 }
@@ -174,7 +179,7 @@ void load_part(char *newfile, vtt_class *vtt)
 	}	
 }
 
-GtkSignalFunc do_load_file(GtkWidget *wid, vtt_class *vtt)
+void do_load_file(GtkWidget *wid, vtt_class *vtt)
 {
 	int ret;
 	char newfile[PATH_MAX];
@@ -190,11 +195,19 @@ GtkSignalFunc do_load_file(GtkWidget *wid, vtt_class *vtt)
 	gtk_widget_destroy(GTK_WIDGET(vtt->gui.fs));
 	
 	load_part(newfile, vtt);
+	
+	if (!globals.current_path)
+	{
+		free(globals.current_path);
+		globals.current_path = NULL;
+	}
+
+	globals.current_path = strdup(newfile);
 
 	vtt->gui.file_dialog=NULL;
 }
 
-GtkSignalFunc drop_file(GtkWidget *widget, GdkDragContext *context,
+void drop_file(GtkWidget *widget, GdkDragContext *context,
 		gint x, gint y, GtkSelectionData *selection_data,
 		guint info, guint time, vtt_class *vtt)
 {
@@ -239,6 +252,10 @@ GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 	
 	vtt->gui.file_dialog=vtt->gui.fs->window;
 	
+	if (globals.current_path)
+		{
+			gtk_file_selection_set_filename(GTK_FILE_SELECTION(vtt->gui.fs),globals.current_path);
+		}
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->ok_button), "clicked", GTK_SIGNAL_FUNC(do_load_file), vtt);
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->cancel_button), "clicked", GTK_SIGNAL_FUNC (cancel_load_file), vtt);	
 	gtk_signal_connect (GTK_OBJECT(vtt->gui.fs), "delete-event", GTK_SIGNAL_FUNC(quit_load_file), vtt);	
@@ -246,14 +263,14 @@ GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 }
 
 
-GtkSignalFunc delete_vtt(GtkWidget *wid, vtt_class *vtt)
+void delete_vtt(GtkWidget *wid, vtt_class *vtt)
 {
 	if (audioon) tx_note("Sorry, you'll have to stop playback first.");
 	else
 	delete(vtt);
 }
 
-GtkSignalFunc edit_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
+void edit_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 {
 	char command[2*PATH_MAX];
 
@@ -273,7 +290,7 @@ GtkSignalFunc edit_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 	}
 }
 
-GtkSignalFunc reload_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
+void reload_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 {
 	char reload_buffer[PATH_MAX];
 	
@@ -288,72 +305,77 @@ GtkSignalFunc reload_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 	else tx_note("Nothing to reload.");
 }
 
-GtkSignalFunc clone_vtt(GtkWidget *wid, vtt_class *vtt)
+void clone_vtt(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->stop();
 }
 
-GtkSignalFunc trigger_vtt(GtkWidget *wid, vtt_class *vtt)
+void trigger_vtt(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->sp_trigger.receive_gui_value((float) 1.0);
 }
 
-GtkSignalFunc stop_vtt(GtkWidget *wid, vtt_class *vtt)
+void stop_vtt(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->sp_trigger.receive_gui_value((float) 0.0);
 }
 
-GtkSignalFunc autotrigger_toggled(GtkWidget *wid, vtt_class *vtt)
+void autotrigger_toggled(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->set_autotrigger(GTK_TOGGLE_BUTTON(wid)->active);
 }
 
-GtkSignalFunc loop_toggled(GtkWidget *wid, vtt_class *vtt)
+void loop_toggled(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->sp_loop.receive_gui_value(GTK_TOGGLE_BUTTON(wid)->active);
 }
 
-GtkSignalFunc lp_enabled(GtkWidget *wid, vtt_class *vtt)
+void lp_enabled(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->sp_lp_enable.receive_gui_value(GTK_TOGGLE_BUTTON(wid)->active);
 }
 
-GtkSignalFunc lp_gain_changed(GtkWidget *wid, vtt_class *vtt)
+void lp_gain_changed(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->sp_lp_gain.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
 }
 
-GtkSignalFunc lp_reso_changed(GtkWidget *wid, vtt_class *vtt)
+void lp_reso_changed(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->sp_lp_reso.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
 }
 
-GtkSignalFunc lp_freq_changed(GtkWidget *wid, vtt_class *vtt)
+void lp_freq_changed(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->sp_lp_freq.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
 }
 
-GtkSignalFunc ec_enabled(GtkWidget *wid, vtt_class *vtt)
+void ec_enabled(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->sp_ec_enable.receive_gui_value(GTK_TOGGLE_BUTTON(wid)->active);
 }
 
-GtkSignalFunc ec_length_changed(GtkWidget *wid, vtt_class *vtt)
+void ec_length_changed(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->sp_ec_length.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
 }
 
-GtkSignalFunc ec_feedback_changed(GtkWidget *wid, vtt_class *vtt)
+void ec_feedback_changed(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->sp_ec_feedback.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
 }
 
-GtkSignalFunc master_setup(GtkWidget *wid, vtt_class *vtt)
+void ec_pan_changed(GtkWidget *wid, vtt_class *vtt)
+{
+	vtt->sp_ec_pan.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
+}
+
+void master_setup(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->set_sync_master(GTK_TOGGLE_BUTTON(wid)->active);
 }
 
-GtkSignalFunc client_setup(GtkWidget *wid, vtt_class *vtt)
+void client_setup(GtkWidget *wid, vtt_class *vtt)
 {
 	int client;
 	
@@ -361,7 +383,7 @@ GtkSignalFunc client_setup(GtkWidget *wid, vtt_class *vtt)
 	vtt->sp_sync_client.receive_gui_value(client);
 }
 
-GtkSignalFunc client_setup_number(GtkWidget *wid, vtt_class *vtt)
+void client_setup_number(GtkWidget *wid, vtt_class *vtt)
 {
 	int cycles;
 	
@@ -371,7 +393,7 @@ GtkSignalFunc client_setup_number(GtkWidget *wid, vtt_class *vtt)
 }
 
 /*
-GtkSignalFunc control_changed(GtkWidget *wid, vtt_class *vtt)
+void control_changed(GtkWidget *wid, vtt_class *vtt)
 {
 	int x,y;
 	vtt_gui *g=&vtt->gui;
@@ -436,23 +458,23 @@ void vg_display_ycontrol(vtt_class *vtt)
 	}
 }
 
-GtkSignalFunc vg_xcontrol_dis(GtkWidget *wid, vtt_class *vtt)
+void vg_xcontrol_dis(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->set_x_input_parameter(NULL);
 }
 
-GtkSignalFunc vg_ycontrol_dis(GtkWidget *wid, vtt_class *vtt)
+void vg_ycontrol_dis(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->set_y_input_parameter(NULL);
 }
 
-GtkSignalFunc vg_xcontrol_set(GtkWidget *wid, tX_seqpar *sp)
+void vg_xcontrol_set(GtkWidget *wid, tX_seqpar *sp)
 {
 	vtt_class *vtt=(vtt_class *) sp->vtt;
 	vtt->set_x_input_parameter(sp);
 }
 
-GtkSignalFunc vg_ycontrol_set(GtkWidget *wid, tX_seqpar *sp)
+void vg_ycontrol_set(GtkWidget *wid, tX_seqpar *sp)
 {
 	vtt_class *vtt=(vtt_class *) sp->vtt;
 	vtt->set_y_input_parameter(sp);
@@ -488,24 +510,24 @@ void vg_control_menu_popup(vtt_class *vtt, int axis)
 	gtk_menu_popup (GTK_MENU(g->par_menu), NULL, NULL, NULL, NULL, 0, 0);
 }
 
-GtkSignalFunc vg_xcontrol_popup(GtkWidget *wid, vtt_class *vtt) 
+void vg_xcontrol_popup(GtkWidget *wid, vtt_class *vtt) 
 {
 	vg_control_menu_popup(vtt, 1);
 }
 
-GtkSignalFunc vg_ycontrol_popup(GtkWidget *wid, vtt_class *vtt)
+void vg_ycontrol_popup(GtkWidget *wid, vtt_class *vtt)
 {
 	vg_control_menu_popup(vtt, 0);
 }
 
 static vtt_class * fx_vtt;
 
-GtkSignalFunc new_effect(GtkWidget *wid, LADSPA_Plugin *plugin)
+void new_effect(GtkWidget *wid, LADSPA_Plugin *plugin)
 {
 	fx_vtt->add_effect(plugin);
 }
 
-GtkSignalFunc fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
+void fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt_gui *g=&vtt->gui;
 	GtkWidget *item;
@@ -559,6 +581,7 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_button(edit, edit_vtt_buffer);
 	connect_button(reload, reload_vtt_buffer);
 	connect_adj(pitch, pitch_changed);
+	connect_adj(pan, pan_changed);
 	connect_button(file, load_file);
 	
 	connect_button(del, delete_vtt);
@@ -593,6 +616,7 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_button(ec_enable, ec_enabled);
 	connect_adj(ec_length, ec_length_changed);
 	connect_adj(ec_feedback, ec_feedback_changed);
+	connect_adj(ec_pan, ec_pan_changed);
 	connect_button(x_control, vg_xcontrol_popup);
 	connect_button(y_control, vg_ycontrol_popup);
 
@@ -820,15 +844,19 @@ void build_vtt_gui(vtt_class *vtt)
 
 	g->ec_length=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->ec_length, 0, 1, 0.1, 0.01, 0.001));
 	g->ec_feedback=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->ec_feedback, 0, 1, 0.1, 0.01, 0.001));
+	g->ec_pan=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->ec_pan, -1.0, 1, 0.1, 0.01, 0.001));
 
 	g->ec_lengthd=new tX_extdial("Duration", g->ec_length);
 	p->add_client_widget(g->ec_lengthd->get_widget());
 	gui_set_tooltip(g->ec_lengthd->get_entry(), "Adjust the length of the echo buffer.");
 
-
 	g->ec_feedbackd=new tX_extdial("Feedback", g->ec_feedback);
 	p->add_client_widget(g->ec_feedbackd->get_widget());
 	gui_set_tooltip(g->ec_feedbackd->get_entry(), "Adjust the feedback of the echo effect. Note that a value of 1 will result in a constant signal.");
+
+	g->ec_pand=new tX_extdial("Pan", g->ec_pan);
+	p->add_client_widget(g->ec_pand->get_widget());
+	gui_set_tooltip(g->ec_pand->get_entry(), "Adjust the panning of the echo effect.");
 
 	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
 	
@@ -852,7 +880,7 @@ void build_vtt_gui(vtt_class *vtt)
 
 	g->pand=new tX_extdial("Pan", g->pan);
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->pand->get_widget(), WID_FIX);
-	gui_set_tooltip(g->pand->get_entry(), "SORRY. terminatorX does not yet support stereo yet. This parameter is plain fake.");
+	gui_set_tooltip(g->pand->get_entry(), "Specifies the position of this turntable within the stereo spectrum: -1 -> left, 0-> center, 1->right.");
 
 	tempbox2=gtk_hbox_new(FALSE,0);
 	gtk_widget_show(tempbox2);
@@ -877,7 +905,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gui_connect_signals(vtt);
 }
 
-GtkSignalFunc fx_up(GtkWidget *wid, vtt_fx *effect)
+void fx_up(GtkWidget *wid, vtt_fx *effect)
 {
 	vtt_class *vtt;
 	
@@ -885,7 +913,7 @@ GtkSignalFunc fx_up(GtkWidget *wid, vtt_fx *effect)
 	vtt->effect_up(effect);
 }
 
-GtkSignalFunc fx_down(GtkWidget *wid, vtt_fx *effect)
+void fx_down(GtkWidget *wid, vtt_fx *effect)
 {
 	vtt_class *vtt;
 	
@@ -894,7 +922,7 @@ GtkSignalFunc fx_down(GtkWidget *wid, vtt_fx *effect)
 }
 
 
-GtkSignalFunc fx_kill(GtkWidget *wid, vtt_fx_ladspa *effect)
+void fx_kill(GtkWidget *wid, vtt_fx_ladspa *effect)
 {
 	vtt_class *vtt;
 	
@@ -972,7 +1000,7 @@ void vg_move_fx_panel_down(GtkWidget *wid, vtt_class *vtt)
 	gtk_box_reorder_child(GTK_BOX(vtt->gui.control_subbox), wid, pos+1);
 }
 
-GtkSignalFunc vg_show_fx_info(GtkWidget *wid, vtt_fx *effect)
+void vg_show_fx_info(GtkWidget *wid, vtt_fx *effect)
 {
 	tx_l_note(effect->get_info_string());
 }
@@ -1046,6 +1074,7 @@ void delete_gui(vtt_class *vtt)
 	
 	delete vtt->gui.ec_lengthd;
 	delete vtt->gui.ec_feedbackd;
+	delete vtt->gui.ec_pand;
 	delete vtt->gui.ec_panel;
 	
 	gtk_widget_destroy(vtt->gui.control_box);

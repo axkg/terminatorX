@@ -201,7 +201,7 @@ int run_engine()
 		}
 	}
 
-	vtt_class::set_mix_buffer_size(device->getblocksize()/sizeof(int16_t));
+	vtt_class::set_mix_buffer_size(device->getblocksize()/sizeof(int16_t)/2);
 	
 	engine_quit=0;
 #ifdef USE_SCHEDULER	

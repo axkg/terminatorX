@@ -95,7 +95,6 @@ void apply_options()
 	int i;
 	
 	strcpy(globals.audio_device, gtk_entry_get_text(GTK_ENTRY(audio_device)));
-	globals.use_stdout=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(use_stdout));
 	globals.buff_no=(int)buff_no->value;	
 	globals.buff_size=(int)buff_size->value;
 	
@@ -200,6 +199,11 @@ void ok_options(GtkWidget *widget)
 	options_destroy(widget);
 }
 
+void  use_stdout_changed(GtkWidget *widget)
+{
+	globals.use_stdout=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
+	globals.use_stdout_cmdline = 0;
+}
 void select_input(GtkWidget *w, char *dev)
 {
 	gtk_label_set(GTK_LABEL(GTK_BUTTON(xinput_device)->child), dev);
@@ -256,6 +260,7 @@ void create_options()
 	begin_box();
 	use_stdout=gtk_check_button_new_with_label("Use standard output instead of the above device");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(use_stdout), globals.use_stdout);	
+	gtk_signal_connect(GTK_OBJECT(use_stdout), "clicked", (GtkSignalFunc) use_stdout_changed, NULL);
 	add_widget_fix(use_stdout);	
 	end_box();	
 		
