@@ -3,7 +3,29 @@ All changes were done by me (Alexander König) if not stated otherwise.
 This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
-[v3.81 pre-release]
+[v3.81]
+- some ALSA installations seem to core on snd_pcm_hw_params_free() after sound
+  device init. So freeing the hw_params can now be explicitly disabled in
+  the Preferences - if terminatorX crashes right after hitting the "Power On"
+  button it might be necessary to activate this for your ALSA setup. This
+  probably results in a memory leak - but on leak vs core you might decide for
+  leak.
+- fixed a bug that caused turntable 1 to get the focus on entering Mouse Grab
+  mode even when it's audio panel was minimized.
+- introduced a new way of assigning MIDI controllers to parameters: simply 
+  right-click on a parameters control: a menu with "MIDI Learn" and 
+  "Remove MIDI Binding" will pop up. Simply select "MIDI Learn" and send the 
+  corresponding MIDI event.
+- fixed a bug in the MIDI callback thanks to 
+- the realtime scheduling reproducibly stalled separate machines. Unluckily 
+  an OS-stall situation is somewhat hard to debug. Additionally the new 2.5.*
+  and the 2.4.*-ckX kernels have significantly improved scheduling that renders
+  the use of SCHED_FIFO unnecessary. 
+- running suid root was reported exploitable by Andrew Griffiths
+  <andrewg@felinemenace.org> - the described environment variable based exploit 
+  was fixed - however there are possibly other ways to exploit it. Therefor 
+  running suid root has been explicitly disabled by default - configure with 
+  --enable-suidroot if you really, really want it. You have been warned.
 - often, you record events and mess things up - in this case I'd often prefer 
   dropping the complete take instead of recording a bad perfomance - which is 
   why you now can activate "Confirm Recorded Events" from the "Sequencer" menu.

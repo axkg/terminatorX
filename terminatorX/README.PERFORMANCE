@@ -27,35 +27,7 @@ kind of themes, neither.
 2. Install suid root
 --------------------
 
-When run with root privileges terminatorX creates the engine thread
-with realtime scheduling priorities which should result in much better
-playback performance. Since Version 3.73 terminatorX supports running
-suid root. If you install the terminatorX binary suid root with the
-following commands: (with the default install you should find the
-terminatorX binary in /usr/local/bin)
-                
- > chown root terminatorX
- > chmod u+s terminatorX
-                
-terminatorX will be started with root privileges even when an
-"unprivileged" user runs the binary. terminatorX will then create the
-engine thread with realtime priority before any files are written, any
-parameters are evaluated or connections to the X11 display are
-established. Right after that terminatorX will drop root privileges,
-so the actual terminatorX code runs unprivileged.
-                
-The problem is, with Linux' pthreads implementation the pthread
-manager thread (that can not be influenced by terminatorX) will still
-run with root privileges.
-               
-So there is a small chance that a malicious attacker could utilize
-terminatorX to acquire root privileges if installed suid root,
-although it should require quite some effort to create an exploit for
-that. On the other hand realtime scheduling massively improves the
-playback performance. So depending on who can access your computer you
-will have to decide for yourself on performance vs security.
-Alternatively you can of course run terminatorX as root to achieve
-realtime scheduling.
+Update: This is now considered dangerous and not recommended.
 
 3. Compile an optimized binary
 ------------------------------
@@ -74,12 +46,7 @@ in the options dialog.
 5. Optimize your kernel
 -----------------------
 
-The current 2.2.X-kernels show a pretty high latency. This is problematic for
-near-realtime apps and therefore most linux-audio-apps. Ingo Molnar is
-maintaining a patch against the 2.2.x kernels that reduces latency. They are
-called "low-latency-patches" and are available from:
-http://people.redhat.com/mingo/lowlatency-patches/
-
-Now although latency has improved with the 2.4 releases there is still some
-tuning possible with those kernels. There exist patches for those kernels as
-well and they may go into the main kernel tree as soon as they're finished.
+2.5 Kernels have much lower latency than older Kernels - if you want to work 
+with a stable Kernel however I recommend patching the 2.4 Series with Kolivas
+ck patches. They improve terminatorX performace signifcally - if you dont 
+forget to renice your X to '0' (see Kolivas' FAQ).

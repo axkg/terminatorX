@@ -134,6 +134,12 @@ void *engine_thread_entry(void *engine_void) {
 	/* Dropping root privileges for the engine thread - if running suid. */
 	
 	if ((!geteuid()) && (getuid() != geteuid())) {
+		
+#ifndef ALLOW_SUID_ROOT
+		tX_error("This binary doesn't support running suid-root.");
+		tX_error("Reconfigure with --enable-suidroot if you really want that.");
+		exit(-1);
+#endif		
 		tX_debug("engine_thread_entry() - Running suid root - dropping privileges.");
 		
 		result=setuid(getuid());

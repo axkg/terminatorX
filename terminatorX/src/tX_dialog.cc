@@ -52,6 +52,30 @@ extern char *logo_xpm[];
 GtkWidget *opt_dialog;
 int opt_hidden=0;
 
+static GtkWidget *last_alsa_device_widget=NULL;
+static GtkWidget *alsa_device_entry=NULL;
+
+static void alsa_device_changed(GtkList *list, GtkWidget *widget, gpointer user_data) {
+	if (widget) {
+		if (widget != last_alsa_device_widget) {
+			last_alsa_device_widget = widget;
+			GtkWidget *label=gtk_bin_get_child(GTK_BIN(widget));
+			
+			if (label) {
+				char foo[PATH_MAX];
+				char tmp[PATH_MAX];
+				int card;
+				int device;
+ 
+				sscanf(gtk_label_get_text(GTK_LABEL(label)), "%i-%i: %s", &card, &device, foo);
+				sprintf(tmp, "hw:%i,%i", card, device);
+				
+				gtk_entry_set_text(GTK_ENTRY(alsa_device_entry), tmp);
+			}
+		}
+	}
+}
+
 void apply_options(GtkWidget *dialog) {
 	/* Audio */
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "alsa_driver")))) {
@@ -69,7 +93,7 @@ void apply_options(GtkWidget *dialog) {
 	globals.oss_samplerate=atoi(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "oss_samplerate"))->entry)));
 	
 	/* Audio: ALSA */
-	strcpy(globals.alsa_device, gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "alsa_audio_device"))->entry)));
+	strcpy(globals.alsa_device_id, gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "alsa_audio_device"))->entry)));
 	globals.alsa_buffer_time=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "alsa_buffer_time")));
 	globals.alsa_buffer_time*=1000;
 	globals.alsa_period_time=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "alsa_period_time")));
@@ -302,12 +326,18 @@ void init_tx_options(GtkWidget *dialog) {
 	
 	
 	/* Audio: ALSA */
+	GtkCombo *combo=GTK_COMBO(lookup_widget(dialog, "alsa_audio_device"));
 	GList *alsa_list=get_alsa_device_list();
+	last_alsa_device_widget=NULL;
+	alsa_device_entry=combo->entry;
+	
 	if (alsa_list) {
-		gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "alsa_audio_device")), get_alsa_device_list());
+		gtk_combo_set_popdown_strings(combo, get_alsa_device_list());
 	}
-	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "alsa_audio_device"))->entry), globals.alsa_device);
+	gtk_entry_set_text(GTK_ENTRY(combo->entry), globals.alsa_device_id);
 
+	g_signal_connect(G_OBJECT(combo->list), "select_child", G_CALLBACK(alsa_device_changed), NULL);
+	
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "alsa_buffer_time")), globals.alsa_buffer_time/1000);
 	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "alsa_buffer_time"), "Sets the size of the ALSA ring buffer. On slower systems you might have to increase this value (if you hear \"clicks\" or drop-outs). Lower values mean lower latency though.", NULL);	
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "alsa_period_time")), globals.alsa_period_time/1000);
@@ -444,16 +474,14 @@ void show_about(int nag)
 
 //	GTK_WINDOW(window)->use_uposition=TRUE;
 
-	gtk_widget_realize(window);
-	
-	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+	g_object_set (G_OBJECT (window), "type", GTK_WINDOW_TOPLEVEL, NULL);
+	if (nag) { gtk_window_set_decorated(GTK_WINDOW(window), FALSE); }
+	gtk_window_set_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER);
+	//gtk_window_set_resizable (GTK_WINDOW (window), FALSE);
 	gtk_window_set_title(GTK_WINDOW(window), "terminatorX - About");
+	//gtk_widget_set_size_request(window, 640, 210);
 	
-	if (nag)
-	{
-		gdk_window_set_decorations(window->window, (enum GdkWMDecoration) 0);
-	}
-
+	gtk_widget_realize(window);
 	
 	style = gtk_widget_get_style( window );
 

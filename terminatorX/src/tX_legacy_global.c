@@ -43,7 +43,7 @@ void get_rc_name_old(char *buffer)
 }
 
 void load_globals_old() {	
-	char rc_name[PATH_MAX]="";	
+	char rc_name[PATH_MAX+256]="";	
 	FILE *rc;
 	get_rc_name_old(rc_name);
 	
