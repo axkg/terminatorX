@@ -10,6 +10,7 @@ new startup switches:	Josh Steiner <joschi@eds.org>
 misc fixes and enhancements:
 			Adrian Reber <adrian@lisas.de>
 Ogg Vorbis support:	Matthew Evans <activesx@hotmail.com>
-			
+MIDI interface:  Arthur Peters <amp@singingwizard.org>
+
 The lowpass filter is based on a description:
 reso_lop.txt:		Paul Kellett <paul.kellett@maxim.abel.co.uk>
