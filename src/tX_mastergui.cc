@@ -1541,7 +1541,7 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_start(GTK_BOX(tt_parent), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
-	audio_parent=gtk_vbox_new(FALSE,0);
+	audio_parent=gtk_vbox_new(FALSE,2);
 	gtk_box_pack_start(GTK_BOX(tt_parent), audio_parent, WID_DYN);
 	gtk_widget_show(audio_parent);
 	
