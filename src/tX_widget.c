@@ -141,7 +141,6 @@ GtkWidget *gtk_tx_new(int16_t * wavdata, int wavsamples) {
 	tx->data = wavdata;
 	tx->samples = wavsamples;
 	tx->zoom=0;
-	tx->zoom_scale=1;
 	tx->display_x_offset=0;
 	
 	return GTK_WIDGET(tx);
@@ -209,12 +208,10 @@ static void gtk_tx_size_request(GtkWidget * widget, GtkRequisition * requisition
 
 static void gtk_tx_prepare(GtkWidget * widget) {
 	int x, sample;
-	f_prec temp;
 	int16_t *ptr;
 	f_prec value;
 	GtkTx *tx;
 	int avg_pos;
-	double scale;
 	
 	g_return_if_fail(widget != NULL);
 	g_return_if_fail(GTK_IS_TX(widget));
@@ -313,7 +310,7 @@ static void gtk_tx_size_allocate(GtkWidget * widget, GtkAllocation * allocation)
 
 static gint gtk_tx_expose(GtkWidget * widget, GdkEventExpose * event) {
 	GtkTx *tx;
-	gint x, pos;
+	gint x;
 	GdkRectangle *area;
 	
 	g_return_val_if_fail(widget != NULL, FALSE);
@@ -379,7 +376,7 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	GdkWindow *window;
 	GdkGC *gc;
 
-	int current_x, x, y, yc, ymax, tmp;
+	int x, y, yc, ymax, tmp;
 	int current_pos, current_pos_x, x_offset;
 	int force_draw=0;
 
@@ -469,7 +466,7 @@ void gtk_tx_cleanup_pos_display(GtkTx * tx) {
 	GtkWidget *widget;
 	GdkWindow *window;
 	GdkGC *gc;
-	int x, y, ymax, yc;
+	int ymax, yc;
 
 	widget = GTK_WIDGET(tx);
 	window = widget->window;
@@ -496,4 +493,8 @@ void gtk_tx_show_frame(GtkTx *tx, int show) {
 	}
 	
 	gtk_widget_queue_draw(GTK_WIDGET(tx));	
+}
+
+f_prec gtk_tx_get_zoom(GtkTx *tx) {
+	return tx->zoom;
 }

@@ -30,6 +30,9 @@
 #include <glib.h>
 #include "tX_types.h"
 
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+
 class tX_event
 {
 	private:
@@ -44,8 +47,11 @@ class tX_event
 			value=val;
 			sp=sp_in;
 		}
+#ifdef ENABLE_TX_LEGACY		
 	tX_event(FILE *input);
-	void store(FILE *output);
+#endif		
+	tX_event(xmlDocPtr, xmlNodePtr);
+	void store(FILE *output, char *indent);
 
 	tX_seqpar *get_sp() { return sp; }
 	guint32 get_timestamp() { return timestamp; }

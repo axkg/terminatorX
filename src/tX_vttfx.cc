@@ -27,6 +27,7 @@
 #include <glib.h>
 #include "tX_vtt.h"
 #define myvtt ((vtt_class *) vtt)
+#include "tX_global.h"
 
 float ladspa_dummy_output_port;
 
@@ -45,8 +46,7 @@ void vtt_fx :: run ()
 	fprintf(stderr, "tX: Oops: run() abstract vtt_fx?");
 }
 
-void vtt_fx :: save (FILE *output)
-{
+void vtt_fx :: save (FILE *output, char *indent) {
 	fprintf(stderr, "tX: Oops: run() abstract vtt_fx?");
 }
 
@@ -74,10 +74,9 @@ void vtt_fx_lp :: activate() { myvtt->lp_reset(); }
 void vtt_fx_lp :: deactivate() { /* NOP */ }
 void vtt_fx_lp :: run() { myvtt->render_lp(); }
 int vtt_fx_lp :: isEnabled() { return myvtt->lp_enable; }
-void vtt_fx_lp :: save (FILE *output)
-{ 
-	guint32 type=TX_FX_BUILTINCUTOFF;
-	fwrite((void *) &type, sizeof(type), 1, output);
+
+void vtt_fx_lp :: save (FILE *output, char *indent) { 
+	fprintf(output, "%s<cutoff/>\n", indent);
 }
 
 const char *vtt_fx_lp :: get_info_string()
@@ -91,10 +90,9 @@ void vtt_fx_ec :: activate() { /* NOP */ }
 void vtt_fx_ec :: deactivate() { myvtt->ec_clear_buffer(); }
 void vtt_fx_ec :: run() { myvtt->render_ec(); }
 int vtt_fx_ec :: isEnabled() { return myvtt->ec_enable; }
-void vtt_fx_ec :: save (FILE *output)
-{ 
-	guint32 type=TX_FX_BUILTINECHO;
-	fwrite((void *) &type, sizeof(type), 1, output);
+
+void vtt_fx_ec :: save (FILE *output, char *indent) { 
+	fprintf(output, "%s<lowpass/>\n", indent);	
 }
 
 const char *vtt_fx_ec :: get_info_string()
@@ -283,59 +281,64 @@ vtt_fx_ladspa :: ~vtt_fx_ladspa()
 }
 
 
-void vtt_fx_ladspa :: save (FILE *output)
-{
+void vtt_fx_ladspa :: save (FILE *rc, char *indent) {
 	long ID=plugin->getUniqueID();
 	list <tX_seqpar_vttfx *> :: iterator sp;
-	guint32 pid;
-	guint32 type=TX_FX_LADSPA;
-	guint32 count;
-	guint8 hidden;
-	float value;
 	
-	fwrite((void *) &type, sizeof(type), 1, output);
+	fprintf(rc, "%s<ladspa_plugin>\n", indent);
+	strcat (indent, "\t");
 	
-	fwrite((void *) &ID, sizeof(ID), 1, output);
+	store_int("ladspa_id", ID);
 	
-	count=controls.size();
-	fwrite((void *) &count, sizeof(count), 1, output);
-	
-	for (sp=controls.begin(); sp!=controls.end(); sp++)
-	{
-		pid=(*sp)->get_persistence_id();
-		fwrite((void *) &pid, sizeof(pid), 1, output);
-		value=(*sp)->get_value();
-		fwrite((void *) &value, sizeof(value), 1, output);
+	for (sp=controls.begin(); sp!=controls.end(); sp++) {
+		store_float_id("param", (*sp)->get_value(), (*sp)->get_persistence_id());
 	}
 	
-	hidden=panel->is_hidden();
-	fwrite((void *) &hidden, sizeof(hidden), 1, output);
+	store_bool("panel_hidden", panel->is_hidden());
+	
+	indent[strlen(indent)-1]=0;
+	fprintf(rc, "%s</ladspa_plugin>\n", indent);
 }
 
-void vtt_fx_ladspa :: load (FILE *input)
-{
-	guint32 count;
-	unsigned int i;
-	list <tX_seqpar_vttfx *> :: iterator sp;
-	guint32 pid;
-	guint8 hidden;
-	float value;
+void vtt_fx_ladspa :: load(xmlDocPtr doc, xmlNodePtr node) {
+	int dummy;
+	bool hidden;
+	list <tX_seqpar_vttfx *> :: iterator sp=controls.begin();
+	int elementFound;
+	guint32 pid=0;
+	double val;
 	
-	fread((void *) &count, sizeof(count), 1, input);
-	
-	if (count!=controls.size())
-	{
-		fprintf(stderr, "tX: Ouch! Plugin %li has less/more controls than saved!\n", plugin->getUniqueID());
+	for (xmlNodePtr cur=node->xmlChildrenNode; cur!=NULL; cur=cur->next) {
+		if (cur->type == XML_ELEMENT_NODE) {
+			elementFound=0;
+			
+			restore_int("ladspa_id", dummy);
+			restore_bool("hidden", hidden);
+			if ((!elementFound) && (xmlStrcmp(cur->name, (xmlChar *) "param")==0)) {
+				val=0;
+				elementFound=1;
+			
+				if (sp==controls.end()) {
+					tX_warning("found unexpected parameters for ladspa plugin [%i].", dummy);
+				} else {			
+					char *buff=(char *) xmlGetProp(cur, (xmlChar *) "id");
+					sscanf(buff, "%i", &pid);
+			
+					if  (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {
+						sscanf((char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%lf", &val); 
+					}
+					(*sp)->set_persistence_id(pid);
+					(*sp)->do_exec(val);
+					(*sp)->do_update_graphics();
+					sp++;
+				}
+			}
+			
+			if (!elementFound) {
+				tX_warning("unhandled ladspa_plugin element %s.", cur->name);
+			}
+		}
 	}
 	
-	for (i=0, sp=controls.begin(); (i<count) && (sp!=controls.end()); i++, sp++) {
-		fread((void *) &pid, sizeof(pid), 1, input);
-		(*sp)->set_persistence_id(pid);
-		fread((void *) &value, sizeof(value), 1, input);
-		(*sp)->do_exec(value);
-		(*sp)->do_update_graphics();
-	} 
-	
-	fread((void *) &hidden, sizeof(hidden), 1, input);
 	panel->hide(hidden);
 }
