@@ -75,6 +75,7 @@ void apply_options(GtkWidget *dialog) {
 	globals.alsa_period_time=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "alsa_period_time")));
 	globals.alsa_period_time*=1000;
 	globals.alsa_samplerate=atoi(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "alsa_samplerate"))->entry)));	
+	globals.alsa_free_hwstats=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "alsa_free_hwstats")));
 	
 	/* TODO: JACK
 	*/
@@ -89,6 +90,7 @@ void apply_options(GtkWidget *dialog) {
 	/* User Interface */ 
 	globals.show_nag=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "startup_nagbox")))==TRUE);
 	globals.tooltips=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "mainwin_tooltips")))==TRUE);
+	globals.filename_length=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget(dialog, "filename_length")));
 	if (globals.tooltips) gtk_tooltips_enable(gui_tooltips);
 	else gtk_tooltips_disable(gui_tooltips);
 
@@ -152,7 +154,7 @@ void apply_options(GtkWidget *dialog) {
 	add_widget_dyn(label);
 
 #ifdef USE_ALSA
-static GList *alsa_devices;
+static GList *alsa_devices=NULL;
 
 GList *get_alsa_device_list() {
 	if (alsa_devices) {
@@ -161,6 +163,7 @@ GList *get_alsa_device_list() {
 	
 	FILE *file;
 	char buffer[PATH_MAX+1];
+	alsa_devices=NULL;
 	
 	if ((file = fopen("/proc/asound/pcm", "r"))) {
 		while(fgets(buffer, PATH_MAX, file)) {
@@ -198,6 +201,8 @@ GList *get_oss_device_list() {
     int n,i;
     n = scandir("/dev", &namelist, oss_select_dsp_only, alphasort);
     
+	oss_devices=NULL;
+	
     if (n>0) {
     	for (i=0; i<n; i++) {
 			char buffer[256];
@@ -312,6 +317,7 @@ void init_tx_options(GtkWidget *dialog) {
 	sprintf(tmp, "%i", globals.alsa_samplerate);
 	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "alsa_samplerate"))->entry), tmp);
 	
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "alsa_free_hwstats")), globals.alsa_free_hwstats);
 	
 	/* TODO: Samplerate!
 		ALSA
@@ -333,6 +339,7 @@ void init_tx_options(GtkWidget *dialog) {
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "vtt_inertia")), globals.vtt_inertia);
 	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "vtt_inertia"),"This value defines how fast the turntables will adapt to the speed input - the higher this value, the longer it will take the turntable to actually reach the target speed.", NULL);	
 
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget(dialog, "filename_length")), globals.filename_length);
 	/* User Interface */ 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "startup_nagbox")), globals.show_nag);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "mainwin_tooltips")), globals.tooltips);

@@ -135,6 +135,9 @@ void set_global_defaults() {
 	globals.compress_set_files=0;
 	
 	globals.vtt_inertia=10.0;
+	
+	globals.alsa_free_hwstats=1;
+	globals.filename_length=20;
 }
 
 int load_globals_xml() {
@@ -186,7 +189,8 @@ int load_globals_xml() {
 			restore_int("alsa_buffer_time", globals.alsa_buffer_time);
 			restore_int("alsa_period_time", globals.alsa_period_time);
 			restore_int("alsa_samplerate", globals.alsa_samplerate);
-
+			restore_int("alsa_free_hwstats", globals.alsa_free_hwstats);
+			
 			restore_string("xinput_device", globals.xinput_device);
 			restore_int("xinput_enable", globals.xinput_enable);
 			restore_int("update_idle", globals.update_idle);
@@ -195,6 +199,7 @@ int load_globals_xml() {
 			restore_float("mouse_speed", globals.mouse_speed);
 			restore_int("width", globals.width);
 			restore_int("height", globals.height);
+			restore_int("filename_length", globals.filename_length);
 			restore_int("tooltips", globals.tooltips);
 			restore_int("use_stdout", globals.use_stdout);
 			restore_int("show_nag", globals.show_nag);
@@ -273,6 +278,7 @@ void store_globals() {
 		store_int("alsa_buffer_time", globals.alsa_buffer_time);
 		store_int("alsa_period_time", globals.alsa_period_time);
 		store_int("alsa_samplerate", globals.alsa_samplerate);		
+		store_int("alsa_free_hwstats", globals.alsa_free_hwstats);
 		
 		store_string("xinput_device", globals.xinput_device);
 		store_int("xinput_enable", globals.xinput_enable);
@@ -282,6 +288,7 @@ void store_globals() {
 		store_float("mouse_speed", globals.mouse_speed);
 		store_int("width", globals.width);
 		store_int("height", globals.height);
+		store_int("filename_length", globals.filename_length);
 		store_int("tooltips", globals.tooltips);
 		store_int("use_stdout", globals.use_stdout);
 		// globals.use_stdout_from_conf_file=0; What the heck is this?
