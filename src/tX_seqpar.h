@@ -382,12 +382,17 @@ class tX_seqpar_vttfx_bool : public tX_seqpar_vttfx
 class tX_seqpar_vttfx_int : public tX_seqpar_vttfx
 {
 	private:
+	GtkAdjustment *myadj;
+
+	private:
 	virtual void create_widget();
 	virtual void do_exec(const float value);
 	virtual void do_update_graphics();	
 
 	public:
 	virtual ~tX_seqpar_vttfx_int();
+
+	static GtkSignalFunc gtk_callback(GtkWidget*, tX_seqpar_vttfx_int *);
 };
 #endif 
 

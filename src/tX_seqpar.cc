@@ -789,25 +789,46 @@ GtkSignalFunc tX_seqpar_vttfx_float :: gtk_callback(GtkWidget* w, tX_seqpar_vttf
 	sp->receive_gui_value(sp->myadj->value);	
 }
 
+#define WID_DYN TRUE, TRUE, 0
+#define WID_FIX FALSE, FALSE, 0
+
 void tX_seqpar_vttfx_int :: create_widget()
 {
+	float tmp=max_value - min_value/1000;
+	GtkWidget *tmpwid;
+
 	*fx_value=min_value;
+	myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value, max_value, tmp, tmp, tmp));
+	widget=gtk_hbox_new(FALSE, 2);
+        tmpwid=gtk_label_new(label_name);
+	gtk_widget_show(tmpwid);
+	gtk_box_pack_start(GTK_BOX(widget), tmpwid, WID_FIX);
 
-	/* code goes here */
+	tmpwid=gtk_spin_button_new(myadj,1.0,0);
+	gtk_widget_show(tmpwid);
+	gtk_box_pack_start(GTK_BOX(widget), tmpwid, WID_DYN);
+	
+	gtk_signal_connect(GTK_OBJECT(myadj), "value_changed", (GtkSignalFunc) tX_seqpar_vttfx_int :: gtk_callback, this);
 }
-
 
 tX_seqpar_vttfx_int :: ~tX_seqpar_vttfx_int()
 {
-	/* oh yeah, some more code here */
+	gtk_widget_destroy(widget);
 }
 
 void tX_seqpar_vttfx_int :: do_exec(const float value)
 {
+	*fx_value=value;
 }
 
 void tX_seqpar_vttfx_int :: do_update_graphics()
 {
+	gtk_adjustment_set_value(myadj, *fx_value);
+}
+
+GtkSignalFunc tX_seqpar_vttfx_int :: gtk_callback(GtkWidget* w, tX_seqpar_vttfx_int *sp)
+{
+	sp->receive_gui_value(sp->myadj->value);	
 }
 
 void tX_seqpar_vttfx_bool :: create_widget()
