@@ -4,35 +4,36 @@
 <section name="screenshots">
   <screenshots>
     <subsection>
-      <title>So you want to see some graphics?</title>
+      <title>What it looks like...</title>
 
-      <para>Ok, so here are some screenshots I took of terminatorX 3.73 in
-	action. These screenshots utilze gtk+ Version 2 and the
-	wonderful Crux theme engine.
-      </para>
+      <para>Here are some screenshots I took of terminatorX 3.80 in
+	action.</para>
 
       <para>
 
-	<screenshot filename="shot-3.73-1.png">
+	<screenshot filename="shot-3.80-1.png">
 	  <nopara>This shows terminatorX with the sequencer
 	  and live scratching in effect.</nopara>
 	</screenshot>
 
-	<screenshot filename="shot-3.73-2.png">
+	<screenshot filename="shot-3.80-2.png">
 	  <nopara>Selecting a <link ref="http://www.ladspa.org">LADSPA</link>
-	  plugin.
+	  plugin from a <link ref="liblrdf">liblrdf</link> structured menu. 
 	  </nopara>
 	</screenshot>
 	
-	<screenshot filename="shot-3.73-3.png">
+	<screenshot filename="shot-3.80-3.png">
 	  <nopara>Mapping a parameter to a turntable's axis. This works
 	  for <link ref="http://www.ladspa.org">LADSPA</link> plugins, too.
 	  </nopara>
 	</screenshot>
 
-	<screenshot filename="shot-3.73-4.png">
+	<screenshot filename="shot-3.80-4.png">
 	  <nopara>Configuring terminatorX.</nopara>
 	</screenshot>
+	
+	<screenshot filename="shot-3.80-5"><nopara>Mapping MIDI events
+	to turntable parameters.</nopara></screenshot>
 
       </para>
     </subsection>

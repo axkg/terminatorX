@@ -18,7 +18,7 @@
 	  scratch on vinyl records. It features multiple turntables, realtime
 	  effects (buit-in as well as
 	  <link ref="http://www.ladspa.org">LADSPA</link> plugin
-	  effects), a sequencer and 
+	  effects), a sequencer and MIDI interface - all accessible through 
 	  an easy-to-use gtk+ GUI. <bold>This sofware is designed to run
 	    under Linux, FreeBSD and the like</bold>. <!-- It will possibly run und
 	  other UNIXish systems running
@@ -35,6 +35,73 @@
     </general>
 
     <news>
+    <newsitem>
+    	<newsheader date="April 03"><link ref="download.html#Current Version">terminatorX 3.80</link> and <link ref="aseqjoy.html">aseqjoy 0.0.1</link></newsheader>
+	<newstext>
+		<para>This terminatorX release does a very good job at erasing points from my TODO-for-4.0 list. Among
+		other things this release introduces:
+		<itemizedlist>
+			<listitem>
+			<para>Finally terminatorX has a <bold>native</bold> <link ref="http://www.alsa-project.org">ALSA</link> 
+			<bold>backend</bold>. See the new <italic>Preferences</italic> dialog and the online manual for details. 
+			The ALSA and the OSS backends now both support operating at an 
+			<bold>arbitrary sampling rate</bold>.</para>
+			</listitem>
+			<listitem><para>I finally untied audio rendering and audio backend. terminatorX now operates
+			at a <bold>fixed internal blocksize</bold> of 1 ms. So now it doesn't matter anymore with which blocksize
+			events were recorded - they will be played back correctly with any audio device blocksize.</para>
+			<para>Note that
+			a a minor problem remains: the sampling rate has an effect on the blocksize, too. While there is 
+			no problem switching from 22 or 32 kHz to 48kHz, there will be a slight rounding error switching from or
+			to 44.1 kHz. So if you record and playback events I suggest you keep the sampling rate the same,
+			or use "straight" sampling rates like 22, 32 and 48 kHz only.
+			</para></listitem>
+			<listitem>
+			<para>The audio data display is now <bold>zoomable</bold>. This helps scratching large audio
+			files (like complete songs) significantly. Use the slider on the right of the display area to adjust
+			the zoom level. When playing the audio data will scroll in such a manner that the current position
+			is always centered.
+			</para>
+			<para>To optimize playback performance terminatorX does a lot of "zoom" calculations in
+			advance - so adjusting the slider will cause quite some amount of recalculation on large audio
+			files.</para>
+			</listitem>
+			<listitem><para>A <bold>MIDI interface</bold> thanks to a patch by
+			<person><name>Arthur Peters</name><email>amp@singingwizard.org</email></person>. The MIDI interface 
+			is based upon the <link ref="http://www.alsa-project.org">ALSA</link> sequencer API, so you'll
+			have to connect terminatorX' input port to an output port of your choice with either <screen>aconnect</screen>
+			or for example the <link ref="http://pkl.net/~node/alsa-patch-bay.html">alsa-patch-bay</link>. To map a MIDI controller or note events
+			to a turntable's parameter click the <italic>MIDI Mapping</italic> button.
+			</para>
+			<para>In order to test the new interface I hacked a little tool called 
+			<link ref="aseqjoy.html">aseqjoy</link> that emits MIDI controller messages based on
+			Joystick motion.</para>
+			</listitem>
+			<listitem>
+			<para>Advancing the use of XML: many XML-related bugs have been fixed, and I moved the <bold>set file format
+			to XML</bold>, too. The MIDI mappings of parameters will be stored within set files, too. As XML set files
+			with a lot of sequencer events can grow quite big tX supports writing <bold>gzip compressed set files</bold>
+			through the use of <link ref="http://www.zlib.org">zlib</link>.
+			</para>
+			</listitem>
+			<listitem>
+			<para>Thanks to a suggestion by
+				<person><name>Darrick Servis</name><email>darrick@dcn.davis.ca.us</email></person> 
+				terminatorX <bold>no longer clips audio</bold>. If the generated amplitude goes beyond the maximum
+				it will simply be cut off.
+			</para>
+			</listitem>
+			<listitem>
+			<para>Further cleaning up the layout for small DJ laptop displays: moved some buttons to
+			a <bold>menu bar</bold> to waste less space. Addtionally you can now hit <screen>F11</screen> to
+			enter <bold>fullscreen</bold> mode - if your window manager supports <italic>NETWM</italic>.
+			</para>
+			</listitem>
+			<listitem><para>Dropped support for the old gtk+ 1.2 - you have to use gtk+ &gt;= 2.0, now.</para></listitem>
+		</itemizedlist>
+		</para>
+	</newstext>
+    </newsitem>
       <newsitem>
 	<newsheader date="18 Sep"><link ref="download.html#Current Version">terminatorX
 	    V3.73</link> available, 
@@ -342,7 +409,7 @@
 		</para>
 	      </listitem>
 	      <listitem>
-		<para>Minor fixes to make W3C's validator accept the
+		<para>Minor fixes to make <link ref="http://www.w3.org">W3C</link>'s validator accept the
 		pages again, and a favicon that needs some improvement.</para>
 	      </listitem>
 	    </itemizedlist>
@@ -350,7 +417,7 @@
 	</newstext>
       </newsitem>
        
-      <newsitem>
+<!--      <newsitem>
 	<newsheader date="20 jun">New scratches, turntables &amp; FAQ updates
 	</newsheader>
 	<newstext>
@@ -459,7 +526,7 @@
 		      Reber</name><email>adrian@lisas.de</email></person>
 		  applied, that fixes some issues with newer gcc releases, some
 		  minor bugs and cleans up the startup switches (there are
-		  some new ones, too - run <italic>terminatorX --help</italic>
+		  some new ones, too - run <italic>terminatorX -help</italic>
 		  for more details). 
 		</para>
 	      </listitem>
@@ -498,7 +565,7 @@
 	</newstext>
       </newsitem>
 
-<!--      <newsitem>
+      <newsitem>
 	<newsheader date="18 dec"><link ref="download.html#Current Version">
 	    RPMs</link> done and some remixes.
 	</newsheader>

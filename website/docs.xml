@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section SYSTEM "./tX.dtd"[
+]>
+<section name="docs">
+  <docs>
+	<para>The following documentation is available:
+	<itemizedlist>
+	<listitem><para>An HTML version of the
+		<link ref="manual/index.html">terminatorX online manual</link>. If you have
+		GNOME2's <italic>yelp</italic> installed you should be able to read this manual
+		by selecting it from the <italic>Help</italic> menu.
+		</para></listitem>
+		<listitem><para><person><name>Brian</name><email>bredfern@calarts.edu</email></person>
+		wrote a nice <italic>QuickToot</italic> tutorial on terminatorX. Check it out 
+		<link ref="tutorial.html">here</link>
+		</para></listitem>
+		<listitem><para>If you're stuck on installing terminatorX I recommend having
+		a look at the <link ref="INSTALL">INSTALL</link> file.
+		</para></listitem>
+		<listitem>
+		<para>I also maintain a <link ref="faq.html">Frequently Asked Questions</link> document.
+		</para>
+		</listitem>
+	</itemizedlist>	
+	</para>
+	<para>Additionally there's a
+	<itemizedlist>
+	<listitem><para>HTML version of the <link ref="aseqjoy.html">aseqjoy</link>
+	<link ref="aseqjoy-man.html">man page</link>.
+	</para></listitem>
+	<listitem><para>And a rather old <link ref="oldturntable.html">description</link> on how I turned by broken
+	turntable into terminatorX turntable.
+	</para>
+	</listitem>
+	</itemizedlist>
+	</para>
+</docs>
+</section>
+

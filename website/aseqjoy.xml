@@ -29,7 +29,7 @@ install</screen>
 and Robert Ham's <link ref="http://pkl.net/%7Enode/alsa-patch-bay.html">alsa-patch-bay</link>
 or aconnect from the <link ref="http://www.alsa-project.org">alsa-utils</link> package to connect aseqjoy's MIDI output port
 to other input ports.</para>
-<para>aseqjoy is distributed under the terms of the GPL V2, too.</para>
+<para>aseqjoy is distributed under the terms of the <link ref="COPYING">GNU General Public License</link>.</para>
   </aseqjoy>
 </section>
 

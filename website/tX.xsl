@@ -26,6 +26,7 @@
             rolloverLoad('download','pix/vinyl-hover.gif','pix/vinyl.png');
 	    rolloverLoad('screenshots','pix/vinyl-hover.gif','pix/vinyl.png');
 	    rolloverLoad('faq','pix/vinyl-hover.gif','pix/vinyl.png');
+	    rolloverLoad('docs','pix/vinyl-hover.gif','pix/vinyl.png');
 	    rolloverLoad('turntable','pix/vinyl-hover.gif','pix/vinyl.png');
 	    rolloverLoad('scratches','pix/vinyl-hover.gif','pix/vinyl.png');
 	    rolloverLoad('aseqjoy','pix/vinyl-hover.gif','pix/vinyl.png');
@@ -93,6 +94,15 @@
 		</xsl:if>
 		<xsl:if test="@name!='faq'"> 
 			<td><img name="faq" alt="-" border="0" src="pix/vinyl.png" vspace="0"/></td><td><a onMouseOut="rolloverOff('faq');" onMouseOver="rolloverOn('faq');" href="faq.html">faq</a></td><td/>
+		</xsl:if>
+    	</tr>
+
+	<tr>
+		<xsl:if test="@name='docs'"> 
+			<td bgcolor="#777777"><img alt="-" border="0" src="pix/vinyl-highlight.png" vspace="0"/></td><td bgcolor="#777777">docs</td><td bgcolor="#777777"><img alt="-" border="0" src="pix/vinyl-spacer.png" vspace="0"/></td>
+		</xsl:if>
+		<xsl:if test="@name!='docs'"> 
+			<td><img name="docs" alt="-" border="0" src="pix/vinyl.png" vspace="0"/></td><td><a onMouseOut="rolloverOff('docs');" onMouseOver="rolloverOn('docs');" href="docs.html">docs</a></td><td/>
 		</xsl:if>
     	</tr>
 
@@ -202,7 +212,7 @@
 		<table border="0" cellspacing="0" cellpadding="2px">
 			<tr>
 			<td><img src="pix/new.png" alt="new:"/></td>
-			<td align="left" valign="middle" width="100%"><font size="+1"><xsl:apply-templates/></font> <font color="#DDDDDD" size="+1">[<xsl:value-of select="@date"/>]</font></td>
+			<td align="left" valign="middle" width="100%"><font size="+1"><xsl:apply-templates/></font><font color="#DDDDDD" size="+1"> [<xsl:value-of select="@date"/>]</font></td>
 			</tr>
 		</table>
 	</xsl:for-each>

@@ -1,6 +1,6 @@
-<!ELEMENT section (main|download|screenshots|scratches|links|faq|turntable|aseqjoy)>
+<!ELEMENT section (main|download|screenshots|scratches|links|faq|turntable|aseqjoy|docs)>
 <!ATTLIST section
-  name (main|download|screenshots|scratches|links|faq|turntable|aseqjoy) #REQUIRED>
+  name (main|download|screenshots|scratches|links|faq|turntable|aseqjoy|docs) #REQUIRED>
 
 <!ELEMENT main (general, news)>
 <!ELEMENT download (index, current, subsection+)>
@@ -9,6 +9,7 @@
 <!ELEMENT faq (qa+)>
 <!ELEMENT turntable (para*, turntabletable, para*)>
 <!ELEMENT aseqjoy (para*)>
+<!ELEMENT docs (para*)>
 <!ELEMENT screenshots (subsection)+>
 
 <!ELEMENT scratchtable (scratch)*>

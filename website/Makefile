@@ -1,6 +1,6 @@
-section = main download faq screenshots scratches turntable aseqjoy
+section = main download faq screenshots scratches turntable aseqjoy docs
 
-all: index.html aseqjoy.html download.html faq.html scratches.html turntable.html screenshots.html
+all: index.html aseqjoy.html download.html faq.html scratches.html docs.html turntable.html screenshots.html
 
 clean:	Makefile
 	rm -rf *.html *.tmp
