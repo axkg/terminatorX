@@ -62,6 +62,7 @@
 #include "tX_ladspa.h"
 #include "tX_ladspa_class.h"
 #include "tX_engine.h"
+#include "tX_capabilities.h"
 
 #ifdef CREATE_BENCHMARK 
 #include "tX_vtt.h"
@@ -76,7 +77,7 @@ void jack_check()
 		tx_note("Couldn't connect to JACK server - JACK output not available.\n\nIf you want to use JACK, ensure the JACK daemon is running before you start terminatorX.", true);
 	}
 }
-#endif			
+#endif // USE_JACK
 
 int idle()
 {
@@ -111,31 +112,18 @@ usage: terminatorX [options]n\
   -s, --std-out                 Use stdout for sound output\n\
   --device=[output device]      Use alternate device for sound output\n\
 \n");
-/*
-  -n, --no-gui			Run terminatorX with no GUI\n\
-  -m, --midi-in [file]		Use [file] for midi input\n\
-  -o, --midi-out [file]		Use [file] for midi input\n\
-  -s, --std-out			Use stdout for sound output\n\
-\n");
-*/
 }
-
 
 int parse_args(int *argc, char **argv)
 {
 	// pass over argv once to see if we need to load an alternate_rc file
-	for (int i = 1 ; i != *argc ; ++i )
-	{
-		if ((strcmp(argv[i], "-r") == 0) || (strcmp(argv[i], "--rc-file") == 0)) 
-		{
-			if (argv[i+1] )
-			{	
+	for (int i = 1 ; i != *argc ; ++i ) {
+		if ((strcmp(argv[i], "-r") == 0) || (strcmp(argv[i], "--rc-file") == 0)) {
+			if (argv[i+1] ) {	
 				++i;
 				fprintf(stderr, "tX: Loading alternate rc file %s\n", argv[i]);
 				globals.alternate_rc = argv[i];
-			}
-			else
-			{
+			} else {
 				show_help();	
 				exit(1);
 			}
@@ -153,41 +141,28 @@ int parse_args(int *argc, char **argv)
 	globals.startup_set = 0;
 		
 	// then pass over again, this time setting passed values
-	for (int i = 1 ; i < *argc ; ++i )
-	{
-		if ((strcmp(argv[i], "-f") == 0) || (strcmp(argv[i], "--file") == 0))
-		{
+	for (int i = 1 ; i < *argc ; ++i ) {
+		if ((strcmp(argv[i], "-f") == 0) || (strcmp(argv[i], "--file") == 0)) {
 			++i;
 			globals.startup_set = argv[i];
-		}	
-		else if (((strcmp(argv[i], "-r") == 0) || (strcmp(argv[i], "--rc-file") == 0)) && (argv[i+1]))
-		{
+		} else if (((strcmp(argv[i], "-r") == 0) || (strcmp(argv[i], "--rc-file") == 0)) && (argv[i+1])) {
 			++i;
 			globals.alternate_rc = argv[i];
-		}
-		else if ((strcmp(argv[i], "-d") == 0) || (strcmp(argv[i], "--dont-save") == 0))
-		{
+		} else if ((strcmp(argv[i], "-d") == 0) || (strcmp(argv[i], "--dont-save") == 0)) {
 			fprintf(stderr, "tX: Do not save settings on exit\n");
 			globals.store_globals = 0;
 
-		}
-		else if ((strcmp(argv[i], "-s") == 0) || (strcmp(argv[i], "--std-out") == 0))
-		{
+		} else if ((strcmp(argv[i], "-s") == 0) || (strcmp(argv[i], "--std-out") == 0)) {
 			globals.use_stdout_cmdline = 1;
 			globals.use_stdout = 1;
-		}
-		else if ((strncmp(argv[i], "--device",8) == 0))
-		{
+		} else if ((strncmp(argv[i], "--device",8) == 0)) {
 			if (strlen(argv[i]+9)<=PATH_MAX)
 				strcpy(globals.oss_device,argv[i]+9);
-			else
-			{
+			else {
 				show_help();
-                                exit(1);
+				exit(1);
 			}
-		}
-		else
-		{
+		} else {
 			show_help();
 			exit(1);
 		}
@@ -201,7 +176,7 @@ void checkenv(const char *name) {
 	
 	value=getenv(name);
 	if (value) {
-		length=strlen(value);
+		length=strnlen(value, PATH_MAX+1);
 		
 		if (length>=PATH_MAX) {
 			tX_error("Your \"%s\" environment variable seems malicious (%i chars).", name, length);
@@ -216,6 +191,28 @@ int main(int argc, char **argv)
 	fprintf(stderr, "%s - Copyright (C) 1999-2003 by Alexander König\n", VERSIONSTRING);
 	fprintf(stderr, "terminatorX comes with ABSOLUTELY NO WARRANTY - for details read the license.\n");
 
+#ifdef USE_CAPABILITIES	
+	if (!geteuid()) {
+		if (prctl(PR_SET_KEEPCAPS, 1, -1, -1, -1)) {
+			tX_error("failed to keep capabilites.");
+		}
+		set_nice_capability(CAP_PERMITTED);
+	}
+	
+	if ((!geteuid()) && (getuid() != geteuid())) {
+		tX_debug("main() - capabilites set, dropping root privileges.");
+		
+		int result=setuid(getuid());
+		
+		if (result) {
+			tX_error("main() Panic: can't drop root privileges.");
+			exit(2);
+		}
+	}
+	
+	set_nice_capability(CAP_EFFECTIVE);	
+#endif
+	
 	checkenv("HOME");
 	checkenv("XLOCALEDIR");	
 	
@@ -235,15 +232,18 @@ int main(int argc, char **argv)
 		idle_tag=gtk_idle_add((GtkFunction)idle, NULL);
 	}
 	
-	LADSPA_Class :: init();
-	LADSPA_Plugin :: init();
+	LADSPA_Class::init();
+	LADSPA_Plugin::init();
 #ifdef USE_JACK	
-	tX_jack_client :: init();
+	tX_jack_client::init();
 #endif	
 	
 	create_mastergui(globals.width, globals.height);
 		
 	if (!globals.show_nag) {
+#ifdef USE_JACK
+		jack_check();
+#endif
 		display_mastergui();
 	}
 		
@@ -264,10 +264,10 @@ int main(int argc, char **argv)
 	if (tX_jack_client::get_instance()) {
 		delete tX_jack_client::get_instance();
 	}
-#endif	
+#endif // USE_JACK
 	
 	fprintf(stderr, "Have a nice life.\n");
-#else
+#else // CREATE_BENCHMARK
 	gtk_widget_hide(main_window);
 	while (gtk_events_pending()) gtk_main_iteration(); gdk_flush();	
 	gdk_flush();
@@ -298,6 +298,6 @@ int main(int argc, char **argv)
 	
 	ratio=((double) BENCH_CYCLES)/res;
 	printf ("Rendered %i blocks in %f secons,\n=> %f blocks per second.\n\n", (long) BENCH_CYCLES, res, ratio);
-#endif
+#endif // CREATE_BENCHMARK
 	return (0);
 }

@@ -4,10 +4,20 @@ This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.81]
+- when compiled with rt-scheduling suppport terminatorX will now display the 
+  resulting scheduling policy in the about dialog.
+- if terminatorX was setup to use realtime priority for the audio engine thread
+  but you dont want it - disable realtime scheduling in the Preferences dialog.
+- if you don't want to confirm program termination every time you can now
+  disable "Ask for Quit confirmation" in the Preferences.
+- added support for Linux' POSIX capabilities. This allows a suid-root installed
+  terminatorX binary to drop root privileges much earlier than with the old
+  approach (so it should be more secure). Requires the libcap library.
 - obligatory documentation updates - clicking on the sub-sections should now 
   work.
-- removed gtk+ 1.2 cruft - terminatorX now compiles and gtk+ 2.2 and
-  *_DISABLE_DEPRECATED macros enabled.
+- removed gtk+ 1.2 cruft - terminatorX now compiles with gtk+ 2.2 and
+  *_DISABLE_DEPRECATED macros enabled. To verfiy that you can run 
+  configure with --disable-deprecated.
 - terminatorX now has a JACK backend. Currently it works like this: on startup
   tX will connect to the JACK daemon - if the daemon is not available on 
   startup JACK output is not available. When the audio engine is turned off,
@@ -20,7 +30,7 @@ changed.
   the Preferences - if terminatorX crashes right after hitting the "Power On"
   button it might be necessary to activate this for your ALSA setup. This
   probably results in a tiny memory leak - but on leak vs core you might decide
-  for leak.
+  for leak. Note: I even enabled the leak by default now.
 - fixed a bug that caused turntable 1 to get the focus on entering Mouse Grab
   mode even when it's audio panel was minimized.
 - MIDI mappings can now have "borders", meaning that the incoming MIDI signals
@@ -37,9 +47,11 @@ changed.
   the use of SCHED_FIFO unnecessary. 
 - running suid root was reported exploitable by Andrew Griffiths
   <andrewg@felinemenace.org> - the described environment variable based exploit 
-  was fixed - however there are possibly other ways to exploit it. Therefor 
-  running suid root has been explicitly disabled by default - configure with 
-  --enable-suidroot if you really, really want it. You have been warned.
+  was fixed - however there are possibly other ways to exploit it. So the 
+  old method of running suid root has been disabled by default. On Linux 
+  systems you really should use the capabilities based approach (see above).
+  If really want to use the old suid-root solution run configure with 
+  --enable-suidroot.
 - often, you record events and mess things up - in this case I'd often prefer 
   dropping the complete take instead of recording a bad perfomance - which is 
   why you now can activate "Confirm Recorded Events" from the "Sequencer" menu.
