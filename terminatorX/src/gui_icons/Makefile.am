@@ -1,6 +1,5 @@
 SOURCES = 	tx_audioengine.xpm\
 		tx_power.xpm\
-		tx_smaller_logo.xpm\
 		tx_grab.xpm\
 		tx_record.xpm\
 		tx_stop.xpm\

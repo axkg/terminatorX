@@ -31,7 +31,6 @@
 #include "gui_icons/tx_audioengine.xpm"
 #include "gui_icons/tx_power.xpm"
 #include "gui_icons/tx_grab.xpm"
-#include "gui_icons/tx_smaller_logo.xpm"
 #include "gui_icons/tx_sequencer.xpm"
 #include "gui_icons/tx_play.xpm"
 #include "gui_icons/tx_stop.xpm"
@@ -45,7 +44,7 @@
 #include "gui_icons/tX_minimize_panel.xpm"
 #include "gui_icons/tX_min_control.xpm"
 
-gchar ** tx_icons[]={ tx_audioengine_xpm, tx_power_xpm, tx_grab_xpm, tx_smaller_logo_xpm,
+gchar ** tx_icons[]={ tx_audioengine_xpm, tx_power_xpm, tx_grab_xpm, 
 		      tx_sequencer_xpm, tx_play_xpm, tx_stop_xpm, tx_record_xpm, 
 		      tx_wave_xpm, tx_reload_xpm, tx_minimize_xpm,
 		      tX_fx_up_xpm, tX_fx_down_xpm, tX_fx_close_xpm, tX_minimize_panel_xpm, tX_min_control_xpm };
@@ -114,7 +113,7 @@ extern GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle, GtkWid
 	
 	box=tx_xpm_label_box(icon_id, label, labelwidget);
 	gtk_widget_show(box);
-    gtk_container_set_border_width (GTK_CONTAINER (button), 3);
+    gtk_container_set_border_width (GTK_CONTAINER (button), 0);
 	gtk_container_add (GTK_CONTAINER (button), box);		
 	
 	return(button);
