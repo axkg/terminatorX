@@ -28,4 +28,5 @@ class tX_panel
 	static void minimize(GtkWidget *w, tX_panel *p);
 };
 
+extern void tX_panel_make_label_bold(GtkWidget *widget);
 #endif

@@ -801,6 +801,7 @@ void sequencer_move(GtkWidget *wid, void *d)
 
 void fullscreen_toggle(GtkCheckMenuItem *item, gpointer data);
 void display_help();
+void display_browser();
 
 void create_master_menu() {
 	GtkWidget *menu_item;
@@ -918,7 +919,7 @@ void create_master_menu() {
 	menu_item = gtk_menu_item_new_with_mnemonic ("_Visit terminatorX.cx");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
-	//g_signal_connect(menu_item, "activate", (GCallback) mplcfitx, NULL);
+	g_signal_connect(menu_item, "activate", (GCallback) display_browser, NULL);
 }
 
 void create_mastergui(int x, int y)
@@ -1095,7 +1096,9 @@ void create_mastergui(int x, int y)
 
 	/* Master */
 	
-	dummy=gtk_label_new("Master");
+	dummy=gtk_label_new(NULL);
+	//gtk_label_set_markup(GTK_LABEL(dummy),"<span foreground='#000080'>Master</span>");
+	gtk_label_set_markup(GTK_LABEL(dummy),"<b>Master</b>");
 	gtk_misc_set_alignment(GTK_MISC(dummy), 0.5, 0.5);
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);	
@@ -1205,7 +1208,8 @@ void create_mastergui(int x, int y)
 	
 	add_sep2();
 
-	dummy=gtk_label_new("Status:");
+	dummy=gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(dummy), "<b>Status</b>");
 	gtk_misc_set_alignment(GTK_MISC(dummy), 0.5, 0.5);
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
@@ -1404,5 +1408,61 @@ void display_help() {
 		g_timer_start(help_timer);
 	
 		help_tag=gtk_idle_add((GtkFunction) help_checker, NULL);
+	}
+}
+
+pid_t browser_child=0;
+GTimer *browser_timer=NULL;
+int browser_tag=-1;
+
+int browser_checker() {
+	gdouble time;
+	gulong ms;
+	int status;
+	int result=waitpid(browser_child, &status, WNOHANG);
+	
+	if (result==0) {
+		time=g_timer_elapsed(browser_timer, &ms);
+		if (time > 5) {
+			/* 5 seconds and it's still running - so we assume everything's OK. */
+			tX_debug("No longer waiting for a browser..");
+			gtk_idle_remove(browser_tag);
+			browser_tag=-1;
+		}
+	} else {
+		/* We are still here and the child exited - that could mean trouble. */
+		tx_note("Failed to run a suitable web browser - if there's one installed on this system, please run it and forward yourself to:\nhttp://terminatorX.cx", true);		
+		
+		gtk_idle_remove(browser_tag);
+		browser_tag=-1;
+	}
+	return TRUE;	
+}
+
+void display_browser() {	
+	browser_child=fork();
+
+	if (browser_tag!=-1) {
+		gtk_idle_remove(browser_tag);
+		if (browser_timer) g_timer_destroy(browser_timer);
+		browser_child=0;
+		browser_tag=-1;
+		browser_timer=NULL;
+	}
+	
+	if (browser_child==0) {
+		// child
+		execlp("mozilla","mozilla","http://terminatorX.cx", NULL);
+		execlp("netscape","netscape","http://terminatorX.cx", NULL);
+		execlp("galeon","galeon","http://terminatorX.cx", NULL);
+		execlp("konqueror","konqueror","http://terminatorX.cx", NULL);		
+		_exit(-1);
+	} else if (browser_child==-1) {
+		tx_note("System error: couldn't fork() to run the browser process.", true);
+	} else {
+		browser_timer=g_timer_new();
+		g_timer_start(browser_timer);
+	
+		browser_tag=gtk_idle_add((GtkFunction) browser_checker, NULL);
 	}
 }

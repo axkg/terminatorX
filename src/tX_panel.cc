@@ -1,6 +1,6 @@
 #include "tX_panel.h"
 #include "tX_pbutton.h"
-
+#include <string.h>
 #include <stdio.h>
 
 #define WID_DYN TRUE, TRUE, 0
@@ -39,6 +39,14 @@ void tX_panel :: minimize(GtkWidget *w, tX_panel *p)
 	}
 }
 
+void tX_panel_make_label_bold(GtkWidget *widget) {
+	char label[128];
+	strcpy(label, "<b>");
+	strcat(label, gtk_label_get_text(GTK_LABEL(widget)));
+	strcat(label, "</b>");
+	gtk_label_set_markup(GTK_LABEL (widget), label);
+}
+
 tX_panel :: tX_panel (const char *name, GtkWidget *par)
 {
 	GtkWidget *pixmap;
@@ -49,7 +57,7 @@ tX_panel :: tX_panel (const char *name, GtkWidget *par)
 	pixmap=tx_pixmap_widget(TX_ICON_MINIMIZE);
 	gtk_container_add (GTK_CONTAINER (minbutton), pixmap);
 	labelbutton=gtk_button_new_with_label(name);
-	
+	gtk_container_foreach(GTK_CONTAINER(labelbutton), (GtkCallback) tX_panel_make_label_bold, NULL);
 	mainbox=gtk_vbox_new(FALSE, 0);
 	
 	topbox=gtk_hbox_new(FALSE, 0);
