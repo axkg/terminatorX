@@ -69,8 +69,6 @@
 #include "tX_vtt.h"
 #endif
 
-GTimer *my_time;
-gint idle_tag;
 #ifdef USE_JACK	
 void jack_check()
 {
@@ -80,24 +78,12 @@ void jack_check()
 }
 #endif // USE_JACK
 
-int idle()
+static bool timesup=false;
+
+gboolean timeout(void *)
 {
-	gdouble time;
-	gulong ms;
-	
-	time=g_timer_elapsed(my_time, &ms);
-	if (time > 1.5)
-	{
-		gtk_idle_remove(idle_tag);
-		g_timer_destroy(my_time);
-		destroy_about();		
-		display_mastergui();		
-#ifdef USE_JACK	
-		jack_check();
-#endif			
-	}
-	
-	return TRUE;
+	timesup=true;
+	return FALSE;
 }
 
 void show_help()
@@ -171,7 +157,8 @@ int parse_args(int *argc, char **argv)
 	return 1;
 }
 
-void checkenv(const char *name) {
+void checkenv(const char *name)
+{
 	char *value;
 	int length;
 	
@@ -220,23 +207,33 @@ int main(int argc, char **argv)
 	
 	checkenv("HOME");
 	checkenv("XLOCALEDIR");	
-	
+
+#ifndef USE_CAPABILITIES
+	/* If we're not using capabilities we're still 
+	   running suid-root here. So we get rid of root
+	   before doing anything esle.
+	*/
 	tX_engine *engine=tX_engine::get_instance();
+#endif	
 	
 	gtk_init (&argc, &argv);
 	gtk_set_locale();
 	
-	parse_args(&argc, argv); 
+	parse_args(&argc, argv); // loads settings
 
 	if (globals.show_nag) {	
 		show_about(1);
-
-		my_time=g_timer_new();
-		g_timer_start(my_time);		
-	
-		idle_tag=gtk_idle_add((GtkFunction)idle, NULL);
+		g_timeout_add(2000, (GSourceFunc) timeout, NULL);
 	}
-	
+
+#ifdef USE_CAPABILITIES
+	/* If we have capabilities it's save to
+	   first read the config and then create 
+	   the engine.
+	*/
+	tX_engine *engine=tX_engine::get_instance();
+#endif	
+
 	LADSPA_Class::init();
 	LADSPA_Plugin::init();
 #ifdef USE_JACK	
@@ -244,13 +241,21 @@ int main(int argc, char **argv)
 #endif	
 	
 	create_mastergui(globals.width, globals.height);
-		
-	if (!globals.show_nag) {
-#ifdef USE_JACK
-		jack_check();
-#endif
-		display_mastergui();
+
+	
+	if (globals.show_nag) {
+		while (!timesup) {
+			while (gtk_events_pending()) gtk_main_iteration(); 
+			gdk_flush();				
+			usleep(250);
+		}
+		destroy_about();
 	}
+	
+#ifdef USE_JACK
+	jack_check();
+#endif
+	display_mastergui();
 		
 	if (globals.startup_set) {
 		while (gtk_events_pending()) gtk_main_iteration(); gdk_flush();	
@@ -287,15 +292,14 @@ int main(int argc, char **argv)
 	double res;
 	list <vtt_class *> :: iterator vtt;
 	
-	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++)
-	{
+	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++) {
 		if ((*vtt)->autotrigger) (*vtt)->trigger();
 	}
-	sleep(3);
 	
+	sleep(3);	
 	g_timer_start(bench_time);
-	for (int i=0; i<BENCH_CYCLES; i++)
-	{
+	
+	for (int i=0; i<BENCH_CYCLES; i++) {
 		vtt_class::render_all_turntables();
 	}
 	g_timer_stop(bench_time);

@@ -76,8 +76,7 @@ int ld_create_loaddlg(int mode, int count)
 	actionarea=GTK_WIDGET(GTK_DIALOG(ld_loaddlg)->action_area);
 	gtk_box_set_spacing(GTK_BOX(actionarea), 5);
 	
-	if (mode==TX_LOADDLG_MODE_MULTI)
-	{
+	if (mode==TX_LOADDLG_MODE_MULTI) {
 		ld_multi_l=gtk_label_new("Loading Set");
 		gtk_misc_set_alignment(GTK_MISC(ld_multi_l), 0.5, 0.5);
 		add_widget_fix(ld_multi_l);
@@ -115,14 +114,12 @@ char *strip_path(char *name)
 	
 	tmp=strrchr(name, (int) '/');
 	
-	if (tmp)
-	{
-		if (strlen(tmp)>1)
-		{
+	if (tmp) {
+		if (strlen(tmp)>1) {
 			tmp++;
 		}
-	}
-	else tmp=name;
+	} else 
+		tmp=name;
 		
 	return(tmp);
 }
@@ -147,18 +144,14 @@ void ld_set_filename(char *name)
 	ld_current++;
 	ld_old_prog=-1;
 	filename=strip_path(name);
-	if (ld_mode==TX_LOADDLG_MODE_MULTI)
-	{
+	if (ld_mode==TX_LOADDLG_MODE_MULTI) {
 		sprintf(buffer, "Loading file No. %i of %i [%s]", ld_current, ld_count, filename);
-	}
-	else
-	{
+	} else {
 		sprintf(buffer, "Loading file [%s]", filename);	
 	}
 	gtk_label_set_text(GTK_LABEL(ld_single_l), buffer);
 	
-	if (ld_mode==TX_LOADDLG_MODE_MULTI)
-	{
+	if (ld_mode==TX_LOADDLG_MODE_MULTI) {
 		setprog=(((float) ld_current)/((float) ld_count));
 		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(ld_multi_p), setprog);
 		gtk_flush();		
@@ -170,12 +163,9 @@ void ld_set_progress(gfloat progress)
 {
 	progress=floor(progress*200.0)/200.0;
 	if (progress>1.0) progress=1.0;
-	//printf("%f\n", progress);
 	
-	if (progress!=ld_old_prog)
-	{
+	if (progress!=ld_old_prog) {
 		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(ld_single_p), progress);
-		
 		gtk_flush();
 	}
 	
@@ -184,8 +174,7 @@ void ld_set_progress(gfloat progress)
 
 void ld_destroy()
 {
-	if (ld_loaddlg)
-	{
+	if (ld_loaddlg) {
 		gtk_widget_hide(ld_loaddlg);
 		gtk_widget_destroy(ld_loaddlg);
 	}

@@ -151,7 +151,7 @@ create_tx_options (void)
   GSList *oss_driver_group = NULL;
   GtkWidget *alsa_driver;
   GtkWidget *jack_driver;
-  GtkWidget *label58;
+  GtkWidget *use_realtime_label;
   GtkWidget *use_realtime;
   GtkWidget *label1;
   GtkWidget *table5;
@@ -314,13 +314,13 @@ create_tx_options (void)
   gtk_radio_button_set_group (GTK_RADIO_BUTTON (jack_driver), oss_driver_group);
   oss_driver_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (jack_driver));
 
-  label58 = gtk_label_new ("Use realtime scheduling\nwhere available:");
-  gtk_widget_show (label58);
-  gtk_table_attach (GTK_TABLE (table4), label58, 0, 1, 1, 2,
+  use_realtime_label = gtk_label_new ("Use realtime scheduling\nwhere available:");
+  gtk_widget_show (use_realtime_label);
+  gtk_table_attach (GTK_TABLE (table4), use_realtime_label, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
-  gtk_label_set_justify (GTK_LABEL (label58), GTK_JUSTIFY_LEFT);
-  gtk_misc_set_alignment (GTK_MISC (label58), 0, 0.5);
+  gtk_label_set_justify (GTK_LABEL (use_realtime_label), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (use_realtime_label), 0, 0.5);
 
   use_realtime = gtk_check_button_new_with_mnemonic ("Enabled");
   gtk_widget_show (use_realtime);
@@ -1078,7 +1078,7 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, oss_driver, "oss_driver");
   GLADE_HOOKUP_OBJECT (tx_options, alsa_driver, "alsa_driver");
   GLADE_HOOKUP_OBJECT (tx_options, jack_driver, "jack_driver");
-  GLADE_HOOKUP_OBJECT (tx_options, label58, "label58");
+  GLADE_HOOKUP_OBJECT (tx_options, use_realtime_label, "use_realtime_label");
   GLADE_HOOKUP_OBJECT (tx_options, use_realtime, "use_realtime");
   GLADE_HOOKUP_OBJECT (tx_options, label1, "label1");
   GLADE_HOOKUP_OBJECT (tx_options, table5, "table5");

@@ -6,9 +6,10 @@ changed.
 [v3.81]
 - fixed a bug that caused enabling sync-client setting via MIDI to fail.
 - when compiled with rt-scheduling suppport terminatorX will now display the 
-  resulting scheduling policy in the about dialog.
+  resulting scheduling policy in the "About" dialog.
 - if terminatorX was setup to use realtime priority for the audio engine thread
   but you dont want it - disable realtime scheduling in the Preferences dialog.
+  This works with capabilities _ONLY_.
 - if you don't want to confirm program termination every time you can now
   disable "Ask for Quit confirmation" in the Preferences.
 - added support for Linux' POSIX capabilities. This allows a suid-root installed
@@ -34,7 +35,7 @@ changed.
   for leak. Note: I even enabled the leak by default now.
 - fixed a bug that caused turntable 1 to get the focus on entering Mouse Grab
   mode even when it's audio panel was minimized.
-- MIDI mappings can now have "borders", meaning that the incoming MIDI signals
+- MIDI mappings can now have "bounds", meaning that the incoming MIDI signals
   can modify the parameter within the given range only.
 - introduced a new way of assigning MIDI controllers to parameters: simply 
   right-click on a parameter's control: a menu with "MIDI Learn" and 
@@ -42,11 +43,7 @@ changed.
   corresponding MIDI event.
 - fixed a bug in the MIDI callback thanks to David Hamilton 
   <daham2@student.monash.edu>
-- the realtime scheduling reproducibly stalled separate machines. Unluckily 
-  an OS-stall situation is somewhat hard to debug. Additionally the new 2.5.*
-  and the 2.4.*-ckX kernels have significantly improved scheduling that renders
-  the use of SCHED_FIFO unnecessary. 
-- running suid root was reported exploitable by Andrew Griffiths
+- running suid root (the old way) was reported exploitable by Andrew Griffiths
   <andrewg@felinemenace.org> - the described environment variable based exploit 
   was fixed - however there are possibly other ways to exploit it. So the 
   old method of running suid root has been disabled by default. On Linux 

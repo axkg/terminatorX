@@ -48,8 +48,7 @@ int tx_tapedeck :: start_record (char *name, int bs, int samplerate)
 
 	written_bytes=0;	
 
-	if (!open_wav_rec(&file)) 
-	{
+	if (!open_wav_rec(&file)) {
 		return 1;
 	}
 	

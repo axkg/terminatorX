@@ -168,55 +168,41 @@ vtt_fx_ladspa :: vtt_fx_ladspa(LADSPA_Plugin *p, void *v)
 	sp_outgain=NULL;
 	
 	/* connecting ports */
-	for (port=0; port < plugin->getPortCount(); port++)
-	{
-		if (LADSPA_IS_PORT_AUDIO(cpd))
-		{
+	for (port=0; port < plugin->getPortCount(); port++) {
+		if (LADSPA_IS_PORT_AUDIO(cpd)) {
 			if (LADSPA_IS_PORT_INPUT(cpd)) input_port=port;
 			else if (LADSPA_IS_PORT_OUTPUT(cpd)) output_port=port;
-		}
-		else if ((LADSPA_IS_PORT_CONTROL(cpd)) && (LADSPA_IS_PORT_INPUT(cpd)))
-		{
+		} else if ((LADSPA_IS_PORT_CONTROL(cpd)) && (LADSPA_IS_PORT_INPUT(cpd))) {
 			min=-22100;
 			max=+22100;
 			
 			if (LADSPA_IS_HINT_BOUNDED_BELOW(cph.HintDescriptor)) min=cph.LowerBound;
 			if (LADSPA_IS_HINT_BOUNDED_ABOVE(cph.HintDescriptor)) max=cph.UpperBound;
 			
-			if (LADSPA_IS_HINT_SAMPLE_RATE(cph.HintDescriptor)) 
-			{
+			if (LADSPA_IS_HINT_SAMPLE_RATE(cph.HintDescriptor)) {
 				min*=44100; max*=44100;
 			}
 			
-			if (LADSPA_IS_HINT_TOGGLED(cph.HintDescriptor))
-			{
+			if (LADSPA_IS_HINT_TOGGLED(cph.HintDescriptor)) {
 				sp=new tX_seqpar_vttfx_bool();
 				sp->set_mapping_parameters(max, min, 0, 0);
-			}
-			else
-			if (LADSPA_IS_HINT_INTEGER(cph.HintDescriptor))
-			{
+			} else if (LADSPA_IS_HINT_INTEGER(cph.HintDescriptor)) {
 				sp=new tX_seqpar_vttfx_int();
 				sp->set_mapping_parameters(max, min, 0, 0);
-			}
-			else
-			{
+			} else {
 				sp=new tX_seqpar_vttfx_float();
 				sp->set_mapping_parameters(max, min, (max-min)/100.0, 1);
 			}
 			
 			sprintf(buffer, "%s: %s", plugin->getLabel(), cpn);
 			strcpy(buffer2, cpn);
-			
 			wrapstr(buffer2);
 			
 			sp->set_name(buffer, buffer2);
 			sp->set_vtt(vtt);
 			plugin->getDescriptor()->connect_port(instance, port, sp->get_value_ptr());
 			controls.push_back(sp);
-		}
-		else if ((LADSPA_IS_PORT_CONTROL(cpd)) && (LADSPA_IS_PORT_OUTPUT(cpd)))
-		{
+		} else if ((LADSPA_IS_PORT_CONTROL(cpd)) && (LADSPA_IS_PORT_OUTPUT(cpd))) {
 			plugin->getDescriptor()->connect_port(instance, port, &ladspa_dummy_output_port);
 		}
 	}
@@ -257,8 +243,7 @@ vtt_fx_ladspa :: ~vtt_fx_ladspa()
 {
 	list <tX_seqpar_vttfx *> :: iterator sp;
 	
-	while (controls.size())
-	{
+	while (controls.size()) {
 		sp=controls.begin();
 		controls.remove((*sp));
 		

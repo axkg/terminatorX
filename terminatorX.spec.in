@@ -2,7 +2,6 @@
 %define version @VERSION@
 %define release 1
 
-
 Summary: Realtime Audio Synthesizer
 Name: %{name}
 Version: %{version}
@@ -12,8 +11,8 @@ Copyright: GPL2
 URL: http://www.terminatorX.cx
 Source: %{name}-%{version}.tar.gz
 Buildroot: %{_tmppath}/%{name}-%{version}-root
-Requires: gtk2, libvorbis, audiofile, libxml2, zlib, scrollkeeper, yelp, sox, vorbis-tools
-BuildPrereq: gtk2-devel, libvorbis-devel, audiofile-devel, libxml2-devel, scrollkeeper
+Requires: gtk2, libvorbis, audiofile, libxml2, zlib, scrollkeeper, yelp, sox, vorbis-tools, libcap
+BuildPrereq: gtk2-devel, libvorbis-devel, audiofile-devel, libxml2-devel, scrollkeeper, libcap-devel
 
 %description
 terminatorX is a realtime audio synthesizer that allows you to "scratch" on 
@@ -23,6 +22,8 @@ effects (buit-in as well as LADSPA plugin effects), a sequencer and MIDI
 interface - all accessible through an easy-to-use gtk+ GUI.
 
 %changelog
+* Mon Aug 18 2003 Alexander König <alex@lisas.de>
+ - added libcap dependency
 * Fri Apr 11 2003 Alexander König <alex@lisas.de>
  - disabled the suid root stuff
 * Fri Apr 11 2003 Alexander König <alex@lisas.de>
@@ -106,11 +107,12 @@ rm -rf $RPM_BUILD_ROOT/var
 %post
 if which scrollkeeper-update>/dev/null 2>&1; then scrollkeeper-update -q -o %{_datadir}/omf/terminatorX; fi
 
-#echo Note: Installing terminatorX \"suid root\" improves terminatorX\' performance 
-#echo for non-root users, but poses a potential security threat. See \'INSTALL\' for
-#echo details. To install terminatorX \"suid root\" run the following command:
-#echo
-#echo chmod u+s /usr/bin/terminatorX
+echo Note: Installing terminatorX \"suid root\" improves terminatorX\' performance 
+echo for non-root users, but poses a potential security threat. See \'INSTALL\' for
+echo and \"README.PERFORMANCE\" details. To install terminatorX \"suid root\" run 
+echo the following command:
+echo
+echo chmod u+s /usr/bin/terminatorX
 
 %postun
 if which scrollkeeper-update>/dev/null 2>&1; then scrollkeeper-update -q; fi

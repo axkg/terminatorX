@@ -88,10 +88,8 @@ void tx_audiofile :: figure_file_type()
 	
 	ext=strrchr(filename, (int) '.');
 	
-	if (ext)
-	{
-		if (strlen(ext) >3)
-		{
+	if (ext) {
+		if (strlen(ext) >3) {
 			ext++;
 			if (!strcasecmp("wav", ext)) file_type=TX_FILE_WAV;
 			else if (!strncasecmp("mp", ext, 2)) file_type=TX_FILE_MPG123;

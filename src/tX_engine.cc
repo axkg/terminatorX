@@ -168,6 +168,8 @@ void *engine_thread_entry(void *engine_void) {
 			parm.sched_priority=sched_get_priority_max(SCHED_FIFO);
 			if (sched_setscheduler(pid, SCHED_FIFO, &parm)) {
 				tX_error("engine_thread_entry(): failed to set realtime priority.");
+			} else {
+				tX_debug("engine_thread_entry(): set SCHED_FIFO via capabilities.");
 			}
 		}
 	} else {
