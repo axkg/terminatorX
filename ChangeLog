@@ -3,6 +3,11 @@ All changes were done by me (Alexander König) if not stated otherwise.
 This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
+[v3.72]
+- fixed a bug that produced corupt wavfiles on big endian machines
+- hack: made XInput work on XFree>4, proabably breaks XFree<4
+- applied Adrians solo-patch
+
 [v3.71]
 - applied a big patch from Adrian Reber (adrian@lisas.de). This patch includes:
   o compile fixes for the newer gcc releases

@@ -74,6 +74,8 @@ typedef struct vtt_gui
 	GtkAdjustment *pitch;
 	GtkAdjustment *pan;
 	GtkAdjustment *volume; 
+        GtkWidget *mute;
+        GtkWidget *solo;
 	GtkWidget *flash;
 
 	/* Widgets in Lowpass Panel */

@@ -1127,7 +1127,7 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_end(GTK_BOX(smaller_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 	
-	dumadj=(GtkAdjustment*) gtk_adjustment_new(2.0-globals.volume, 0, 2, 0.001, 0.001, 0.01);
+	dumadj=(GtkAdjustment*) gtk_adjustment_new(2.0-globals.volume, 0, 2, 0.01, 0.05, 0.005);
 	volume_adj=dumadj;
 
 	connect_adj(dumadj, master_volume_changed, NULL);	
