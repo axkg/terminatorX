@@ -4,6 +4,10 @@
  <changelog>
   <version name="3.82">
 	<listitem>
+		<para class="screen">the position of the audio control scrollbars
+			is now saved within set files and restored upon loading.</para>
+	</listitem>
+	<listitem>
 		<para class="screen">fixed a liblrdf related issue resulting in use of 
 			previously free'd memory.</para>
 	</listitem>
