@@ -225,8 +225,8 @@ class tX_seqpar_vtt_pitch : public tX_seqpar_update_active_forward
 	public:
 	tX_seqpar_vtt_pitch();
 	virtual float get_value();
-	private:	
 	virtual void do_exec(const float value);
+	private:	
 	virtual void do_update_graphics();	
         virtual const char *get_name(); 
 };
@@ -446,8 +446,4 @@ class tX_seqpar_vttfx_int : public tX_seqpar_vttfx
 
 	static GtkSignalFunc gtk_callback(GtkWidget*, tX_seqpar_vttfx_int *);
 };
-#endif 
-
-
-
-
+#endif

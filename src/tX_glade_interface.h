@@ -3,3 +3,4 @@
  */
 
 GtkWidget* create_tx_options (void);
+GtkWidget* create_tx_adjust (void);

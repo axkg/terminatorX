@@ -49,6 +49,8 @@
 #include "tX_ladspa.h"
 #include "tX_ladspa_class.h"
 #include "tX_engine.h"
+#include "tX_glade_interface.h"
+#include "tX_glade_support.h"
 
 #ifdef USE_DIAL
 #include "tX_dial.h"
@@ -503,6 +505,52 @@ void vg_ycontrol_set(GtkWidget *wid, tX_seqpar *sp)
 	vtt->set_y_input_parameter(sp);
 }
 
+gboolean vg_delete_pitch_adjust (GtkWidget *wid, vtt_class *vtt) {
+	vtt->gui.adjust_dialog=NULL;
+	return FALSE;
+}
+
+void vg_do_pitch_adjust (GtkWidget *wid, vtt_class *vtt) {
+	int master_cycles=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget(vtt->gui.adjust_dialog, "master_cycles")));
+	int cycles=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget(vtt->gui.adjust_dialog, "cycles")));
+	bool create_event=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(vtt->gui.adjust_dialog, "create_event")));
+
+	vtt->adjust_to_master_pitch(master_cycles, cycles, create_event);
+	
+	gtk_widget_destroy(vtt->gui.adjust_dialog);
+}
+
+void vg_cancel_pitch_adjust (GtkWidget *wid, vtt_class *vtt) {
+	gtk_widget_destroy(vtt->gui.adjust_dialog);
+}
+
+void vg_adjust_pitch_vtt(GtkWidget *wid, vtt_class *vtt) {
+	if (vtt->gui.adjust_dialog) {
+		gtk_widget_destroy(vtt->gui.adjust_dialog);
+		return;
+	}
+	
+	if (!vtt_class::sync_master) {
+		tx_note("No master turntable to adjust pitch to selected.", true);
+		return;
+	}
+	
+	if (vtt==vtt_class::sync_master) {
+		tx_note("This is the master turntable - cannot adjust a turntable to itself.", true);
+		return;
+	}
+	
+	vtt->gui.adjust_dialog=create_tx_adjust();
+	gtk_widget_show(vtt->gui.adjust_dialog);
+	
+	GtkWidget *ok_button=lookup_widget(vtt->gui.adjust_dialog, "ok");
+	GtkWidget *cancel_button=lookup_widget(vtt->gui.adjust_dialog, "cancel");
+	
+	g_signal_connect(G_OBJECT(ok_button), "clicked", GTK_SIGNAL_FUNC(vg_do_pitch_adjust), vtt);
+	g_signal_connect(G_OBJECT(vtt->gui.adjust_dialog), "destroy", GTK_SIGNAL_FUNC(vg_delete_pitch_adjust), vtt);
+	g_signal_connect(G_OBJECT(cancel_button), "clicked", GTK_SIGNAL_FUNC(vg_cancel_pitch_adjust), vtt);
+}
+
 void vg_mouse_mapping_pressed(GtkWidget *wid, vtt_class *vtt) {
 	if (vtt->gui.mouse_mapping_menu) {
 		gtk_widget_destroy(vtt->gui.mouse_mapping_menu);
@@ -682,6 +730,7 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_button(loop, loop_toggled);
 	connect_button(sync_master, master_setup);
 	connect_button(sync_client, client_setup);
+	connect_button(adjust_button, vg_adjust_pitch_vtt);
 	connect_adj(cycles, client_setup_number);
 	connect_press_button(fx_button, fx_button_pressed);
 	
@@ -856,6 +905,10 @@ void build_vtt_gui(vtt_class *vtt)
 	gui_set_tooltip(g->del, "Click here to annihilate this turntable. All events recorded for this turntable will be erased, too.");
 	p->add_client_widget(g->del);
 	
+	g->adjust_button=gtk_button_new_with_label("Pitch Adj.");
+	gui_set_tooltip(g->adjust_button, "Activate this button to adjust this turntable's speed to the master turntable's speed.");
+	p->add_client_widget(g->adjust_button);
+
 	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
 				
 	p=new tX_panel("Trigger", g->control_subbox);
@@ -1033,6 +1086,8 @@ void build_vtt_gui(vtt_class *vtt)
 	g->mouse_mapping_menu=NULL;
 	g->mouse_mapping_menu_x=NULL;
 	g->mouse_mapping_menu_y=NULL;
+	
+	g->adjust_dialog=NULL;
 	
 	gui_set_name(vtt, vtt->name);
 }

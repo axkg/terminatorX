@@ -224,7 +224,7 @@ class vtt_class
 	void recalc_volume();
 	
 	void set_pan(f_prec);
-	
+	void adjust_to_master_pitch(int master_cycles, int cycles, bool create_event);
 	void set_pitch(f_prec);
 	void recalc_pitch();
 	
