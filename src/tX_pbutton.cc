@@ -30,7 +30,7 @@
 #include "tX_pbutton.h"
 #include "tX_global.h"
 
-#include "gui_icons/icons.pixbuf"
+#include "icons/icons.pixbuf"
 
 const guint8* tx_icons[ALL_ICONS];
 long tx_icon_sizes[ALL_ICONS];

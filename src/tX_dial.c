@@ -232,17 +232,11 @@ static void gtk_tx_dial_realize (GtkWidget *widget)
 	attributes.colormap = gtk_widget_get_colormap (widget);
 	
 	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
-	widget->window = gdk_window_new (widget->parent->window,
-									&attributes,
-									attributes_mask);
+	widget->window = gdk_window_new (widget->parent->window, &attributes, attributes_mask);
 	
 	gdk_window_set_user_data (widget->window, widget);
 	widget->style = gtk_style_attach (widget->style, widget->window);
-	gtk_widget_set_style(widget, gtk_widget_get_default_style());
 	gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
-	
-	gdk_window_set_background (widget->window, &widget->style->base[GTK_STATE_NORMAL]); 
-	gtk_widget_shape_combine_mask (widget, knob_mask, 0,0);
 }
 
 static void gtk_tx_dial_size_request(GtkWidget *widget, GtkRequisition *requisition)
@@ -435,7 +429,7 @@ static void gtk_tx_dial_update_mouse (GtkTxDial *tx_dial, gint x, gint y)
 		
 			if (image!=tx_dial->old_image) {
 		 		tx_dial->old_image=image;
-		 		gtk_tx_dial_draw(tx_dial, GTK_WIDGET(tx_dial));
+				gtk_widget_queue_draw(GTK_WIDGET(tx_dial));
 			}
 		
 			if (tx_dial->policy == GTK_UPDATE_DELAYED) {
@@ -475,7 +469,7 @@ static void gtk_tx_dial_update (GtkTxDial *tx_dial)
 	
 	if (image!=tx_dial->old_image) {
 		tx_dial->old_image=image;
-		gtk_tx_dial_draw(tx_dial, GTK_WIDGET(tx_dial));
+		gtk_widget_queue_draw(GTK_WIDGET(tx_dial));
 	}
 }
 
