@@ -58,9 +58,12 @@ void prelis_stop()
 void prelis_start(char *name) {
 	char *ext;
 	pid_t temp;
+#ifdef USE_MPG123_INPUT	
 	int usempg123=0;
+#endif
+#ifdef USE_OGG123_INPUT
 	int useogg123=0;
-	int res;
+#endif
 	char dev[PATH_MAX];
 	char ogg123_dev[PATH_MAX]="dev:";
 	char nm[PATH_MAX];
@@ -106,17 +109,16 @@ void prelis_start(char *name) {
 		strcpy(nm, name);
 #ifdef USE_OGG123_INPUT
 		if (useogg123)
-			res=execlp("ogg123", "ogg123", "-q", "-d", "oss", "-o", ogg123_dev,
-			nm, NULL);
+			execlp("ogg123", "ogg123", "-q", "-d", "oss", "-o", ogg123_dev, nm, NULL);
 		else
 #endif
 #ifdef USE_MPG123_INPUT
 		if (usempg123)
-			res=execlp("mpg123", "mpg123", "-q", "-o","oss","-a", dev, nm, NULL);
+			execlp("mpg123", "mpg123", "-q", "-o","oss","-a", dev, nm, NULL);
 		else
 #endif
 #ifdef USE_SOX_INPUT		
-			res=execlp("sox", "sox", nm, "-t", "ossdsp", "-w", "-s", dev, NULL);
+			execlp("sox", "sox", nm, "-t", "ossdsp", "-w", "-s", dev, NULL);
 #else
 			exit(0);
 #endif			
