@@ -144,7 +144,6 @@ int tX_audiodevice_oss :: open()
 	i += ioctl(fd, SNDCTL_DSP_GETBLKSIZE, &blocksize);
 
 	samples_per_buffer=blocksize/sizeof(int16_t);
-	globals.true_block_size=samples_per_buffer/2;
 
 	tX_debug("tX_adudiodevice_oss::open() - blocksize: %i, samples_per_buffer: %i", blocksize, samples_per_buffer);
 	
@@ -277,8 +276,6 @@ int tX_audiodevice_alsa :: open()
 		return -1;
 	}
 
-	globals.true_block_size=periodsize;
-	
 	/* Apply all that setup work.. */
 	if (snd_pcm_hw_params(pcm_handle, hw_params) < 0) {
 		tX_error("ALSA: Failed to apply settings to PCM device \"%s\"", pcm_name);
@@ -286,7 +283,7 @@ int tX_audiodevice_alsa :: open()
 		return -1;
 	}
 	
-	tX_debug("ALSA: samples_per_buffer: %i, bs: %i, period=%i", samples_per_buffer, globals.true_block_size, periodsize);
+	tX_debug("ALSA: samples_per_buffer: %i, period=%i", samples_per_buffer, periodsize);
 	
 	snd_pcm_hw_params_free (hw_params);
 	return 0;

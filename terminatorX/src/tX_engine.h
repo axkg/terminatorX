@@ -88,7 +88,6 @@ class tX_engine {
 	tX_engine_error run();
 	void stop();
 	void loop();
-	void loop_og();	
 	
 	void set_recording_request(bool recording);
 	bool get_recording_request() { return recording_request; }

@@ -140,11 +140,10 @@ int tX_midiin::check_event()
 				return -1;
 			}
 
-			//cerr << event.type << ", " << event.number << ", " << event.value << endl;
-			//event.print( __FUNCTION__ );
-
-			list <tX_seqpar *> :: iterator sp;
-
+			// This should be solved with a hash table. Possibly.
+			
+			list <tX_seqpar *> :: iterator sp;			
+			
 			for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
 				if ( (*sp)->bound_midi_event.type_matches (event) ) {
 					(*sp)->handle_midi_input (event);
@@ -161,13 +160,6 @@ int tX_midiin::check_event()
 void tX_midiin::configure_bindings( vtt_class* vtt )
 {
 	list <tX_seqpar *> :: iterator sp;
-
-	/*
-	tX_midievent event = {0,tX_midievent::CC,0,0,0};
-	event.type = tX_midievent::CC;
-	event.number = 11;
-	event.channel = 0;
-	*/
 
 	GType types[3] = { G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER };
 	GtkListStore* model = gtk_list_store_newv(3, types);
@@ -187,17 +179,11 @@ void tX_midiin::configure_bindings( vtt_class* vtt )
 								1, tempstr,
 								2, (*sp),
 								-1 );
-
-			//cerr << (*sp)->get_name() << endl;
 		}
 	}
 
 	// it will delete itself.
 	new midi_binding_gui(GTK_TREE_MODEL(model), this);
-
-	//cerr << "window created." << endl;
-
-	return;
 }
 
 tX_midiin::midi_binding_gui::midi_binding_gui ( GtkTreeModel* _model, tX_midiin* _midi )
@@ -262,17 +248,55 @@ tX_midiin::midi_binding_gui::midi_binding_gui ( GtkTreeModel* _model, tX_midiin*
 	gtk_widget_show (bind_button);
 	gtk_box_pack_start (GTK_BOX (vbox1), bind_button, FALSE, FALSE, 0);
 	
+	GtkWidget* unbind_button = gtk_button_new_with_mnemonic ("Remove Binding");
+	gtk_widget_show (unbind_button);
+	gtk_box_pack_start (GTK_BOX (vbox1), unbind_button, FALSE, FALSE, 0);	
+	
 	GtkWidget* close_button = gtk_button_new_with_mnemonic ("Close");
 	gtk_widget_show (close_button);
 	gtk_box_pack_start (GTK_BOX (vbox1), close_button, FALSE, FALSE, 0);
 	
 	gtk_signal_connect(GTK_OBJECT(bind_button), "clicked", (GtkSignalFunc) bind_clicked, (void *) this);
+	gtk_signal_connect(GTK_OBJECT(unbind_button), "clicked", (GtkSignalFunc) unbind_clicked, (void *) this);	
 	gtk_signal_connect(GTK_OBJECT(close_button), "clicked", (GtkSignalFunc) close_clicked, (void *) this);
+	gtk_signal_connect(GTK_OBJECT(window), "destroy", (GtkSignalFunc) close_clicked, (void *) this);
 	
 	timer_tag = gtk_timeout_add( 100, (GtkFunction) timer, (void *) this);
 	
 	gtk_widget_show_all( GTK_WIDGET( window ) );
 }
+
+void tX_midiin::midi_binding_gui::window_closed(GtkWidget *widget, gpointer _this )
+{
+	tX_midiin::midi_binding_gui* this_ = (tX_midiin::midi_binding_gui*)_this;
+
+	delete this_;
+}
+
+void tX_midiin::midi_binding_gui::unbind_clicked( GtkButton *button, gpointer _this )
+{
+	tX_midiin::midi_binding_gui* this_ = (tX_midiin::midi_binding_gui*)_this;
+	GtkTreeModel* model;
+	GtkTreeSelection* selection;
+	GtkTreeIter iter;
+	char tmpstr[128];
+	tX_seqpar* param;
+
+	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(this_->parameter_treeview) );
+	gtk_tree_selection_get_selected( selection, &model, &iter );
+	gtk_tree_model_get( model, &iter, 2, &param, -1 );
+	
+	param->bound_midi_event.type=tX_midievent::NONE;
+	param->bound_midi_event.number=0;
+	param->bound_midi_event.channel=0;
+	
+	snprintf( tmpstr, sizeof(tmpstr), "Type: %d, Number: %d, Channel: %d",
+				param->bound_midi_event.type, param->bound_midi_event.number,
+				param->bound_midi_event.channel );
+
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, param->get_name(), 1, tmpstr, 2, param, -1 );	
+}
+
 
 void tX_midiin::midi_binding_gui::bind_clicked( GtkButton *button, gpointer _this )
 {
@@ -280,20 +304,27 @@ void tX_midiin::midi_binding_gui::bind_clicked( GtkButton *button, gpointer _thi
 	GtkTreeModel* model;
 	GtkTreeSelection* selection;
 	GtkTreeIter iter;
+	char tmpstr[128];
 	tX_seqpar* param;
 
 	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(this_->parameter_treeview) );
 	gtk_tree_selection_get_selected( selection, &model, &iter );
 	gtk_tree_model_get( model, &iter, 2, &param, -1 );
-
+	
 	param->bound_midi_event = this_->last_event;
+	
+	snprintf( tmpstr, sizeof(tmpstr), "Type: %d, Number: %d, Channel: %d",
+				param->bound_midi_event.type, param->bound_midi_event.number,
+				param->bound_midi_event.channel );
+
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, param->get_name(), 1, tmpstr, 2, param, -1 );	
 }
 
 void tX_midiin::midi_binding_gui::close_clicked( GtkButton *button, gpointer _this )
 {
 	tX_midiin::midi_binding_gui* this_ = (tX_midiin::midi_binding_gui*)_this;
 	
-	gtk_widget_hide( this_->window );
+	gtk_widget_destroy( this_->window );
 
 	delete this_;
 }
@@ -301,9 +332,6 @@ void tX_midiin::midi_binding_gui::close_clicked( GtkButton *button, gpointer _th
 gint tX_midiin::midi_binding_gui::timer( gpointer _this )
 {
 	tX_midiin::midi_binding_gui* this_ = (tX_midiin::midi_binding_gui*)_this;
-
-	//this_->midi->check_event();
-	
 	tX_midievent tmpevent = this_->midi->get_last_event();
 
 	if( tmpevent.type_matches( this_->last_event ) )
@@ -326,9 +354,6 @@ gint tX_midiin::midi_binding_gui::timer( gpointer _this )
 tX_midiin::midi_binding_gui::~midi_binding_gui ()
 {
 	gtk_timeout_remove( timer_tag );
-
-	//g_object_unref( window );
-	gtk_widget_destroy( window );
 }
 
 #endif // USE_ALSA_MIDI_IN
