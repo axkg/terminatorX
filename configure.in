@@ -459,7 +459,13 @@ fi
 AC_SUBST(XML_LIBS)
 AC_SUBST(XML_CFLAGS)
 
-CFLAGS="$XML_CFLAGS $CFLAGS"
+if test "$prefix" != "NONE"; then
+	inst_pref=$datadir
+else
+	inst_pref=/usr/local/share
+fi
+
+CFLAGS="$XML_CFLAGS $CFLAGS -DINSTALL_PREFIX=\\\"$inst_pref\\\""
 LIBS="$XML_LIBS $LIBS"
 
 dnl Scrollkeeper

@@ -80,20 +80,19 @@ GtkWidget *tx_xpm_label_box(int	icon_id, gchar *label_text, GtkWidget **labelwid
 
     /* Create box for xpm and label */
     box1 = gtk_hbox_new (FALSE, 0);
-    gtk_container_set_border_width (GTK_CONTAINER (box1),0);
-
-
+	gtk_container_set_border_width (GTK_CONTAINER (box1), 0);
+	
     if (globals.button_type != BUTTON_TYPE_TEXT)
     {
 	    pixmapwid=tx_pixmap_widget(icon_id);
-	    gtk_box_pack_start (GTK_BOX (box1), pixmapwid, FALSE, FALSE, 3);
+	    gtk_box_pack_start (GTK_BOX (box1), pixmapwid, FALSE, FALSE, 0);
 	    gtk_widget_show(pixmapwid);
     }
 
     if ((globals.button_type != BUTTON_TYPE_ICON) || (labelwidget!=NULL))
     {
 	    label = gtk_label_new (label_text);
-	    gtk_box_pack_start (GTK_BOX (box1), label, FALSE, FALSE, 3);
+	    gtk_box_pack_start (GTK_BOX (box1), label, FALSE, FALSE, 0);
 	    gtk_widget_show(label); 
 		if (labelwidget!=NULL) {
 			*labelwidget=label;
@@ -114,6 +113,7 @@ extern GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle, GtkWid
 	
 	box=tx_xpm_label_box(icon_id, label, labelwidget);
 	gtk_widget_show(box);
+    gtk_container_set_border_width (GTK_CONTAINER (button), 2);
 	gtk_container_add (GTK_CONTAINER (button), box);		
 	
 	return(button);
