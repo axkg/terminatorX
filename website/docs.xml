@@ -7,7 +7,7 @@
     <itemizedlist>
       <listitem>
         <para>An HTML version of the 
-        <link ref='manual/index.html'>terminatorX online manual</link>. If you
+        <dblink id='manual'>terminatorX online manual</dblink>. If you
         have GNOME2's 
         <italic>yelp</italic> installed you should be able to read this manual
         by selecting it from the 

@@ -23,7 +23,7 @@
         gtk+ GUI. 
         <bold>This sofware is designed to run under Linux, FreeBSD and the
         like</bold>. If you have more questions read the 
-        <dblink id='faq'/>/<link ref='doc/index.html'>Manual</link>/<dblink id='tutorial'>Tutorial</dblink>/<dblink id='license'>License</dblink> and if you have further questions,
+        <dblink id='faq'/>/<dblink id='manual'>Manual</dblink>/<dblink id='tutorial'>Tutorial</dblink>/<dblink id='license'>License</dblink> and if you have further questions,
         suggestions, patches, 
         <dblink id='scratches'>scratches</dblink> send me a 
         <link ref='mailto:alex@lisas.de'>mail</link></para>

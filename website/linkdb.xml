@@ -17,4 +17,5 @@
 	<dlink id="oldtable" url="oldtable.html" text="old turntable to tX device description"/>
 	<dlink id="aseqjoy_man" url="aseqjoy-man.html" text="aseqjoy man page"/>
 	<dlink id="liblrdf" url="http://plugin.org.uk/releases/lrdf/" text="liblrdf"/>
+	<dlink id="manual" url="manual/index.html" text="manual"/>
 </linkdb>
