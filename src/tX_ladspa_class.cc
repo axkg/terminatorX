@@ -80,8 +80,8 @@ void LADSPA_Class::init() {
 		LADSPA_Class::scandir(buffer);
 		free (buffer); 
     
-    	start = end;
-    	if (*start == ':') start++;
+		start = end;
+		if (*start == ':') start++;
   	}
 	
 	if (rdf_files.size() > 0) {
