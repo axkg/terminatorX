@@ -465,7 +465,7 @@ else
 	inst_pref=/usr/local/share
 fi
 
-CFLAGS=$XML_CFLAGS $CFLAGS -DINSTALL_PREFIX=\\\"$inst_pref\\\"
+CFLAGS="$XML_CFLAGS $CFLAGS -DINSTALL_PREFIX="\\\"$inst_pref\\\"
 LIBS="$XML_LIBS $LIBS"
 
 dnl Scrollkeeper
