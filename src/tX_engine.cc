@@ -265,6 +265,7 @@ tX_engine_error tX_engine :: run() {
 	}
 	
 	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++) {
+		(*vtt)->sync_countdown=0;
 		if ((*vtt)->autotrigger) (*vtt)->trigger();
 	}
 
