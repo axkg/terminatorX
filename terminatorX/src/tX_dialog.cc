@@ -340,7 +340,7 @@ void create_options()
 	}
 	else
 	{
-		xinput_device=gtk_button_new_with_label("< NONE >");
+		xinput_device=gtk_button_new_with_label("");
 	}
 		
 	gtk_signal_connect_object (GTK_OBJECT (xinput_device), "event", GTK_SIGNAL_FUNC (showdevmenu), GTK_OBJECT (menu));
