@@ -1026,12 +1026,12 @@ void vg_create_fx_gui(vtt_class *vtt, vtt_fx_ladspa *effect, LADSPA_Plugin *plug
 	list <tX_seqpar_vttfx *> :: iterator sp;
 	
 	strcpy(buffer, plugin->getLabel());
-	if (strlen(buffer) > 8)
+	if (strlen(buffer) > 6)
 	{
+		buffer[5]='.';
+		buffer[6]='.';
 		buffer[7]='.';
-		buffer[8]='.';
-		buffer[9]='.';
-		buffer[10]=0;
+		buffer[8]=0;
 	}
 
 	p=new tX_panel(buffer, g->control_subbox);

@@ -4,8 +4,6 @@ These are the things I´d like to implement IF I have the time.
 
 - MIDI interface (Josh Steiner is working on that)
 
-- stereo operation (this is up next)
-
 - port Bennos mmap technology into the new code
 
 - more precise syncing
@@ -17,6 +15,10 @@ These are the things I´d like to implement IF I have the time.
 DONE:
 
 The following stuff has been on the list above and is now ipmlemented:
+
+[V3.71]
+
+- stereo operation (this is up next)
 
 [V3.7]
 
