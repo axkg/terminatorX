@@ -317,10 +317,11 @@ class vtt_class
 	void set_mix_solo(int newstate);
 	static int get_last_sample_rate() { return last_sample_rate; }
 	
-	void calc_mute()
-	{
+	void calc_mute() {
 		res_mute=((mute) || (mix_mute && (!mix_solo)) || ((solo_ctr>0)&&(!mix_solo)));
 	}
+	
+	static f_prec *get_mix_buffer() { return mix_buffer; }
 };
 
 #endif

@@ -127,6 +127,12 @@ class tX_seqpar
 	float min_value;
 	float scale_value;
 
+	bool midi_upper_bound_set;
+	double midi_upper_bound;
+	
+	bool midi_lower_bound_set;
+	double midi_lower_bound;
+	
 	bool is_boolean;
 	
 	public:
@@ -134,9 +140,29 @@ class tX_seqpar
 	void restore_meta(xmlNodePtr node);
 	void store_meta(FILE *rc, gzFile rz);
 	
+	void set_upper_midi_bound(double val) {
+		midi_upper_bound=val;
+		midi_upper_bound_set=true;		
+	}
+	
+	void reset_upper_midi_bound() { midi_upper_bound_set=false; }
+
+	void set_lower_midi_bound(double val) {
+		midi_lower_bound=val;
+		midi_lower_bound_set=true;		
+	}
+	
+	void reset_lower_midi_bound() { midi_lower_bound_set=false; }
+	
 	static gboolean tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gpointer data);
 	static gboolean remove_midi_binding(GtkWidget *widget, gpointer data);
-	static gboolean learn_midi_binding(GtkWidget *widget, gpointer data);
+	static gboolean learn_midi_binding(GtkWidget *widget, gpointer data);	
+	
+	static gboolean set_midi_upper_bound(GtkWidget *widget, gpointer data);
+	static gboolean reset_midi_upper_bound(GtkWidget *widget, gpointer data);
+	
+	static gboolean set_midi_lower_bound(GtkWidget *widget, gpointer data);
+	static gboolean reset_midi_lower_bound(GtkWidget *widget, gpointer data);	
 };
 
 class tX_seqpar_update : public tX_seqpar

@@ -16,7 +16,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  
-    File: tX_dialog.c
+    File: tX_dialog.cc
  
     Description: Contains the implementation of the Options and About
     		 Dialogs. (And some really ugly "WE WANT TO 
@@ -54,27 +54,6 @@ int opt_hidden=0;
 
 static GtkWidget *last_alsa_device_widget=NULL;
 static GtkWidget *alsa_device_entry=NULL;
-
-static void alsa_device_changed(GtkList *list, GtkWidget *widget, gpointer user_data) {
-	if (widget) {
-		if (widget != last_alsa_device_widget) {
-			last_alsa_device_widget = widget;
-			GtkWidget *label=gtk_bin_get_child(GTK_BIN(widget));
-			
-			if (label) {
-				char foo[PATH_MAX];
-				char tmp[PATH_MAX];
-				int card;
-				int device;
- 
-				sscanf(gtk_label_get_text(GTK_LABEL(label)), "%i-%i: %s", &card, &device, foo);
-				sprintf(tmp, "hw:%i,%i", card, device);
-				
-				gtk_entry_set_text(GTK_ENTRY(alsa_device_entry), tmp);
-			}
-		}
-	}
-}
 
 void apply_options(GtkWidget *dialog) {
 	/* Audio */
@@ -135,6 +114,7 @@ void apply_options(GtkWidget *dialog) {
 	strcpy(globals.lrdf_path, gtk_entry_get_text(GTK_ENTRY(lookup_widget(dialog, "ladspa_rdf_path"))));
 	globals.compress_set_files=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "compress_set_files")))==TRUE);	
 	globals.prelis=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "prelisten_enabled")))==TRUE);
+	globals.restore_midi_connections=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "reconnect_enabled")))==TRUE);
 }
 
 
@@ -194,7 +174,16 @@ GList *get_alsa_device_list() {
 			buffer[PATH_MAX]=0;
 			if (strlen(buffer)) buffer[strlen(buffer)-1]=0;
 			if(strstr(buffer, "playback")) {
-				alsa_devices=g_list_append (alsa_devices, strdup(buffer));
+				char foo[PATH_MAX];
+				char tmp[PATH_MAX];
+				memset(foo, 0, PATH_MAX);
+				int card;
+				int device;
+ 
+				sscanf(buffer, "%i-%i: %1024c", &card, &device, foo);
+				sprintf(tmp, "hw:%i,%i# %s", card, device, foo);
+				
+				alsa_devices=g_list_append (alsa_devices, strdup(tmp));
 			}
 		}
 		fclose(file);
@@ -336,8 +325,6 @@ void init_tx_options(GtkWidget *dialog) {
 	}
 	gtk_entry_set_text(GTK_ENTRY(combo->entry), globals.alsa_device_id);
 
-	g_signal_connect(G_OBJECT(combo->list), "select_child", G_CALLBACK(alsa_device_changed), NULL);
-	
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "alsa_buffer_time")), globals.alsa_buffer_time/1000);
 	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "alsa_buffer_time"), "Sets the size of the ALSA ring buffer. On slower systems you might have to increase this value (if you hear \"clicks\" or drop-outs). Lower values mean lower latency though.", NULL);	
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "alsa_period_time")), globals.alsa_period_time/1000);
@@ -400,12 +387,13 @@ void init_tx_options(GtkWidget *dialog) {
 	gtk_entry_set_text(GTK_ENTRY(lookup_widget(dialog, "ladspa_rdf_path")), globals.lrdf_path);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "compress_set_files")), globals.compress_set_files);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "prelisten_enabled")), globals.prelis);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "reconnect_enabled")), globals.restore_midi_connections);
 }
 
 void create_options()
 {
 	opt_dialog=create_tx_options();
-	gtk_widget_hide(lookup_widget(opt_dialog, "jack_driver"));	
+	//gtk_widget_hide(lookup_widget(opt_dialog, "jack_driver"));	
 	init_tx_options(opt_dialog);
 	gtk_widget_show(opt_dialog);
 }
@@ -423,21 +411,17 @@ GtkWidget *about=NULL;
 
 void raise_about()
 {
-	if (about)
-	gdk_window_raise(about->window);
+	if (about) gdk_window_raise(about->window);
 }
 
 
 void destroy_about()
 {
-	if (about)
-	{	
+	if (about) {	
 		gtk_widget_destroy(about);
 		about=NULL;
 	}
 }
-
-
 
 #define add_about_wid(wid); gtk_box_pack_start(GTK_BOX(box), wid, WID_DYN); \
 	gtk_widget_show(wid);
@@ -461,32 +445,25 @@ void show_about(int nag)
 	GtkWidget *scroll;
 	GdkPixmap *pmap=NULL;
 	
-	if (about) 
-	{
+	/* Only raise the window if it's already open... */
+	if (about)  {
 		gdk_window_raise(about->window);
 		return;
 	}
 	
+	/* Create the window... */
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);	
 	gtk_window_set_wmclass(GTK_WINDOW(window), "terminatorX", "tX_about");
-
 	gtk_container_set_border_width(GTK_CONTAINER(window), 5);
-
-//	GTK_WINDOW(window)->use_uposition=TRUE;
-
 	g_object_set (G_OBJECT (window), "type", GTK_WINDOW_TOPLEVEL, NULL);
-	if (nag) { gtk_window_set_decorated(GTK_WINDOW(window), FALSE); }
+	gtk_window_set_decorated(GTK_WINDOW(window), nag ? TRUE : FALSE);
 	gtk_window_set_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER);
-	//gtk_window_set_resizable (GTK_WINDOW (window), FALSE);
+	gtk_window_set_resizable (GTK_WINDOW (window), FALSE);
 	gtk_window_set_title(GTK_WINDOW(window), "terminatorX - About");
-	//gtk_widget_set_size_request(window, 640, 210);
 	
-	gtk_widget_realize(window);
+	GdkPixbuf *image=gdk_pixbuf_new_from_xpm_data((const char **)logo_xpm);
+	gdk_pixbuf_render_pixmap_and_mask(image, &pmap, &mask, 0);
 	
-	style = gtk_widget_get_style( window );
-
-	pmap=gdk_pixmap_create_from_xpm_d(window->window, &mask, &style->bg[GTK_STATE_NORMAL], (gchar **)logo_xpm);
-
   	pwid = gtk_pixmap_new( pmap, mask );
 	
 	if (nag) {
@@ -510,13 +487,10 @@ void show_about(int nag)
 		
 		gtk_widget_show(box2);
 		gtk_widget_show(box);
-		gtk_widget_show(window);
 		gtk_widget_show(pwid);
 		
-		while (gtk_events_pending()) gtk_main_iteration();	
-	}
-	else
-	{
+		gtk_widget_show(window);
+	} else {
 		box=gtk_vbox_new(FALSE, 5);
 		add_about_wid_fix(pwid);
 		
@@ -588,7 +562,7 @@ void show_about(int nag)
 		gtk_text_buffer_get_iter_at_offset (tbuffer, &iter, 0);
 		
 		scroll=gtk_scrolled_window_new (NULL, NULL);
-        	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+        gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 		gtk_container_add (GTK_CONTAINER (scroll), text);
 		gtk_text_buffer_create_tag (tbuffer, "courier", "family", "courier", NULL);
 		
@@ -629,15 +603,10 @@ GtkWidget *tX_icon_widget=NULL;
 
 void tX_set_icon(GtkWidget *widget, char *name)
 {
-	GtkStyle *style;
+	GtkStyle *style = gtk_widget_get_style(widget);
 
-	style = gtk_widget_get_style( widget );
-
-	if (!tX_icon_pmap)
-	{
+	if (!tX_icon_pmap) {
 		tX_icon_pmap=gdk_pixmap_create_from_xpm_d(widget->window, &tX_icon_mask, &style->bg[GTK_STATE_NORMAL], (gchar **) tX_icon_xpm );
-	  	//tX_icon_widget = gtk_pixmap_new( tX_icon_pmap, tX_icon_mask );		
-		//gtk_widget_realize(tX_icon_widget);		
 	}
 
 	gdk_window_set_icon(widget->window, NULL, tX_icon_pmap, tX_icon_mask);

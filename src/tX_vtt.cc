@@ -813,8 +813,7 @@ int vtt_class :: set_mix_buffer_size(int no_samples)
 
 //	printf("mix_out_buffer: %12x\n", mix_out_buffer);
 	
-	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++)
-	{
+	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
 		res|=(*vtt)->set_output_buffer_size(no_samples);
 	}
 	
@@ -836,22 +835,17 @@ int16_t * vtt_class :: render_all_turntables()
 	
 	pthread_mutex_lock(&render_lock);
 	
-	if (render_list.size()==0)
-	{
-		for (sample=0; sample<samples_in_mix_buffer; sample++)
-		{
+	if (render_list.size()==0) {
+		for (sample=0; sample<samples_in_mix_buffer; sample++) {
 			mix_out_buffer[sample]=0;
 		}
-	}
-	else
-	{
+	} else {
 			vtt=render_list.begin();
 			(*vtt)->render();			
 			max=(*vtt)->max_value;
 			min=max;
 
-			for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
-			{				
+			for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {				
 				temp=(*vtt)->output_buffer[sample];
 				mix_buffer[mix_sample]=temp*(*vtt)->res_volume_left;
 				mix_sample++;
@@ -865,10 +859,8 @@ int16_t * vtt_class :: render_all_turntables()
 			min*=-1.0;
 			if (min>max) (*vtt)->max_value=min; else (*vtt)->max_value=max;
 
-			if ((*vtt)->ec_enable)
-			{
-				for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
-				{				
+			if ((*vtt)->ec_enable) {
+				for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {				
 					temp=(*vtt)->ec_output_buffer[sample];
 					
 					mix_buffer[mix_sample]+=temp*(*vtt)->ec_volume_left;
@@ -878,19 +870,13 @@ int16_t * vtt_class :: render_all_turntables()
 				}
 			}
 			
-			if (master_triggered)
-			{
+			if (master_triggered) {
 				pthread_mutex_unlock(&render_lock);
-				for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++)
-				{
-					if ((*vtt)->is_sync_client)
-					{
-						if ((*vtt)->sync_countdown)
-						{
+				for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
+					if ((*vtt)->is_sync_client)	{
+						if ((*vtt)->sync_countdown)	{
 							(*vtt)->sync_countdown--;
-						}
-						else
-						{
+						} else {
 							(*vtt)->sync_countdown=(*vtt)->sync_cycles;
 							(*vtt)->trigger();
 						}
@@ -900,14 +886,12 @@ int16_t * vtt_class :: render_all_turntables()
 			}
 			
 			vtt=render_list.begin();
-			for (vtt++; vtt!=render_list.end(); vtt++)
-			{
+			for (vtt++; vtt!=render_list.end(); vtt++) {
 				(*vtt)->render();					
 				max=(*vtt)->max_value;
 				min=max;
 
-				for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
-				{				
+				for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {
 					temp=(*vtt)->output_buffer[sample];
 					mix_buffer[mix_sample]+=temp*(*vtt)->res_volume_left;
 					mix_sample++;					
@@ -921,10 +905,8 @@ int16_t * vtt_class :: render_all_turntables()
 				min*=-1.0;
 				if (min>max) (*vtt)->max_value=min; else (*vtt)->max_value=max;
 				
-				if ((*vtt)->ec_enable)
-				{
-					for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
-					{				
+				if ((*vtt)->ec_enable) {
+					for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {
 						temp=(*vtt)->ec_output_buffer[sample];
 						
 						mix_buffer[mix_sample]+=temp*(*vtt)->ec_volume_left;
@@ -940,8 +922,7 @@ int16_t * vtt_class :: render_all_turntables()
 			max=mix_max_l;
 			min=max;
 
-			for (sample=0; sample<samples_in_mix_buffer; sample+=2)
-			{				
+			for (sample=0; sample<samples_in_mix_buffer; sample+=2) {				
 				temp=mix_buffer[sample];
 
 #ifndef TX_DO_CLIP
@@ -965,8 +946,7 @@ int16_t * vtt_class :: render_all_turntables()
 			max=mix_max_r;
 			min=max;
 
-			for (sample=1; sample<samples_in_mix_buffer; sample+=2)
-			{				
+			for (sample=1; sample<samples_in_mix_buffer; sample+=2) {				
 				temp=mix_buffer[sample];
 
 #ifndef TX_DO_CLIP
@@ -987,8 +967,7 @@ int16_t * vtt_class :: render_all_turntables()
 	master_triggered=0;
 		
 	vtt=render_list.begin();
-	while (vtt!=render_list.end())
-	{
+	while (vtt!=render_list.end()) {
 		next=vtt;
 		next++;
 		
@@ -1563,6 +1542,10 @@ void vtt_class :: delete_all()
 	sp_master_volume.do_exec(1.0);
 	sp_master_volume.do_update_graphics();
 	
+	/* Remove master MIDI mappings... */
+	sp_master_pitch.bound_midi_event.type=tX_midievent::NONE;
+	sp_master_volume.bound_midi_event.type=tX_midievent::NONE;
+	
 	seq_update();
 }
 
@@ -1650,6 +1633,9 @@ int vtt_class :: load_all(xmlDocPtr doc, char *fname) {
 			}
 		}
 	}
+	
+	sp_master_volume.do_update_graphics();
+	sp_master_pitch.do_update_graphics();
 	
 	ld_destroy();
 	

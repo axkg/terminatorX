@@ -45,6 +45,11 @@
 tx_global globals;
 int _store_compress_xml=0;
 
+#ifdef USE_ALSA_MIDI_IN
+extern void tX_midiin_store_connections(FILE *rc, char *indent);
+extern void tX_midiin_restore_connections(xmlNodePtr node);
+#endif
+
 void get_rc_name(char *buffer)
 {
 	strcpy(buffer,"");
@@ -138,6 +143,7 @@ void set_global_defaults() {
 	
 	globals.alsa_free_hwstats=1;
 	globals.filename_length=20;
+	globals.restore_midi_connections=1;
 }
 
 int load_globals_xml() {
@@ -219,6 +225,16 @@ int load_globals_xml() {
 			restore_int("fullscreen_enabled", globals.fullscreen_enabled);
 			restore_int("confirm_events", globals.confirm_events);
 			restore_float("vtt_inertia", globals.vtt_inertia);
+			restore_int("restore_midi_connections", globals.restore_midi_connections);
+
+#ifdef USE_ALSA_MIDI_IN
+			if (!elementFound && (xmlStrcmp(cur->name, (xmlChar *) "midi_connections")==0)) {
+				if (globals.restore_midi_connections) {
+					tX_midiin_restore_connections(cur);
+				}
+				elementFound=1;
+			}
+#endif			
 
 			if (!elementFound) {
 				fprintf(stderr, "tX: Unhandled XML element: \"%s\"\n", cur->name);
@@ -238,7 +254,7 @@ int load_globals_xml() {
 void store_globals() {
 	char rc_name[PATH_MAX+256]="";
 	char device_type[16];
-	char indent[]="\t";
+	char indent[32]="\t";
 	FILE *rc=NULL;
 	gzFile rz=NULL;
 	char tmp_xml_buffer[4096];
@@ -310,6 +326,11 @@ void store_globals() {
 		store_float("vtt_inertia", globals.vtt_inertia);
 
 		store_string("last_path", globals.current_path);
+		store_int("restore_midi_connections", globals.restore_midi_connections);
+
+#ifdef USE_ALSA_MIDI_IN
+		tX_midiin_store_connections(rc, indent);
+#endif		
 
 		fprintf(rc,"</terminatorXrc>\n");
 	}
