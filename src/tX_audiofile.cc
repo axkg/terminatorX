@@ -181,9 +181,6 @@ int tx_audiofile :: load_piped()
 	{	
 		bytes = fread(w->buffer, 1, SOX_BLOCKSIZE, file);
 		w->used=bytes;
-/*#ifdef BIG_ENDIAN_MACHINE
-		swapbuffer((int16_t *) w->buffer, bytes/sizeof(int16_t));
-#endif*/
 		
 		if (bytes)
 		{
@@ -269,7 +266,7 @@ int tx_audiofile :: load_mpg123()
 	
 	if (!file) return TX_AUDIO_ERR_MPG123;
 	
-	return load_piped();	
+	return load_piped();
 }
 #endif	
 
@@ -349,7 +346,7 @@ int tx_audiofile :: load_wav()
 		bytes = fread(p, 1, min(1024, wav_in.len-allbytes), wav_in.handle);
 
 #ifdef ENABLE_DEBUG_OUTPUT
-		if (output) { tX_debug("tX_audiofile::load_wav() read %i Bytes [%02x %02x %02x %02x %02x %02x ..]", bytes, (unsigned int) debug_p[0],  (unsigned int) debug_p[1], (unsigned int) debug_p[2], (unsigned int) debug_p[3], (unsigned int) debug_p[4], (unsigned int) debug_p[5]); }
+		if (output) { tX_debug("tX_audiofile::load_wav() read %i Bytes [%04x %04x %04x %04x %04x %04x ..]", bytes, (unsigned int) p[0],  (unsigned int) p[1], (unsigned int) p[2], (unsigned int) p[3], (unsigned int) p[4], (unsigned int) p[5]); }
 #endif
 
 		if (bytes<=0) {
@@ -360,7 +357,8 @@ int tx_audiofile :: load_wav()
 #ifdef BIG_ENDIAN_MACHINE
 		swapbuffer(p, bytes/sizeof(int16_t));
 #	ifdef ENABLE_DEBUG_OUTPUT
-		if (output) { tX_debug("tX_audiofile::load_wav() swapped %i Bytes [%02x %02x %02x %02x %02x %02x ..]", bytes, (unsigned int) debug_p[0],  (unsigned int) debug_p[1], (unsigned int) debug_p[2], (unsigned int) debug_p[3], (unsigned int) debug_p[4], (unsigned int) debug_p[5]); }
+		if (output) { tX_debug("tX_audiofile::load_wav() swapped %i Bytes [%04x %04x %04x %04x %04x %04x ..]",
+		bytes, (unsigned int) p[0],  (unsigned int) p[1], (unsigned int) p[2], (unsigned int) p[3], (unsigned int) p[4], (unsigned int) p[5]); }
 #	endif
 #endif		
 

@@ -20,16 +20,17 @@
  
     Description: This implements the mouse AND keyboard Input handling in
     		 Grab-Mode.
-*/    
+*/
 
+#include <sys/wait.h>
+#include <X11/Xlib.h>
+#include <X11/extensions/xf86dga.h>
 
 #include "tX_mouse.h"
 #include "tX_mastergui.h"
 #include "tX_global.h"
 #include "tX_engine.h"
 #include "tX_vtt.h"
-#include <sys/wait.h>
-#include <X11/extensions/xf86dga.h>
 
 #define TX_MOUSE_SPEED_NORMAL 0.05
 #define TX_MOUSE_SPEED_WARP 250000
@@ -61,7 +62,7 @@ int tx_mouse :: grab()
 
 	if (grabbed) return(0);
 
-	dpy=XOpenDisplay(NULL); // FIXME: use correct display
+	dpy=XOpenDisplay(NULL);
 	if (!dpy)
 	{
 		fputs("GrabMode Error: couldn't connect to XDisplay.", stderr);
