@@ -31,6 +31,7 @@
 #include <stdio.h>
 
 class vtt_class;
+class tX_seqpar;
 
 class tX_midievent
 {
@@ -73,6 +74,8 @@ class tX_midiin
 	snd_seq_t *ALSASeqHandle;
 	tX_midievent last_event;
 	bool is_open;
+	tX_seqpar *sp_to_learn;
+	GtkWidget *learn_dialog;
 	
   public:
  	tX_midiin();
@@ -91,6 +94,12 @@ class tX_midiin
 		return last_event;
 	}
 
+	void set_midi_learn_sp(tX_seqpar *);
+	void cancel_midi_learn();
+	
+	static gboolean midi_learn_cancel(GtkWidget *, tX_midiin *);
+	static gboolean midi_learn_destroy(GtkWidget *, tX_midiin *);	
+	
   private:
 
 	class midi_binding_gui
