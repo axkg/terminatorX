@@ -207,6 +207,10 @@ vtt_class :: ~vtt_class()
 		delete effect;
 	}
 	
+	if (sync_master==this) {
+		sync_master=NULL;
+	}
+	
 	delete_gui(this);
 }
 

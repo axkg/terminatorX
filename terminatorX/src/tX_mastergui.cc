@@ -62,7 +62,6 @@ GtkWidget *tt_parent;
 GtkWidget *control_parent;
 GtkWidget *audio_parent;
 GtkWidget *main_window;
-GtkWidget *wav_progress;
 GtkWidget *grab_button;
 GtkWidget *main_flash_l;
 GtkWidget *main_flash_r;
@@ -1299,23 +1298,6 @@ void create_mastergui(int x, int y)
 }
 
 gfloat old_percent=-1;
-
-void wav_progress_update(gfloat percent)
-{
-	percent=floor(percent*10.0)/10.0; //Updating statusbars with gtk-themes eats up hell of a lot CPU-time
-					  // which is why we update every 10% only.
-	
-	if (wav_progress)
-	{
-		if (old_percent != percent)
-		{
-			old_percent = percent;
-			gtk_progress_bar_update(GTK_PROGRESS_BAR(wav_progress), percent);
-			while (gtk_events_pending()) gtk_main_iteration();	
-		}
-	}
-
-}
 
 void note_destroy(GtkWidget *widget, GtkWidget *mbox)
 {

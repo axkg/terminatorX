@@ -204,7 +204,7 @@ int tX_audiodevice_alsa :: open()
 	sscanf(globals.alsa_device, "%i-%i: %s", &card, &device, foo);
 	sprintf(pcm_name, "hw:%i,%i", card, device);
 	
-	if (snd_pcm_open(&pcm_handle, pcm_name, stream, 0) < 0) {
+	if (snd_pcm_open(&pcm_handle, pcm_name, stream, SND_PCM_NONBLOCK) < 0) {
 		tX_error("ALSA: Failed to access PCM device \"%s\"", pcm_name);
 		snd_pcm_hw_params_free (hw_params);
 		return -1;
@@ -290,7 +290,7 @@ int tX_audiodevice_alsa :: open()
 	}
 	
 	snd_pcm_hw_params_free (hw_params);
-	return 0;
+	return snd_pcm_prepare(pcm_handle);
 }
 
 int tX_audiodevice_alsa :: close()
