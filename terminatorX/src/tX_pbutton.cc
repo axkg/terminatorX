@@ -72,7 +72,7 @@ GtkWidget *tx_pixmap_widget(int icon_id)
     return pixmapwid;
 }
 
-GtkWidget *tx_xpm_label_box(int	icon_id, gchar *label_text, GtkWidget **labelwidget=NULL)
+GtkWidget *tx_xpm_label_box(int	icon_id, gchar *label_text, GtkWidget **labelwidget=(GtkWidget **) NULL)
 {
     GtkWidget *box1;
     GtkWidget *label;
@@ -104,7 +104,7 @@ GtkWidget *tx_xpm_label_box(int	icon_id, gchar *label_text, GtkWidget **labelwid
 }
 
 //GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle)
-extern GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle, GtkWidget **labelwidget=NULL)
+extern GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle, GtkWidget **labelwidget=(GtkWidget **) NULL)
 {
 	GtkWidget *box;
 	GtkWidget *button;

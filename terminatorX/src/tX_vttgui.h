@@ -111,10 +111,12 @@ typedef struct vtt_gui
 	GtkWidget *audio_minimize;
 	GtkWidget *display;
 	GtkWidget *file;
-//	GtkWidget *edit;
-//	GtkWidget *reload;
-	GtkWidget *x_control;
-	GtkWidget *y_control;
+	GtkWidget *file_menu;
+
+	GtkWidget *mouse_mapping;
+	GtkWidget *mouse_mapping_menu;
+	GtkWidget *mouse_mapping_menu_x;
+	GtkWidget *mouse_mapping_menu_y;
 	
 	GtkWidget *audio_minimized_panel_bar_button;
 	GtkWidget *control_minimized_panel_bar_button;
@@ -125,7 +127,6 @@ typedef struct vtt_gui
 
 extern void cleanup_all_vtts();
 extern void update_all_vtts();
-/*extern void vg_update_sync(void *);*/
 extern void vg_enable_critical_buttons(int enable);
 extern void vg_init_all_non_seqpars();
 #endif
