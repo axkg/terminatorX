@@ -113,30 +113,55 @@ gtk_tx_flash_class_init (GtkTxFlashClass *gclass)
 //  widget_class->motion_notify_event = gtk_tx_flash_motion_notify;
 }
 
-void gtk_tx_flash_mk_col(GtkTxFlash *tx_flash, GdkColor *col, float r, float g, float b)
+enum {
+	COL_BG,
+	COL_NORM,
+	COL_NORM_HALF,
+	COL_LOUD,
+	COL_LOUD_HALF,
+	NO_COLS
+};
+
+/* c=a+(a-b)*x; */
+
+inline void mk_half(double s, GdkColor *a, GdkColor *b, GdkColor *c)
 {
-	float max=65535.0;
+	c->red=a->red-(a->red-b->red)*s;
+	c->green=a->green-(a->green-b->green)*s;
+	c->blue=a->blue-(a->blue-b->blue)*s;
+}
+
+void gtk_tx_flash_update_colors(GtkTxFlash *tx)
+{
+	int i;
 	
-	col->red=(gint) (r*max);
-	col->green=(gint) (g*max);
-	col->blue=(gint) (b*max);
-	gdk_colormap_alloc_color (gtk_widget_get_colormap (GTK_WIDGET(tx_flash)), col, 1, 1);		
+	if (tx->colors_allocated) {
+		gdk_colormap_free_colors(gtk_widget_get_colormap(GTK_WIDGET(tx)), tx->colors, NO_COLS);
+	}
+	
+	gdk_color_parse(globals.vu_meter_bg, &tx->colors[COL_BG]);
+	gdk_color_parse(globals.vu_meter_loud, &tx->colors[COL_LOUD]);
+	gdk_color_parse(globals.vu_meter_normal, &tx->colors[COL_NORM]);	
+	mk_half(globals.vu_meter_border_intensity, &tx->colors[COL_BG], &tx->colors[COL_LOUD], &tx->colors[COL_LOUD_HALF]);
+	mk_half(globals.vu_meter_border_intensity, &tx->colors[COL_BG], &tx->colors[COL_NORM], &tx->colors[COL_NORM_HALF]);
+
+	for (i=0; i<NO_COLS; i++) {
+		gdk_colormap_alloc_color(gtk_widget_get_colormap(GTK_WIDGET(tx)), &tx->colors[i], 0, 1);
+	}
+
+	tx->colors_allocated=1;
 }
 
 static void
 gtk_tx_flash_init (GtkTxFlash *tx_flash)
 {
 	GdkColormap *priv;
-			
+	
+	tx_flash->colors_allocated=0;
 	priv=gdk_colormap_new(gtk_widget_get_visual(GTK_WIDGET(tx_flash)), 6);
 
 	gtk_widget_set_colormap(GTK_WIDGET(tx_flash), priv);
-
-	gtk_tx_flash_mk_col(tx_flash, &tx_flash->black, 0, 0, 0);
-	gtk_tx_flash_mk_col(tx_flash, &tx_flash->red, 1, 0.5, 0.5);
-	gtk_tx_flash_mk_col(tx_flash, &tx_flash->green, 0.5, 1, 0.5);	
-	gtk_tx_flash_mk_col(tx_flash, &tx_flash->lightgreen, 0, 0.7, 0);
-	gtk_tx_flash_mk_col(tx_flash, &tx_flash->redgreen, 0.7, 0, 0);
+	gtk_tx_flash_update_colors(tx_flash);
 }
 
 GtkWidget*
@@ -253,11 +278,11 @@ static void gtk_tx_flash_paint_yourself(GtkWidget *widget)
 
   tx_flash = GTK_TX_FLASH (widget);
 
-  gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->black);
+  gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->colors[COL_BG]);
   
   gdk_draw_rectangle(widget->window, widget->style->fg_gc[widget->state], 1, 0, 0, widget->allocation.width,widget->allocation.height); 
 
-  gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->lightgreen);
+  gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->colors[COL_NORM_HALF]);
 
   x12=DMINIX+S_MINIX;
   x21=widget->allocation.width-1-x12;
@@ -275,7 +300,7 @@ static void gtk_tx_flash_paint_yourself(GtkWidget *widget)
 	else if (i==tx_flash->red_level)
 	{
 		long_level=1;
-		gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->redgreen);
+		gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->colors[COL_LOUD_HALF]);
 	}
 	else if (i==tx_flash->levels)
 	{
@@ -348,7 +373,7 @@ gtk_tx_flash_set_level(GtkWidget *widget, f_prec new_value)
   if (tx_flash->max_cycles <= 0)
   {  	
 	y=widget->allocation.height-(DY+(tx_flash->max)*DLEVEL);
-	gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->black);
+	gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->colors[COL_BG]);
 	gdk_draw_line(widget->window, widget->style->fg_gc[widget->state], tx_flash->x1, y, tx_flash->x2, y);
 
 	if (tx_flash->max>0)
@@ -357,11 +382,11 @@ gtk_tx_flash_set_level(GtkWidget *widget, f_prec new_value)
 		y+=DLEVEL;
 		if (tx_flash->max>tx_flash->red_level)
 		{
-			gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->red);		
+			gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->colors[COL_LOUD]);
 		}
 		else
 		{
-			gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->green);		
+			gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->colors[COL_NORM]);
 		}
 		gdk_draw_line(widget->window, widget->style->fg_gc[widget->state], tx_flash->x1, y, tx_flash->x2, y);	
 	}
@@ -376,7 +401,7 @@ gtk_tx_flash_set_level(GtkWidget *widget, f_prec new_value)
   
   if (new_level>tx_flash->last_level)
   {
-	  gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->green);
+	  gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->colors[COL_NORM]);
   
   	  for (i=tx_flash->last_level, y=widget->allocation.height-(DY+tx_flash->last_level*DLEVEL); i<=new_level; y-=DLEVEL, i++)
 	  {
@@ -384,7 +409,7 @@ gtk_tx_flash_set_level(GtkWidget *widget, f_prec new_value)
 		{
 			if (i>=tx_flash->red_level)
 			{
-				gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->red);
+				gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->colors[COL_LOUD]);
 				red=1;
 			}
 		}
@@ -393,7 +418,7 @@ gtk_tx_flash_set_level(GtkWidget *widget, f_prec new_value)
   }
   else
   {
-	  gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->black);
+	  gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx_flash->colors[COL_BG]);
 
 	  if (tx_flash->last_level==tx_flash->max)
 	  {

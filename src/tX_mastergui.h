@@ -36,6 +36,10 @@ extern GtkWidget *main_window;
 extern GtkAdjustment *volume_adj;
 extern GtkAdjustment *pitch_adj;
 
+
+extern GtkWidget *main_flash_l;
+extern GtkWidget *main_flash_r;
+
 extern tX_seqpar_master_volume sp_master_volume;
 extern tX_seqpar_master_pitch sp_master_pitch;
 
