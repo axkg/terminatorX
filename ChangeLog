@@ -34,6 +34,10 @@ changed.
 - I've drawn some new icons with the wonderful inkscape. They're now being 
   built into terminatorX as gdk-pixbuf c-source code, so they actually do alpha
   blending.
+- Wrote support for gtk+'s new FileChooser widget - will be enabled 
+  automatically when configure finds a gtk+ >= 2.4.0
+- Fixed the buffer overflows detected by c0wboy <c0wboy@tiscali.it> in his 
+  outsiders-terminatorX-001.txt advisory. 
 - merged parts of a patch from Adam King <aking@lgh.com.au>
   - Simple min/maximization for the control panels
   - Bugfix for sequencer menu crash
