@@ -90,6 +90,7 @@ class vtt_class
 	static vtt_class * focused_vtt;
 	static int solo_ctr;
 	static int mix_buffer_size;
+	static int last_sample_rate;
 	
 	/* the gui */
 	vtt_gui gui;
@@ -327,6 +328,8 @@ class vtt_class
 	
 	void set_mix_mute(int newstate);
 	void set_mix_solo(int newstate);
+	static int get_last_sample_rate() { return last_sample_rate; }
+	
 	void calc_mute()
 	{
 		res_mute=((mute) || (mix_mute && (!mix_solo)) || ((solo_ctr>0)&&(!mix_solo)));

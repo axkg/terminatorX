@@ -281,10 +281,8 @@ void tX_sequencer :: forward_to_start_timestamp(int dont_fake)
 	int run_save=run;
 	
 	run=1;
-	//if (!run) return;
 	
-	gui_update_max=(globals.update_idle * (globals.update_delay+1) * globals.true_block_size) >> 1;
-//	printf("%i\n", gui_update_max);
+	gui_update_max=(globals.update_idle * (globals.update_delay+1) * 1000) >> 1;
 	gui_update=gui_update_max;
 	
 	current_timestamp=0;

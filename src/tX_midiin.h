@@ -108,6 +108,8 @@ class tX_midiin
 
 		tX_midievent last_event;
 
+	  	static void window_closed( GtkWidget *widget, gpointer _this );
+		static void unbind_clicked( GtkButton *button, gpointer _this );	  
 		static void bind_clicked( GtkButton *button, gpointer _this );
 		static void close_clicked( GtkButton *button, gpointer _this );
 		static gint timer( gpointer _this );

@@ -67,7 +67,6 @@ void set_global_defaults() {
 	globals.no_gui = 0;
 	globals.alternate_rc = 0;
 	
-	
 	strcpy(globals.xinput_device, "");
 	globals.xinput_enable=0;
 	
@@ -79,7 +78,7 @@ void set_global_defaults() {
 	globals.oss_buff_size=9;
 	globals.oss_samplerate=44100;
 
-	strcpy(globals.alsa_device, "hw:0,0");	
+	strcpy(globals.alsa_device, "00-00: Default");	
 	globals.alsa_buff_no=2;
 	globals.alsa_buff_size=1024;
 	globals.alsa_samplerate=44100;
@@ -129,8 +128,6 @@ void set_global_defaults() {
 	
 	strcpy(globals.lrdf_path, "/usr/share/ladspa/rdf:/usr/local/share/ladspa/rdf");
 	globals.fullscreen_enabled=1;
-	
-	if (!globals.true_block_size) globals.true_block_size=1<globals.oss_buff_size;
 }
 
 int load_globals_xml() {
@@ -199,7 +196,6 @@ int load_globals_xml() {
 			restore_float("volume", globals.volume);
 			restore_float("flash_response", globals.flash_response);
 			restore_int("button_type", globals.button_type);
-			restore_int("true_block_size", globals.true_block_size);
 			restore_string("tables_filename", globals.tables_filename);
 			restore_string("record_filename", globals.record_filename);
 			restore_string("file_editor", globals.file_editor);
@@ -283,7 +279,6 @@ void store_globals() {
 		store_float("volume", globals.volume);
 		store_float("flash_response", globals.flash_response);
 		store_int("button_type", globals.button_type);
-		store_int("true_block_size", globals.true_block_size);
 		store_string("tables_filename", globals.tables_filename);
 		store_string("record_filename", globals.record_filename);
 		store_string("file_editor", globals.file_editor);

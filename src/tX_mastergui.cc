@@ -744,18 +744,20 @@ void seq_update_entry(const guint32 timestamp)
 	char buffer[20];
 	guint32 samples;
 	guint32 minu,sec,hun;	
+	guint32 sr;
 	
-	samples=timestamp*globals.true_block_size;
+	samples=timestamp*vtt_class::get_mix_buffer_size();
+	sr=vtt_class::get_last_sample_rate();
 	
 	if (samples>0)
 	{
-		minu=samples/2646000;
-		samples-=2646000*minu;
+		minu=samples/(sr*60);
+		samples-=(sr*60)*minu;
 	
-		sec=samples/44100;
-		samples-=44100*sec;
+		sec=samples/sr;
+		samples-=sr*sec;
 	
-		hun=samples/441;
+		hun=samples/(sr/100);
 	}
 	else
 	{
