@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE section SYSTEM "./tX.dtd"[ ]>
 <section name='turntable gallery'>
+   &db;
   <turntable>
     <para>While scratching with the mouse usually 
     <italic>sounds</italic> the way terminatorX users want it to (at least if
@@ -11,7 +12,7 @@
     method suggested by the terminatorX logo should be feasible. Optical input
     devices are known to produce best results in such a scenario. For those
     interested here's a 
-    <link ref='oldtable.html'>document</link> on how I turned my old turntable
+    <dblink id='oldtable'>document</dblink> on how I turned my old turntable
     into a terminatorX device.</para>
     <para>Luckily a lot of terminatorX users have built their own turntables
     and I'm really happy to present some of these creations below. Please, if 
@@ -34,7 +35,7 @@
           works.</para>
           <para>
           <italic>Note</italic>: Fernando also contributed a scratch - see 
-          <link ref='scratches.html'>users' scratches-section</link>.</para>
+          <dblink id='scratches'>users' scratches-section</dblink>.</para>
         </text>
         <ttimages>
           <image filename='fernando1.jpg'>
@@ -106,7 +107,7 @@
         <text>
           <para>These are the pictures of my very own terminatorX turntable.
           The turntable is described in more detail 
-          <link ref='oldtable.html'>here</link>.</para>
+          <dblink id='oldtable'>here</dblink>.</para>
         </text>
         <ttimages>
           <image filename='tt_normal.jpg'>

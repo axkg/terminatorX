@@ -1,0 +1,9 @@
+#!/bin/bash
+for file in $*;
+do 
+	if [ -f pre_$file ]
+	then
+		rm -rf pre_$file
+	fi
+	pngtopnm < $file | pnmscale -xsize=350 | pnmtopng > pre_$file
+done
