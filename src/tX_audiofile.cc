@@ -107,6 +107,8 @@ tX_audio_error tx_audiofile :: load(char *p_file_name)
 	ld_set_progress(0);
 		
 	figure_file_type();
+	
+	if (mem) { free(mem); mem=NULL; }
 
 #ifdef USE_AUDIOFILE_INPUT
 	if ((load_err) && (file_type!=TX_FILE_MPG123) && (file_type!=TX_FILE_OGG123)) {
@@ -310,7 +312,6 @@ tX_audio_error tx_audiofile :: load_wav() {
 	p=data;
 #ifdef ENABLE_DEBUG_OUTPUT
 	int output=1;
-	unsigned char *debug_p=(unsigned char *) p;
 #endif	
 	while (wav_in.len>allbytes)
 	{	
@@ -528,7 +529,7 @@ int tx_audiofile::mad_decode(unsigned char const *start, unsigned long length) {
 	buffer.sample_rate=0;
 	buffer.lost_sync_counter=0;
 
-	tX_debug("tx_audiofile::mad_decode() - start %08x, length %i", buffer.start, buffer.size);
+	tX_debug("tx_audiofile::mad_decode() - start %08x, length %i", (int) buffer.start, buffer.size);
 	/* configure input, output, and error functions */
 
 	mad_decoder_init(&decoder, &buffer, tX_mad_input, NULL, NULL, tX_mad_output, tX_mad_error, NULL);
