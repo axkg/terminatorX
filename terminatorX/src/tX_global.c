@@ -123,7 +123,8 @@ void set_global_defaults() {
 	globals.use_stdout_cmdline=0;
 	globals.current_path = NULL;
 	globals.pitch=1.0;
-	globals.volume=1.0;	
+	globals.volume=1.0;
+	globals.fullscreen_enabled=1;
 	if (!globals.true_block_size) globals.true_block_size=1<globals.buff_size;
 
 }
@@ -187,6 +188,7 @@ int load_globals_xml() {
 			restore_string("tables_filename", globals.tables_filename);
 			restore_string("record_filename", globals.record_filename);
 			restore_string("file_editor", globals.file_editor);
+			restore_int("fullscreen_enabled", globals.fullscreen_enabled);
 
 			if (!elementFound) {
 				fprintf(stderr, "tX: Unhandled XML element: \"%s\"\n", cur->name);
@@ -194,7 +196,6 @@ int load_globals_xml() {
 		}
 	}
 
-	puts(globals.audio_device);
 	xmlFreeDoc(doc);
 	
 	return 0;
@@ -241,6 +242,7 @@ void store_globals() {
 		store_string("tables_filename", globals.tables_filename);
 		store_string("record_filename", globals.record_filename);
 		store_string("file_editor", globals.file_editor);
+		store_int("fullscreen_enabled", globals.fullscreen_enabled);
 		
 		fprintf(rc,"</terminatorXrc>\n");
 	}

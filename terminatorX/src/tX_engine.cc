@@ -106,6 +106,10 @@ void tX_engine :: loop() {
 					grab_request=false;
 				}
 			}
+
+#ifdef USE_ALSA_MIDI_IN			
+			midi->check_event();
+#endif			
 		
 			/* Playback the audio... */
 			device->play(temp);
@@ -203,6 +207,9 @@ tX_engine :: tX_engine() {
 	}
 	
 	mouse=new tx_mouse();
+#ifdef USE_ALSA_MIDI_IN	
+	midi=new tX_midiin();
+#endif	
 	tape=new tx_tapedeck();
 	device=NULL;
 	recording=false;
@@ -259,7 +266,7 @@ tX_engine_error tX_engine :: run() {
 	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++) {
 		if ((*vtt)->autotrigger) (*vtt)->trigger();
 	}
-	
+
 	sequencer.forward_to_start_timestamp(1);	
 	stop_flag=false;
 	/* Trigger the engine thread... */

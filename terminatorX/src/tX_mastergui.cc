@@ -28,6 +28,7 @@
 #include <math.h>
 #include <unistd.h>
 #include <string.h>
+#include <gdk/gdkkeysyms.h>
 #include "version.h"
 #include "tX_global.h"
 #include "tX_engine.h"
@@ -65,7 +66,7 @@ GtkWidget *grab_button;
 GtkWidget *main_flash_l;
 GtkWidget *main_flash_r;
 GtkWidget *rec_btn;
-GtkWidget *fullscreen_button;
+GtkWidget *fullscreen_item;
 
 GtkWidget *seq_rec_btn;
 GtkWidget *seq_play_btn;
@@ -93,7 +94,7 @@ GtkWidget *SaveSet;
 
 GtkWidget *engine_btn;
 
-bool tX_fullscreen_status=false;
+GtkWidget *main_menubar;
 
 int rec_dont_care=0;
 gint update_tag;
@@ -801,8 +802,117 @@ void sequencer_move(GtkWidget *wid, void *d)
 	gtk_box_pack_end(GTK_BOX(smaller_box), dummy, WID_FIX);\
 	gtk_widget_show(dummy);\
 
+void fullscreen_toggle(GtkCheckMenuItem *item, gpointer data);
+
+void create_master_menu() {
+	GtkWidget *menu_item;
+	GtkWidget *sub_menu;
+	GtkAccelGroup* accel_group=gtk_accel_group_new();
+	gtk_window_add_accel_group(GTK_WINDOW(main_window), accel_group);
+      /*gtk_signal_connect (GTK_OBJECT (dummy), "drag_data_received",
+        gtk_signal_connect(GTK_OBJECT(dummy), "clicked", GtkSignalFunc(new_table), NULL);       
+        gtk_signal_connect(GTK_OBJECT(dummy), "clicked", GtkSignalFunc(load_tables), NULL);     
+        gtk_signal_connect (GTK_OBJECT (dummy), "drag_data_received",
+        gtk_signal_connect(GTK_OBJECT(dummy), "clicked", GtkSignalFunc(save_tables), NULL);     
+        gtk_signal_connect (GTK_OBJECT(dummy), "clicked", (GtkSignalFunc) display_options, NULL);
+        gtk_signal_connect (GTK_OBJECT(dummy), "clicked", (GtkSignalFunc) mplcfitx, NULL);      
+        gtk_signal_connect (GTK_OBJECT(dummy), "clicked", (GtkSignalFunc) quit, NULL);
+*/
+	/* FILE */
+	menu_item = gtk_menu_item_new_with_mnemonic ("_File");
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (main_menubar), menu_item);
+
+	sub_menu = gtk_menu_new ();
+	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), sub_menu);
+
+	menu_item = gtk_image_menu_item_new_from_stock ("gtk-new", accel_group);
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+
+	menu_item = gtk_image_menu_item_new_from_stock ("gtk-open", accel_group);
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	g_signal_connect(menu_item, "activate", (GCallback) load_tables, NULL);
+
+	menu_item = gtk_image_menu_item_new_from_stock ("gtk-save", accel_group);
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	g_signal_connect(menu_item, "activate", (GCallback) save_tables, NULL);
+
+	/*menu_item = gtk_image_menu_item_new_from_stock ("gtk-save-as", accel_group);
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);*/
+
+	menu_item = gtk_menu_item_new ();
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	gtk_widget_set_sensitive (menu_item, FALSE);
+
+	menu_item = gtk_image_menu_item_new_from_stock ("gtk-quit", accel_group);
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	g_signal_connect(menu_item, "activate", (GCallback) quit, NULL);
+
+	/* Turntables */
+	menu_item = gtk_menu_item_new_with_mnemonic ("_Turntables");
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (main_menubar), menu_item);
+	
+	sub_menu = gtk_menu_new ();
+	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), sub_menu);
+
+	menu_item = gtk_menu_item_new_with_mnemonic("_Add Turntable");
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	g_signal_connect(menu_item, "activate", (GCallback) new_table, NULL);
+
+	/* Options */
+	menu_item = gtk_menu_item_new_with_mnemonic ("_Options");
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (main_menubar), menu_item);
+
+	sub_menu = gtk_menu_new ();
+	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), sub_menu);
+		
+	menu_item = gtk_check_menu_item_new_with_mnemonic("_Fullscreen");
+	fullscreen_item = menu_item;
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), globals.fullscreen_enabled);
+	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_F11, (GdkModifierType) 0, GTK_ACCEL_VISIBLE);
+	g_signal_connect(menu_item, "activate", (GCallback) fullscreen_toggle, NULL);
+	//GtkWidget *label=gtk_accel_label_new("F11");
+	//gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), menu_item);
+	
+	menu_item = gtk_menu_item_new ();
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	gtk_widget_set_sensitive (menu_item, FALSE);
+
+	menu_item = gtk_menu_item_new_with_mnemonic("_Preferences");
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	g_signal_connect(menu_item, "activate", (GCallback) display_options, NULL);
+
+	/* HELP */ 
+	menu_item = gtk_menu_item_new_with_mnemonic ("_Help");
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (main_menubar), menu_item);
+
+	sub_menu = gtk_menu_new ();
+	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), sub_menu);
+
+	menu_item = gtk_menu_item_new_with_mnemonic ("_About");
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	g_signal_connect(menu_item, "activate", (GCallback) mplcfitx, NULL);
+}
+
 void create_mastergui(int x, int y)
 {
+	GtkWidget *mother_of_all_boxen;
 	GtkWidget *main_vbox;
 	GtkWidget *right_hbox;
 	GtkWidget *left_hbox;
@@ -830,9 +940,18 @@ void create_mastergui(int x, int y)
 
 	gtk_widget_realize(main_window);
 	
-	main_vbox=gtk_hbox_new(FALSE, 5);
+	mother_of_all_boxen=gtk_vbox_new(FALSE, 5);
+	gtk_container_add(GTK_CONTAINER(main_window), mother_of_all_boxen);
+	gtk_widget_show(mother_of_all_boxen);	
 	
-	gtk_container_add(GTK_CONTAINER(main_window), main_vbox);
+	main_menubar=gtk_menu_bar_new();
+	gtk_box_pack_start(GTK_BOX(mother_of_all_boxen), main_menubar, WID_FIX);
+	gtk_widget_show(main_menubar);	
+	
+	create_master_menu();
+	
+	main_vbox=gtk_hbox_new(FALSE, 5);
+	gtk_box_pack_start(GTK_BOX(mother_of_all_boxen), main_vbox, WID_DYN);
 	gtk_widget_show(main_vbox);
 	
 	left_hbox=gtk_vbox_new(FALSE, 5);
@@ -941,7 +1060,7 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_DYN);
 	gtk_widget_show(dummy);
 	
-	dummy=gtk_hbox_new(FALSE,2);
+	dummy=gtk_hbox_new(FALSE,2); //gtk_hpaned_new ();
 	gtk_box_pack_start(GTK_BOX(left_hbox), dummy, WID_DYN);
 	gtk_widget_show(dummy);
 	
@@ -952,6 +1071,7 @@ void create_mastergui(int x, int y)
 
 	control_parent=gtk_hbox_new(FALSE,0);
 	gtk_box_pack_start(GTK_BOX(tt_parent), control_parent, WID_FIX);
+	//gtk_paned_pack1(GTK_PANED(tt_parent), control_parent, FALSE, FALSE);
 	gtk_widget_show(control_parent);
 
 	dummy=gtk_vseparator_new();
@@ -960,6 +1080,7 @@ void create_mastergui(int x, int y)
 
 	audio_parent=gtk_vbox_new(FALSE,0);
 	gtk_box_pack_start(GTK_BOX(tt_parent), audio_parent, WID_DYN);
+	//gtk_paned_pack2(GTK_PANED(tt_parent), audio_parent, TRUE, FALSE);
 	gtk_widget_show(audio_parent);
 	
 	dummy=gtk_vseparator_new();
@@ -969,7 +1090,7 @@ void create_mastergui(int x, int y)
 	right_hbox=gtk_vbox_new(FALSE, 5);
 	gtk_box_pack_start(GTK_BOX(main_vbox), right_hbox, WID_FIX);
 	gtk_widget_show(right_hbox);
-	
+/*	
 	dummy=gtk_button_new_with_label("Add Turntable");
 	AddTable=dummy;	
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
@@ -1026,11 +1147,8 @@ void create_mastergui(int x, int y)
 	gui_set_tooltip(dummy, "Click here to exit terminatorX.");
 	gtk_signal_connect (GTK_OBJECT(dummy), "clicked", (GtkSignalFunc) quit, NULL);
 
-	fullscreen_button=gtk_button_new_with_label("Fullscreen");
-	gtk_box_pack_start(GTK_BOX(right_hbox), fullscreen_button, WID_FIX);
-	
 	add_sep();		
-
+*/
 	small_box=gtk_hbox_new(FALSE, 5);
 	gtk_box_pack_start(GTK_BOX(right_hbox), small_box, WID_DYN);
 	gtk_widget_show(small_box);
@@ -1189,12 +1307,12 @@ void remove_from_panel_bar(GtkWidget *button) {
 #define _NET_WM_STATE_ADD	1
 #define _NET_WM_STATE_TOGGLE	2
 
-void fullscreen_toggle() {
+void fullscreen_toggle(GtkCheckMenuItem *item, gpointer data) {
 	XEvent xev;
 	Window win=GDK_WINDOW_XID(main_window->window);
 	Display *disp=GDK_WINDOW_XDISPLAY(main_window->window);
 	
-	tX_fullscreen_status=!tX_fullscreen_status;
+	globals.fullscreen_enabled=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(fullscreen_item));
 	
 	/* Top layer.. */
 	xev.xclient.type = ClientMessage;
@@ -1204,7 +1322,7 @@ void fullscreen_toggle() {
 	xev.xclient.window = win;
 	xev.xclient.message_type = gdk_x11_get_xatom_by_name ("_WIN_LAYER");
 	xev.xclient.format = 32;
-	xev.xclient.data.l[0] = tX_fullscreen_status ? _WIN_LAYER_TOP : _WIN_LAYER_NORMAL ;
+	xev.xclient.data.l[0] = globals.fullscreen_enabled ? _WIN_LAYER_TOP : _WIN_LAYER_NORMAL ;
 	XSendEvent(disp, GDK_WINDOW_XID (gdk_get_default_root_window ()),
 		False, SubstructureRedirectMask | SubstructureNotifyMask,
 		&xev);
@@ -1217,7 +1335,7 @@ void fullscreen_toggle() {
 	xev.xclient.window = win;
 	xev.xclient.message_type = gdk_x11_get_xatom_by_name ("_NET_WM_STATE");
 	xev.xclient.format = 32;
-	xev.xclient.data.l[0] = tX_fullscreen_status ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
+	xev.xclient.data.l[0] = globals.fullscreen_enabled ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
 	xev.xclient.data.l[1] = gdk_x11_atom_to_xatom (gdk_atom_intern ("_NET_WM_STATE_FULLSCREEN", TRUE));
 	xev.xclient.data.l[2] = gdk_x11_atom_to_xatom (GDK_NONE);
 	XSendEvent(gdk_display, GDK_WINDOW_XID (gdk_get_default_root_window ()),
@@ -1225,13 +1343,10 @@ void fullscreen_toggle() {
 		&xev);	
 }
 
-#include <gdk/gdkkeysyms.h>
-
 void fullscreen_setup() {
-	GtkAccelGroup* accel_group=gtk_accel_group_new();
-	gtk_widget_add_accelerator (fullscreen_button, "activate", accel_group, GDK_F11, (GdkModifierType) 0, (GtkAccelFlags) 0);
-	g_signal_connect(fullscreen_button, "activate", (GCallback) fullscreen_toggle, NULL);
-	gtk_window_add_accel_group(GTK_WINDOW(main_window), accel_group);
+	if (globals.fullscreen_enabled) {
+		fullscreen_toggle(NULL, NULL);
+	}
 }
 
 void display_mastergui()
@@ -1240,8 +1355,8 @@ void display_mastergui()
 	gtk_widget_realize(main_window);
 	tX_set_icon(main_window, "terminatorX");
 	load_knob_pixs(main_window);
-	fullscreen_setup();
 	gtk_widget_show(main_window);
+	fullscreen_setup();	
 	top=gtk_widget_get_toplevel(main_window);
 	xwindow=GDK_WINDOW_XWINDOW(top->window);
 }
