@@ -921,7 +921,7 @@ void tX_seqpar_vttfx_int :: create_widget()
 	GtkWidget *tmpwid;
 
 	*fx_value=min_value;
-	myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value, max_value, tmp, tmp, tmp));
+	myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value, max_value, 1, 10, tmp));
 	widget=gtk_vbox_new(FALSE, 2);
 
 	tmpwid=gtk_spin_button_new(myadj,1.0,0);
