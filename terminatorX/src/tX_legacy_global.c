@@ -63,7 +63,7 @@ void load_globals_old() {
 	  to old values on startup....
 	*/
 	globals.use_stdout_cmdline=0;
-	globals.current_path = NULL;
+	globals.current_path[0] = 0;
 	globals.pitch=1.0;
 	globals.volume=1.0;	
 }

@@ -215,6 +215,8 @@ vtt_class :: ~vtt_class()
 	if (output_buffer) tX_freemem(output_buffer, "output_buffer", "vtt Destructor");
 	vtt_amount--;
 	
+	if (mix_solo) solo_ctr--;
+	
 	while (fx_list.size())
 	{ 
 		effect=(*fx_list.begin());
@@ -1521,6 +1523,10 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 
 	recalc_volume();
 
+	if (mix_solo) {
+		solo_ctr++;
+	}
+	
 	if (xpar_id>=0) {
 		set_x_input_parameter(tX_seqpar :: get_sp_by_persistence_id(xpar_id));
 	}
