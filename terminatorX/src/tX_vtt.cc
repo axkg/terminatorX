@@ -1798,6 +1798,13 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 	return 0;
 }
 
+void vtt_class :: delete_all()
+{
+	while (main_list.size()) {
+		delete((*main_list.begin()));
+	}
+}
+
 
 int vtt_class :: load_all(xmlDocPtr doc, char *fname) {
 	xmlNodePtr root=xmlDocGetRootElement(doc);
@@ -1830,9 +1837,7 @@ int vtt_class :: load_all(xmlDocPtr doc, char *fname) {
 	}
 	
 	/* delete current tables... */
-	while (main_list.size()) {
-		delete((*main_list.begin()));
-	}
+	delete_all();
 
 	int table_ctr=0;
 	
