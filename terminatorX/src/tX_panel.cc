@@ -62,7 +62,6 @@ void tX_panel_make_label_bold(GtkWidget *widget) {
 
 tX_panel :: tX_panel (const char *name, GtkWidget *par)
 {
-	GtkWidget *pixmap;
 	client_hidden=0;
 	
   	container=par;

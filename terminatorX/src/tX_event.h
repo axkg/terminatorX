@@ -36,22 +36,18 @@
 class tX_event
 {
 	private:
-	float			value;
 	guint32 		timestamp;
 	tX_seqpar		*sp;
+	float			value;
 	
 	public:
-	tX_event(guint32 time, float val, tX_seqpar *sp_in) {
-		timestamp=time;
-		value=val;
-		sp=sp_in;
-	}
-	
+	tX_event(guint32 time, tX_seqpar *sp_in, float val) : 
+		timestamp(time),sp(sp_in),value(val) {}
+
 #ifdef ENABLE_TX_LEGACY		
 	tX_event(FILE *input);
 #endif		
 	static tX_event* load_event(xmlDocPtr, xmlNodePtr);
-	tX_event(tX_seqpar *p, guint32 t, float v) : sp(p),timestamp(t),value(v) {}
 	
 	void store(FILE *rc, gzFile rz, char *indent);
 

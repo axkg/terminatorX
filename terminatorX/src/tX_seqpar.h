@@ -58,18 +58,13 @@ class tX_seqpar
 	float fwd_value;
 	
 	guint32 persistence_id;
-	guint32 touch_timestamp;		
+	guint32 touch_timestamp;
+	bool reverse_midi;
 	void *last_event_recorded;
 	
 	public:
 	/* default constructor */
 	tX_seqpar();
-	/* to initialize with a vtt 
-	tX_seqpar(void *); */
-	/* to initialize with mapping settings */
-	/* tX_seqpar(float max, float min, float scale, int mappable); */
-	/* to initialize with mapping settings AND a vtt 
-	tX_seqpar (void *mytt, float max, float min, float scale, int mappable); */
 	
 	virtual float get_value();
 	void set_mapping_parameters(float max, float min, float scale, int mappable);
@@ -78,6 +73,9 @@ class tX_seqpar
 	void set_vtt(void *);
 	int is_touched() {return touched;}
 	int is_untouched() {return !touched;}
+	
+	bool get_reverse_midi() {return reverse_midi;}
+	void set_reverse_midi(bool reverse) {reverse_midi=reverse;}
 	
 	void do_touch(); /* can't be inline as requires tX_sequencer.h */
 	void touch() { if (!touched) do_touch();}
@@ -157,6 +155,8 @@ class tX_seqpar
 	static gboolean tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gpointer data);
 	
 #ifdef USE_ALSA_MIDI_IN	
+	static gboolean reverse_midi_binding(GtkWidget *widget, gpointer data);
+	
 	static gboolean remove_midi_binding(GtkWidget *widget, gpointer data);
 	static gboolean learn_midi_binding(GtkWidget *widget, gpointer data);	
 	
