@@ -33,6 +33,7 @@
 #include <malloc.h>
 #include "wav_file.h"
 #include "tX_loaddlg.h"
+#include "tX_endian.h"
 
 tx_audiofile :: tx_audiofile()
 {
@@ -180,9 +181,9 @@ int tx_audiofile :: load_piped()
 	{	
 		bytes = fread(w->buffer, 1, SOX_BLOCKSIZE, file);
 		w->used=bytes;
-#ifdef BIG_ENDIAN_MACHINE
+/*#ifdef BIG_ENDIAN_MACHINE
 		swapbuffer((int16_t *) w->buffer, bytes/sizeof(int16_t));
-#endif		
+#endif*/
 		
 		if (bytes)
 		{
@@ -192,9 +193,6 @@ int tx_audiofile :: load_piped()
 			w=newb;
 		}				
 
-#ifdef BIG_ENDIAN_MACHINE
-		//if (!wav_in.has_host_order) swapbuffer(p, bytes/sizeof(int16_t));
-#endif		
 		allbytes+=bytes;			
 	}
 	
@@ -361,10 +359,12 @@ int tx_audiofile :: load_wav()
 
 #ifdef BIG_ENDIAN_MACHINE
 		swapbuffer(p, bytes/sizeof(int16_t));
+#	ifdef ENABLE_DEBUG_OUTPUT
+		if (output) { tX_debug("tX_audiofile::load_wav() swapped %i Bytes [%02x %02x %02x %02x %02x %02x ..]", bytes, (unsigned int) debug_p[0],  (unsigned int) debug_p[1], (unsigned int) debug_p[2], (unsigned int) debug_p[3], (unsigned int) debug_p[4], (unsigned int) debug_p[5]); }
+#	endif
 #endif		
 
 #ifdef ENABLE_DEBUG_OUTPUT
-		if (output) { tX_debug("tX_audiofile::load_wav() swapped %i Bytes [%02x %02x %02x %02x %02x %02x ..]", bytes, (unsigned int) debug_p[0],  (unsigned int) debug_p[1], (unsigned int) debug_p[2], (unsigned int) debug_p[3], (unsigned int) debug_p[4], (unsigned int) debug_p[5]); }
 		output=0;
 #endif
 
