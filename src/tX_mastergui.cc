@@ -1125,7 +1125,7 @@ void note_destroy(GtkWidget *widget, GtkWidget *mbox)
 	gtk_widget_destroy(GTK_WIDGET(mbox));
 }
 
-void tx_note(const char *message, bool isError=false)
+void tx_note(const char *message, bool isError)
 {
 	char buffer[4096]="terminatorX ";
 	if (isError) {
