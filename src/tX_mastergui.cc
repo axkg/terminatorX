@@ -560,19 +560,13 @@ GtkSignalFunc save_tables()
 
 GtkSignalFunc master_volume_changed (GtkWidget *wid, void *d)
 {
-	sp_master_volume.receive_gui_value((float) 2.0-GTK_ADJUSTMENT(wid)->value);
+	sp_master_volume.receive_gui_value((float) GTK_ADJUSTMENT(wid)->value);
 	return NULL;	
 }
 
 GtkSignalFunc master_pitch_changed(GtkWidget *wid, void *d)
 {
 	sp_master_pitch.receive_gui_value((float) GTK_ADJUSTMENT(wid)->value);	
-	return NULL;	
-}
-
-GtkSignalFunc saturate_changed(GtkWidget *w, void *d)
-{
-	vtt_class::enable_saturate (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)));
 	return NULL;	
 }
 
@@ -1357,7 +1351,7 @@ void create_mastergui(int x, int y)
 
 	connect_adj(dumadj, master_volume_changed, NULL);	
 	dummy=gtk_vscale_new(dumadj);
-	//gtk_range_set_inverted(GTK_RANGE(dummy), TRUE);
+	gtk_range_set_inverted(GTK_RANGE(dummy), TRUE);
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), False);
 	gtk_signal_connect(GTK_OBJECT(dummy), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &sp_master_volume);	
 	

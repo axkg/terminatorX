@@ -71,9 +71,6 @@ class vtt_class
 	static f_prec res_master_volume;
 	static f_prec vol_channel_adjust;
 
-	static f_prec saturate_fac;
-	static int do_saturate;	
-	
 	static vtt_class * sync_master;
 	static int master_triggered;
 	static int master_triggered_at;
@@ -270,7 +267,6 @@ class vtt_class
 	static int set_mix_buffer_size(int);
 	static void set_master_volume(f_prec);
 	static void set_master_pitch(f_prec);
-	static void enable_saturate(int);
 	static void focus_no(int);
 	static void focus_next();
 	static void unfocus();
