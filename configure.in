@@ -404,6 +404,8 @@ dnl if test "$enable_dga2" = yes; then
 dnl 	AC_DEFINE(USE_DGA2)
 dnl fi
 
+GNOMEpresent=fl
+
 AC_MSG_CHECKING(for GNOME)
 	AC_MSG_RESULT([in progress])
 	AC_CHECK_PROG(gnomepresent, gnome-name-service, yes, no)
@@ -415,12 +417,12 @@ AC_MSG_CHECKING(for GNOME)
 			gnomedatadir=${datadir}
 		fi
 		AC_SUBST(gnomedatadir)
-		AM_CONDITIONAL(GNOMEpresent, test "$gnomepresent" = yes)
    		AC_MSG_RESULT([Found GNOME - installing terminatorX.desktop.])
 		OPTION_GNOME="yes"
     	else
    		AC_MSG_RESULT([GNOME not found.])
     	fi
+	AM_CONDITIONAL(GNOMEpresent, test "$gnomepresent" = yes)
 
 
 dnl Detecting libxml. Based on dia's test.

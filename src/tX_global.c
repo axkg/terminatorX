@@ -230,8 +230,8 @@ void store_globals() {
 	char indent[]="\t";
 	FILE *rc=NULL;
 	gzFile rz=NULL;
-	_store_compress_xml=0;
 	char tmp_xml_buffer[4096];
+	_store_compress_xml=0;
 	
 	get_rc_name(rc_name);
 
@@ -316,6 +316,9 @@ void load_globals() {
 char *encode_xml(char *dest, const char *src) {
 	int i, t, max;
 	char tmp[4096];
+	int outlen=4096;
+	int inlen;
+	int res;
 	
 	tmp[0]=0;
 	t=0;
@@ -333,16 +336,13 @@ char *encode_xml(char *dest, const char *src) {
 	}
 	tmp[t]=0;
 
-	int outlen=4096;
-	int inlen=t;
-	
-	int res=isolat1ToUTF8((unsigned char *) dest, &outlen, (unsigned char *) tmp, &inlen);
+	inlen=t;
+	res=isolat1ToUTF8((unsigned char *) dest, &outlen, (unsigned char *) tmp, &inlen);
 	dest[outlen]=0;
 	if (res<0) {
 		tX_error("failed to encode string (%s) to UTF-8.", src);
 	}
 	
-	//tX_debug("encode_xml: from \"%s\" to \"%s\".", src, dest); 
 	return dest;
 }
 

@@ -60,5 +60,24 @@ extern GtkWidget *panel_bar;
 void add_to_panel_bar(GtkWidget *);
 void remove_from_panel_bar(GtkWidget *);
 
+class tX_cursor {
+	public:
+	enum cursor_shape {
+		DEFAULT_CURSOR,
+		WAIT_CURSOR,
+		WAIT_A_SECOND_CURSOR,
+		MAX_CURSOR
+	};
+	
+	private:
+	static GdkCursor *cursors[MAX_CURSOR];
+	static cursor_shape current_shape;
+	
+	public:
+	static void set_cursor(cursor_shape shape);
+	static void reset_cursor();
+	static GdkCursor *get_cursor();
+};
+
 extern bool tX_shutdown;
 #endif
