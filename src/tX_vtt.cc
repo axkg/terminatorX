@@ -1990,3 +1990,18 @@ void vtt_class :: hide_control(bool hide) {
 	control_hidden=hide;
 	gui_hide_control_panel(this, hide);	
 }
+
+void vtt_class :: set_sample_rate(int samplerate) {
+	list <vtt_class *> :: iterator vtt;
+	double sr=(double) samplerate;
+	
+	for (vtt=main_list.begin(); vtt!=main_list.end() ; vtt++) {
+		if ((*vtt)->audiofile) {
+			double file_rate=(*vtt)->audiofile->get_sample_rate();
+			(*vtt)->audiofile_pitch_correction=file_rate/sr;
+		} else {
+			(*vtt)->audiofile_pitch_correction=1.0;
+		}
+		(*vtt)->recalc_pitch();
+	}
+}

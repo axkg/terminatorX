@@ -87,6 +87,8 @@ int tX_audiodevice_oss :: open()
 	p =  globals.oss_samplerate;
 	i += ioctl(fd, SOUND_PCM_WRITE_RATE, &p);
 	
+	sample_rate=globals.oss_samplerate;
+	
 	/* Figure actual blocksize.. */
 	
 	i += ioctl(fd, SNDCTL_DSP_GETBLKSIZE, &blocksize);
@@ -193,6 +195,8 @@ int tX_audiodevice_alsa :: open()
 		tX_warning("ALSA: The PCM device \"%s\" doesnt support 44100 Hz playback - using %i instead", pcm_name, hw_rate);
 	}	
 
+	sample_rate=hw_rate;
+	
 	/* Using stereo output */
 	if (snd_pcm_hw_params_set_channels(pcm_handle, hw_params, 2) < 0) {
 		tX_error("ALSA: PCM device \"%s\" does not support stereo operation", pcm_name);
