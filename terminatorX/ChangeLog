@@ -3,6 +3,12 @@ All changes were done by me (Alexander König) if not stated otherwise.
 This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
+[v3.82] (pre-release)
+- applied a fix from Juha Erkkila <erkkila@cc.jyu.fi> that makes tX work on
+  systems that don't have procfs mounted.
+- added an optional Dry/Wet control for all LADSPA plugins. Simply click on the
+  plugin's label to add or remove the additional control.
+
 [v3.81]
 - JACK doesn't seem to like SCHED_FIFO clients so I added a little test that
   will set SCHED_OTHER when jack output was selected. This will work for true

@@ -60,6 +60,14 @@ extern "C" {
 #define tX_error(fmt, args...); { fprintf(stderr, "* tX_error: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
 #define tX_warning(fmt, args...); { fprintf(stderr, "+ tX_warning: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
 
+#ifdef MEM_DEBUG
+#define tX_freemem(ptr, varname, comment); fprintf(stderr, "** free() [%s] at %08x. %s.\n", varname, ptr, comment); free(ptr);
+#define tX_malloc(ptr, varname, comment, size, type); fprintf(stderr, "**[1/2] malloc() [%s]. Size: %i. %s.\n", varname, size, comment); ptr=type malloc(size); fprintf(stderr, "**[2/2] malloc() [%s]. ptr: %08x.\n", varname, ptr);
+#else
+#define tX_freemem(ptr, varname, comment); free(ptr);
+#define tX_malloc(ptr, varname, comment, size, type); ptr=type malloc(size);
+#endif
+
 typedef enum {
 	OSS =0,
 	ALSA = 1,
