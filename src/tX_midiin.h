@@ -53,6 +53,8 @@ class tX_midievent
 		is_noteon = false;
 	}
 	
+	tX_midievent() : channel(0), type(NONE), value(0.0), is_noteon(false) {}
+	
 	/* not being used anyway */
 	// void print( const char* prefix ) const;
 };
