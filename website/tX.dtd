@@ -23,7 +23,7 @@
 <!ELEMENT tt (author, text, ttimages)>
 <!ATTLIST tt 
   title CDATA #REQUIRED>
-<!ELEMENT ttimages (images+)>
+<!ELEMENT ttimages (image+)>
   
 <!ELEMENT tinycomment (nopara)>
 
@@ -55,7 +55,10 @@
 <!ATTLIST rpm
   version CDATA #REQUIRED
   rpmsubversion CDATA #REQUIRED
-  type (src|i386|i586|sparc) #REQUIRED>
+  type (src|i386|i586|sparc) #REQUIRED
+  distribution CDATA #IMPLIED
+  note CDATA #IMPLIED
+  ext CDATA #IMPLIED>
 
 <!ELEMENT general (heading, subtitle, text)>
 <!ELEMENT heading (#PCDATA)>
