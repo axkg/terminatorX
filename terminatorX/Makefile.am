@@ -1,3 +1,5 @@
 AUTOMAKE_OPTIONS = foreign 
-SUBDIRS = src gnome-support doc
+SUBDIRS = src gnome-support doc debian
 SOURCES = README.GNOME README.PERFORMANCE terminatorX.spec terminatorX.spec.in
+
+man_MANS = terminatorX.1

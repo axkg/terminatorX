@@ -385,16 +385,16 @@ int main(int argc, char **argv)
 	else
         printf("3DNow! accelerations available.\n");	
 #endif
-	gtk_set_locale ();
+//	gtk_set_locale ();
         gtk_init (&argc, &argv);
 	
-	gtk_rc_file=fopen(TX_GTKRC, "r");
+/*	gtk_rc_file=fopen(TX_GTKRC, "r");
 	if (gtk_rc_file)
 	{
 		fprintf (stderr, "Using terminatorX gtkrc.\n");
 		fclose(gtk_rc_file);
 		gtk_rc_parse(TX_GTKRC);
-	}
+	} */
 
 	parse_args(&argc, argv); 
 
