@@ -179,7 +179,7 @@ vtt_class :: vtt_class (int do_create_gui)
 	set_output_buffer_size(samples_in_mix_buffer/2);
 	
 	audiofile = NULL;
-	audiofile_pitch_correction=0;
+	audiofile_pitch_correction=1.0;
 	mix_solo=0;
 	mix_mute=0;
 	res_mute=mute;
@@ -236,7 +236,7 @@ tX_audio_error vtt_class :: load_file(char *fname)
 	if (res==TX_AUDIO_SUCCESS) {
 		buffer=audiofile->get_buffer();
 		double file_rate=audiofile->get_sample_rate();
-		audiofile_pitch_correction=file_rate/44100.0;
+		audiofile_pitch_correction=file_rate/((double) last_sample_rate);
 		recalc_pitch();
 		samples_in_buffer=audiofile->get_no_samples();
 		maxpos=audiofile->get_no_samples();
@@ -330,9 +330,7 @@ void vtt_class :: set_pan(f_prec newpan)
 void vtt_class :: set_pitch(f_prec newpitch)
 {
 	rel_pitch=newpitch;
-	res_pitch=globals.pitch*rel_pitch;
-	speed=res_pitch;
-	ec_set_length(ec_length);
+	recalc_pitch();
 }
 
 void vtt_class :: recalc_pitch()
@@ -341,6 +339,7 @@ void vtt_class :: recalc_pitch()
 	res_pitch*=audiofile_pitch_correction;
 	speed=res_pitch;
 	ec_set_length(ec_length);
+	tX_debug("setting pitch: rel: %lf -> res: %lf", rel_pitch, res_pitch);
 }
 
 void vtt_class :: set_autotrigger(int newstate)
@@ -603,7 +602,7 @@ void vtt_class :: render_scratch()
 	
 	int sample;
 	
-	f_prec pos_a_f;
+	d_prec pos_a_f;
 	
 	f_prec amount_a;
 	f_prec amount_b;
@@ -1791,4 +1790,25 @@ void vtt_class :: set_sample_rate(int samplerate) {
 	int no_samples=(int) (sr*0.001); // Forcing 1 ms blocksize
 	
 	set_mix_buffer_size(no_samples);	
+}
+
+void vtt_class :: adjust_to_master_pitch(int master_cycles, int cycles, bool create_event) {
+	if (!sync_master) return;
+	if (this==sync_master) return;
+	if (!sync_master->audiofile) return;
+	if (!audiofile) return;
+	
+	double master_time=((double) master_cycles)/sync_master->rel_pitch*sync_master->audiofile->get_no_samples()/((double) sync_master->audiofile->get_sample_rate());
+	double my_rel_pitch=((audiofile->get_no_samples()/((double) audiofile->get_sample_rate()))*((double) cycles))/master_time;
+	
+	if (create_event) {
+		sp_pitch.do_exec(my_rel_pitch);
+		sp_pitch.record_value(my_rel_pitch);
+	} else {
+		sp_pitch.do_exec(my_rel_pitch);
+	}
+	
+	tX_debug("master_time: %lf, res_pitch: %lf - res time: %lf, (%lf, %lf)", master_time, my_rel_pitch, ((double) cycles)*my_rel_pitch*audiofile->get_no_samples()/((double) audiofile->get_sample_rate()), (double) sync_master->audiofile->get_sample_rate(),(double)  audiofile->get_sample_rate());
+	
+	sp_pitch.update_graphics();
 }
