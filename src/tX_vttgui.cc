@@ -824,13 +824,13 @@ void build_vtt_gui(vtt_class *vtt)
 	g->mouse_mapping=gtk_button_new_with_label("Mouse Mapping");
 	gtk_widget_show(g->mouse_mapping);
 	gui_set_tooltip(g->mouse_mapping, "Determines what parameters should be affected on mouse moition in mouse grab mode.");
-	gtk_box_pack_start(GTK_BOX(tempbox), g->mouse_mapping, WID_DYN);
+	gtk_box_pack_start(GTK_BOX(tempbox2), g->mouse_mapping, WID_FIX);
 
 #ifdef USE_ALSA_MIDI_IN
 	g->midi_mapping=gtk_button_new_with_label("MIDI Mapping");
 	gtk_widget_show(g->midi_mapping);
 	gui_set_tooltip(g->midi_mapping, "Determines what parameters should be bound to what MIDI events.");
-	gtk_box_pack_start(GTK_BOX(tempbox), g->midi_mapping, WID_DYN);
+	gtk_box_pack_start(GTK_BOX(tempbox2), g->midi_mapping, WID_FIX);
 	
 	if (!tX_engine::get_instance()->get_midi()->get_is_open()) {
 		gtk_widget_set_sensitive(g->midi_mapping, FALSE);
