@@ -59,6 +59,8 @@ int tx_mouse :: grab() {
 
 	if (grabbed) return(0);
 
+	warp_override=false;
+	
 	dpy=XOpenDisplay(NULL);
 	if (!dpy)
 	{
@@ -299,7 +301,12 @@ int tx_mouse :: check_event()
 		switch(xev.type)
 		{
 			case MotionNotify:
-				vtt->xy_input(((f_prec) xmot->x_root)*warp,((f_prec) xmot->y_root)*warp);
+				
+				if (warp_override) {
+					vtt->sp_speed.handle_mouse_input(((f_prec) xmot->x_root)*globals.mouse_speed*warp);
+				} else {
+					vtt->xy_input((f_prec) xmot->x_root, (f_prec) xmot->y_root);
+				}
 				break;
 			
 			case ButtonPress:
@@ -357,6 +364,7 @@ int tx_mouse :: check_event()
 					case XK_w:
 					vtt->sp_mute.receive_input_value(1);
 					case XK_f: 
+					warp_override=true;
 					warp=((float) vtt->samples_in_buffer)/TX_MOUSE_SPEED_WARP;	
 					vtt->set_scratch(1);
 					break;
@@ -398,6 +406,7 @@ int tx_mouse :: check_event()
 					case XK_w:
 					vtt->sp_mute.receive_input_value(0);
 					case XK_f: warp=TX_MOUSE_SPEED_NORMAL;
+					warp_override=false;
 					vtt->set_scratch(0);
 					break;					
 				}

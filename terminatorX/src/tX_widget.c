@@ -98,21 +98,44 @@ static void gtk_tx_class_init(GtkTxClass * gclass) {
 //	widget_class->motion_notify_event = gtk_tx_motion_notify;
 }
 
-void gtk_tx_mk_col(GtkTx * tx, GdkColor * col, float r, float g, float b) {
-	float max = 65535.0;
+#define COL_BG_FOCUS     0
+#define COL_BG_NO_FOCUS  1
+#define COL_FG_FOCUS     2
+#define COL_FG_NO_FOCUS  3
+#define COL_CURSOR       4
+#define COL_CURSOR_MUTE  5
+
+void gtk_tx_update_colors(GtkTx *tx)
+{
+	int i;
 	
-	col->red = (gint) (r * max);
-	col->green = (gint) (g * max);
-	col->blue = (gint) (b * max);
-		
-	gdk_colormap_alloc_color(gtk_widget_get_colormap(GTK_WIDGET(tx)), col, 0, 1);
+	if (tx->colors_allocated) {
+		gdk_colormap_free_colors(gtk_widget_get_colormap(GTK_WIDGET(tx)), tx->colors, 6);
+	}
+	
+	gdk_color_parse(globals.wav_display_bg_focus, &tx->colors[COL_BG_FOCUS]);
+	gdk_color_parse(globals.wav_display_bg_no_focus, &tx->colors[COL_BG_NO_FOCUS]);
+	
+	gdk_color_parse(globals.wav_display_fg_focus, &tx->colors[COL_FG_FOCUS]);
+	gdk_color_parse(globals.wav_display_fg_no_focus, &tx->colors[COL_FG_NO_FOCUS]);
+	
+	gdk_color_parse(globals.wav_display_cursor, &tx->colors[COL_CURSOR]);
+	gdk_color_parse(globals.wav_display_cursor_mute, &tx->colors[COL_CURSOR_MUTE]);
+	
+	for (i=0; i<6; i++) {
+		gdk_colormap_alloc_color(gtk_widget_get_colormap(GTK_WIDGET(tx)), &tx->colors[i], 0, 1);
+	}
+
+	tx->colors_allocated=1;
 }
+
 
 static void gtk_tx_init(GtkTx * tx) {
 	GdkColormap *priv;
 
 	tx->disp_data = NULL;
 	tx->data = NULL;
+	tx->colors_allocated=0;
 	tx->samples = 0;
 	tx->do_showframe = 0;
 #ifdef USE_DISPLAY_NORMALIZE
@@ -121,17 +144,13 @@ static void gtk_tx_init(GtkTx * tx) {
 	
 	priv = gdk_colormap_new(gtk_widget_get_visual(GTK_WIDGET(tx)), 6);
 	gtk_widget_set_colormap(GTK_WIDGET(tx), priv);
+
+	memset(tx->colors, 0, sizeof(tx->colors));
 	
-	gtk_tx_mk_col(tx, &tx->bg, 0, 0, 0);
-	gtk_tx_mk_col(tx, &tx->fg, 0, 1, 0);
-	gtk_tx_mk_col(tx, &tx->focus_fg, 1, 1, 0);
-	gtk_tx_mk_col(tx, &tx->focus_bg, 0, 0, 0.3);	
+	gtk_tx_update_colors(tx);
 	
-	gtk_tx_mk_col(tx, &tx->busy, 1, 0.4, 0.4);
-	gtk_tx_mk_col(tx, &tx->mute, 1, 1, 1);
-	
-	tx->current_fg=&tx->fg;
-	tx->current_bg=&tx->bg;
+	tx->current_fg=&tx->colors[COL_FG_NO_FOCUS];
+	tx->current_bg=&tx->colors[COL_BG_NO_FOCUS];
 	
 	tx->spp=1;
 	tx->lastmute=-1;
@@ -465,8 +484,8 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 
 	x = current_pos_x;
 
-	if (mute) gdk_gc_set_foreground(gc, &tx->mute);
-	else gdk_gc_set_foreground(gc, &tx->busy);
+	if (mute) gdk_gc_set_foreground(gc, &tx->colors[COL_CURSOR_MUTE]);
+	else gdk_gc_set_foreground(gc, &tx->colors[COL_CURSOR]);
 
 	gdk_draw_line(window, gc, x, 0, x, ymax);
 	
@@ -498,11 +517,11 @@ void gtk_tx_cleanup_pos_display(GtkTx * tx) {
 
 void gtk_tx_show_frame(GtkTx *tx, int show) {
 	if (show) {
-		tx->current_fg=&tx->focus_fg;
-		tx->current_bg=&tx->focus_bg;
+		tx->current_fg=&tx->colors[COL_FG_FOCUS];
+		tx->current_bg=&tx->colors[COL_BG_FOCUS];
 	} else {
-		tx->current_fg=&tx->fg;
-		tx->current_bg=&tx->bg;
+		tx->current_fg=&tx->colors[COL_FG_NO_FOCUS];
+		tx->current_bg=&tx->colors[COL_BG_NO_FOCUS];
 	}
 	
 	gtk_widget_queue_draw(GTK_WIDGET(tx));	

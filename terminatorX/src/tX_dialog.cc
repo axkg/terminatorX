@@ -38,6 +38,9 @@
 #include "tX_glade_interface.h"
 #include "tX_glade_support.h"
 
+#include "tX_widget.h"
+#include "tX_flash.h"
+
 #ifndef WIN32
 #include <X11/extensions/XInput.h>
 #include <X11/X.h>
@@ -46,6 +49,7 @@
 #include "license.c"
 #include "tX_mastergui.h"
 #include "version.h"
+#include "tX_vtt.h"
 #include <dirent.h>
 
 extern char *logo_xpm[];
@@ -109,12 +113,43 @@ void apply_options(GtkWidget *dialog) {
 	globals.update_idle=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "update_idle")));
 	globals.flash_response=gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "vumeter_decay")));
 	
+	/* Audio Colors */
+	
+	strcpy(globals.wav_display_bg_focus, (char *) g_object_get_data(G_OBJECT(lookup_widget(dialog, "wav_display_bg_focus")), "Color"));
+	strcpy(globals.wav_display_bg_no_focus, (char *) g_object_get_data(G_OBJECT(lookup_widget(dialog, "wav_display_bg_no_focus")), "Color"));
+	strcpy(globals.wav_display_fg_focus, (char *) g_object_get_data(G_OBJECT(lookup_widget(dialog, "wav_display_fg_focus")), "Color"));
+	strcpy(globals.wav_display_fg_no_focus, (char *) g_object_get_data(G_OBJECT(lookup_widget(dialog, "wav_display_fg_no_focus")), "Color"));
+	strcpy(globals.wav_display_cursor, (char *) g_object_get_data(G_OBJECT(lookup_widget(dialog, "wav_display_cursor")), "Color"));
+	strcpy(globals.wav_display_cursor_mute, (char *) g_object_get_data(G_OBJECT(lookup_widget(dialog, "wav_display_cursor_mute")), "Color"));
+
+	/* VU Colors */ 
+	strcpy(globals.vu_meter_bg, (char *) g_object_get_data(G_OBJECT(lookup_widget(dialog, "vu_meter_bg")), "Color"));
+	strcpy(globals.vu_meter_loud, (char *) g_object_get_data(G_OBJECT(lookup_widget(dialog, "vu_meter_loud")), "Color"));
+	strcpy(globals.vu_meter_normal, (char *) g_object_get_data(G_OBJECT(lookup_widget(dialog, "vu_meter_normal")), "Color"));
+
+	globals.vu_meter_border_intensity=gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "vu_meter_border_intensity")));
+	
 	/* Misc */
 	strcpy(globals.file_editor, gtk_entry_get_text(GTK_ENTRY(lookup_widget(dialog, "soundfile_editor"))));
 	strcpy(globals.lrdf_path, gtk_entry_get_text(GTK_ENTRY(lookup_widget(dialog, "ladspa_rdf_path"))));
 	globals.compress_set_files=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "compress_set_files")))==TRUE);	
 	globals.prelis=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "prelisten_enabled")))==TRUE);
 	globals.restore_midi_connections=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "reconnect_enabled")))==TRUE);
+	
+	/* update colors */
+	std::list<vtt_class *>::iterator vtt;
+	
+	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++) {
+		gtk_tx_update_colors(GTK_TX((*vtt)->gui.display));
+		gtk_widget_queue_draw((*vtt)->gui.display);
+		gtk_tx_flash_update_colors(GTK_TX_FLASH((*vtt)->gui.flash));
+		gtk_widget_queue_draw((*vtt)->gui.flash);
+	}
+	
+	gtk_tx_flash_update_colors(GTK_TX_FLASH(main_flash_l));
+	gtk_widget_queue_draw(main_flash_l);
+	gtk_tx_flash_update_colors(GTK_TX_FLASH(main_flash_r));
+	gtk_widget_queue_draw(main_flash_r);
 }
 
 
@@ -265,8 +300,26 @@ GList *get_xinput_devices_list() {
 	return xinput_devices;
 }
 
+#define MAX_COLORS 10
+char *colors[MAX_COLORS]={ NULL };
+
+#define set_color_button(s,g); \
+	sprintf(tmp, "<span foreground=\"%s\"><b>%s</b></span>", s, s);\
+	gtk_label_set_markup(GTK_LABEL(gtk_container_get_children(GTK_CONTAINER(lookup_widget(dialog, g)))->data), tmp);\
+	strcpy(colors[ctr], s);\
+	g_object_set_data(G_OBJECT(lookup_widget(dialog, g)), "Color", colors[ctr]);\
+	ctr++;
+
+
 void init_tx_options(GtkWidget *dialog) {
 	GtkTooltips *tooltips=GTK_TOOLTIPS(lookup_widget(dialog, "tooltips"));
+	
+	if (colors[0]==NULL) {
+		for (int i=0; i<MAX_COLORS; i++) {
+			colors[i]=new char[8];
+			colors[i][0]=0;
+		}
+	}
 	
 	/* Audio */
 	switch (globals.audiodevice_type) {		
@@ -309,7 +362,7 @@ void init_tx_options(GtkWidget *dialog) {
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "oss_buffersize")), globals.oss_buff_size);
 	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "oss_buffersize"), "Set the size of the kernel level audio buffers. On slower systems you might have to increase this value (if you hear \"clicks\" or drop-outs). Lower values mean lower latency though.", NULL);	
 	gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "oss_samplerate")), get_sampling_rates_list());
-	char tmp[32];
+	char tmp[64];
 	sprintf(tmp, "%i", globals.oss_samplerate);
 	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "oss_samplerate"))->entry), tmp);
 	
@@ -336,11 +389,6 @@ void init_tx_options(GtkWidget *dialog) {
 	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "alsa_free_hwstats")), globals.alsa_free_hwstats);
 	
-	/* TODO: Samplerate!
-		ALSA
-		JACK
-	*/
-	
 	/* Input */
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "xinput_enable")), globals.xinput_enable);
 	
@@ -357,6 +405,7 @@ void init_tx_options(GtkWidget *dialog) {
 	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "vtt_inertia"),"This value defines how fast the turntables will adapt to the speed input - the higher this value, the longer it will take the turntable to actually reach the target speed.", NULL);	
 
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget(dialog, "filename_length")), globals.filename_length);
+
 	/* User Interface */ 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "startup_nagbox")), globals.show_nag);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "mainwin_tooltips")), globals.tooltips);
@@ -382,6 +431,23 @@ void init_tx_options(GtkWidget *dialog) {
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "vumeter_decay")), globals.flash_response);
 	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "vumeter_decay"), "Defines how fast the maximum values of the VU meters should be decayed.", NULL);	
 
+	/* Audio Colors */
+	int ctr=0;
+	
+	set_color_button(globals.wav_display_bg_focus, "wav_display_bg_focus");
+	set_color_button(globals.wav_display_bg_no_focus, "wav_display_bg_no_focus");
+	set_color_button(globals.wav_display_fg_focus, "wav_display_fg_focus");
+	set_color_button(globals.wav_display_fg_no_focus, "wav_display_fg_no_focus");
+	set_color_button(globals.wav_display_cursor, "wav_display_cursor");
+	set_color_button(globals.wav_display_cursor_mute, "wav_display_cursor_mute");
+	
+	/* VU Colors */
+	set_color_button(globals.vu_meter_bg, "vu_meter_bg");
+	set_color_button(globals.vu_meter_loud, "vu_meter_loud");
+	set_color_button(globals.vu_meter_normal, "vu_meter_normal");
+	
+	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "vu_meter_border_intensity")), globals.vu_meter_border_intensity);
+	
 	/* Misc */
 	gtk_entry_set_text(GTK_ENTRY(lookup_widget(dialog, "soundfile_editor")), globals.file_editor);
 	gtk_entry_set_text(GTK_ENTRY(lookup_widget(dialog, "ladspa_rdf_path")), globals.lrdf_path);

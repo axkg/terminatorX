@@ -144,6 +144,20 @@ void set_global_defaults() {
 	globals.alsa_free_hwstats=1;
 	globals.filename_length=20;
 	globals.restore_midi_connections=1;
+	
+	strcpy(globals.wav_display_bg_focus, "#00004C");
+	strcpy(globals.wav_display_bg_no_focus, "#000000");
+
+	strcpy(globals.wav_display_fg_focus, "#FFFF00");
+	strcpy(globals.wav_display_fg_no_focus, "#00FF00");
+
+	strcpy(globals.wav_display_cursor, "#FF6666");
+	strcpy(globals.wav_display_cursor_mute, "#FFFFFF");	
+	
+	strcpy(globals.vu_meter_bg, "#000000");
+	strcpy(globals.vu_meter_loud, "#FF0000");
+	strcpy(globals.vu_meter_normal, "#00FF00");	
+	globals.vu_meter_border_intensity=0.5;
 }
 
 int load_globals_xml() {
@@ -226,6 +240,19 @@ int load_globals_xml() {
 			restore_int("confirm_events", globals.confirm_events);
 			restore_float("vtt_inertia", globals.vtt_inertia);
 			restore_int("restore_midi_connections", globals.restore_midi_connections);
+			
+			restore_string("wav_display_bg_focus", globals.wav_display_bg_focus);
+			restore_string("wav_display_bg_no_focus", globals.wav_display_bg_no_focus);
+			restore_string("wav_display_fg_focus", globals.wav_display_fg_focus);
+			restore_string("wav_display_fg_no_focus", globals.wav_display_fg_no_focus);
+			restore_string("wav_display_cursor", globals.wav_display_cursor);
+			restore_string("wav_display_cursor_mute", globals.wav_display_cursor_mute);
+			
+			restore_string("vu_meter_bg", globals.vu_meter_bg);
+			restore_string("vu_meter_normal", globals.vu_meter_normal);
+			restore_string("vu_meter_loud", globals.vu_meter_loud);
+			
+			restore_float("vu_meter_border_intensity", globals.vu_meter_border_intensity);
 
 #ifdef USE_ALSA_MIDI_IN
 			if (!elementFound && (xmlStrcmp(cur->name, (xmlChar *) "midi_connections")==0)) {
@@ -327,6 +354,20 @@ void store_globals() {
 
 		store_string("last_path", globals.current_path);
 		store_int("restore_midi_connections", globals.restore_midi_connections);
+
+
+		store_string("wav_display_bg_focus", globals.wav_display_bg_focus);
+		store_string("wav_display_bg_no_focus", globals.wav_display_bg_no_focus);
+		store_string("wav_display_fg_focus", globals.wav_display_fg_focus);
+		store_string("wav_display_fg_no_focus", globals.wav_display_fg_no_focus);
+		store_string("wav_display_cursor", globals.wav_display_cursor);
+		store_string("wav_display_cursor_mute", globals.wav_display_cursor_mute);
+
+		store_string("vu_meter_bg", globals.vu_meter_bg);
+		store_string("vu_meter_normal", globals.vu_meter_normal);
+		store_string("vu_meter_loud", globals.vu_meter_loud);
+			
+		store_float("vu_meter_border_intensity", globals.vu_meter_border_intensity);
 
 #ifdef USE_ALSA_MIDI_IN
 		tX_midiin_store_connections(rc, indent);
