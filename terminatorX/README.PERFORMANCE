@@ -11,23 +11,33 @@ In Detail:
 1. Don't use pixmapped nor other "fat" gtk+-themes.
 ---------------------------------------------------
 
-The sequencer brings a lot of additional GUI activity. Now the "selfmade"
-widgets perform pretty good (no matter what theme you use) but for example
-scale widgets are extremly slow with pixmap-themes. The problem is that the
-gtk-pixmap engine has to stretch the images and stretching images is a very
-CPU-intensive task. So it's best to not use those themes at all.
-
-Now just recently I installed terminatorX on PIII 500 and wondered why it
-performed like running on a 486 machine. Now I found that those new fancy
-gtk+-themes that bring their own code to draw the widgets eat performance
-like mad, too. This even hurts the performance of tX' very own widgets and
-therefore hurts playback performance quite a lot. So you shouldn't use these 
-kind of themes, neither.
+terminatorX involves quite some GUI activity, so it's desirable that drawing
+happens fast. Some gtk+ engines can slow down drawing signifcantly
 
 2. Install suid root
 --------------------
 
-Update: This is now considered dangerous and not recommended.
+Note: Installing a program suid-root is always potentially dangerous. However
+a program needs special privileges to acquire realtime scheduling (which 
+improves playback quality signifcantly). Since release 3.81 terminatorX provides
+two methods of running suid root:
+
+- Linux' POSIX capabilities: when capabilities support is available at
+  compile time (requires libcap) terminatorX can make use of Linux' POSIX
+  capabilities. The binary has to be installed suid root but the program
+  will drop root privileges right on startup - after aquiring the CAP_SYS_NICE
+  capability.
+  
+- The "old" suid-root way: terminatorX starts the engine thread with root
+  privileges (and realtime scheduling). Then both threads drop root privileges.
+  Unfortunately the standard Linux 2.4 pthreads implementation has an extra
+  "manager" thread that keeps running as root. So it might be possible to gain
+  root privileges somehow. This has been shown before - the detected holes 
+  have been close, but I'm confident that others do exist.
+
+As the 2nd approach is more dangerous you have to explictly enable it at
+compile time (run configure with --enable-suidroot). However both methods might
+be exploitable somehow - so your not getting any garanties either way.
 
 3. Compile an optimized binary
 ------------------------------
@@ -46,7 +56,8 @@ in the options dialog.
 5. Optimize your kernel
 -----------------------
 
-2.5 Kernels have much lower latency than older Kernels - if you want to work 
-with a stable Kernel however I recommend patching the 2.4 Series with Kolivas
-ck patches. They improve terminatorX performace signifcally - if you dont 
-forget to renice your X to '0' (see Kolivas' FAQ).
+2.6 Kernels have much lower latency than older Kernels - if you want to work 
+with a stable Kernel however I recommend patching the 2.4 Series with Con 
+Kolivas' "ck" patches. They improve terminatorX performace signifcantly - if you
+dont forget to renice your X to '0' (see Con Kolivas' FAQ at 
+http://members.optusnet.com.au/ckolivas/kernel/).

@@ -51,6 +51,11 @@
 #include "version.h"
 #include "tX_vtt.h"
 #include <dirent.h>
+#include "tX_engine.h"
+
+#ifdef USE_SCHEDULER
+#include <sched.h>
+#endif
 
 #ifdef USE_JACK
 extern void jack_check();
@@ -72,6 +77,7 @@ void apply_options(GtkWidget *dialog) {
 	} else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "jack_driver")))) {
 		globals.audiodevice_type=JACK;
 	}
+	globals.use_realtime=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "use_realtime")));
 	
 	/* Audio: OSS */
 	strcpy(globals.oss_device, gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "oss_audio_device"))->entry)));
@@ -343,6 +349,8 @@ void init_tx_options(GtkWidget *dialog) {
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "oss_driver")), 1);
 			break;
 	}
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "use_realtime")), globals.use_realtime);
 	
 #ifndef USE_OSS
 	gtk_widget_set_sensitive(lookup_widget(dialog, "oss_driver"), 0);
@@ -614,6 +622,35 @@ void show_about(int nag)
 		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
 		add_about_wid_fix(label);
 		
+#ifdef 	USE_SCHEDULER
+		int prio=sched_getscheduler(tX_engine::get_instance()->get_pid());
+		char prio_str[32]="";
+		
+		switch (prio) {
+			case SCHED_OTHER:
+				strcpy(prio_str, "SCHED_OTHER");
+				break;
+			
+			case SCHED_RR:
+				strcpy(prio_str, "SCHED_RR");
+				break;
+			
+			case SCHED_FIFO:
+				strcpy(prio_str, "SCHED_FIFO");
+				break;
+			
+			default:
+				sprintf(prio_str, "UNKOWN (%i)", prio);
+		}
+		
+		sprintf(buffer, "Audio engine scheduling policy: %s.\n(Note: SCHED_FIFO equals realtime scheduling.)", prio_str);
+
+		label=gtk_label_new(buffer);
+
+		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
+		add_about_wid_fix(label);
+#endif
+
 		sep=gtk_hseparator_new();
 		add_about_wid_fix(sep);
 
@@ -640,7 +677,7 @@ void show_about(int nag)
 		gtk_text_buffer_insert_with_tags_by_name(tbuffer, &iter, license, -1, "courier", NULL);
 		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(text), 5);
 		gtk_text_view_set_right_margin(GTK_TEXT_VIEW(text), 5);
-		gtk_widget_set_size_request(GTK_WIDGET(text), 700, 220);
+		gtk_widget_set_size_request(GTK_WIDGET(text), 640, 200);
 		gtk_widget_show(text);		
 		
 		gtk_box_pack_start(GTK_BOX(hbox), scroll, WID_DYN);

@@ -2,7 +2,7 @@ LIBS=@X_LIBS@ @GTK_LIBS@ @LIBS@
 
 SUBDIRS = gui_icons smallknob
 
-EXTRA_CFLAGS=-D_REENTRANT -DGTK_DISABLE_DEPRECATED -DGDK_DISABLE_DEPRECATED -DG_DISABLE_DEPRECATED
+EXTRA_CFLAGS=-D_REENTRANT @DEPRECATED_FLAGS@
 AM_CFLAGS=@CFLAGS@ @GTK_CFLAGS@ $(EXTRA_CFLAGS)
 AM_CXXFLAGS=@CFLAGS@ @GTK_CFLAGS@  $(EXTRA_CFLAGS)
 
@@ -37,4 +37,5 @@ terminatorX_SOURCES =	tX_endian.c tX_dialog.cc tX_widget.c wav_write.c \
 			tX_midiin.h tX_midiin.cc tX_glade_interface.cc \
 			tX_glade_interface.h tX_glade_callbacks.cc \
 			tX_glade_callbacks.h tX_glade_support.cc \
-			tX_glade_support.h tX_ladspa_class.h tX_ladspa_class.cc
+			tX_glade_support.h tX_ladspa_class.h tX_ladspa_class.cc \
+			tX_capabilities.h tX_capabilities.cc
