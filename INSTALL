@@ -80,6 +80,27 @@ Step 1: Configure terminatorX.
 		them - or check your distribution first, AFAIK all bring these
 		tools nowaday.
 		
+		--enable-mad
+		
+		This will make terminatorX use the MPEG Audio Decoder library if 
+		it's detected. This allows terminatorX to load mp3 files
+		significantly faster than with the mpg123 method. Additionally
+		terminatorX will find out about the sampling rate of an mp3 file
+		and adjust the playback speed accordingly.
+		
+		--enable-vorbis
+		
+		This will make terminatorX use the OGG Vobris libraries to load
+		OGG files directly. This method has the same advantages over 
+		loading through ogg123 as the "mad" method has over loading 
+		through mpg123.
+		
+		--enable-audiofile
+		
+		This enables the use of libaudiofile on loading audio files.
+		The library supports a wide range of common audio file formats
+		(eg WAV/AIFF/AU etc) therefor its use highly recommended.
+		
 		--enable-wav
 		
 		This enables the builtin wav routines. They load 16Bit/44Khz
