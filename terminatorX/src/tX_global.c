@@ -125,7 +125,7 @@ void set_global_defaults() {
 #endif	
 #endif		
 	globals.use_stdout_cmdline=0;
-	globals.current_path = NULL;
+	strcpy(globals.current_path, "");
 	globals.pitch=1.0;
 	globals.volume=1.0;
 	
@@ -213,6 +213,7 @@ int load_globals_xml() {
 			restore_string("record_filename", globals.record_filename);
 			restore_string("file_editor", globals.file_editor);
 			restore_string("lrdf_path", globals.lrdf_path);
+			restore_string("last_path", globals.current_path);
 			
 			restore_int("compress_set_files", globals.compress_set_files);
 			restore_int("fullscreen_enabled", globals.fullscreen_enabled);
@@ -307,6 +308,8 @@ void store_globals() {
 		store_int("fullscreen_enabled", globals.fullscreen_enabled);
 		store_int("confirm_events", globals.confirm_events);
 		store_float("vtt_inertia", globals.vtt_inertia);
+
+		store_string("last_path", globals.current_path);
 
 		fprintf(rc,"</terminatorXrc>\n");
 	}
