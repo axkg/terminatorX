@@ -4,12 +4,8 @@ This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.72]
-- Well, I am allowed to change my mind, aren't I? Anyway, 3DNow! enhanced
-  mixing is back. I virtually "ported" the old code to the new stereo
-  algorithm. Ensure you run configure with the --enable-3dnow switch
-  if your CPU supports 3DNow - it accelerates mixing quite a lot.
 - Applied a patch from Matthew Evans <activesx@hotmail.com> that introduces 
-  support for Ogg Vorbis audiofiles. It requires ogg123 and sox to work.
+  support for Ogg Vorbis audiofiles. It requires ogg123 > RC2 and sox to work.
   Autodetection is supported via configure (--enable-ogg123).
 - Experimental support for input devices other than the core-pointer
   under XFree86 > 4. This uses the xsetpointer executable that comes with
@@ -24,6 +20,11 @@ changed.
   from the turntable's trigger menu, the keyboard short-cuts (alt/strg), or
   your middle mouse button.
 - fixed a bug that produced corrupt wavfiles on big endian machines
+- some minor fixes to make terminatorX compile with newer gcc releases
+- Well, I am allowed to change my mind, aren't I? Anyway, 3DNow! is back.
+  Nevertheless newer gcc releases seem to have a bug in handling movq and
+  the current 3DNow! stereo implementation does not seem to be very efficient.
+  So use --enable-3dnow only if you want to help me improve perfomance.
 
 [v3.71]
 - applied a big patch from Adrian Reber (adrian@lisas.de). This patch includes:
