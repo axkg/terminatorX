@@ -62,11 +62,14 @@ void init_head(wav_sig *info){
 #endif
 	*(int32_t *)&info->head[16] = tmp32;
 	
-	tmp16=1;
+/*	tmp16=1;
 #ifdef BIG_ENDIAN_MACHINE	
 	swap16(&tmp16);
 #endif
 	*(int16_t *)&info->head[20] = tmp16;
+*/
+	info->head[20] = 1;
+	info->head[21] = 0;
 	
   	info->head[22] = info->chans;
 	info->head[23] = 0;	

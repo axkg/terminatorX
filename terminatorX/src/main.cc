@@ -265,6 +265,8 @@ int main(int argc, char **argv)
 	load_knob_pixs(main_window);
 #endif	
 
+//	gdk_input_init();
+
 	gtk_main();
 
 	store_globals();

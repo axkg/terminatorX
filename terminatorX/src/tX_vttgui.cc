@@ -397,27 +397,38 @@ void client_setup_number(GtkWidget *wid, vtt_class *vtt)
 	vtt->sp_sync_cycles.receive_gui_value(cycles);
 }
 
-/*
-void control_changed(GtkWidget *wid, vtt_class *vtt)
+void mute_volume(GtkWidget *widget, vtt_class *vtt)
 {
-	int x,y;
-	vtt_gui *g=&vtt->gui;
-	
-	if (GTK_TOGGLE_BUTTON(g->x_scratch)->active) x=CONTROL_SCRATCH;
-	else if (GTK_TOGGLE_BUTTON(g->x_volume)->active) x=CONTROL_VOLUME;
-	else if (GTK_TOGGLE_BUTTON(g->x_lp_cutoff)->active) x=CONTROL_CUTOFF;
-	else if (GTK_TOGGLE_BUTTON(g->x_ec_feedback)->active) x=CONTROL_FEEDBACK;
-	else if (GTK_TOGGLE_BUTTON(g->x_nothing)->active) x=CONTROL_NOTHING;
-
-	if (GTK_TOGGLE_BUTTON(g->y_scratch)->active) y=CONTROL_SCRATCH;
-	else if (GTK_TOGGLE_BUTTON(g->y_volume)->active) y=CONTROL_VOLUME;
-	else if (GTK_TOGGLE_BUTTON(g->y_lp_cutoff)->active) y=CONTROL_CUTOFF;
-	else if (GTK_TOGGLE_BUTTON(g->y_ec_feedback)->active) y=CONTROL_FEEDBACK;
-	else if (GTK_TOGGLE_BUTTON(g->y_nothing)->active) y=CONTROL_NOTHING;
-	
-	vtt->set_controls(x,y);
+       if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)))
+	       vtt->set_mute(1);
+       else
+	       vtt->set_mute(0);
+       //vtt->sp_volume.receive_gui_value(0);
 }
-*/
+
+void solo_vtt(GtkWidget *widget, vtt_class *vtt)
+{
+       list <vtt_class *> :: iterator it_vtt;
+
+       if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
+	       
+	       for (it_vtt=vtt_class::main_list.begin(); it_vtt!=vtt_class::main_list.end(); it_vtt++) {
+		       (*it_vtt)->set_mute(1);
+		       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON((*it_vtt)->gui.mute), TRUE);
+	       }
+	       
+	       vtt->set_mute(0);
+	       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(vtt->gui.mute), FALSE);
+
+       }
+       else {
+	       for (it_vtt=vtt_class::main_list.begin(); it_vtt!=vtt_class::main_list.end(); it_vtt++) {
+		       (*it_vtt)->set_mute(0);
+		       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON((*it_vtt)->gui.mute), FALSE);
+	       }
+       }
+
+}      
 
 void vg_display_xcontrol(vtt_class *vtt)
 {
@@ -892,6 +903,17 @@ void build_vtt_gui(vtt_class *vtt)
 	g->pand=new tX_extdial("Pan", g->pan);
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->pand->get_widget(), WID_FIX);
 	gui_set_tooltip(g->pand->get_entry(), "Specifies the position of this turntable within the stereo spectrum: -1 -> left, 0-> center, 1->right.");
+
+       g->mute=gtk_check_button_new_with_label("Mute");
+       gtk_box_pack_start(GTK_BOX(tempbox2), g->mute, WID_FIX);
+       gtk_signal_connect(GTK_OBJECT(g->mute),"clicked", (GtkSignalFunc) mute_volume, vtt);
+       gtk_widget_show(g->mute);
+
+       g->solo=gtk_check_button_new_with_label("Solo");
+       gtk_box_pack_start(GTK_BOX(tempbox2), g->solo, WID_FIX);
+       gtk_signal_connect(GTK_OBJECT(g->solo),"clicked", (GtkSignalFunc) solo_vtt, vtt);
+       gtk_widget_show(g->solo);
+       
 
 	tempbox2=gtk_hbox_new(FALSE,0);
 	gtk_widget_show(tempbox2);
