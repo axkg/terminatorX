@@ -1278,6 +1278,9 @@ int  vtt_class :: save(FILE *rc, gzFile rz, char *indent) {
 	store_bool("mix_solo", mix_solo);
 	store_float("audio_x_zoom", gui_get_audio_x_zoom(this));
 	
+	GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW (gui.scrolled_win));
+	store_float("control_adjustment", gtk_adjustment_get_value(adj));
+	
 	tX_store("%s<fx>\n", indent);
 	strcat(indent, "\t");
 	
@@ -1298,7 +1301,7 @@ int  vtt_class :: save(FILE *rc, gzFile rz, char *indent) {
 		
 	indent[strlen(indent)-1]=0;
 	tX_store("%s</turntable>\n", indent);
-	
+		
 	return(res);
 }
 
@@ -1342,6 +1345,8 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 	double tmp;
 	char tmp_xml_buffer[4096];
 	
+	control_scroll_adjustment = 0.0;
+	
 	for (xmlNodePtr cur=node->xmlChildrenNode; cur != NULL; cur = cur->next) {
 		if (cur->type == XML_ELEMENT_NODE) {
 			elementFound=0;
@@ -1381,11 +1386,12 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 	
 			restore_bool("audio_panel_hidden", audio_hidden);
 			restore_bool("control_panel_hidden", control_hidden);
-			restore_bool_ac("main_panel_hidden", hidden, gui.main_panel->hide(hidden));
-			restore_bool_ac("trigger_panel_hidden", hidden, gui.trigger_panel->hide(hidden));
-			restore_bool_ac("lowpass_panel_hidden", hidden, gui.lp_panel->hide(hidden));			
-			restore_bool_ac("echo_panel_hidden", hidden, gui.ec_panel->hide(hidden));
+			restore_bool_ac("main_panel_hidden", hidden, gui.main_panel->hide(!hidden));
+			restore_bool_ac("trigger_panel_hidden", hidden, gui.trigger_panel->hide(!hidden));
+			restore_bool_ac("lowpass_panel_hidden", hidden, gui.lp_panel->hide(!hidden));			
+			restore_bool_ac("echo_panel_hidden", hidden, gui.ec_panel->hide(!hidden));
 			restore_float_ac("audio_x_zoom", tmp, gui_set_audio_x_zoom(this,tmp));
+			restore_float("control_adjustment", control_scroll_adjustment);
 			vg_adjust_zoom(gui.zoom, this);
 			
 			if ((xmlStrcmp(cur->name, (xmlChar *) "fx")==0) || 
@@ -1480,7 +1486,7 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gui.mute), mix_mute);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gui.solo), mix_solo);
-
+	
 	return 0;
 }
 
@@ -1580,7 +1586,7 @@ int vtt_class :: load_all(xmlDocPtr doc, char *fname) {
 				gtk_box_pack_start(GTK_BOX(control_parent), vtt->gui.control_box, TRUE, TRUE, 0);
 				gtk_box_pack_start(GTK_BOX(audio_parent), vtt->gui.audio_box, TRUE, TRUE, 0);
 				if (vtt->audio_hidden) vtt->hide_audio(vtt->audio_hidden);
-				if (vtt->control_hidden) vtt->hide_control(vtt->control_hidden);
+				if (vtt->control_hidden) vtt->hide_control(vtt->control_hidden);				
 			}
 			if ((!elementFound) && (xmlStrcmp(cur->name, (xmlChar *) "sequencer")==0)) {
 				elementFound=1;
@@ -1594,6 +1600,15 @@ int vtt_class :: load_all(xmlDocPtr doc, char *fname) {
 	
 	sp_master_volume.do_update_graphics();
 	sp_master_pitch.do_update_graphics();
+
+	while (gtk_events_pending()) gtk_main_iteration();
+
+	list <vtt_class *> :: iterator vtt;
+
+	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
+		GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW((*vtt)->gui.scrolled_win));
+		gtk_adjustment_set_value(adj, (*vtt)->control_scroll_adjustment);
+	}
 	
 	ld_destroy();
 	
