@@ -122,6 +122,10 @@ AM_PATH_GTK_2_0(, [
   gtk2="yes"
   GTK2_VERSION="`$PKG_CONFIG --modversion gtk+-2.0`"], [ gtk2="yes" ]) 
   OPTION_GTK_VERSION="Version 2 - ($GTK2_VERSION)"
+  vers=`echo $GTK2_VERSION | awk 'BEGIN {FS=".";} { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
+  if test "$vers" -ge 2004000; then
+     AC_DEFINE_UNQUOTED([USE_FILECHOOSER], 1, [Use the new FileChooser.])
+  fi
 
 if test "$gtk2" = "no"; then
 	AC_MSG_ERROR([** couldn't find gtk+ > Version 2. Please upgrade (http://www.gtk.org). **])

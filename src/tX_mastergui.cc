@@ -110,10 +110,13 @@ extern void add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn);
 extern void destroy_gui(vtt_class *vtt);
 extern void gui_show_frame(vtt_class *vtt, int show);
 
+#ifndef USE_FILECHOOSER
 GdkWindow *save_dialog_win=NULL;
 GdkWindow *load_dialog_win=NULL;
+
 GtkWidget *save_dialog=NULL;
 GtkWidget *load_dialog=NULL;
+#endif
 
 GdkWindow *rec_dialog_win=NULL;
 GtkWidget *rec_dialog=NULL;
@@ -284,7 +287,7 @@ GtkSignalFunc new_tables() {
 }
 
 /* Loading saved setups */
-
+#ifndef USE_FILECHOOSER
 GtkSignalFunc cancel_load_tables(GtkWidget *wid)
 {
 	gtk_widget_destroy(load_dialog);
@@ -292,10 +295,10 @@ GtkSignalFunc cancel_load_tables(GtkWidget *wid)
 	load_dialog_win=NULL;
 	return(0);
 }
+#endif
 
 void load_tt_part(char * buffer)
 {
-	char idbuff[256];
 	char wbuf[PATH_MAX];
 	xmlDocPtr doc;
 #ifdef ENABLE_TX_LEGACY
@@ -303,7 +306,7 @@ void load_tt_part(char * buffer)
 #endif	
 	turn_audio_off();
 	
-	strcpy(globals.tables_filename, buffer);
+	strncpy(globals.tables_filename, buffer, sizeof(globals.tables_filename));
 	
 	doc = xmlParseFile(buffer);
 	if (doc) {
@@ -316,6 +319,8 @@ void load_tt_part(char * buffer)
 		in=fopen(buffer, "r");	
 	
 		if (in) {
+			char idbuff[256];
+			
 			fread(idbuff, strlen(TX_SET_ID_10), 1, in);
 			if (strncmp(idbuff, TX_SET_ID_10, strlen(TX_SET_ID_10))==0) {
 				if (vtt_class::load_all_10(in, buffer)) tx_note("Error while reading set.", true);
@@ -334,20 +339,18 @@ void load_tt_part(char * buffer)
 			}
 			fclose(in);	
 		} else {
-			strcpy(idbuff, "Failed to access file: \"");	// I'm stealing the unrelated string for a temp :)
-			strcat(idbuff, globals.tables_filename);
-			strcat(idbuff, "\"");
-			tx_note(idbuff, true);
+			char message[PATH_MAX+256];
+			sprintf(message, "Failed to acesss file: \"%s\"", globals.tables_filename);
+			tx_note(message, true);
 			
 			return;
 		}
 	}
 #else
 	else {
-		strcpy(idbuff, "Failed to access file: \"");	// I'm stealing the unrelated sting for a temp :)
-		strcat(idbuff, globals.tables_filename);
-		strcat(idbuff, "\"");
-		tx_note(idbuff, true);
+		char message[PATH_MAX+256];
+		sprintf(message, "Failed to acesss file: \"%s\"", globals.tables_filename);
+		tx_note(message, true);
 		
 		return;
 	}
@@ -368,6 +371,7 @@ void load_tt_part(char * buffer)
 	gtk_window_set_title(GTK_WINDOW(main_window), wbuf);		
 }
 
+#ifndef USE_FILECHOOSER
 void do_load_tables(GtkWidget *wid)
 {
 	char buffer[PATH_MAX];
@@ -383,14 +387,47 @@ void do_load_tables(GtkWidget *wid)
 	load_tt_part(buffer);
 	tX_cursor::reset_cursor();
 }
+#endif
 
 GtkSignalFunc load_tables()
 {
+#ifdef USE_FILECHOOSER	
+	GtkWidget * dialog = gtk_file_chooser_dialog_new ("Open Set File",
+		GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_OPEN,
+		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,  
+	    GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
+				      
+
+	GtkFileFilter *filter=gtk_file_filter_new();
+	gtk_file_filter_add_pattern (filter, "*.tX");
+	gtk_file_filter_add_pattern (filter, "*.tx");
+	gtk_file_filter_set_name(filter, "terminatorX Set Files");
+	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter); 
+
+	filter=gtk_file_filter_new();
+	gtk_file_filter_add_pattern (filter, "*");
+	gtk_file_filter_set_name(filter, "All Files");
+	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter); 
+	
+	if (strlen(globals.tables_filename)) {
+		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), globals.tables_filename);
+	}	
+	
+	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
+    	char * filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+		gtk_widget_hide(dialog);
+		tX_cursor::set_cursor(tX_cursor::WAIT_CURSOR);
+		load_tt_part(filename);
+		tX_cursor::reset_cursor();		
+	}	
+	
+	gtk_widget_destroy(dialog);
+#else
 	if (load_dialog_win) {
 		gdk_window_raise(load_dialog_win);
 		return 0;
 	}
-	
+
 	load_dialog=gtk_file_selection_new("Load Set");	
 	
 	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(load_dialog));
@@ -408,8 +445,12 @@ GtkSignalFunc load_tables()
 	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(load_dialog)->cancel_button), "clicked", G_CALLBACK (cancel_load_tables), NULL);	
 	g_signal_connect (G_OBJECT(load_dialog), "delete-event", G_CALLBACK(cancel_load_tables), NULL);	
 	
+#endif
+
 	return NULL;
 }
+
+
 
 GtkSignalFunc drop_set(GtkWidget *widget, GdkDragContext *context,
 		gint x, gint y, GtkSelectionData *selection_data,
@@ -435,6 +476,7 @@ GtkSignalFunc drop_set(GtkWidget *widget, GdkDragContext *context,
 
 /* save tables */
 
+#ifndef USE_FILECHOOSER
 GtkSignalFunc cancel_save_tables(GtkWidget *wid)
 {
 	gtk_widget_destroy(save_dialog);
@@ -443,13 +485,8 @@ GtkSignalFunc cancel_save_tables(GtkWidget *wid)
 	return(0);
 }
 
-gboolean do_save_tables(GtkWidget *wid)
-{
-	FILE *out;
-	gzFile zout;
+gboolean do_save_from_selection(GtkWidget *wid) {
 	char buffer[PATH_MAX];
-	char wbuf[PATH_MAX];
-	char *ext;
 	
 	if (wid) {
 		strcpy(buffer, gtk_file_selection_get_filename(GTK_FILE_SELECTION(save_dialog)));
@@ -458,13 +495,25 @@ gboolean do_save_tables(GtkWidget *wid)
 			tx_note("Invalid filename for set file.", true);			
 			return FALSE;
 		}
-		strcpy(globals.tables_filename, buffer);
 		gtk_widget_destroy(save_dialog);
 		save_dialog=NULL;
 		save_dialog_win=NULL;
 	} else {
 		strcpy(buffer, tx_mg_current_setname);
-	}
+	}	
+	
+	do_save_tables(buffer);
+	
+	return TRUE;
+}
+#endif
+
+void do_save_tables(char *buffer)
+{
+	FILE *out;
+	gzFile zout;
+	char wbuf[PATH_MAX];
+	char *ext;
 	
 	ext=strrchr(buffer, '.');
 	
@@ -476,6 +525,7 @@ gboolean do_save_tables(GtkWidget *wid)
 
 	tx_mg_have_setname=true;
 	strcpy(tx_mg_current_setname, buffer);
+	strcpy(globals.tables_filename, buffer);
 	
 	if (globals.compress_set_files) {
 		_store_compress_xml=1;
@@ -496,12 +546,30 @@ gboolean do_save_tables(GtkWidget *wid)
 	} else {
 		tx_note("Failed to open file for write access.", true);
 	}
-	
-	return FALSE;
 }
 
 GtkSignalFunc save_tables_as()
 {
+#ifdef USE_FILECHOOSER
+	GtkWidget * dialog = gtk_file_chooser_dialog_new ("Save Set",
+		GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_SAVE, 
+		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
+		GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,NULL);
+	
+	if (tx_mg_have_setname) {
+		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER (dialog), tx_mg_current_setname);
+	}
+				      
+	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
+    	char buffer[PATH_MAX];
+		char *filename=gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+		strcpy(buffer, filename);
+		g_free(filename);
+		do_save_tables(buffer);
+	}	
+	
+	gtk_widget_destroy(dialog);	
+#else
 	if (save_dialog_win) {
 		gtk_widget_destroy(save_dialog);
 		save_dialog=NULL;
@@ -518,10 +586,10 @@ GtkSignalFunc save_tables_as()
 	
 	save_dialog_win=save_dialog->window;
 	
-	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(save_dialog)->ok_button), "clicked", G_CALLBACK(do_save_tables), NULL);
+	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(save_dialog)->ok_button), "clicked", G_CALLBACK(do_save_from_selection), NULL);
 	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(save_dialog)->cancel_button), "clicked", G_CALLBACK (cancel_save_tables), NULL);	
 	g_signal_connect (G_OBJECT(save_dialog), "delete-event", G_CALLBACK(cancel_save_tables), NULL);	
-
+#endif
 	return NULL;
 }
 
@@ -530,7 +598,7 @@ GtkSignalFunc save_tables()
 	if (!tx_mg_have_setname) {
 		save_tables_as();
 	} else {
-		do_save_tables(NULL);
+		do_save_tables(tx_mg_current_setname);
 	}
 	
 	return NULL;
@@ -1384,7 +1452,7 @@ void create_mastergui(int x, int y)
 	pitch_adj=dumadj;
 	connect_adj(dumadj, master_pitch_changed, NULL);
 	
-	tX_extdial *pdial=new tX_extdial("Pitch", pitch_adj, &sp_master_pitch);
+	tX_extdial *pdial=new tX_extdial("Pitch", pitch_adj, &sp_master_pitch, true);
 	gtk_box_pack_start(GTK_BOX(right_hbox), pdial->get_widget(), WID_FIX);
 	gui_set_tooltip(pdial->get_entry(), "Use this dial to adjust the master pitch (affecting *all* turntables).");
 	
@@ -1393,7 +1461,7 @@ void create_mastergui(int x, int y)
 	gtk_widget_show(dummy);
 	
 	/* Volume */
-	master_vol_box=gtk_hbox_new(FALSE, 2);
+	master_vol_box=gtk_hbox_new(FALSE, 5);
 	gtk_box_pack_start(GTK_BOX(right_hbox), master_vol_box, WID_DYN);
 	gtk_widget_show(master_vol_box);	
 	
@@ -1503,10 +1571,9 @@ void tx_note(const char *message, bool isError, GtkWindow *window)
 	
 	if (!window) window==GTK_WINDOW(main_window);
 	
-	strcat(buffer, message);
 	GtkWidget *dialog=gtk_message_dialog_new(window,
 		GTK_DIALOG_DESTROY_WITH_PARENT,
-		isError ? GTK_MESSAGE_ERROR : GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, message);
+		isError ? GTK_MESSAGE_ERROR : GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, "%s", message);
 	gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);	
 }
@@ -1518,7 +1585,7 @@ void tx_l_note(const char *message)
 	strcat(buffer, message);
 	
 	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window),
-		GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, message);
+		GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, "%s", message);
 	gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);	
 }
