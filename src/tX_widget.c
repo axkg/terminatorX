@@ -25,12 +25,13 @@
 
 #include <math.h>
 
-#include <gtk/gtkwindow.h>
+#include <gtk/gtk.h>
 #include "tX_widget.h"
 #include "tX_types.h"
 #include "tX_global.h"
 #include <malloc.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifndef WIN32
 #include <unistd.h>
@@ -57,23 +58,24 @@ static GtkWidgetClass *parent_class = NULL;
 
 /* widget "methods" */
 
-guint gtk_tx_get_type() {
-	static guint tx_type = 0;
-	
-	if (!tx_type) {
-		GtkTypeInfo tx_info = {
-		"GtkTx",
-		sizeof(GtkTx),
-		sizeof(GtkTxClass),
-		(GtkClassInitFunc) gtk_tx_class_init,
-		(GtkObjectInitFunc) gtk_tx_init,
-		/* reserved */ NULL,
-		/* reserved */ NULL,
-		/* reserved */ NULL
-	};
-	
-	 tx_type = gtk_type_unique(gtk_widget_get_type(), &tx_info);
-	}
+GType gtk_tx_get_type() {
+	static GType tx_type = 0;
+
+ 	if (!tx_type) {
+		static const GTypeInfo tx_info = {
+			sizeof (GtkTxClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) gtk_tx_class_init, 
+			NULL,
+			NULL,
+			sizeof (GtkTx),
+        	0,
+			(GInstanceInitFunc) gtk_tx_init,
+		};
+
+		tx_type = g_type_register_static(GTK_TYPE_WIDGET, "GtkTx", &tx_info, 0);
+    }
 	
 	return tx_type;
 }
@@ -162,7 +164,7 @@ static void gtk_tx_init(GtkTx * tx) {
 GtkWidget *gtk_tx_new(int16_t * wavdata, int wavsamples) {
 	GtkTx *tx;
 
-	tx = gtk_type_new(gtk_tx_get_type());
+	tx = (GtkTx *) g_object_new(gtk_tx_get_type (), NULL);
 
 	tx->data = wavdata;
 	tx->samples = wavsamples;
@@ -392,14 +394,14 @@ void gtk_tx_set_zoom(GtkTx *tx, f_prec zoom) {
 	
 	tx->zoom=zoom;
 	gtk_tx_prepare(wid);
-	gtk_widget_queue_draw_area(wid, 0, 0, wid->allocation.width, wid->allocation.height);
+	gtk_widget_queue_draw(wid);
 }
 
 static void gtk_tx_update(GtkTx * tx) {
 	g_return_if_fail(tx != NULL);
 	g_return_if_fail(GTK_IS_TX(tx));
 
-	gtk_widget_draw(GTK_WIDGET(tx), NULL);
+	gtk_widget_queue_draw(GTK_WIDGET(tx));
 }
 
 void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {

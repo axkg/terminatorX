@@ -302,14 +302,14 @@ GtkWidget * LADSPA_Class :: get_menu() {
 			item=gtk_menu_item_new_with_label(c->label);
 			GtkWidget *submenu=c->get_menu();
 			gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
-			gtk_menu_append(menu, item);
+			gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 			gtk_widget_show(item);
 		}
 	}
 	
 	if (subclasses.size() && plugins.size()) {
 		item = gtk_menu_item_new();
-		gtk_menu_append(menu, item);
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 		gtk_widget_set_sensitive (item, FALSE);
 		gtk_widget_show (item);
 	}
@@ -322,8 +322,8 @@ GtkWidget * LADSPA_Class :: get_menu() {
 		
 		sprintf(buffer, "%s - (%s, %li)", p->getName(), p->getLabel(), p->getUniqueID());
 		item=gtk_menu_item_new_with_label(buffer);
-		gtk_menu_append(menu, item);
-		gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(menu_callback), p);		
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(menu_callback), p);		
 		gtk_widget_show(item);
 	}
 	

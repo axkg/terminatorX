@@ -197,10 +197,9 @@ int tX_audiodevice_alsa :: open()
 	snd_pcm_stream_t stream = SND_PCM_STREAM_PLAYBACK;
 	snd_pcm_hw_params_t *hw_params;
 	char pcm_name[64];
-	char foo[PATH_MAX];
-	
+
 	/* Removing the device ID comment... */
-	for (int i=0; i<strlen(globals.alsa_device_id); i++) {
+	for (unsigned int i=0; i<strlen(globals.alsa_device_id); i++) {
 		if (globals.alsa_device_id[i]!='#') {
 			pcm_name[i]=globals.alsa_device_id[i];
 		} else {
@@ -509,8 +508,8 @@ void tX_audiodevice_jack::start()
 
 void tX_audiodevice_jack::fill_frames(jack_default_audio_sample_t *left, jack_default_audio_sample_t *right, jack_nframes_t nframes)
 {
-	int outbuffer_pos=0;
-	int sample;
+	unsigned int outbuffer_pos=0;
+	unsigned int sample;
 	
 	if (samples_in_overrun_buffer) {
 		for (sample=0; ((sample<samples_in_overrun_buffer) && (outbuffer_pos<nframes));) {
@@ -522,12 +521,12 @@ void tX_audiodevice_jack::fill_frames(jack_default_audio_sample_t *left, jack_de
 	while (outbuffer_pos<nframes) {
 		engine->render_cycle();
 		
-		for (sample=0; ((sample<vtt_class::samples_in_mix_buffer) && (outbuffer_pos<nframes));) {
+		for (sample=0; ((sample<(unsigned int) vtt_class::samples_in_mix_buffer) && (outbuffer_pos<nframes));) {
 			left[outbuffer_pos]=vtt_class::mix_buffer[sample++]/32767.0;
 			right[outbuffer_pos++]=vtt_class::mix_buffer[sample++]/32767.0;
 		}
 		
-		if (sample<vtt_class::samples_in_mix_buffer) {
+		if (sample<(unsigned int) vtt_class::samples_in_mix_buffer) {
 			samples_in_overrun_buffer=vtt_class::samples_in_mix_buffer-sample;
 			/* There's more data in the mixbuffer... */
 			memcpy(overrun_buffer, &vtt_class::mix_buffer[sample], sizeof(f_prec) * samples_in_overrun_buffer);

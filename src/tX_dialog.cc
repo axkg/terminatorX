@@ -139,6 +139,7 @@ void apply_options(GtkWidget *dialog) {
 	globals.compress_set_files=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "compress_set_files")))==TRUE);	
 	globals.prelis=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "prelisten_enabled")))==TRUE);
 	globals.restore_midi_connections=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "reconnect_enabled")))==TRUE);
+	globals.quit_confirm=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "quit_confirm")))==TRUE);
 	
 	/* update colors */
 	std::list<vtt_class *>::iterator vtt;
@@ -462,12 +463,13 @@ void init_tx_options(GtkWidget *dialog) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "compress_set_files")), globals.compress_set_files);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "prelisten_enabled")), globals.prelis);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "reconnect_enabled")), globals.restore_midi_connections);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "quit_confirm")), globals.quit_confirm);
 }
 
 void create_options()
 {
 	opt_dialog=create_tx_options();
-	//gtk_widget_hide(lookup_widget(opt_dialog, "jack_driver"));	
+	tX_set_icon(opt_dialog);
 	init_tx_options(opt_dialog);
 	gtk_widget_show(opt_dialog);
 }
@@ -507,9 +509,7 @@ GdkFont *GPL_font=NULL;
 
 void show_about(int nag)
 {
-	GtkWidget *window, *pwid;
-	GdkBitmap *mask;
-	GtkStyle *style;
+	GtkWidget *window;
 	GtkWidget *btn;
 	GtkWidget *box;
 	GtkWidget *hbox;
@@ -517,7 +517,7 @@ void show_about(int nag)
 	GtkWidget *sep;
 	GtkWidget *text;
 	GtkWidget *scroll;
-	GdkPixmap *pmap=NULL;
+	GtkWidget *iwid;
 	
 	/* Only raise the window if it's already open... */
 	if (about)  {
@@ -528,24 +528,13 @@ void show_about(int nag)
 	/* Create the window... */
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_container_set_border_width(GTK_CONTAINER(window), 5);
-	gtk_window_set_title(GTK_WINDOW (window), "terminatorX - About");
-	gtk_window_set_position(GTK_WINDOW (window), GTK_WIN_POS_CENTER);
-	gtk_window_set_modal(GTK_WINDOW (window), TRUE);
-	gtk_window_set_policy(GTK_WINDOW (window), TRUE, TRUE, FALSE);	
-	
-	/*
-	gtk_window_set_wmclass(GTK_WINDOW(window), "terminatorX", "tX_about");
-	g_object_set (G_OBJECT (window), "type", GTK_WINDOW_TOPLEVEL, NULL);
-	gtk_window_set_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER);
-	gtk_window_set_resizable (GTK_WINDOW (window), FALSE);
 	gtk_window_set_title(GTK_WINDOW(window), "terminatorX - About");
-	gtk_window_set_decorated(GTK_WINDOW(window), nag ? TRUE : FALSE);
-	*/
-	
+	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
+	gtk_window_set_resizable(GTK_WINDOW(window), nag ? TRUE: FALSE);
+
 	GdkPixbuf *image=gdk_pixbuf_new_from_xpm_data((const char **)logo_xpm);
-	gdk_pixbuf_render_pixmap_and_mask(image, &pmap, &mask, 0);
-	
-  	pwid = gtk_pixmap_new( pmap, mask );
+	iwid = gtk_image_new_from_pixbuf(image);
 	
 	if (nag) {
 		GtkWidget *box=gtk_vbox_new(FALSE, 2);
@@ -553,7 +542,7 @@ void show_about(int nag)
 		GtkWidget *label;
 		
 		gtk_container_add(GTK_CONTAINER(window), box);
-		gtk_box_pack_start(GTK_BOX(box), pwid, WID_FIX);
+		gtk_box_pack_start(GTK_BOX(box), iwid, WID_FIX);
 		gtk_box_pack_start(GTK_BOX(box), box2, WID_FIX);
 		
 		label=gtk_label_new(PACKAGE" release "VERSION);
@@ -568,13 +557,13 @@ void show_about(int nag)
 		
 		gtk_widget_show(box2);
 		gtk_widget_show(box);
-		gtk_widget_show(pwid);
+		gtk_widget_show(iwid);
 
 		gtk_window_set_decorated(GTK_WINDOW(window), FALSE);		
 		gtk_widget_show(window);
 	} else {
 		box=gtk_vbox_new(FALSE, 5);
-		add_about_wid_fix(pwid);
+		add_about_wid_fix(iwid);
 		
 		sep=gtk_hseparator_new();
 		add_about_wid_fix(sep);
@@ -651,7 +640,7 @@ void show_about(int nag)
 		gtk_text_buffer_insert_with_tags_by_name(tbuffer, &iter, license, -1, "courier", NULL);
 		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(text), 5);
 		gtk_text_view_set_right_margin(GTK_TEXT_VIEW(text), 5);
-		gtk_widget_set_usize(GTK_WIDGET(text), 640, 180);
+		gtk_widget_set_size_request(GTK_WIDGET(text), 700, 220);
 		gtk_widget_show(text);		
 		
 		gtk_box_pack_start(GTK_BOX(hbox), scroll, WID_DYN);
@@ -668,25 +657,24 @@ void show_about(int nag)
 		gtk_container_add(GTK_CONTAINER(window), box);
 		gtk_widget_show(box);
 		
-		gtk_signal_connect(GTK_OBJECT(btn), "clicked", (GtkSignalFunc) destroy_about, NULL);		
-		gtk_signal_connect(GTK_OBJECT(window), "delete-event", (GtkSignalFunc) destroy_about, NULL);		
+		g_signal_connect(G_OBJECT(btn), "clicked", (GtkSignalFunc) destroy_about, NULL);		
+		g_signal_connect(G_OBJECT(window), "delete-event", (GtkSignalFunc) destroy_about, NULL);		
 	}
 	gtk_widget_show(window);	
-	tX_set_icon(window, "tX About");
+	tX_set_icon(window);
 	
 	while (gtk_events_pending()) gtk_main_iteration();
 		
 	about=window;
 }
 
-GdkPixbuf *tX_window_icon=NULL;
+static GdkPixbuf *tX_window_icon=NULL;
 
-void tX_set_icon(GtkWidget *widget, char *name)
+void tX_set_icon(GtkWidget *widget)
 {	
 	if (!tX_window_icon) {
 		tX_window_icon=gdk_pixbuf_new_from_inline(-1, tX_icon, FALSE, NULL);
 	}
 
 	gtk_window_set_icon(GTK_WINDOW(widget), tX_window_icon);
-	gdk_window_set_icon_name(widget->window, name);	
 }

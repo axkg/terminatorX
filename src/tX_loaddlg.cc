@@ -160,7 +160,7 @@ void ld_set_filename(char *name)
 	if (ld_mode==TX_LOADDLG_MODE_MULTI)
 	{
 		setprog=(((float) ld_current)/((float) ld_count));
-		gtk_progress_bar_update(GTK_PROGRESS_BAR(ld_multi_p), setprog);
+		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(ld_multi_p), setprog);
 		gtk_flush();		
 	}
 	gtk_flush();
@@ -174,7 +174,7 @@ void ld_set_progress(gfloat progress)
 	
 	if (progress!=ld_old_prog)
 	{
-		gtk_progress_bar_update(GTK_PROGRESS_BAR(ld_single_p), progress);
+		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(ld_single_p), progress);
 		
 		gtk_flush();
 	}
