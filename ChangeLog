@@ -3,12 +3,28 @@ All changes were done by me (Alexander König) if not stated otherwise.
 This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
-[v3.74]
+[v3.74 - prerelase]
+- Fixed a bug in XML serialization that dropped strings' contents.
+- You can now hit "F11" to turn fullscreen mode on off - this will help using
+  terminatorX on small DJ laptops. Note that the key will have no effect in 
+  scratch - hit it before you get that engine running.
+- terminatorX now stores set files as XML documents, too - so terminatorX has
+  become terminatorXML finally. Note: for sets with a large number of events
+  recorded into the sequencer - the XML based set files can grow significally
+  larger than the old ones.
+- The old code to support the obsolete binary tX file formats has now been
+  scheduled for deletion. It's been moved into the tX_legacy* source files and 
+  it will be built only when "--enable-legacy" was used on configuring
+  terminatorX (which is the default). Expect this to become disabled and then
+  totally removed from the sources in future.
 - Enhanced audio data display - you can now zoom into the audio signal, which
   should allow much more precise scratching with larger audio files (ie 
   complete tracks). On playback terminatorX will scroll the displayed area
-  to ensure you always see the area of the sample in which you currently
-  scratch.
+  to ensure you always see the area of the sample in which you're currently
+  scratching on.
+- I have not backported the new code to the old gtk+ 1.2 - so this release no
+  longer builds with gtk+ 1.2 - you have to upgrade to gtk+ Version 2 to be
+  able to build terminatorX.
 - fixed a gcc 3.2 compilation bug - thanks to 
   Adam Duck <duck@informatik.uni-frankfurt.de>
 

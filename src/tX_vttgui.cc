@@ -206,11 +206,7 @@ void load_part(char *newfile, vtt_class *vtt)
 	else
 	{
 		nicer_filename(global_filename_buffer, newfile);
-#ifdef  USE_GTK2
         gtk_button_set_label(GTK_BUTTON(vtt->gui.file), global_filename_buffer);
-#else           
-		gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.file)->child), global_filename_buffer);
-#endif
 	}	
 }
 
@@ -251,26 +247,20 @@ void drop_file(GtkWidget *widget, GdkDragContext *context,
 	*fn=0;	
 	
 	char *realfn=NULL;
-#ifdef USE_GTK2	
 	char *host=NULL;
 	
 	realfn=g_filename_from_uri(filename, &host, NULL);
 	if (realfn) {
 		fn=realfn;
 	} else  {
-#endif		
 		fn = strchr (filename, ':');
 		if (fn) fn++; else fn=(char *) selection_data->data;
-#ifdef USE_GTK2			
 	}
-#endif	
 
 	load_part(realfn, vtt);
 
-#ifdef USE_GTK2	
 	if (realfn) g_free(realfn);
 	if (host) g_free(host);
-#endif		
 }
 
 
@@ -303,11 +293,7 @@ GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->ok_button), "clicked", GTK_SIGNAL_FUNC(do_load_file), vtt);
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->cancel_button), "clicked", GTK_SIGNAL_FUNC (cancel_load_file), vtt);	
 	gtk_signal_connect (GTK_OBJECT(vtt->gui.fs), "delete-event", GTK_SIGNAL_FUNC(quit_load_file), vtt);	
-#ifdef USE_GTK2
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->file_list), "cursor_changed", GTK_SIGNAL_FUNC(trigger_prelis), vtt->gui.fs);		
-#else
-	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->file_list), "select_row", GTK_SIGNAL_FUNC(trigger_prelis), vtt->gui.fs);
-#endif
 	return NULL;
 }
 
@@ -584,10 +570,7 @@ void vg_mouse_mapping_pressed(GtkWidget *wid, vtt_class *vtt) {
 	
 	gtk_menu_popup (GTK_MENU(vtt->gui.mouse_mapping_menu), NULL, NULL, NULL, NULL, 0, 0);
 
-#ifdef USE_GTK2
-	/* gtk+ is really waiting for this.. */
 	gtk_signal_emit_by_name(GTK_OBJECT(wid), "released", vtt);
-#endif	
 }
 
 void vg_file_button_pressed(GtkWidget *wid, vtt_class *vtt) {
@@ -616,10 +599,8 @@ void vg_file_button_pressed(GtkWidget *wid, vtt_class *vtt) {
 	
 	gtk_menu_popup(GTK_MENU(vtt->gui.file_menu), NULL, NULL, NULL, NULL, 0,0);
 
-#ifdef USE_GTK2
 	/* gtk+ is really waiting for this.. */
 	gtk_signal_emit_by_name(GTK_OBJECT(wid), "released", vtt);
-#endif	
 }
 
 void vg_adjust_zoom(GtkWidget *wid, vtt_class *vtt) {	
@@ -677,10 +658,8 @@ void fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
 	
 	gtk_menu_popup (GTK_MENU(g->ladspa_menu), NULL, NULL, NULL, NULL, 0, 0);
 
-#ifdef USE_GTK2
 	/* gtk+ is really waiting for this.. */
 	gtk_signal_emit_by_name(GTK_OBJECT(wid), "released", vtt);
-#endif	
 }
 
 #define connect_entry(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "activate", (GtkSignalFunc) func, (void *) vtt);
@@ -688,16 +667,7 @@ void fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
 #define connect_button(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "clicked", (GtkSignalFunc) func, (void *) vtt);
 #define connect_range(wid, func); gtk_signal_connect(GTK_OBJECT(gtk_range_get_adjustment(GTK_RANGE(g->wid))), "value_changed", (GtkSignalFunc) func, (void *) vtt);
 #define connect_scale_format(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "format-value", (GtkSignalFunc) func, (void *) vtt);
-
-#ifdef USE_GTK2
 #define connect_press_button(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "pressed", (GtkSignalFunc) func, (void *) vtt);
-#else
-/* "pressed" then pop-up doesn't work with gtk 1.2 
-   and the well-known gdk hack doesn't support an additional vtt pointer..
-*/
-#define connect_press_button(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "clicked", (GtkSignalFunc) func, (void *) vtt);
-#endif
-
 #define connect_rel_button(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "released", (GtkSignalFunc) func, (void *) vtt);
 
 GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel);
@@ -1207,21 +1177,13 @@ void gui_set_name(vtt_class *vtt, char *newname)
 
 void gui_set_filename (vtt_class *vtt, char *newname)
 {
-#ifdef  USE_GTK2
         gtk_button_set_label(GTK_BUTTON(vtt->gui.file), newname);
-#else           
-        gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.file)->child), newname);
-#endif  
 }
 
 void gui_update_display(vtt_class *vtt)
 {
 	nicer_filename(global_filename_buffer, vtt->filename);
-#ifdef  USE_GTK2
-        gtk_button_set_label(GTK_BUTTON(vtt->gui.file), global_filename_buffer);
-#else           
-        gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.file)->child), global_filename_buffer);
-#endif  
+	gtk_button_set_label(GTK_BUTTON(vtt->gui.file), global_filename_buffer);
 	gtk_tx_set_data(GTK_TX(vtt->gui.display), vtt->buffer, vtt->samples_in_buffer);
 }
 
