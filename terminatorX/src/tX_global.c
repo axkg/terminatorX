@@ -38,14 +38,20 @@ tx_global globals;
 void get_rc_name(char *buffer)
 {
 	strcpy(buffer,"");
-	
-	if (getenv("HOME"))
+	if (globals.alternate_rc)
 	{
-		strcpy(buffer, getenv("HOME"));
-		if (buffer[strlen(buffer)-1]!='/')
-		strcat(buffer, "/");
+		strcpy(buffer, globals.alternate_rc);
 	}
-	strcat(buffer, ".terminatorX3rc.bin");
+	else 
+	{
+		if (getenv("HOME"))
+		{
+			strcpy(buffer, getenv("HOME"));
+			if (buffer[strlen(buffer)-1]!='/')
+			strcat(buffer, "/");
+		}
+		strcat(buffer, ".terminatorX3rc.bin");
+	}
 }
 
 void load_globals()
@@ -53,54 +59,63 @@ void load_globals()
 	char rc_name[PATH_MAX]="";
 	FILE *rc;
 
-	strcpy(globals.audio_device, "/dev/dsp");
-	
-	strcpy(globals.xinput_device, "");
-	globals.xinput_enable=0;
-	
-	globals.update_idle=18;
-	globals.update_delay=1;
-	
-	globals.buff_no=2;
-	globals.buff_size=8;
-		
-	globals.sense_cycles=12;
-	
-	globals.mouse_speed=0.8;
-	
-	globals.width=800;
-	globals.height=440;	
-	
-	globals.tooltips=1;
-	
-	globals.use_stdout=0;
-	
-	globals.show_nag=1;
-	globals.prelis=1;
-	
-	strcpy(globals.last_fn,"");
-	
-	globals.pitch=1.0;
-	globals.volume=1.0;
-	globals.gui_wrap=3;
-	
-	globals.flash_response=0.95;
-	
-	globals.button_type=BUTTON_TYPE_BOTH;
-	
-	globals.true_block_size=0;
-	
-	strcpy(globals.tables_filename, "");
-	strcpy(globals.record_filename, "tX_record.wav");
-	strcpy(globals.file_editor, "");
-	
 	get_rc_name(rc_name);
-
+	
 	rc=fopen(rc_name, "r");
 	if (rc)
 	{
 		fread(&globals, sizeof(tx_global), 1, rc);
 		fclose(rc);
+	}
+	else
+	{
+		fprintf(stderr, "tX: Alternate rc file doesn't exist, reverting to defaults");
+
+		globals.startup_set = 0;
+		globals.store_globals = 1;
+		globals.no_gui = 0;
+		globals.alternate_rc = 0;
+	
+		strcpy(globals.audio_device, "/dev/dsp");
+	
+		strcpy(globals.xinput_device, "");
+		globals.xinput_enable=0;
+	
+		globals.update_idle=18;
+		globals.update_delay=1;
+	
+		globals.buff_no=2;
+		globals.buff_size=8;
+		
+		globals.sense_cycles=12;
+	
+		globals.mouse_speed=0.8;
+	
+		globals.width=800;
+		globals.height=440;	
+	
+		globals.tooltips=1;
+	
+		globals.use_stdout=0;
+	
+		globals.show_nag=1;
+		globals.prelis=1;
+	
+		strcpy(globals.last_fn,"");
+	
+		globals.pitch=1.0;
+		globals.volume=1.0;
+		globals.gui_wrap=3;
+	
+		globals.flash_response=0.95;
+	
+		globals.button_type=BUTTON_TYPE_BOTH;
+		
+		globals.true_block_size=0;
+	
+		strcpy(globals.tables_filename, "");
+		strcpy(globals.record_filename, "tX_record.wav");
+		strcpy(globals.file_editor, "");
 	}
 
 	/* i'll have to keep these as they're in the code
@@ -117,12 +132,16 @@ void store_globals()
 	char rc_name[PATH_MAX]="";
 	FILE *rc;
 	
-	get_rc_name(rc_name);
-
-	rc=fopen(rc_name, "w");
-	if (rc)
+	if (globals.store_globals)
 	{
-		fwrite(&globals, sizeof(tx_global), 1, rc);
-		fclose(rc);
+
+		get_rc_name(rc_name);
+
+		rc=fopen(rc_name, "w");
+		if (rc)
+		{
+			fwrite(&globals, sizeof(tx_global), 1, rc);
+			fclose(rc);
+		}
 	}	
 }

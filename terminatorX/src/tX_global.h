@@ -52,6 +52,10 @@ typedef struct {
 	char	xinput_device[256]; // If your device's name is longer than that
 				    // you are insane and you simply don't deserve
 				    // running terminatorX ;) (said the guy who invented 8+3)				    				    
+	int	store_globals;		// if it should store the globals vals on exit
+	char 	*startup_set;	
+	char	*alternate_rc;		// a diferent set of stored globals to load
+	int	no_gui;			// run without any gui
 	
 	int	update_idle;
 	
