@@ -48,6 +48,18 @@ extern "C" {
 #define TX_AUDIODEVICE_TYPE_OSS 0
 #define TX_AUDIODEVICE_TYPE_ALSA 1
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+	
+#ifdef ENABLE_DEBUG_OUTPUT	
+#define tX_debug(fmt, args...); { fprintf(stderr, "- tX_debug: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
+#else
+#define tX_debug(fmt, args...);
+#endif
+	
+#define tX_error(fmt, args...); { fprintf(stderr, "* tX_error: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
+
 typedef struct {
 	char	audio_device[PATH_MAX];
 	
