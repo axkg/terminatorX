@@ -11,8 +11,8 @@
         </title>
         <script language="Javascript" src="script.js" type="text/javascript"/>
         <style type="text/css"> A:hover {text-decoration: none; color: #ff4444} A:active
-          {text-decoration: none; color: #ff4444} body { font-family: vera-sans, Verdana, sans-serif; } p.plain
-          { text-align: left } p.fancy { text-align: justify } </style>
+          {text-decoration: none; color: #ff4444} body {font-family: vera-sans, Verdana, sans-serif;} p.plain
+          {text-align: left} p.fancy {text-align: justify} p.screen {text-align: left; font-family: monospace} </style>
       </head>
       <body alink="#FF0000" bgcolor="#555555" link="#FFFF99"
         onload="load('main','pix/vinyl-hover.gif','pix/vinyl.png');load('download','pix/vinyl-hover.gif','pix/vinyl.png');load('screenshots','pix/vinyl-hover.gif','pix/vinyl.png');load('faq','pix/vinyl-hover.gif','pix/vinyl.png');load('docs','pix/vinyl-hover.gif','pix/vinyl.png');load('turntable','pix/vinyl-hover.gif','pix/vinyl.png');load('scratches','pix/vinyl-hover.gif','pix/vinyl.png');load('links','pix/vinyl-hover.gif','pix/vinyl.png');load('bugs','pix/vinyl-hover.gif','pix/vinyl.png');load('aseqjoy','pix/vinyl-hover.gif','pix/vinyl.png');"
@@ -308,6 +308,11 @@
     </xsl:if>
     <xsl:if test="@class='plain'">
       <p class="plain">
+        <xsl:apply-templates/>
+      </p>
+    </xsl:if>
+    <xsl:if test="@class='screen'">
+      <p class="screen">
         <xsl:apply-templates/>
       </p>
     </xsl:if>
@@ -665,10 +670,8 @@
   </xsl:template>
 
   <xsl:template match="changelog">
-    <span style="font-family: monospace;">
     <p><font size="+2">ChangeLog</font></p>
       <xsl:apply-templates/>
-	  </span>
   </xsl:template>
 
   <xsl:template match="version">
