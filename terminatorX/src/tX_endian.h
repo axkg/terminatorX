@@ -28,28 +28,39 @@
 		 include <bits/endian.h>
 */    
 
+#ifndef _H_TX_ENDIAN_
+#define _H_TX_ENDIAN_
+
 #ifdef HAVE_CONFIG_H
-#include <config.h>
-#ifdef WORDS_BIGENDIAN
-#define BIG_ENDIAN_MACHINE 1
-#else
-#undef BIG_ENDIAN_MACHINE
+#	include <config.h>
+#	ifdef WORDS_BIGENDIAN
+#		define BIG_ENDIAN_MACHINE 1
+#	else
+#		undef BIG_ENDIAN_MACHINE
+#	endif
 #endif
-#endif
 
 #ifdef WORDS_BIGENDIAN
 
-#include "tX_types.h"
+#	include "tX_types.h"
 
-#ifdef __cplusplus
+#define __USE_XOPEN // we need this for swab()
+#	include <unistd.h>
+#undef __USE_XOPEN
+
+#define swapbuffer(b, s) swab((void *) b, (void *) b, (ssize_t) s<<1)
+
+#	ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */
+#	endif /* __cplusplus */
 
 extern void swap16(int16_t * val);
 extern void swap32(int32_t * val);
-extern void swapbuffer(int16_t *buffer, int samples);
-#ifdef __cplusplus
+	
+#	ifdef __cplusplus
 }
-#endif /* __cplusplus */
+#	endif /* __cplusplus */
 
-#endif
+#endif /* WORDS_BIGENDIAN */
+
+#endif /* _H_TX_ENDIAN_ */

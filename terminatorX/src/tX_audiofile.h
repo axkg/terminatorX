@@ -30,16 +30,24 @@
 #include <config.h>
 #endif
 
+#include <tX_endian.h>
+
 #ifdef USE_SOX_INPUT
 #define SOX_STR "sox \"%s\" -t raw -c 1 -r 44100 -s -w -"
 #endif
 
 #ifdef USE_MPG123_INPUT
-#define MPG123_STR "mpg123 -qs \"%s\" | sox -t raw -s -w -r 44100 -c 2 - -t raw -c 1 -r 44100 -s -w -"
 /* The Original MPG123_STR - probably slightly faster than the one above but
 but mpg321 doesn't support -m yet.
 #define MPG123_STR "mpg123 -qms \"%s\""
 */
+
+#ifdef BIG_ENDIAN_MACHINE
+/* This works with mpg321 only... */
+#define MPG123_STR "mpg123 -qs \"%s\" | sox -x -t raw -s -w -r 44100 -c 2 - -t raw -c 1 -r 44100 -s -w -"
+#else
+#define MPG123_STR "mpg123 -qs \"%s\" | sox -t raw -s -w -r 44100 -c 2 - -t raw -c 1 -r 44100 -s -w -"
+#endif
 #endif
 
 #ifdef USE_OGG123_INPUT
