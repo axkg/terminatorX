@@ -26,12 +26,16 @@
 #include <gtk/gtk.h>
 #include "tX_extdial.h"
 #include "tX_midiin.h"
+#include "tX_global.h"
 
 #ifndef _tx_seqpar_h
 #define _tx_seqpar_h 1
 
 #define NO_MOUSE_MAPPING 0
 #define MOUSE_MAPPING_OK 1
+
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
 
 /* required for gcc>=3.0 */
 using namespace std;
@@ -42,9 +46,8 @@ class tX_seqpar
 	static list <tX_seqpar *> all;
 	void *vtt; /* have to make this void as tX_vtt.h includes this */
 
-#ifdef USE_ALSA_MIDI_IN
 	tX_midievent bound_midi_event;
-#endif	
+
 	protected:
 	static list <tX_seqpar *> update;
 	static pthread_mutex_t update_lock;
@@ -130,6 +133,8 @@ class tX_seqpar
 	
 	public:
 	int is_mappable;	
+	void restore_meta(xmlNodePtr node);
+	void store_meta(FILE *output);
 };
 
 class tX_seqpar_update : public tX_seqpar

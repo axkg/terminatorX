@@ -1581,26 +1581,26 @@ int  vtt_class :: save(FILE *rc, char *indent) {
 	}
 	store_bool("sync_master", is_sync_master);
 	store_bool("autotrigger", autotrigger);
-	store_bool_id("loop", loop, sp_loop.get_persistence_id());
+	store_bool_sp("loop", loop, sp_loop);
 
-	store_bool_id("sync_client", is_sync_client, sp_sync_client.get_persistence_id());
-	store_int_id("sync_cycles", sync_cycles, sp_sync_cycles.get_persistence_id());
+	store_bool_sp("sync_client", is_sync_client, sp_sync_client);
+	store_int_sp("sync_cycles", sync_cycles, sp_sync_cycles);
 
-	store_float_id("volume", rel_volume, sp_volume.get_persistence_id());
-	store_float_id("pitch", rel_pitch, sp_pitch.get_persistence_id());	
-	store_bool_id("mute", mute, sp_mute.get_persistence_id());
-	store_float_id("pan", pan, sp_pan.get_persistence_id());
+	store_float_sp("volume", rel_volume, sp_volume);
+	store_float_sp("pitch", rel_pitch, sp_pitch);	
+	store_bool_sp("mute", mute, sp_mute);
+	store_float_sp("pan", pan, sp_pan);
 	
-	store_bool_id("lowpass_enable", lp_enable, sp_lp_enable.get_persistence_id());
-	store_float_id("lowpass_gain", lp_gain, sp_lp_gain.get_persistence_id());
-	store_float_id("lowpass_reso", lp_reso, sp_lp_reso.get_persistence_id());
-	store_float_id("lowpass_freq", lp_freq, sp_lp_freq.get_persistence_id());
+	store_bool_sp("lowpass_enable", lp_enable, sp_lp_enable);
+	store_float_sp("lowpass_gain", lp_gain, sp_lp_gain);
+	store_float_sp("lowpass_reso", lp_reso, sp_lp_reso);
+	store_float_sp("lowpass_freq", lp_freq, sp_lp_freq);
 
-	store_bool_id("echo_enable", ec_enable, sp_ec_enable.get_persistence_id());
-	store_float_id("echo_length", ec_length, sp_ec_length.get_persistence_id());
-	store_float_id("echo_feedback", ec_feedback, sp_ec_feedback.get_persistence_id());
-	store_float_id("echo_pan", ec_pan, sp_ec_pan.get_persistence_id());
-	store_float_id("echo_volume", ec_volume, sp_ec_volume.get_persistence_id());
+	store_bool_sp("echo_enable", ec_enable, sp_ec_enable);
+	store_float_sp("echo_length", ec_length, sp_ec_length);
+	store_float_sp("echo_feedback", ec_feedback, sp_ec_feedback);
+	store_float_sp("echo_pan", ec_pan, sp_ec_pan);
+	store_float_sp("echo_volume", ec_volume, sp_ec_volume);
 	
 	store_id("speed", sp_speed.get_persistence_id());
 	store_id("trigger", sp_trigger.get_persistence_id());
@@ -1655,8 +1655,8 @@ int  vtt_class :: save_all(FILE* rc) {
 
 	//store_int(vtt_amount); obsolete
 
-	store_float_id("master_volume", master_volume, sp_master_volume.get_persistence_id());
-	store_float_id("master_pitch", globals.pitch, sp_master_pitch.get_persistence_id());
+	store_float_sp("master_volume", master_volume, sp_master_volume);
+	store_float_sp("master_pitch", globals.pitch, sp_master_pitch);
 
 	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
 		res+=(*vtt)->save(rc, indent);
