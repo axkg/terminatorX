@@ -1,4 +1,4 @@
-SOURCES = 	tx_audioengine.xpm\
+EXTRA_DIST = 	tx_audioengine.xpm\
 		tx_power.xpm\
 		tx_grab.xpm\
 		tx_record.xpm\

@@ -1,4 +1,4 @@
-SOURCES =	knob0.xpm\
+EXTRA_DIST =	knob0.xpm\
 		knob1.xpm\
 		knob10.xpm\
 		knob11.xpm\
