@@ -314,7 +314,10 @@ void load_tt_part(char * buffer)
 	}
 	else
 	{
-		tx_note("Failed to access file.");
+		strcpy(idbuff, "Failed to access file: \"");	// I'm stealing the unrelated sting for a temp :)
+		strcat(idbuff, globals.tables_filename);
+		strcat(idbuff, "\"");
+		tx_note(idbuff);
 	}
 }
 
@@ -1152,12 +1155,15 @@ void tx_note(const char *message)
 	
 	btn = gtk_button_new_with_label("Ok");
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->action_area), btn, TRUE, TRUE, 0);
-	gtk_widget_show(btn);
 	
 	gtk_signal_connect(GTK_OBJECT(btn), "clicked", GtkSignalFunc(note_destroy), mbox);
 
 	gtk_window_set_default_size(win, 200, 100);
 	gtk_window_set_position(win, GTK_WIN_POS_CENTER_ALWAYS);	
+
+	GTK_WIDGET_SET_FLAGS (btn, GTK_CAN_DEFAULT);
+	gtk_widget_grab_default(btn);
+	gtk_widget_show(btn);
 	gtk_widget_show(mbox);
 
 //	gtk_widget_unrealize(main_window);
