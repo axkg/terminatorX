@@ -178,9 +178,9 @@ void load_globals() {
 	}
 }
 
-#define restore_int(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s)) && (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1))) {sscanf(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%i", &i); elementFound=1;}
-#define restore_float(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s)) && (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1))) {sscanf(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%lf", &dvalue); i=dvalue; elementFound=1;}
-#define restore_string(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s)) && (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1))) {strcpy(i, xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)); elementFound=1;}
+#define restore_int(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) { sscanf(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%i", &i); }}
+#define restore_float(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if  (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {sscanf(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%lf", &dvalue); i=dvalue;}}
+#define restore_string(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {strcpy(i, xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)); }}
 
 int load_globals_xml() {
 	char rc_name[PATH_MAX]="";	
