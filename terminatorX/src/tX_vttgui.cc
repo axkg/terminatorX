@@ -1032,7 +1032,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gui_set_tooltip(g->lp_enable, "Click here to enable the built-in lowpass effect.");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->lp_enable), vtt->lp_enable);
 	p->add_client_widget(vg_create_fx_bar(vtt, vtt->lp_fx, 0));
-	g_signal_connect(G_OBJECT(g->lp_enable), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_ec_enable);	
+	g_signal_connect(G_OBJECT(g->lp_enable), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_lp_enable);	
 
 	p->add_client_widget(g->lp_enable);
 
