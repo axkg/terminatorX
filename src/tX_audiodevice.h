@@ -37,12 +37,19 @@
 #include <alsa/asoundlib.h>
 #endif
 
+class tX_engine;
+
 class tX_audiodevice
 {
 	protected:
 	int samples_per_buffer;
+	int16_t *sample_buffer[2];
+	int current_buffer;
+	int buffer_pos;
+	tX_engine *engine;
+	
 	int sample_rate;
-	void init();
+	tX_audiodevice();
 	
 	public:
 	virtual double get_latency()=0; /* call only valid *after* open() */
@@ -51,7 +58,10 @@ class tX_audiodevice
 	
 	virtual int open()=0;
 	virtual int close()=0;
-		
+	
+	void fill_buffer(int16_t *target_buffer, int16_t *next_target_buffer);
+
+	virtual void start();	
 	virtual void play(int16_t*)=0; /* play blocked */
 };
 

@@ -367,7 +367,7 @@ int main(int argc, char **argv)
 	fprintf(stderr, "%s - Copyright (C) 1999-2003 by Alexander König\n", VERSIONSTRING);
 	fprintf(stderr, "terminatorX comes with ABSOLUTELY NO WARRANTY - for details read the license.\n");
 
-	engine=new tX_engine();
+	tX_engine *engine=tX_engine::get_instance();
 	
 #ifdef USE_3DNOW
 	if (tx_mm_support()!=5) {

@@ -103,6 +103,7 @@ void apply_options(GtkWidget *dialog) {
 
 	/* Misc */
 	strcpy(globals.file_editor, gtk_entry_get_text(GTK_ENTRY(lookup_widget(dialog, "soundfile_editor"))));
+	strcpy(globals.lrdf_path, gtk_entry_get_text(GTK_ENTRY(lookup_widget(dialog, "ladspa_rdf_path"))));
 	globals.prelis=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "prelisten_enabled")))==TRUE);
 }
 
@@ -339,6 +340,7 @@ void init_tx_options(GtkWidget *dialog) {
 
 	/* Misc */
 	gtk_entry_set_text(GTK_ENTRY(lookup_widget(dialog, "soundfile_editor")), globals.file_editor);
+	gtk_entry_set_text(GTK_ENTRY(lookup_widget(dialog, "ladspa_rdf_path")), globals.lrdf_path);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "prelisten_enabled")), globals.prelis);
 }
 

@@ -393,7 +393,7 @@ void ec_enabled(GtkWidget *wid, vtt_class *vtt)
 #ifdef USE_ALSA_MIDI_IN
 void midi_mapping_clicked(GtkWidget *wid, vtt_class *vtt)
 {
-	engine->midi->configure_bindings(vtt);
+	tX_engine::get_instance()->midi->configure_bindings(vtt);
 }
 #endif
 
@@ -785,7 +785,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gui_set_tooltip(g->midi_mapping, "Determines what parameters should be bound to what MIDI events.");
 	gtk_box_pack_start(GTK_BOX(tempbox), g->midi_mapping, WID_DYN);
 	
-	if (!engine->get_midi()->get_is_open()) {
+	if (!tX_engine::get_instance()->get_midi()->get_is_open()) {
 		gtk_widget_set_sensitive(g->midi_mapping, FALSE);
 	}
 #endif
