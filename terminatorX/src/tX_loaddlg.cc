@@ -67,6 +67,7 @@ int ld_create_loaddlg(int mode, int count)
 	ld_loaddlg=gtk_dialog_new_with_buttons("terminatorX - loading",
 		GTK_WINDOW(main_window), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_STOCK_CANCEL, GTK_RESPONSE_NONE, NULL);
 	ld_window=&(GTK_DIALOG(ld_loaddlg)->window);
+	
 	gtk_container_set_border_width(GTK_CONTAINER(ld_window), 5);
 	
 	vbox=GTK_WIDGET(GTK_DIALOG(ld_loaddlg)->vbox);
@@ -101,6 +102,7 @@ int ld_create_loaddlg(int mode, int count)
 	gtk_widget_realize(ld_loaddlg);
 	gdk_window_set_decorations(gtk_widget_get_parent_window(vbox),(GdkWMDecoration) 0);
 	gtk_widget_show(ld_loaddlg);
+	gdk_window_set_cursor(ld_loaddlg->window, tX_cursor::get_cursor());
 
 	gtk_flush();
 		

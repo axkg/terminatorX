@@ -221,6 +221,8 @@ void do_load_file(GtkWidget *wid, vtt_class *vtt)
 	strcpy(newfile, gtk_file_selection_get_filename(GTK_FILE_SELECTION(vtt->gui.fs)));
 	gtk_widget_destroy(GTK_WIDGET(vtt->gui.fs));
 	
+	tX_cursor::set_cursor(tX_cursor::WAIT_CURSOR);
+	
 	load_part(newfile, vtt);
 	
 	if (!globals.current_path)
@@ -232,6 +234,8 @@ void do_load_file(GtkWidget *wid, vtt_class *vtt)
 	globals.current_path = strdup(newfile);
 
 	vtt->gui.file_dialog=NULL;
+	
+	tX_cursor::reset_cursor();
 }
 
 void drop_file(GtkWidget *widget, GdkDragContext *context,

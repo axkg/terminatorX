@@ -154,10 +154,11 @@ GtkWidget *gtk_tx_new(int16_t * wavdata, int wavsamples) {
 }
 
 static void gtk_tx_destroy(GtkObject * object) {
+	GtkTx *tx;
 	g_return_if_fail(object != NULL);
 	g_return_if_fail(GTK_IS_TX(object));
 
-	GtkTx *tx=GTK_TX(object);
+	tx=GTK_TX(object);
 	
 	if (tx->disp_data) { free(tx->disp_data); tx->disp_data=NULL; }
 	

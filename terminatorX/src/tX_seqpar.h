@@ -163,20 +163,20 @@ class tX_seqpar_master_volume : public tX_seqpar_update
 {
 	public:
 	tX_seqpar_master_volume();
-	private:
 	virtual void do_exec(const float value);
 	virtual void do_update_graphics();	
-        virtual const char *get_name(); 
+	private:
+	virtual const char *get_name(); 
 };
 
 class tX_seqpar_master_pitch : public tX_seqpar_update_active_forward
 {
 	public:
 	tX_seqpar_master_pitch();
-	private:
 	virtual void do_exec(const float value);
 	virtual void do_update_graphics();	
-        virtual const char *get_name(); 
+	private:
+    virtual const char *get_name(); 
 };
 
 class tX_seqpar_vtt_speed : public tX_seqpar_no_update_active_forward
