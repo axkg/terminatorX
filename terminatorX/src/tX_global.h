@@ -74,6 +74,8 @@ typedef struct {
 	char last_fn[PATH_MAX];
 
 	int use_stdout;
+	int use_stdout_cmdline;
+	int use_stdout_from_conf_file;
 	int show_nag;
 	
 	int prelis;
@@ -94,6 +96,8 @@ typedef struct {
 	char file_editor[PATH_MAX];
 	int true_block_size;
 	int update_delay; 
+	
+	char *current_path;
 } tx_global;
 
 extern tx_global globals;

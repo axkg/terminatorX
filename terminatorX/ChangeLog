@@ -3,6 +3,12 @@ All changes were done by me (Alexander König) if not stated otherwise.
 This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
+[v3.71]
+- applied a huge patch from Adrian Reber (adrian@lisas.de). This patch includes:
+  - mostly compile fixes (tX should compile in FreeBSD now, too)
+  - fixed
+- yes now it actually is: STEREO
+
 [v3.70]
 - this list may be incomplete
 - This release brings support for LADSPA plugins. These plugins can be inserted

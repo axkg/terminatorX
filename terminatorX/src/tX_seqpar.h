@@ -192,6 +192,17 @@ class tX_seqpar_vtt_volume : public tX_seqpar_update
         virtual const char *get_name(); 
 };
 
+class tX_seqpar_vtt_pan : public tX_seqpar_update
+{
+	public:
+	tX_seqpar_vtt_pan();
+	virtual float get_value();
+	private:	
+	virtual void do_exec(const float value);
+	virtual void do_update_graphics();	
+        virtual const char *get_name(); 
+};
+
 class tX_seqpar_vtt_pitch : public tX_seqpar_update_active_forward
 {
 	public:
@@ -310,6 +321,17 @@ class tX_seqpar_vtt_ec_feedback : public tX_seqpar_update
 {
 	public:
 	tX_seqpar_vtt_ec_feedback();
+	virtual float get_value();
+	private:	
+	virtual void do_exec(const float value);
+	virtual void do_update_graphics();	
+        virtual const char *get_name(); 
+};
+
+class tX_seqpar_vtt_ec_pan : public tX_seqpar_update
+{
+	public:
+	tX_seqpar_vtt_ec_pan();
 	virtual float get_value();
 	private:	
 	virtual void do_exec(const float value);
