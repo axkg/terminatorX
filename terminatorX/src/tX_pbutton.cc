@@ -42,13 +42,13 @@
 #include "gui_icons/tX_fx_up.xpm"
 #include "gui_icons/tX_fx_down.xpm"
 #include "gui_icons/tX_fx_close.xpm"
-#include "gui_icons/tX_minimize.xpm"
+#include "gui_icons/tX_minimize_panel.xpm"
 #include "gui_icons/tX_min_control.xpm"
 
 gchar ** tx_icons[]={ tx_audioengine_xpm, tx_power_xpm, tx_grab_xpm, tx_smaller_logo_xpm,
 		      tx_sequencer_xpm, tx_play_xpm, tx_stop_xpm, tx_record_xpm, 
 		      tx_wave_xpm, tx_reload_xpm, tx_minimize_xpm,
-		      tX_fx_up_xpm, tX_fx_down_xpm, tX_fx_close_xpm, tX_minimize_xpm, tX_min_control_xpm };
+		      tX_fx_up_xpm, tX_fx_down_xpm, tX_fx_close_xpm, tX_minimize_panel_xpm, tX_min_control_xpm };
 
 GtkWidget *tx_pixmap_widget(int icon_id)
 {
