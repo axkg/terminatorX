@@ -1,21 +1,20 @@
 #!/bin/bash
 
 create_image() {
+	echo -n Merging image $no:
 
-echo -n Merging image $no:
-
-image=knob$no.png
-mask=knob$no-mask.png
-out=merge$no.png
+	image=knob$no.png
+	mask=knob$no-mask.png
+	out=merge$no.png
 
 cat > tmp.scm <<EOF
 (let* (
-(mask (car (file-png-load 1 "$mask" "$mask")))
-(mask-drawable (car (gimp-image-active-drawable mask)))
-(img (car (file-png-load 1 "$image" "$image")))
-(img-drawable (car (gimp-image-active-drawable img)))
-(color (car (gimp-image-pick-color img img-drawable 0 0 0 0 1)))
-)
+	(mask (car (file-png-load 1 "$mask" "$mask")))
+	(mask-drawable (car (gimp-image-active-drawable mask)))
+	(img (car (file-png-load 1 "$image" "$image")))
+	(img-drawable (car (gimp-image-active-drawable img)))
+	(color (car (gimp-image-pick-color img img-drawable 0 0 0 0 1))))
+	
 (gimp-fuzzy-select mask-drawable 0 0 0 0 FALSE 0 1 0)
 (set! active-selection (car (gimp-selection-save mask)))
 (gimp-selection-all img)
@@ -32,11 +31,10 @@ cat > tmp.scm <<EOF
 )
 EOF
 
-gimp -s -f -i -d --console-messages --batch '(load "tmp.scm" nil nil)'
-rm tmp.scm
+	gimp -s -f -i -d --console-messages --batch '(load "tmp.scm" nil nil)'
+	rm tmp.scm
 
-echo " done."
-
+	echo " done."
 }
 
 for no in {,1,2,3,4}{0,1,2,3,4,5,6,7,8,9}

@@ -2,6 +2,8 @@
 
 import os, sys
 
+knob_view = 1
+
 def render(i, mask):
 	angle = 280.0*float(i)/49.0+40.0-180.0
 	
@@ -16,26 +18,36 @@ def render(i, mask):
 		else:
 			out = out.replace('BACKGROUND','Blue')
 			out = out.replace('MASKOPTION','')
+			
+		out = out.replace('KNOB_VIEW', '%i' % knob_view)
 		
 		outf.write(out)
 		
 	outf.close()
 	inf.close()
 	
-	os.system('/usr/local/share/povray-3.6/scripts/render_scene.sh tmp.pov')
+	if knob_view == 2:
+		povargs='-w1600 -h1280 +a0.3'
+	else:
+		povargs='-w320 -h240 -icon'
+
 	if mask:
 		m = '-mask'
 	else:
 		m = ''
 		
-	os.rename('tmp.png', 'knob%0i%s.png' % (49-i,m))
+	imagename = 'knob%0i%s.png' % (49-i,m)
+	os.system('povray +L. -itmp.pov -p -o. -O%s %s' % (imagename,povargs))
 	os.unlink('tmp.pov')
 
 
 if len(sys.argv)>1:
 	img = []
 	for image in sys.argv[1:]:
-		img.append(int(image))
+		if image == "-2":
+			knob_view = 2
+		else:
+			img.append(int(image))
 else:
 	img = xrange(0,50)
 	
@@ -43,5 +55,6 @@ print img
 
 for i in img:
 	render(i, False)
-	render(i, True)
+	if knob_view == 1:
+		render(i, True)
 	

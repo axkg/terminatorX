@@ -19,7 +19,7 @@
 // interface.
 
 // -w320 -h240 -icon
-// -w800 -h600 +a0.3
+// -w1600 -h1280 +a0.3
 
 #include "colors.inc"
 #include "metals.inc"
@@ -50,16 +50,21 @@ texture {
     finish {ambient 0.1 diffuse 0.8 phong 0.5 phong_size 100 }
 }
 
-#if(1=1)
+#if(KNOB_VIEW=1)
   camera { orthographic location -z*3.3 look_at 0 }
 #else
-  camera { orthographic location -x*5 look_at 0 }
+	camera { location <+1.6,-1,-4> look_at 0 }
+//  camera { orthographic location -x*5 look_at 0 }
 #end
 
 plane {
   z, 0.01
   hollow on
+#if(KNOB_VIEW=1)
   pigment {BACKGROUND}
+#else
+  texture { chrome }
+#end
 }
 
 light_source { <-60, 80, -500> color Gray85}
