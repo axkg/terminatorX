@@ -83,17 +83,19 @@ void tX_seqpar :: handle_midi_input( const tX_midievent& event )
 	
 	if( !is_boolean )
 	{
-		if( event.type == tX_midievent::CC || event.type == tX_midievent::PITCHBEND )
-		{	
-			tmpvalue = event.value * (max_value-min_value) + min_value;
-		}
-		else if( event.type == tX_midievent::NOTE )
-		{
-			tmpvalue = event.is_noteon;
-		}
-		else
-		{
-			return;
+		switch (event.type) {
+			case tX_midievent::CC:
+			case tX_midievent::CC14:
+			case tX_midievent::PITCHBEND:
+			case tX_midievent::RPN:
+			case tX_midievent::NRPN:
+					tmpvalue = event.value * (max_value-min_value) + min_value;				
+				break;
+			case tX_midievent::NOTE:
+					tmpvalue = event.is_noteon;
+				break;
+			default:
+				return;
 		}
 
 		if (tmpvalue>max_value) tmpvalue=max_value;
@@ -242,6 +244,12 @@ void tX_seqpar :: restore_meta(xmlNodePtr node) {
 			bound_midi_event.type=tX_midievent::NOTE;
 		} else if (strcmp("pitchbend", buffer)==0) {
 			bound_midi_event.type=tX_midievent::PITCHBEND;
+		} else if (strcmp("cc14", buffer)==0) {
+			bound_midi_event.type=tX_midievent::CC14;
+		} else if (strcmp("rpn", buffer)==0) {
+			bound_midi_event.type=tX_midievent::RPN;
+		} else if (strcmp("nrpn", buffer)==0) {
+			bound_midi_event.type=tX_midievent::NRPN;
 		} else {
 			tX_error("unknown midiType \"%s\" for seqpar %s", buffer, this->get_name());
 		}
@@ -267,6 +275,9 @@ void tX_seqpar :: store_meta(FILE *rc, gzFile rz) {
 			case tX_midievent::NOTE: type="note"; break;
 			case tX_midievent::CC: type="cc"; break;
 			case tX_midievent::PITCHBEND: type="pitchbend"; break;
+			case tX_midievent::CC14: type="cc14"; break;
+			case tX_midievent::RPN: type="rpn"; break;
+			case tX_midievent::NRPN: type="nrpn"; break;
 			default: type="error";
 		}
 		sprintf(buffer, "id=\"%i\" midiType=\"%s\" midiChannel=\"%i\" midiNumber=\"%i\"", persistence_id, type, bound_midi_event.channel, bound_midi_event.number);

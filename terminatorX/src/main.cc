@@ -183,11 +183,30 @@ int parse_args(int *argc, char **argv)
 	return 1;
 }
 
+void checkenv(const char *name) {
+	char *value;
+	int length;
+	
+	value=getenv(name);
+	if (value) {
+		length=strlen(value);
+		
+		if (length>=PATH_MAX) {
+			tX_error("Your \"%s\" environment variable seems malicious (%i chars).", name, length);
+			tX_error("Please correct that and restart terminatorX.");
+			exit(-1);
+		}
+	}
+}
+
 int main(int argc, char **argv)
 {
 	fprintf(stderr, "%s - Copyright (C) 1999-2003 by Alexander König\n", VERSIONSTRING);
 	fprintf(stderr, "terminatorX comes with ABSOLUTELY NO WARRANTY - for details read the license.\n");
 
+	checkenv("HOME");
+	checkenv("XLOCALEDIR");	
+	
 	tX_engine *engine=tX_engine::get_instance();
 	
 	gtk_init (&argc, &argv);
