@@ -83,12 +83,12 @@ void LADSPA_Plugin :: handlelib(void *lib, LADSPA_Descriptor_Function desc_func,
 	
 	for (i=0; (descriptor = desc_func(i)) != NULL; i++) {		
 		if (LADSPA_IS_INPLACE_BROKEN(descriptor->Properties)) {
-			tX_plugin_warning("Plugin \"%s\" [%i] disabled: No in-place processing support.", descriptor->Label, descriptor->UniqueID);
+			tX_plugin_warning("Plugin \"%s\" [%li] disabled: No in-place processing support.", descriptor->Label, descriptor->UniqueID);
 		} else if (!LADSPA_IS_HARD_RT_CAPABLE(descriptor->Properties) && !globals.force_nonrt_plugins) {
-			tX_plugin_warning("Plugin \"%s\" [%i] disabled: Not realtime capable.", descriptor->Label, descriptor->UniqueID);
+			tX_plugin_warning("Plugin \"%s\" [%li] disabled: Not realtime capable.", descriptor->Label, descriptor->UniqueID);
 		} else {
 			if (!LADSPA_IS_HARD_RT_CAPABLE(descriptor->Properties)) {
-				tX_warning("Plugin \"%s\" [%i] is classified as non-rt capable: loading forced.", descriptor->Label, descriptor->UniqueID);
+				tX_warning("Plugin \"%s\" [%li] is classified as non-rt capable: loading forced.", descriptor->Label, descriptor->UniqueID);
 			}
 			in_audio=0; out_audio=0; in_ctrl=0;
 		
@@ -106,7 +106,7 @@ void LADSPA_Plugin :: handlelib(void *lib, LADSPA_Descriptor_Function desc_func,
 			} if ((in_audio == 2) && (out_audio == 2)) {
 				new LADSPA_Stereo_Plugin(descriptor, filename);
 			}
-			else { tX_plugin_warning("Plugin \"%s\" [%i] disabled: Neither mono nor stereo.", descriptor->Label, descriptor->UniqueID); }
+			else { tX_plugin_warning("Plugin \"%s\" [%li] disabled: Neither mono nor stereo.", descriptor->Label, descriptor->UniqueID); }
 		}
 	}
 }

@@ -54,6 +54,7 @@ tX_seqpar :: tX_seqpar () : bound_midi_event()
 	
 	midi_lower_bound_set=false;
 	midi_upper_bound_set=false;
+	reverse_midi=false;
 }
 
 void tX_seqpar :: set_mapping_parameters(float max, float min, float scale, int mappable)
@@ -107,11 +108,18 @@ void tX_seqpar :: handle_midi_input( const tX_midievent& event )
 			default:
 				return;
 		}
+		
+		if (reverse_midi) tmpvalue=(max-tmpvalue)+min;
 
 		if (tmpvalue>max) tmpvalue=max;
 		else if (tmpvalue<min) tmpvalue=min;
 	} else {
 		tmpvalue=event.value;
+		
+		if (reverse_midi) {
+			if (tmpvalue>0) tmpvalue = 0;
+			else tmpvalue = 1;
+		}
 	}
 	
 	touch();
@@ -277,7 +285,17 @@ void tX_seqpar :: restore_meta(xmlNodePtr node) {
 		buffer=(char *) xmlGetProp(node, (xmlChar *) "midiNumber");
 		if (buffer) { sscanf(buffer, "%i", &bound_midi_event.number); }
 		else { tX_error("no midiNumber for seqpar %s", this->get_name()); }
-	} 
+	}
+	
+	buffer=(char *) xmlGetProp(node, (xmlChar *) "midiReverse");
+	if (buffer) {
+		if (strcmp("true", buffer)==0) {
+			reverse_midi=true;
+		} else {
+			reverse_midi=false;
+		}
+	}
+		
 	/* else: no MIDI init.... */
 }
 
@@ -297,7 +315,7 @@ void tX_seqpar :: store_meta(FILE *rc, gzFile rz) {
 			case tX_midievent::NRPN: type="nrpn"; break;
 			default: type="error";
 		}
-		sprintf(buffer, "id=\"%i\" midiType=\"%s\" midiChannel=\"%i\" midiNumber=\"%i\"", persistence_id, type, bound_midi_event.channel, bound_midi_event.number);
+		sprintf(buffer, "id=\"%i\" midiType=\"%s\" midiChannel=\"%i\" midiNumber=\"%i\" midiReverse=\"%s\"", persistence_id, type, bound_midi_event.channel, bound_midi_event.number, (reverse_midi ? "true" : "false"));
 	} else {
 		sprintf(buffer, "id=\"%i\"", persistence_id);
 	}
@@ -1057,6 +1075,23 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gp
 #else
 		gtk_widget_set_sensitive(item, FALSE);
 #endif
+
+		item = gtk_check_menu_item_new_with_label("Map MIDI Reversed");
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+		gtk_widget_show(item);		
+
+		if (sp->bound_midi_event.type==tX_midievent::NONE) {
+			gtk_widget_set_sensitive(item, FALSE);
+		}
+		
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), sp->get_reverse_midi());
+		
+#ifdef USE_ALSA_MIDI_IN
+		g_signal_connect(item, "activate", (GCallback) tX_seqpar::reverse_midi_binding, sp);		
+#else
+		gtk_widget_set_sensitive(item, FALSE);
+#endif
+
 		
 		item = gtk_menu_item_new_with_label("Remove MIDI Binding");
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
@@ -1144,6 +1179,12 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gp
 }
 
 #ifdef USE_ALSA_MIDI_IN
+gboolean tX_seqpar::reverse_midi_binding(GtkWidget *widget, gpointer data) {
+	tX_seqpar *sp=(tX_seqpar *) data;
+	sp->set_reverse_midi(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget)));
+	
+	return TRUE;
+}
 
 gboolean tX_seqpar::remove_midi_binding(GtkWidget *widget, gpointer data) {
 	tX_seqpar *sp=(tX_seqpar *) data;
