@@ -60,30 +60,24 @@ extern "C" {
 
 typedef enum {
 	OSS =0,
-	ALSA = 1
+	ALSA = 1,
+	JACK = 2
 } tX_audiodevice_type;
 	
 typedef struct {
-	char	audio_device[PATH_MAX];
+	int	xinput_enable;
+	char xinput_device[256];
 	
-	int 	xinput_enable;
-	char	xinput_device[256]; // If your device's name is longer than that
-				    // you are insane and you simply don't deserve
-				    // running terminatorX ;) (said the guy who invented 8+3)				    				    
 	int	store_globals;		// if it should store the globals vals on exit
-	char 	*startup_set;	
-	char	*alternate_rc;		// a diferent set of stored globals to load
+	char *startup_set;	
+	char *alternate_rc;		// a diferent set of stored globals to load
 	int	no_gui;			// run without any gui
 	
-	int	update_idle;
-	
-	int	buff_no;
-	int	buff_size;
-	
+	int	update_idle;	
 	int	sense_cycles;
 	
-	int 	width;
-	int 	height;
+	int width;
+	int height;
 
 	int tooltips;
 	
@@ -124,14 +118,18 @@ typedef struct {
 	*/
 	
 	tX_audiodevice_type audiodevice_type; // TX_AUDIODEVICE_TYPE_OSS etc.
-	int audiodevice_buffersize; // buffer in samples
 	
-	/* OSS specific options */
-	char audiodevice_oss_devicename[PATH_MAX];
+	/* OSS specific options  */
+	char oss_device[PATH_MAX];
+	int oss_buff_no;
+	int oss_buff_size; // 2^X Bytes
+	int oss_samplerate;
 	
 	/* ALSA specific options */
-	int audiodevice_alsa_card;
-	int audiodevice_alsa_pcm;		
+	char alsa_device[PATH_MAX];
+	int alsa_buff_no;
+	int alsa_buff_size; // In Samples
+	int alsa_samplerate;
 	
 	int fullscreen_enabled;
 } tx_global;

@@ -47,7 +47,7 @@
 void tX_audiodevice :: init()
 {
 	samples_per_buffer=0;
-	set_buffersize_near(globals.audiodevice_buffersize);
+	//set_buffersize_near(globals.audiodevice_buffersize);
 }
 
 
@@ -97,10 +97,10 @@ int tX_audiodevice_oss :: open()
 	int buff_cfg;
 
 	if (fd) return (1);
-	fd=::open(globals.audio_device, O_WRONLY, 0);
+	fd=::open(globals.oss_device, O_WRONLY, 0);
 	
 	/* setting buffer size */	
-	buff_cfg=(globals.buff_no<<16) | globals.buff_size;
+	buff_cfg=(globals.oss_buff_no<<16) | globals.oss_buff_size;
 	p=buff_cfg;
 
 	tX_debug("tX_adudiodevice_oss::open() - buff_no: %i, buff_size: %i, buff_cfg: %08x", globals.buff_no, globals.buff_size, buff_cfg);
@@ -120,7 +120,7 @@ int tX_audiodevice_oss :: open()
 	
 	/* 44.1 khz */
 
-	p =  44100;
+	p =  globals.oss_samplerate;
 	i += ioctl(fd, SOUND_PCM_WRITE_RATE, &p);
 	
 	/* Figure actual blocksize.. */
@@ -177,10 +177,16 @@ int tX_audiodevice_alsa :: open()
 {
 	snd_pcm_stream_t stream = SND_PCM_STREAM_PLAYBACK;
 	snd_pcm_hw_params_t *hw_params;
-	char *pcm_name;
+	char pcm_name[64];
+	char foo[PATH_MAX];
 	
-	pcm_name=strdup(globals.audio_device);
-	snd_pcm_hw_params_alloca(&hw_params);
+	snd_pcm_hw_params_alloca(&hw_params);	
+	
+	int card;
+	int device;
+	
+	sscanf(globals.alsa_device, "%i-%i: %s", &card, &device, foo);
+	sprintf(pcm_name, "plughw:%i,%i", card, device);
 	
 	if (snd_pcm_open(&pcm_handle, pcm_name, stream, 0) < 0) {
 		tX_error("ALSA: Failed to access PCM device \"%s\"", pcm_name);
@@ -209,14 +215,13 @@ int tX_audiodevice_alsa :: open()
 	}
 	
 	/* Setting sampling rate */
-	int rate=44100;
 	int hw_rate;
 	int dir;
 	
-	hw_rate = snd_pcm_hw_params_set_rate_near(pcm_handle, hw_params, rate, &dir);
+	hw_rate = snd_pcm_hw_params_set_rate_near(pcm_handle, hw_params, globals.alsa_samplerate, &dir);
 	
 	if (dir != 0) {
-		tX_warning("ALSA: The PCM device \"%s\" doesnt support 44100 kHz playback - using %i instead", pcm_name, hw_rate);
+		tX_warning("ALSA: The PCM device \"%s\" doesnt support 44100 Hz playback - using %i instead", pcm_name, hw_rate);
 	}	
 
 	/* Using stereo output */
@@ -227,22 +232,18 @@ int tX_audiodevice_alsa :: open()
 	}
 
 	/* Setting the number of buffers... */
-	if (snd_pcm_hw_params_set_periods(pcm_handle, hw_params, globals.buff_no, 0) < 0) {
-		tX_error("ALSA: Failed to set %i periods for PCM device \"%s\"", globals.buff_no, pcm_name);
+	if (snd_pcm_hw_params_set_periods(pcm_handle, hw_params, globals.alsa_buff_no, 0) < 0) {
+		tX_error("ALSA: Failed to set %i periods for PCM device \"%s\"", globals.alsa_buff_no, pcm_name);
 		snd_pcm_hw_params_free (hw_params);
 		return -1;
 	}
 	
-	int samples=1<<globals.buff_size;
-	
 //	snd_pcm_sw_params_set_avail_min(pcm_handle, hw_params, samples);
-	samples=snd_pcm_hw_params_set_buffer_size_near(pcm_handle, hw_params, samples);
+	int samples=snd_pcm_hw_params_set_buffer_size_near(pcm_handle, hw_params, globals.alsa_buff_size );
 	
-	samples_per_buffer= samples;//hw_buffsize/sizeof(int16_t);
-	globals.true_block_size=samples_per_buffer/2;
+	samples_per_buffer=samples;//hw_buffsize/sizeof(int16_t);
+	globals.true_block_size=samples*4;
 	
-	tX_error("sa: %i", samples);
-		
 	/* Apply all that setup work.. */
 	if (snd_pcm_hw_params(pcm_handle, hw_params) < 0) {
 		tX_error("ALSA: Failed to apply settings to PCM device \"%s\"", pcm_name);
@@ -251,7 +252,6 @@ int tX_audiodevice_alsa :: open()
 	}
 	
 	snd_pcm_hw_params_free (hw_params);
-	tX_warning("ALSA OK!");
 	return 0;
 }
 
@@ -275,10 +275,17 @@ void tX_audiodevice_alsa :: play(int16_t *buffer)
 	swapbuffer (buffer, samples_per_buffer);
 #endif
 	
-	while ((pcmreturn = snd_pcm_writei(pcm_handle, buffer, samples_per_buffer /* *2 ?*/)) == EPIPE) {
+	pcmreturn = snd_pcm_writei(pcm_handle, buffer, samples_per_buffer/2);
+	
+	while (pcmreturn==-EPIPE) {
 		snd_pcm_prepare(pcm_handle);
+		pcmreturn=snd_pcm_writei(pcm_handle, buffer, samples_per_buffer/2);
 		tX_warning("ALSA: ** buffer underrun **");
-	}	
+	}
+	
+	if (pcmreturn<0) {
+		printf("snd_pcm_writei says: %s.\n", strerror(-1*pcmreturn));
+	}
 }
 
 #endif //USE_ALSA
