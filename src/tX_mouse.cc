@@ -133,7 +133,20 @@ int tx_mouse :: grab() {
 	otime=CurrentTime;
 	
 	grabbed=1;
-	vtt_class::focus_no(0);
+	
+	std::list<vtt_class *> :: iterator v;
+	int c=0;
+	
+	for (v=vtt_class::main_list.begin(); v!=vtt_class::main_list.end(); v++) {
+		if (!(*v)->audio_hidden) {
+			vtt_class::focus_no(c);
+			break;
+		}
+		c++;
+		//vtt_class::focus_no(0);
+	}
+	
+	
 	warp=TX_MOUSE_SPEED_NORMAL;
 	
 	tX_debug("tX_mouse::grab(): this: %08x, dpy: %08x", (int) this, (int) dpy);
