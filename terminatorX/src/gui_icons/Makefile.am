@@ -12,5 +12,5 @@ SOURCES = 	tx_audioengine.xpm\
 		tX_fx_up.xpm\
 		tX_fx_down.xpm\
 		tX_fx_close.xpm\
-		tX_minimize.xpm\
+		tX_minimize_panel.xpm\
 		tX_min_control.xpm
