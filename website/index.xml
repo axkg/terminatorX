@@ -104,7 +104,7 @@
             <listitem>
               <para>I added a little 
               <bold>pitch calculator</bold> that allows adjusting the playback
-              speed of a turntable to that of the master turntable so it easy
+              speed of a turntable to that of the master turntable so it is
               very easy to synchronize (<italic>precisely cut</italic>) loops now. 
 	      Note that this feature is
               probably useless with large audiofiles (like complete songs).</para>
@@ -149,7 +149,7 @@
           <screen>-Wall</screen> and 
           <screen>-Werror</screen> enabled. Well, the version number ends in a
 	  zero, which means lots of new code with possibly lots of new and yet
-	  undiscovered busg.
+	  undiscovered bugs.
 	  </para>
         </newstext>
       </newsitem>
