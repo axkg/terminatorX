@@ -1258,7 +1258,7 @@ void vtt_class :: set_master_pitch(f_prec new_pitch)
 	}
 }
 
-int vtt_class :: enable_saturate (int newstate)
+void vtt_class :: enable_saturate (int newstate)
 {
 	do_saturate=newstate;
 }
@@ -1955,7 +1955,7 @@ int  vtt_class :: load_all_12(FILE* input, char *fname)
 	return(res);
 }
 
-int add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn)
+void add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn)
 {
 	vtt_class *hmmpg;
 	hmmpg = new vtt_class(1);

@@ -99,7 +99,7 @@ gint update_tag;
 Window xwindow;
 #define WID_DYN TRUE, TRUE, 0
 #define WID_FIX FALSE, FALSE, 0
-extern int add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn);
+extern void add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn);
 extern void recreate_gui(vtt_class *vtt, GtkWidget *daddy);
 extern void destroy_gui(vtt_class *vtt);
 extern void gui_show_frame(vtt_class *vtt, int show);
@@ -125,6 +125,13 @@ int grab_status=0;
 int last_grab_status=0;
 
 void tx_note(const char *message);
+
+GtkTooltips *gui_tooltips=NULL;
+
+void gui_set_tooltip(GtkWidget *wid, char *tip)
+{
+	gtk_tooltips_set_tip(gui_tooltips, wid, tip, NULL);
+}
 
 void turn_audio_off(void)
 {
@@ -786,7 +793,7 @@ GtkSignalFunc sequencer_move(GtkWidget *wid, void *d)
 	gtk_box_pack_end(GTK_BOX(smaller_box), dummy, WID_FIX);\
 	gtk_widget_show(dummy);\
 
-int create_mastergui(int x, int y)
+void create_mastergui(int x, int y)
 {
 	GtkWidget *main_vbox;
 	GtkWidget *right_hbox;
@@ -803,7 +810,8 @@ int create_mastergui(int x, int y)
 		{ "text/uri-list", 0, 0}
 	};
 	static gint n_drop_types = sizeof (drop_types) / sizeof(drop_types[0]);
-		
+	
+	gui_tooltips=gtk_tooltips_new();
 
 	main_window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
@@ -847,18 +855,21 @@ int create_mastergui(int x, int y)
 	dummy=tx_xpm_button_new(TX_ICON_POWER,"Power ", 1);
 	connect_button(dummy,audio_on, NULL);
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
+	gui_set_tooltip(dummy, "Turn the audio engine on/off.");
 	gtk_widget_show(dummy);
 	engine_btn=dummy;
 	
 	grab_button=tx_xpm_button_new(TX_ICON_GRAB, "Mouse Grab ", 1);
 	gtk_box_pack_start(GTK_BOX(control_box), grab_button, WID_FIX);
 	connect_button(grab_button, grab_on, NULL);
+	gui_set_tooltip(grab_button, "Enter the mouse grab mode operation. Press <ESCAPE> to exit grab mode.");
 	gtk_widget_show(grab_button);
 
 	dummy=gtk_check_button_new_with_label("Record");
 	rec_btn=dummy;
 	connect_button(dummy,tape_on, NULL);
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
+	gui_set_tooltip(dummy, "Record the audio the terminatorX' audio engine renders. You will be prompted to enter a name for the target wav-file.");
 	gtk_widget_show(dummy);
 	
 /*	dummy=gtk_label_new("Volume:");
@@ -885,6 +896,7 @@ int create_mastergui(int x, int y)
 	gtk_scale_set_digits(GTK_SCALE(dummy), 2);
 	gtk_scale_set_value_pos(GTK_SCALE(dummy), GTK_POS_LEFT);
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_DYN);
+	gui_set_tooltip(dummy, "Use this scale to adjust the master pitch (affecting *all* turntables).");
 	gtk_widget_show(dummy);
 
 	dummy=tx_xpm_label_box(TX_ICON_SEQUENCER, "Sequencer");
@@ -895,18 +907,21 @@ int create_mastergui(int x, int y)
 	connect_button(dummy, seq_play, NULL);
 	seq_play_btn=dummy;
 	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_FIX);
+	gui_set_tooltip(dummy, "Playback previously recorded events from the sequencer. This will turn on the audio engine automagically.");
 	gtk_widget_show(dummy);
 
 	dummy=tx_xpm_button_new(TX_ICON_STOP,"Stop ", 0);
 	seq_stop_btn=dummy;
 	connect_button(dummy, seq_stop, NULL);	
 	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_FIX);
+	gui_set_tooltip(dummy, "Stop the playback of sequencer events.");
 	gtk_widget_show(dummy);
 
 	dummy=tx_xpm_button_new(TX_ICON_RECORD,"Record ", 1);
 	connect_button(dummy, seq_rec, NULL);
 	seq_rec_btn=dummy;
 	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_FIX);
+	gui_set_tooltip(dummy, "Enable recording of *events* into the sequencer. All touched controls will be recorded. Existing events for the song-time recording will be overwritten for touched controls.");
 	gtk_widget_show(dummy);
 
 	dummy=gtk_label_new("Pos:");
@@ -928,6 +943,7 @@ int create_mastergui(int x, int y)
 	gtk_signal_connect(GTK_OBJECT(seq_slider), "button-release-event", (GtkSignalFunc) seq_slider_released, NULL);
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), FALSE);
 	
+	gui_set_tooltip(dummy, "Select the start position for the sequencer in song-time.");
 	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_DYN);
 	gtk_widget_show(dummy);
 
@@ -961,6 +977,7 @@ int create_mastergui(int x, int y)
 	dummy=gtk_button_new_with_label("Add Turntable");
 	AddTable=dummy;	
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
+	gui_set_tooltip(dummy, "Click this button to add a new turntable to the current set.");
 	gtk_widget_show(dummy);
 
 	gtk_drag_dest_set (GTK_WIDGET (dummy), (GtkDestDefaults) (GTK_DEST_DEFAULT_MOTION |GTK_DEST_DEFAULT_HIGHLIGHT |GTK_DEST_DEFAULT_DROP),
@@ -976,6 +993,7 @@ int create_mastergui(int x, int y)
 	LoadSet=dummy;
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
+	gui_set_tooltip(dummy, "Click to load a previously saved terminatorX-set-file. As an alternative you can drop a set file over this button.");
 	gtk_signal_connect(GTK_OBJECT(dummy), "clicked", GtkSignalFunc(load_tables), NULL);	
 
 	gtk_drag_dest_set (GTK_WIDGET (dummy), (GtkDestDefaults) (GTK_DEST_DEFAULT_MOTION |GTK_DEST_DEFAULT_HIGHLIGHT |GTK_DEST_DEFAULT_DROP),
@@ -989,6 +1007,7 @@ int create_mastergui(int x, int y)
 	SaveSet=dummy;
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
+	gui_set_tooltip(dummy, "Click here to save the current set.");
 	gtk_signal_connect(GTK_OBJECT(dummy), "clicked", GtkSignalFunc(save_tables), NULL);	
 
 	add_sep();
@@ -1011,16 +1030,19 @@ int create_mastergui(int x, int y)
 	dummy=gtk_button_new_with_label("Options");
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
+	gui_set_tooltip(dummy, "Click here to configure terminatorX.");
 	gtk_signal_connect (GTK_OBJECT(dummy), "clicked", (GtkSignalFunc) display_options, NULL);
 
 	dummy=gtk_button_new_with_label("About/Legal");
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
+	gui_set_tooltip(dummy, "Click here to read the license and to get some information about this binary.");
 	gtk_signal_connect (GTK_OBJECT(dummy), "clicked", (GtkSignalFunc) mplcfitx, NULL);	
 
 	dummy=gtk_button_new_with_label("Quit");
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
+	gui_set_tooltip(dummy, "Click here to exit terminatorX.");
 	gtk_signal_connect (GTK_OBJECT(dummy), "clicked", (GtkSignalFunc) quit, NULL);
 	
 	add_sep();		
@@ -1092,11 +1114,13 @@ int create_mastergui(int x, int y)
 	
 	dumadj=(GtkAdjustment*) gtk_adjustment_new(2.0-globals.volume, 0, 2, 0.001, 0.001, 0.01);
 	volume_adj=dumadj;
+
 	connect_adj(dumadj, master_volume_changed, NULL);	
 	dummy=gtk_vscale_new(dumadj);
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), False);
 	gtk_box_pack_end(GTK_BOX(small_box), dummy, WID_DYN);
 	gtk_widget_show(dummy);	
+	gui_set_tooltip(dummy, "Adjust the master volume. This parameter will effect *all* turntables in the set.");
 	
 #ifdef USE_FLASH	
 	main_flash=gtk_tx_flash_new();
@@ -1109,6 +1133,9 @@ int create_mastergui(int x, int y)
 	new_table(NULL, NULL); // to give the user something to start with ;)
 
 	gtk_signal_connect (GTK_OBJECT(main_window), "delete-event", (GtkSignalFunc) quit, NULL);	
+	
+	if (globals.tooltips) gtk_tooltips_enable(gui_tooltips);
+	else gtk_tooltips_disable(gui_tooltips);
 }
 
 gfloat old_percent=-1;

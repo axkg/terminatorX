@@ -46,8 +46,8 @@ void LADSPA_Plugin :: init ()
 	
 	if (!ladspa_path_ptr) 
 	{
-		fprintf(stderr, "tX: Warning: LADSPA_PATH not set. Trying /usr/lib/ladspa.\n");
-		strcpy(ladspa_path, "/usr/lib/ladspa");
+		fprintf(stderr, "tX: Warning: LADSPA_PATH not set. Trying /usr/lib/ladspa:/usr/local/lib/ladspa.\n");
+		strcpy(ladspa_path, "/usr/lib/ladspa:/usr/local/lib/ladspa");
 	}
 	else strcpy(ladspa_path, ladspa_path_ptr);
 	

@@ -39,7 +39,7 @@ extern GtkAdjustment *pitch_adj;
 extern tX_seqpar_master_volume sp_master_volume;
 extern tX_seqpar_master_pitch sp_master_pitch;
 
-extern int create_mastergui(int x, int y);
+extern void create_mastergui(int x, int y);
 extern void wav_progress_update(gfloat percent);
 extern void note_destroy(GtkWidget *widget, GtkWidget *mbox);
 extern void tx_note(const char *message);
@@ -52,5 +52,7 @@ extern void seq_update();
 
 extern GtkWidget *control_parent;
 extern GtkWidget *audio_parent;
+extern GtkTooltips *gui_tooltips;
+extern void gui_set_tooltip(GtkWidget *wid, char *tip);
 
 #endif

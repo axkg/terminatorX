@@ -27,7 +27,7 @@
 extern int run_engine();
 extern int stop_engine();
 
-extern int grab_mouse(int);
+extern void grab_mouse(int);
 
 #define ENG_ERR 4
 
