@@ -31,6 +31,7 @@
 #include "tX_global.h"
 #include "tX_engine.h"
 #include "tX_vtt.h"
+#include <stdlib.h>
 
 #define TX_MOUSE_SPEED_NORMAL 0.05
 #define TX_MOUSE_SPEED_WARP 250000
@@ -303,9 +304,10 @@ int tx_mouse :: check_event()
 			case MotionNotify:
 				
 				if (warp_override) {
-					vtt->sp_speed.handle_mouse_input(((f_prec) xmot->x_root)*globals.mouse_speed*warp);
+					f_prec value=(abs(xmot->x_root)>abs(xmot->y_root)) ? xmot->x_root : xmot->y_root;
+					vtt->sp_speed.handle_mouse_input(value*globals.mouse_speed*warp);
 				} else {
-					vtt->xy_input((f_prec) xmot->x_root, (f_prec) xmot->y_root);
+					vtt->xy_input((f_prec) xmot->x_root*warp, (f_prec) xmot->y_root*warp);
 				}
 				break;
 			
