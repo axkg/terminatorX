@@ -106,6 +106,7 @@ vtt_class :: vtt_class (int do_create_gui)
 	ec_length=1;
 	ec_output_buffer=NULL;
 	output_buffer=NULL;
+	output_buffer2=NULL;
 	
 	set_volume(1);
 	set_pitch(1);
@@ -206,6 +207,8 @@ vtt_class :: ~vtt_class()
 	if (audiofile) delete audiofile;
 	//if (buffer) free(buffer);
 	if (output_buffer) tX_freemem(output_buffer, "output_buffer", "vtt Destructor");
+	if (output_buffer2) tX_freemem(output_buffer2, "output_buffer2", "vtt Destructor");
+		
 	vtt_amount--;
 	
 	if (mix_solo) solo_ctr--;
@@ -279,6 +282,8 @@ int vtt_class :: set_output_buffer_size(int newsize)
 
 	if (output_buffer) tX_freemem(output_buffer, "output_buffer", "vtt set_output_buffer_size()");
 	tX_malloc(output_buffer, "output_buffer", "vtt set_output_buffer_size()", sizeof(float)*newsize, (float *));
+	if (output_buffer2) tX_freemem(output_buffer2, "output_buffer2", "vtt set_output_buffer2_size()");
+	tX_malloc(output_buffer2, "output_buffer2", "vtt set_output_buffer2_size()", sizeof(float)*newsize, (float *));
 
 	end_of_outputbuffer = output_buffer + newsize; //size_t(sizeof(float)*(newsize));
 	
@@ -290,8 +295,7 @@ int vtt_class :: set_output_buffer_size(int newsize)
 		(*effect)->reconnect_buffer();
 	}
 	
-	if (output_buffer) return(0);	
-	else return(0);
+	return 0;	
 }
 
 void vtt_class :: set_volume(f_prec newvol)
@@ -519,7 +523,7 @@ void vtt_class :: ec_clear_buffer()
 void vtt_class :: render()
 {
 	list <vtt_fx *> :: iterator effect;
-
+	
 	if (do_scratch) {
 		if (sense_cycles>0) {
 			sense_cycles--;
@@ -531,6 +535,42 @@ void vtt_class :: render()
 	for (effect=fx_list.begin(); effect != fx_list.end(); effect++) {
 		if ((*effect)->isEnabled()) (*effect)->run();
 	}
+	
+	if (stereo_fx_list.size()>0) {
+		// fill 2nd channel
+		memcpy((void *) output_buffer2, (void *) output_buffer, sizeof(float)*((int)samples_in_outputbuffer));
+		
+		// apply stereo effects.
+		list <vtt_fx_stereo_ladspa *> :: iterator stereo_effect;
+		
+		for (stereo_effect=stereo_fx_list.begin(); stereo_effect != stereo_fx_list.end(); stereo_effect++) {
+			if ((*stereo_effect)->isEnabled()) (*stereo_effect)->run();
+		}
+
+		for (int sample=0; sample<samples_in_outputbuffer; sample++) {				
+			f_prec temp=output_buffer[sample]*=res_volume_left;
+			output_buffer2[sample]*=res_volume_right;
+			
+			temp=fabs(temp);
+			if (temp>max_value) max_value=temp;
+		}
+	} else {
+		for (int sample=0; sample<samples_in_outputbuffer; sample++) {				
+			output_buffer2[sample]=output_buffer[sample]*res_volume_right;
+			f_prec temp=output_buffer[sample]*=res_volume_left;
+			
+			temp=fabs(temp);
+			if (temp>max_value) max_value=temp;
+		}
+	}
+	
+	if (ec_enable) {
+		for (int sample=0; sample<samples_in_outputbuffer; sample++) {
+			f_prec temp=ec_output_buffer[sample];
+			output_buffer[sample]+=temp*ec_volume_left;
+			output_buffer2[sample]+=temp*ec_volume_right;
+		}
+	}	
 }
 
 extern void vg_create_fx_gui(vtt_class *vtt, vtt_fx_ladspa *effect, LADSPA_Plugin *plugin);
@@ -542,6 +582,20 @@ vtt_fx_ladspa * vtt_class :: add_effect (LADSPA_Plugin *plugin)
 	new_effect = new vtt_fx_ladspa (plugin, this);
 	pthread_mutex_lock(&render_lock);
 	fx_list.push_back(new_effect);
+	if (is_playing) new_effect->activate();
+	pthread_mutex_unlock(&render_lock);
+	vg_create_fx_gui(this, new_effect, plugin);
+	
+	return new_effect;
+}
+
+vtt_fx_stereo_ladspa * vtt_class :: add_stereo_effect (LADSPA_Stereo_Plugin *plugin)
+{
+	vtt_fx_stereo_ladspa *new_effect;
+	
+	new_effect = new vtt_fx_stereo_ladspa(plugin, this);
+	pthread_mutex_lock(&render_lock);
+	stereo_fx_list.push_back(new_effect);
 	if (is_playing) new_effect->activate();
 	pthread_mutex_unlock(&render_lock);
 	vg_create_fx_gui(this, new_effect, plugin);
@@ -839,34 +893,12 @@ int16_t * vtt_class :: render_all_turntables()
 	} else {
 			vtt=render_list.begin();
 			(*vtt)->render();			
-			max=(*vtt)->max_value;
-			min=max;
-
-			for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {				
-				temp=(*vtt)->output_buffer[sample];
-				mix_buffer[mix_sample]=temp*(*vtt)->res_volume_left;
-				mix_sample++;
-				mix_buffer[mix_sample]=temp*(*vtt)->res_volume_right;
-				mix_sample++;
-				
-				if (temp>max) max=temp;
-				else if (temp<min) min=temp;
-			}
 			
-			min*=-1.0;
-			if (min>max) (*vtt)->max_value=min; else (*vtt)->max_value=max;
-
-			if ((*vtt)->ec_enable) {
-				for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {				
-					temp=(*vtt)->ec_output_buffer[sample];
-					
-					mix_buffer[mix_sample]+=temp*(*vtt)->ec_volume_left;
-					mix_sample++;
-					mix_buffer[mix_sample]+=temp*(*vtt)->ec_volume_right;
-					mix_sample++;
-				}
+			for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {
+				mix_buffer[mix_sample++]=(*vtt)->output_buffer[sample];
+				mix_buffer[mix_sample++]=(*vtt)->output_buffer2[sample];
 			}
-			
+
 			if (master_triggered) {
 				for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
 					if ((*vtt)->is_sync_client)	{
@@ -881,34 +913,13 @@ int16_t * vtt_class :: render_all_turntables()
 			}
 			
 			vtt=render_list.begin();
+			
 			for (vtt++; vtt!=render_list.end(); vtt++) {
 				(*vtt)->render();					
-				max=(*vtt)->max_value;
-				min=max;
 
 				for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {
-					temp=(*vtt)->output_buffer[sample];
-					mix_buffer[mix_sample]+=temp*(*vtt)->res_volume_left;
-					mix_sample++;					
-					mix_buffer[mix_sample]+=temp*(*vtt)->res_volume_right;
-					mix_sample++;
-				
-					if (temp>max) max=temp;
-					else if (temp<min) min=temp;
-				}
-				
-				min*=-1.0;
-				if (min>max) (*vtt)->max_value=min; else (*vtt)->max_value=max;
-				
-				if ((*vtt)->ec_enable) {
-					for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++) {
-						temp=(*vtt)->ec_output_buffer[sample];
-						
-						mix_buffer[mix_sample]+=temp*(*vtt)->ec_volume_left;
-						mix_sample++;
-						mix_buffer[mix_sample]+=temp*(*vtt)->ec_volume_right;
-						mix_sample++;
-					}
+					mix_buffer[mix_sample++]+=(*vtt)->output_buffer[sample];
+					mix_buffer[mix_sample++]+=(*vtt)->output_buffer2[sample];
 				}
 			}
 			
@@ -1042,8 +1053,6 @@ void vtt_class :: retrigger()
 
 int vtt_class :: trigger(bool need_lock)
 {
-	list <vtt_fx *> :: iterator effect;
-
 	if (!buffer) return 1;
 	
 	retrigger();
@@ -1054,7 +1063,11 @@ int vtt_class :: trigger(bool need_lock)
 		cleanup_required=false;
 		
 		/* activating plugins */
-		for (effect=fx_list.begin(); effect != fx_list.end(); effect++) {
+		for (list <vtt_fx *> :: iterator effect=fx_list.begin(); effect != fx_list.end(); effect++) {
+			(*effect)->activate();
+		}
+		
+		for (list <vtt_fx_stereo_ladspa *> :: iterator effect=stereo_fx_list.begin(); effect != stereo_fx_list.end(); effect++) {
 			(*effect)->activate();
 		}
 		
@@ -1252,7 +1265,6 @@ void vtt_class :: xy_input(f_prec x_value, f_prec y_value)
 #define store(data); if (fwrite((void *) &data, sizeof(data), 1, output)!=1) res+=1;
 
 int  vtt_class :: save(FILE *rc, gzFile rz, char *indent) {
-	list <vtt_fx *> :: iterator effect;
 	char tmp_xml_buffer[4096];
 	
 	int res=0;
@@ -1317,12 +1329,21 @@ int  vtt_class :: save(FILE *rc, gzFile rz, char *indent) {
 	tX_store("%s<fx>\n", indent);
 	strcat(indent, "\t");
 	
-	for (effect=fx_list.begin(); effect!=fx_list.end(); effect++) {
+	for (list <vtt_fx *> :: iterator effect=fx_list.begin(); effect!=fx_list.end(); effect++) {
 		(*effect)->save(rc, rz, indent);
 	}
 	indent[strlen(indent)-1]=0;
 	tX_store("%s</fx>\n", indent);
 	
+	tX_store("%s<stereo_fx>\n", indent);
+	strcat(indent, "\t");
+	
+	for (list <vtt_fx_stereo_ladspa *> :: iterator effect=stereo_fx_list.begin(); effect!=stereo_fx_list.end(); effect++) {
+		(*effect)->save(rc, rz, indent);
+	}
+	indent[strlen(indent)-1]=0;
+	tX_store("%s</stereo_fx>\n", indent);
+		
 	indent[strlen(indent)-1]=0;
 	tX_store("%s</turntable>\n", indent);
 	
@@ -1417,7 +1438,9 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 			restore_float_ac("audio_x_zoom", tmp, gui_set_audio_x_zoom(this,tmp));
 			vg_adjust_zoom(gui.zoom, this);
 			
-			if (xmlStrcmp(cur->name, (xmlChar *) "fx")==0) {
+			if ((xmlStrcmp(cur->name, (xmlChar *) "fx")==0) || 
+				(xmlStrcmp(cur->name, (xmlChar *) "stereo_fx")==0))  {
+				bool stereo=(xmlStrcmp(cur->name, (xmlChar *) "stereo_fx")==0);
 				xmlNodePtr fx=cur;
 				elementFound=1;
 				
@@ -1448,8 +1471,25 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 							
 							if (ladspa_id!=-1) {
 								LADSPA_Plugin *plugin=LADSPA_Plugin::getPluginByUniqueID(ladspa_id);
+								if (!plugin) plugin=LADSPA_Stereo_Plugin::getPluginByUniqueID(ladspa_id);
+								
 								if (plugin) {
-									vtt_fx_ladspa *ladspa_effect=add_effect(plugin);
+									vtt_fx_ladspa *ladspa_effect=NULL;
+									
+									if (plugin->is_stereo()) {
+										ladspa_effect=add_stereo_effect((LADSPA_Stereo_Plugin *) plugin);
+										if (!stereo) {
+											sprintf(buffer,"Trying to load mono plugin into stereo queue [%i].", ladspa_id);
+											tx_note(buffer, true);							
+										}
+									} else {
+										ladspa_effect=add_effect(plugin);
+										if (stereo) {
+											sprintf(buffer,"Trying to load stereo plugin into mono queue [%i].", ladspa_id);
+											tx_note(buffer, true);							
+										}										
+									}
+									
 									ladspa_effect->load(doc, pluginNode);
 								} else {
 									sprintf(buffer,"The terminatorX set file you are loading makes use of a LADSPA plugin that is not installed on this machine. The plugin's ID is [%i].", ladspa_id);
@@ -1621,23 +1661,30 @@ void add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn)
 	if (fn) new_tt->load_file(fn);
 }
 
-extern void vg_move_fx_panel_up(GtkWidget *wid, vtt_class *vtt);
-extern void vg_move_fx_panel_down(GtkWidget *wid, vtt_class *vtt);
+extern void vg_move_fx_panel_up(GtkWidget *wid, vtt_class *vtt, bool stereo);
+extern void vg_move_fx_panel_down(GtkWidget *wid, vtt_class *vtt, bool stereo);
 
-//#define debug_fx_stack(); for (i=fx_list.begin(); i != fx_list.end(); i++) puts((*i)->get_info_string());
+//#define debug_fx_stack(); for (i=list->begin(); i != list->end(); i++) puts((*i)->get_info_string());
 #define debug_fx_stack();
 
 void vtt_class :: effect_up(vtt_fx *effect)
 {
 	list <vtt_fx *> :: iterator i;
 	list <vtt_fx *> :: iterator previous;
+	list <vtt_fx *> *list;
 	int ok=0;
+	
+	if (effect->is_stereo()) {
+		list=(std::list <vtt_fx *> *) &stereo_fx_list;
+	} else {
+		list=&fx_list;
+	}
 	
 	debug_fx_stack();
 	
-	if ((*fx_list.begin())==effect) return;
+	if ((*list->begin())==effect) return;
 	
-	for (previous=i=fx_list.begin(); i != fx_list.end(); i++) {
+	for (previous=i=list->begin(); i != list->end(); i++) {
 		if ((*i) == effect) {
 			ok=1;
 			break;
@@ -1647,11 +1694,11 @@ void vtt_class :: effect_up(vtt_fx *effect)
 	
 	if (ok) {	
 		pthread_mutex_lock(&render_lock);
-		fx_list.remove(effect);
-		fx_list.insert(previous, effect);
+		list->remove(effect);
+		list->insert(previous, effect);
 		pthread_mutex_unlock(&render_lock);
 
-		vg_move_fx_panel_up(effect->get_panel_widget(), this);
+		vg_move_fx_panel_up(effect->get_panel_widget(), this, effect->is_stereo());
 	}
 	
 	debug_fx_stack();
@@ -1660,27 +1707,34 @@ void vtt_class :: effect_up(vtt_fx *effect)
 void vtt_class :: effect_down(vtt_fx *effect)
 {
 	list <vtt_fx *> :: iterator i;
+	list <vtt_fx *> *list;
 	int ok=0;
+	
+	if (effect->is_stereo()) {
+		list=(std::list <vtt_fx *> *) &stereo_fx_list;
+	} else {
+		list=&fx_list;
+	}
 
 	debug_fx_stack();
 		
-	for (i=fx_list.begin(); i != fx_list.end(); i++) {
+	for (i=list->begin(); i != list->end(); i++) {
 		if ((*i) == effect) {
 			ok=1;
 			break;
 		}
 	}
 	
-	if ((ok) && (i!=fx_list.end())) {
+	if ((ok) && (i!=list->end())) {
 		i++;
-		if (i==fx_list.end()) return;
+		if (i==list->end()) return;
 		i++;
 
 		pthread_mutex_lock(&render_lock);
-		fx_list.remove(effect);
+		list->remove(effect);
 		
-		fx_list.insert(i, effect);
-		vg_move_fx_panel_down(effect->get_panel_widget(), this);
+		list->insert(i, effect);
+		vg_move_fx_panel_down(effect->get_panel_widget(), this, effect->is_stereo());
 		pthread_mutex_unlock(&render_lock);
 	}
 	
@@ -1690,7 +1744,11 @@ void vtt_class :: effect_down(vtt_fx *effect)
 void vtt_class ::  effect_remove(vtt_fx_ladspa *effect)
 {
 	pthread_mutex_lock(&render_lock);
-	fx_list.remove(effect);
+	if (effect->is_stereo()) {
+		stereo_fx_list.remove((vtt_fx_stereo_ladspa *) effect);
+	} else {
+		fx_list.remove(effect);
+	}
 	pthread_mutex_unlock(&render_lock);
 	
 	delete effect;

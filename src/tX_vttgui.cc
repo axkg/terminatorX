@@ -653,6 +653,20 @@ void fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
 	g_signal_emit_by_name(G_OBJECT(wid), "released", vtt);
 }
 
+void stereo_fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
+{
+	vtt_gui *g=&vtt->gui;
+
+	LADSPA_Class::set_current_vtt(vtt);
+
+	if (g->ladspa_menu) gtk_object_destroy(GTK_OBJECT(g->ladspa_menu));
+	g->ladspa_menu=LADSPA_Class::get_stereo_ladspa_menu();
+	gtk_menu_popup (GTK_MENU(g->ladspa_menu), NULL, NULL, NULL, NULL, 0, 0);
+
+	/* gtk+ is really waiting for this.. */
+	g_signal_emit_by_name(G_OBJECT(wid), "released", vtt);
+}
+
 void gui_set_name(vtt_class *vtt, char *newname)
 {
 	char bold_name[128];
@@ -703,6 +717,7 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_button(adjust_button, vg_adjust_pitch_vtt);
 	connect_adj(cycles, client_setup_number);
 	connect_press_button(fx_button, fx_button_pressed);
+	connect_press_button(stereo_fx_button, stereo_fx_button_pressed);
 	
 	connect_button(lp_enable, lp_enabled);
 	connect_adj(lp_gain, lp_gain_changed);
@@ -926,18 +941,22 @@ void build_vtt_gui(vtt_class *vtt)
 	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_sync_cycles);	
 
 	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
-
+	
+	g->fx_box=gtk_vbox_new(FALSE,0);
+	gtk_box_pack_start(GTK_BOX(g->control_subbox), g->fx_box, WID_FIX);
+	gtk_widget_show(g->fx_box);
+	
 	dummy=gtk_button_new_with_label("FX");
 	gtk_container_foreach(GTK_CONTAINER(dummy), (GtkCallback) tX_panel_make_label_bold, NULL);
 	gtk_widget_show(dummy);
 	g->fx_button=dummy;
 	gui_set_tooltip(g->fx_button, "Click here to load a LADSPA plugin. You will get a menu from which you can choose which plugin to load.");
-	gtk_box_pack_start(GTK_BOX(g->control_subbox), dummy, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(g->fx_box), dummy, WID_FIX);
 	
 	/* Lowpass Panel */
 
-	p=new tX_panel("Lowpass", g->control_subbox);
-	g_signal_connect(G_OBJECT(p->get_labelbutton()), "clicked", G_CALLBACK(vg_show_fx_menu), vtt->lp_fx);
+	p=new tX_panel("Lowpass", g->fx_box);
+	g_signal_connect(G_OBJECT(p->get_labelbutton()), "pressed", G_CALLBACK(vg_show_fx_menu), vtt->lp_fx);
 	g->lp_panel=p;
 		
 	g->lp_enable=gtk_check_button_new_with_label("Enable");
@@ -964,12 +983,12 @@ void build_vtt_gui(vtt_class *vtt)
 	p->add_client_widget(g->lp_resod->get_widget());
 	gui_set_tooltip(g->lp_resod->get_entry(), "Adjust the resonance of the lowpass filter. This value determines how much the signal at the cutoff frequency will be amplified.");
 
-	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
+	gtk_box_pack_start(GTK_BOX(g->fx_box), p->get_widget(), WID_FIX);
 
 	/* Echo Panel */
 
-	p=new tX_panel("Echo", g->control_subbox);
-	g_signal_connect(G_OBJECT(p->get_labelbutton()), "clicked",  G_CALLBACK(vg_show_fx_menu), vtt->ec_fx);
+	p=new tX_panel("Echo", g->fx_box);
+	g_signal_connect(G_OBJECT(p->get_labelbutton()), "pressed",  G_CALLBACK(vg_show_fx_menu), vtt->ec_fx);
 	g->ec_panel=p;
 
 	p->add_client_widget(vg_create_fx_bar(vtt, vtt->ec_fx, 0));
@@ -1001,8 +1020,19 @@ void build_vtt_gui(vtt_class *vtt)
 	p->add_client_widget(g->ec_pand->get_widget());
 	gui_set_tooltip(g->ec_pand->get_entry(), "Adjust the panning of the echo effect.");
 
-	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
+	gtk_box_pack_start(GTK_BOX(g->fx_box), p->get_widget(), WID_FIX);
 	
+	g->stereo_fx_box=gtk_vbox_new(FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(g->control_subbox), g->stereo_fx_box, WID_FIX);
+	gtk_widget_show(g->stereo_fx_box);
+	
+	dummy=gtk_button_new_with_label("Stereo FX");
+	gtk_container_foreach(GTK_CONTAINER(dummy), (GtkCallback) tX_panel_make_label_bold, NULL);
+	gtk_widget_show(dummy);
+	g->stereo_fx_button=dummy;
+	gui_set_tooltip(g->stereo_fx_button, "Click here to load a stereo LADSPA plugin. You will get a menu from which you can choose which plugin to load.");
+	gtk_box_pack_start(GTK_BOX(g->stereo_fx_box), dummy, WID_FIX);
+
 	/* Output */
 	
 	tempbox=gtk_hbox_new(FALSE,2);
@@ -1139,7 +1169,6 @@ GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel)
 	return box;
 }
 
-
 int gtk_box_get_widget_pos(GtkBox *box, GtkWidget *child)
 {
 	int i=0;
@@ -1157,16 +1186,18 @@ int gtk_box_get_widget_pos(GtkBox *box, GtkWidget *child)
 	return i;
 }
 
-void vg_move_fx_panel_up(GtkWidget *wid, vtt_class *vtt)
+void vg_move_fx_panel_up(GtkWidget *wid, vtt_class *vtt, bool stereo)
 {
-	int pos=gtk_box_get_widget_pos(GTK_BOX(vtt->gui.control_subbox), wid);
-	gtk_box_reorder_child(GTK_BOX(vtt->gui.control_subbox), wid, pos-1);
+	GtkWidget *box=(stereo ? vtt->gui.stereo_fx_box : vtt->gui.fx_box);
+	int pos=gtk_box_get_widget_pos(GTK_BOX(box), wid);
+	gtk_box_reorder_child(GTK_BOX(box), wid, pos-1);
 }
 
-void vg_move_fx_panel_down(GtkWidget *wid, vtt_class *vtt)
+void vg_move_fx_panel_down(GtkWidget *wid, vtt_class *vtt, bool stereo)
 {
-	int pos=gtk_box_get_widget_pos(GTK_BOX(vtt->gui.control_subbox), wid);
-	gtk_box_reorder_child(GTK_BOX(vtt->gui.control_subbox), wid, pos+1);
+	GtkWidget *box=(stereo ? vtt->gui.stereo_fx_box : vtt->gui.fx_box);
+	int pos=gtk_box_get_widget_pos(GTK_BOX(box), wid);
+	gtk_box_reorder_child(GTK_BOX(box), wid, pos+1);
 }
 
 void vg_show_fx_info(GtkWidget *wid, vtt_fx *effect)
@@ -1182,7 +1213,7 @@ void vg_toggle_drywet(GtkWidget *wid, vtt_fx *effect)
 void vg_show_fx_menu(GtkWidget *wid, vtt_fx *effect)
 {
 	GtkWidget *menu=gtk_menu_new();
-	GtkWidget *item=gtk_menu_item_new_with_label("Show Info");
+	GtkWidget *item=gtk_menu_item_new_with_label("View Plugin Details");
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 	gtk_widget_set_sensitive(item, (effect->has_drywet_feature()!=NOT_DRYWET_CAPABLE));
 	gtk_widget_show(item);
@@ -1201,10 +1232,30 @@ void vg_show_fx_menu(GtkWidget *wid, vtt_fx *effect)
 			break;
 	}
 	
-	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(vg_toggle_drywet), effect);
-	
+	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(vg_toggle_drywet), effect);	
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 	gtk_widget_show(item);
+	
+	item = gtk_menu_item_new();
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+	gtk_widget_set_sensitive(item, FALSE);
+	gtk_widget_show(item);
+
+	item=gtk_menu_item_new_with_label("Up");
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+	gtk_widget_show(item);
+	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(fx_up), effect);
+
+	item=gtk_menu_item_new_with_label("Down");
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+	gtk_widget_show(item);
+	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(fx_down), effect);
+
+	item=gtk_menu_item_new_with_label("Delete");
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+	gtk_widget_set_sensitive(item, (effect->has_drywet_feature()!=NOT_DRYWET_CAPABLE));
+	gtk_widget_show(item);
+	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(fx_kill), effect);
 
 	gtk_menu_popup (GTK_MENU(menu), NULL, NULL, NULL, NULL, 0, 0);
 
@@ -1222,8 +1273,7 @@ void vg_create_fx_gui(vtt_class *vtt, vtt_fx_ladspa *effect, LADSPA_Plugin *plug
 	list <tX_seqpar_vttfx *> :: iterator sp;
 	
 	strcpy(buffer, plugin->getLabel());
-	if (strlen(buffer) > 6)
-	{
+	if (strlen(buffer) > 6) {
 		buffer[5]='.';
 		buffer[6]='.';
 		buffer[7]='.';
@@ -1234,17 +1284,16 @@ void vg_create_fx_gui(vtt_class *vtt, vtt_fx_ladspa *effect, LADSPA_Plugin *plug
 	
 	p->add_client_widget(vg_create_fx_bar(vtt, effect, 1));
 	
-	for (sp = effect->controls.begin(); sp != effect->controls.end(); sp++)
-	{
+	for (sp = effect->controls.begin(); sp != effect->controls.end(); sp++) {
 			p->add_client_widget((*sp)->get_widget());
 	}
 
-	g_signal_connect(G_OBJECT(p->get_labelbutton()), "clicked", (GtkSignalFunc) vg_show_fx_menu, (void *) effect);
+	g_signal_connect(G_OBJECT(p->get_labelbutton()), "pressed", (GtkSignalFunc) vg_show_fx_menu, (void *) effect);
 	gui_set_tooltip(p->get_labelbutton(), "Click here for menu");
 	effect->set_panel_widget(p->get_widget());
 	effect->set_panel(p);
 
-	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
+	gtk_box_pack_start(GTK_BOX((effect->is_stereo() ? g->stereo_fx_box : g->fx_box)), p->get_widget(), WID_FIX);
 }
 
 void gui_set_filename (vtt_class *vtt, char *newname)

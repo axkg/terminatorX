@@ -38,6 +38,7 @@ void vtt_fx :: reconnect_buffer()
 
 vtt_fx :: ~vtt_fx() {}
 void vtt_fx::toggle_drywet() {}
+bool vtt_fx::is_stereo() { return false; }
 tX_drywet_type vtt_fx::has_drywet_feature() { return NOT_DRYWET_CAPABLE; }
 
 /******************* builtin fx ***/
@@ -202,7 +203,6 @@ vtt_fx_ladspa :: vtt_fx_ladspa(LADSPA_Plugin *p, void *v)
 			plugin->getDescriptor()->connect_port(instance, port, &ladspa_dummy_output_port);
 		}
 	}
-	reconnect_buffer();
 }
 
 void vtt_fx_ladspa :: realloc_drywet() 
@@ -302,15 +302,16 @@ void vtt_fx_ladspa :: load(xmlDocPtr doc, xmlNodePtr node) {
 	list <tX_seqpar_vttfx *> :: iterator sp=controls.begin();
 	int elementFound;
 	double val;
-	bool bdummy;
 	
 	for (xmlNodePtr cur=node->xmlChildrenNode; cur!=NULL; cur=cur->next) {
 		if (cur->type == XML_ELEMENT_NODE) {
+			bool drywet=false;
 			elementFound=0;
 			
 			restore_int("ladspa_id", dummy);
 			restore_bool("panel_hidden", hidden);
-			restore_bool_ac("has_drywet", bdummy, add_drywet());
+			restore_bool("has_drywet", drywet);
+			if (drywet) add_drywet();
 			
 			if ((!elementFound) && (xmlStrcmp(cur->name, (xmlChar *) "param")==0)) {
 				val=0;
@@ -377,3 +378,82 @@ tX_drywet_type vtt_fx_ladspa::has_drywet_feature()
 	if (sp_wet) return DRYWET_ACTIVE;
 	else return DRYWET_AVAILABLE;
 }
+
+/****** STEREO plugins **********/
+
+vtt_fx_stereo_ladspa::vtt_fx_stereo_ladspa(LADSPA_Stereo_Plugin *p, void *v):vtt_fx_ladspa(p,v)
+{
+	input_port=input2_port=-1; 
+	output_port=output2_port=-1; 
+	wet_buffer2=NULL;
+	
+	for (int port=0; port < plugin->getPortCount(); port++) {
+		if (LADSPA_IS_PORT_AUDIO(cpd)) {
+			if (LADSPA_IS_PORT_INPUT(cpd)) {
+				if (input_port<0) { input_port=port; }
+				else if (input2_port<0) { input2_port=port; }
+				else { tX_error("Extra input port for plugin %s?", plugin->getName()); }
+			} else if (LADSPA_IS_PORT_OUTPUT(cpd)) {
+				if (output_port<0) { output_port=port; }
+				else if (output2_port<0) { output2_port=port; }
+				else { tX_error("Extra output port for plugin %s?", plugin->getName()); }
+			}
+		}
+	}
+};
+
+void vtt_fx_stereo_ladspa :: reconnect_buffer()
+{
+	plugin->getDescriptor()->connect_port(instance, input_port, myvtt->output_buffer);
+	plugin->getDescriptor()->connect_port(instance, input2_port, myvtt->output_buffer2);
+
+	if (wet_buffer) {
+		plugin->getDescriptor()->connect_port(instance, output_port, wet_buffer);	
+		plugin->getDescriptor()->connect_port(instance, output2_port, wet_buffer2);
+	} else {
+		plugin->getDescriptor()->connect_port(instance, output_port, myvtt->output_buffer);	
+		plugin->getDescriptor()->connect_port(instance, output2_port, myvtt->output_buffer2);	
+	}
+}
+
+void vtt_fx_stereo_ladspa :: realloc_drywet() 
+{
+	free_drywet();
+	wet_buffer=(f_prec *) malloc(sizeof(float)*vtt_class::samples_in_mix_buffer);
+	wet_buffer2=(f_prec *) malloc(sizeof(float)*vtt_class::samples_in_mix_buffer);
+}
+
+void vtt_fx_stereo_ladspa :: free_drywet()
+{
+	if (wet_buffer) {
+		free(wet_buffer);
+		wet_buffer=NULL;
+	}
+	if (wet_buffer2) {
+		free(wet_buffer2);
+		wet_buffer2=NULL;
+	}
+}
+
+void vtt_fx_stereo_ladspa :: run()
+{
+	plugin->getDescriptor()->run(instance, (vtt_class::samples_in_mix_buffer)>>1);
+	
+	if (wet_buffer) {
+		f_prec wet=sp_wet->get_value();
+		f_prec dry=1.0-wet;
+		
+		for (int sample=0; sample < (vtt_class::samples_in_mix_buffer)>>1; sample++) {
+			myvtt->output_buffer[sample]=dry*myvtt->output_buffer[sample]+wet*wet_buffer[sample];
+			myvtt->output_buffer2[sample]=dry*myvtt->output_buffer2[sample]+wet*wet_buffer2[sample];
+		}
+	}
+}
+
+vtt_fx_stereo_ladspa :: ~vtt_fx_stereo_ladspa()
+{
+	// rest should be handeld in parent's destrucutor.
+	if (wet_buffer2) free(wet_buffer2);
+}
+
+bool vtt_fx_stereo_ladspa::is_stereo() { return true; }

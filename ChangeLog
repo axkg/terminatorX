@@ -8,6 +8,11 @@ changed.
   systems that don't have procfs mounted.
 - added an optional Dry/Wet control for all LADSPA plugins. Simply click on the
   plugin's label to add or remove the additional control.
+- added an additional stereo effects queue that allows loading stereo LADPSA 
+  plugins. The stereo effects are located below the mono effects - to add a new
+  instance press the "Stereo FX" button and select the plugin of your choice.
+- fixed the plugin menu - empty categories no longer get a menu entry.
+- plugins that do not qualify as realtime capable will now be disabled.
 
 [v3.81]
 - JACK doesn't seem to like SCHED_FIFO clients so I added a little test that
