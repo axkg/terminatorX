@@ -420,8 +420,9 @@ int main(int argc, char **argv)
 	while (gtk_events_pending()) gtk_main_iteration(); gdk_flush();	
 	gdk_flush();
 	
-	vtt_class::set_mix_buffer_size(globals.true_block_size);
-	printf("\n* BENCHMARKING *\nBlocksize is %i samples.\n", globals.true_block_size);
+	vtt_class::set_sample_rate(48000);
+	
+	printf("\n* BENCHMARKING *\n");
 	
 	GTimer *bench_time = g_timer_new();
 	gulong micros;
