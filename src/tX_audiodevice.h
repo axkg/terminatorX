@@ -32,27 +32,56 @@
 
 #define NON_RT_BUFF 12
 
-
-class audiodevice
+class tX_audiodevice
 {
-	friend void* writer_thread(void *parm);
-	int fd;
-	int blocksize;
-	int samples;
-	clock_t lastclock;
-	clock_t rendercl;
-	clock_t writecl;
+	int samples_per_buffer;
+	
+	private:
+	void init();
 	
 	public:
-	int dev_open(int);
-	int dev_close();
+	void set_latency_near(int milliseconds);
+	int get_latency(); /* call only valid *after* open() */
 	
-	int getblocksize();
+	void set_buffersize_near(int samples);
+	int get_buffersize(); /* call only valid *after* open() */
 	
-	void eat(int16_t*);
-	
-	audiodevice();
-	
+	virtual int open();
+	virtual int close();
+		
+	virtual void play(int16_t*); /* play blocked */
 };
+
+
+#ifdef USE_OSS
+
+class tX_audiodevice_oss : public tX_audiodevice
+{
+	public:
+	virtual int open();
+	virtual int close();
+		
+	virtual void play(int16_t*); /* play blocked */
+	
+	tX_audiodevice_oss();
+};
+
+#endif
+
+
+#ifdef USE_ALSA
+
+class tX_audiodevice_alsa : public tX_audiodevice
+{	
+	public:
+	virtual int open();
+	virtual int close();
+		
+	virtual void play(int16_t*); /* play blocked */
+	
+	tX_audiodevice_alsa();
+};
+
+#endif
 
 #endif

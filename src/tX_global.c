@@ -117,6 +117,17 @@ void load_globals()
 		strcpy(globals.tables_filename, "");
 		strcpy(globals.record_filename, "tX_record.wav");
 		strcpy(globals.file_editor, "");
+		
+#ifdef USE_OSS
+		globals.audiodevice_type=TX_AUDIODEVICE_TYPE_OSS;		
+#else
+#ifdef USE_ALSA
+		globals.audiodevice_type=TX_AUDIODEVICE_TYPE_ALSA;
+#endif	
+#endif		
+		strcpy(globals.audiodevice_oss_devicename, "/dev/dsp");
+		globals.audiodevice_alsa_card=0;
+		globals.audiodevice_alsa_pcm=0;		
 	}
 
 	/* i'll have to keep these as they're in the code
