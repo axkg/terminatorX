@@ -39,12 +39,8 @@
 /* Exec xsetpointer instead of using Xlib-calls. */
 #undef USE_XSETPOINTER
 
-/* Do we have the ALSA-Lib?
-#undef HAVE_ALSALIB
-
-/* Do we have the ALSA-Headers? 
-#undef HAVE_ALSAHEADER*/
-
 /* Use ALSA*/
 #undef USE_ALSA
 
+/* Use OSS */
+#undef USE_OSS
