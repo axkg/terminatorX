@@ -3,6 +3,18 @@ All changes were done by me (Alexander König) if not stated otherwise.
 This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
+[v3.73]
+- Fixed a compilation bug ocurring on big endian systems only.
+- Fixed the built-in wav loading routines for big endian systems (again).
+- Ported terminatorX to gtk+ Version 2. The code for gtk2 will be enabled
+  when gtk2 is detected by configure. To force terminatorX to use the good
+  old gtk 1.2.x (x>=5) run configure with the '--disable-gtk2' switch.
+- Applied a patch from Adrian that brings lots of new stuff:
+  - Debian package support  
+  - enhanced GNOME integration
+  - a manpage for terminatorX
+- Included another gcc3 fix thanks to Gregor Riepl <seto-kun@freesurf.ch>
+
 [v3.72]
 - Applied a patch from Matthew Evans <activesx@hotmail.com> that introduces 
   support for Ogg Vorbis audiofiles. It requires ogg123 > RC2 and sox to work.

@@ -43,7 +43,7 @@ tX_sequencer :: ~tX_sequencer()
 {
 }
 
-void tX_sequencer :: set_timestamp(u_int32_t timestamp)
+void tX_sequencer :: set_timestamp(guint32 timestamp)
 {
 	current_timestamp=0;
 	start_timestamp=0;
@@ -232,7 +232,7 @@ void tX_sequencer :: delete_all_events_for_sp(tX_seqpar *sp)
 
 void tX_sequencer :: save(FILE *out)
 {
-	u_int32_t event_count;
+	guint32 event_count;
 	list <tX_event *> :: iterator song_event;
 	
 	event_count=song_list.size();
@@ -247,8 +247,8 @@ void tX_sequencer :: save(FILE *out)
 
 void tX_sequencer :: load(FILE *in)
 {
-	u_int32_t event_count=0;
-	u_int32_t i;
+	guint32 event_count=0;
+	guint32 i;
 	tX_event *new_event=NULL;
 	
 	clear();
@@ -281,15 +281,15 @@ void tX_sequencer :: clear()
 }
 
 
-u_int32_t tX_sequencer :: set_start_timestamp(float pos)
+guint32 tX_sequencer :: set_start_timestamp(float pos)
 {
-	u_int32_t timestamp;
+	guint32 timestamp;
 	
 	if (pos>99.999) pos=99.999;
 	
 	pos/=100;
 	
-	timestamp = (u_int32_t) (((float) max_timestamp) * pos);
+	timestamp = (guint32) (((float) max_timestamp) * pos);
 	
 	start_timestamp=timestamp;
 	

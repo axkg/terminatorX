@@ -24,6 +24,7 @@
 
 #include "tX_vttfx.h"
 #include <stdio.h>
+#include <glib.h>
 #include "tX_vtt.h"
 #define myvtt ((vtt_class *) vtt)
 
@@ -75,7 +76,7 @@ void vtt_fx_lp :: run() { myvtt->render_lp(); }
 int vtt_fx_lp :: isEnabled() { return myvtt->lp_enable; }
 void vtt_fx_lp :: save (FILE *output)
 { 
-	u_int32_t type=TX_FX_BUILTINCUTOFF;
+	guint32 type=TX_FX_BUILTINCUTOFF;
 	fwrite((void *) &type, sizeof(type), 1, output);
 }
 
@@ -92,7 +93,7 @@ void vtt_fx_ec :: run() { myvtt->render_ec(); }
 int vtt_fx_ec :: isEnabled() { return myvtt->ec_enable; }
 void vtt_fx_ec :: save (FILE *output)
 { 
-	u_int32_t type=TX_FX_BUILTINECHO;
+	guint32 type=TX_FX_BUILTINECHO;
 	fwrite((void *) &type, sizeof(type), 1, output);
 }
 
@@ -287,10 +288,10 @@ void vtt_fx_ladspa :: save (FILE *output)
 {
 	long ID=plugin->getUniqueID();
 	list <tX_seqpar_vttfx *> :: iterator sp;
-	u_int32_t pid;
-	u_int32_t type=TX_FX_LADSPA;
-	u_int32_t count;
-	u_int8_t hidden;
+	guint32 pid;
+	guint32 type=TX_FX_LADSPA;
+	guint32 count;
+	guint8 hidden;
 	float value;
 	
 	fwrite((void *) &type, sizeof(type), 1, output);
@@ -314,11 +315,11 @@ void vtt_fx_ladspa :: save (FILE *output)
 
 void vtt_fx_ladspa :: load (FILE *input)
 {
-	u_int32_t count;
+	guint32 count;
 	int i;
 	list <tX_seqpar_vttfx *> :: iterator sp;
-	u_int32_t pid;
-	u_int8_t hidden;
+	guint32 pid;
+	guint8 hidden;
 	float value;
 	
 	fread((void *) &count, sizeof(count), 1, input);

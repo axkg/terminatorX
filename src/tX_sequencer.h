@@ -26,6 +26,7 @@
 
 #include <list>
 #include <pthread.h>
+#include <glib.h>
 
 #include "tX_event.h"
 #include "tX_seqpar.h"
@@ -40,11 +41,11 @@ class tX_sequencer
 	list <tX_event *> record_list;
 	pthread_mutex_t record_lock;
 	
-	u_int32_t current_timestamp;
-	u_int32_t start_timestamp;
-	u_int32_t max_timestamp;
-	u_int32_t record_start_timestamp;		
-	u_int32_t record_stop_timestamp;		
+	guint32 current_timestamp;
+	guint32 start_timestamp;
+	guint32 max_timestamp;
+	guint32 record_start_timestamp;		
+	guint32 record_stop_timestamp;		
 
 	list <tX_event *> :: iterator next_event;
 	
@@ -55,10 +56,10 @@ class tX_sequencer
 	tX_sequencer();
 	~tX_sequencer();
 	
-	void set_timestamp(u_int32_t timestamp);
+	void set_timestamp(guint32 timestamp);
 	int is_recording() { return (mode == TX_SEQMODE_PLAYREC); }
 	
-	u_int32_t get_timestamp() { return current_timestamp; }
+	guint32 get_timestamp() { return current_timestamp; }
 	float get_timestamp_as_float(){ return ((float) (((float) current_timestamp)/((float) max_timestamp))*100.0); }
 
 	void step();
@@ -81,7 +82,7 @@ class tX_sequencer
 	void load(FILE *);
 	void clear();
 	
-	u_int32_t set_start_timestamp(float pos);
+	guint32 set_start_timestamp(float pos);
 	void forward_to_start_timestamp(int dont_fake);
 };
 

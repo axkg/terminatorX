@@ -87,8 +87,9 @@ gtk_tx_dial_get_type ()
 	sizeof (GtkTxDialClass),
 	(GtkClassInitFunc) gtk_tx_dial_class_init,
 	(GtkObjectInitFunc) gtk_tx_dial_init,
-	(GtkArgSetFunc) NULL,
-	(GtkArgGetFunc) NULL,
+	/* reserved */ NULL,
+	/* reserved */ NULL,
+	/* reserved */ NULL
       };
 
       tx_dial_type = gtk_type_unique (gtk_widget_get_type (), &tx_dial_info);

@@ -250,6 +250,7 @@ GtkSignalFunc new_table(GtkWidget *, char *fn)
 		
 		if (fn) ld_destroy();		
 	mg_update_status();
+	return NULL;
 }
 
 GtkSignalFunc drop_new_table(GtkWidget *widget, GdkDragContext *context,
@@ -490,16 +491,19 @@ GtkSignalFunc save_tables()
 GtkSignalFunc master_volume_changed (GtkWidget *wid, void *d)
 {
 	sp_master_volume.receive_gui_value((float) 2.0-GTK_ADJUSTMENT(wid)->value);
+	return NULL;	
 }
 
 GtkSignalFunc master_pitch_changed(GtkWidget *wid, void *d)
 {
 	sp_master_pitch.receive_gui_value((float) GTK_ADJUSTMENT(wid)->value);	
+	return NULL;	
 }
 
 GtkSignalFunc saturate_changed(GtkWidget *w, void *d)
 {
 	vtt_class::enable_saturate (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)));
+	return NULL;	
 }
 
 void mg_enable_critical_buttons(int enable)
@@ -727,11 +731,11 @@ GtkSignalFunc seq_rec(GtkWidget *w, void *)
 	sequencer.trig_rec();
 }
 
-void seq_update_entry(const u_int32_t timestamp)
+void seq_update_entry(const guint32 timestamp)
 {
 	char buffer[20];
-	u_int32_t samples;
-	u_int32_t minu,sec,hun;	
+	guint32 samples;
+	guint32 minu,sec,hun;	
 	
 	samples=timestamp*globals.true_block_size;
 	
@@ -770,7 +774,7 @@ void seq_slider_released(GtkWidget *wid, void *d)
 }
 void sequencer_move(GtkWidget *wid, void *d)
 {
-	u_int32_t pos;
+	guint32 pos;
 	
 	if (seq_adj_care)
 	{

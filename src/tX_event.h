@@ -27,17 +27,18 @@
 #include "tX_seqpar.h"
 #include "tX_vtt.h"
 #include <stdio.h>
+#include <glib.h>
 #include "tX_types.h"
 
 class tX_event
 {
 	private:
 	float			value;
-	u_int32_t 		timestamp;
+	guint32 		timestamp;
 	tX_seqpar		*sp;
 	
 	public:
-	tX_event(u_int32_t time, float val, tX_seqpar *sp_in)
+	tX_event(guint32 time, float val, tX_seqpar *sp_in)
 		{
 			timestamp=time;
 			value=val;
@@ -47,7 +48,7 @@ class tX_event
 	void store(FILE *output);
 
 	tX_seqpar *get_sp() { return sp; }
-	u_int32_t get_timestamp() { return timestamp; }
+	guint32 get_timestamp() { return timestamp; }
 	float get_value() { return value; }
 	void set_value(float val) { value=val; }
 

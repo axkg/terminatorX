@@ -227,6 +227,7 @@ const char * tX_seqpar :: get_name()
 float tX_seqpar :: get_value()
 {
 	printf("Ooops. tX_seqpar::get_value() called. Trouble.");
+	return 0.0;	
 }
 
 void tX_seqpar :: do_exec(const float value)
@@ -860,6 +861,7 @@ void tX_seqpar_vttfx_float :: do_update_graphics()
 GtkSignalFunc tX_seqpar_vttfx_float :: gtk_callback(GtkWidget* w, tX_seqpar_vttfx_float *sp)
 {
 	sp->receive_gui_value(sp->myadj->value);	
+	return NULL;	
 }
 
 #define WID_DYN TRUE, TRUE, 0
@@ -902,6 +904,7 @@ void tX_seqpar_vttfx_int :: do_update_graphics()
 GtkSignalFunc tX_seqpar_vttfx_int :: gtk_callback(GtkWidget* w, tX_seqpar_vttfx_int *sp)
 {
 	sp->receive_gui_value(sp->myadj->value);	
+	return NULL;
 }
 
 void tX_seqpar_vttfx_bool :: create_widget()
@@ -925,6 +928,7 @@ void tX_seqpar_vttfx_bool :: do_exec(const float value)
 GtkSignalFunc tX_seqpar_vttfx_bool :: gtk_callback(GtkWidget* w, tX_seqpar_vttfx_bool *sp)
 {
 	sp->receive_gui_value(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sp->widget)));	
+	return NULL;
 }
 
 void tX_seqpar_vttfx_bool :: do_update_graphics()
