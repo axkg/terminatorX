@@ -178,7 +178,6 @@ void tX_engine::loop() {
 
 void *engine_thread_entry(void *engine_void) {
 	tX_engine *engine=(tX_engine*) engine_void;
-	int result;
 	
 #ifdef USE_SCHEDULER
 	pid_t pid=getpid();
@@ -194,7 +193,6 @@ void *engine_thread_entry(void *engine_void) {
 			tX_debug("engine_thread_entry(): set SCHED_FIFO via capabilities.");
 		}
 	}
-	int policy=0;
 #endif //USE_SCHEDULER
 		
 #ifdef USE_JACK

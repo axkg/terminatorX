@@ -56,10 +56,9 @@ gfloat ld_old_prog;
 int ld_create_loaddlg(int mode, int count)
 {
 	GtkWidget *vbox=gtk_vbox_new(0, 5);
-	GtkWidget *actionarea;
 	GtkWidget *dummy;
 	
-	if (ld_loaddlg) return(1);
+	if (ld_loaddlg) return 1;
 	
 	ld_mode=mode;
 	ld_count=count;
@@ -74,8 +73,6 @@ int ld_create_loaddlg(int mode, int count)
 	gtk_widget_set_size_request(vbox, 400, -1);
 	gtk_widget_show(vbox);
 	
-	//gtk_widget_show(ld_loaddlg);
-		
 	if (mode==TX_LOADDLG_MODE_MULTI) {
 		ld_multi_l=gtk_label_new("Loading Set");
 		gtk_misc_set_alignment(GTK_MISC(ld_multi_l), 0.5, 0.5);
@@ -97,7 +94,6 @@ int ld_create_loaddlg(int mode, int count)
 	add_widget_fix(ld_single_p);
 
 	gtk_window_set_modal(GTK_WINDOW(ld_loaddlg), TRUE);
-	//gtk_window_set_default_size(GTK_WINDOW(ld_loaddlg), 400, 100);
 	gtk_widget_realize(ld_loaddlg);
 	gdk_window_set_decorations(ld_loaddlg->window, (GdkWMDecoration) 0);
 	gtk_widget_show(ld_loaddlg);

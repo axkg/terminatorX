@@ -48,7 +48,7 @@ tX_event* tX_event :: load_event (xmlDocPtr doc, xmlNodePtr node) {
 	sp=tX_seqpar::get_sp_by_persistence_id(sp_persistence_id);
 	
 	if (sp) {
-		event=new tX_event(sp, timestamp, value);
+		event=new tX_event(timestamp, sp, value);
 	} else {
 		tX_error("failed to resolve event at %i - pid [%i]. Event lost.", timestamp, sp_persistence_id);
 	}
