@@ -151,6 +151,8 @@ create_tx_options (void)
   GSList *oss_driver_group = NULL;
   GtkWidget *alsa_driver;
   GtkWidget *jack_driver;
+  GtkWidget *label58;
+  GtkWidget *use_realtime;
   GtkWidget *label1;
   GtkWidget *table5;
   GtkWidget *label21;
@@ -270,7 +272,7 @@ create_tx_options (void)
   gtk_widget_show (notebook1);
   gtk_box_pack_start (GTK_BOX (dialog_vbox3), notebook1, TRUE, TRUE, 0);
 
-  table4 = gtk_table_new (1, 2, FALSE);
+  table4 = gtk_table_new (2, 2, FALSE);
   gtk_widget_show (table4);
   gtk_container_add (GTK_CONTAINER (notebook1), table4);
   gtk_container_set_border_width (GTK_CONTAINER (table4), 4);
@@ -311,6 +313,20 @@ create_tx_options (void)
   gtk_tooltips_set_tip (tooltips, jack_driver, "Use the JACK (JACK Audio Connection Kit) driver for audio output.", NULL);
   gtk_radio_button_set_group (GTK_RADIO_BUTTON (jack_driver), oss_driver_group);
   oss_driver_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (jack_driver));
+
+  label58 = gtk_label_new ("Use realtime scheduling\nwhere available:");
+  gtk_widget_show (label58);
+  gtk_table_attach (GTK_TABLE (table4), label58, 0, 1, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label58), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (label58), 0, 0.5);
+
+  use_realtime = gtk_check_button_new_with_mnemonic ("Enabled");
+  gtk_widget_show (use_realtime);
+  gtk_table_attach (GTK_TABLE (table4), use_realtime, 1, 2, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
 
   label1 = gtk_label_new ("Audio");
   gtk_widget_show (label1);
@@ -1062,6 +1078,8 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, oss_driver, "oss_driver");
   GLADE_HOOKUP_OBJECT (tx_options, alsa_driver, "alsa_driver");
   GLADE_HOOKUP_OBJECT (tx_options, jack_driver, "jack_driver");
+  GLADE_HOOKUP_OBJECT (tx_options, label58, "label58");
+  GLADE_HOOKUP_OBJECT (tx_options, use_realtime, "use_realtime");
   GLADE_HOOKUP_OBJECT (tx_options, label1, "label1");
   GLADE_HOOKUP_OBJECT (tx_options, table5, "table5");
   GLADE_HOOKUP_OBJECT (tx_options, label21, "label21");

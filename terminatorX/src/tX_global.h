@@ -162,6 +162,7 @@ typedef struct {
 	double vu_meter_border_intensity;
 	
 	int quit_confirm;
+	int use_realtime;
 } tx_global;
 
 extern tx_global globals;

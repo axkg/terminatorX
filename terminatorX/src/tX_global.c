@@ -156,6 +156,7 @@ void set_global_defaults() {
 	strcpy(globals.vu_meter_normal, "#00FF00");	
 	globals.vu_meter_border_intensity=0.7;
 	globals.quit_confirm=1;
+	globals.use_realtime=1;
 }
 
 int load_globals_xml() {
@@ -253,6 +254,7 @@ int load_globals_xml() {
 			restore_float("vu_meter_border_intensity", globals.vu_meter_border_intensity);
 
 			restore_int("quit_confirm", globals.quit_confirm);
+			restore_int("use_realtime", globals.use_realtime);
 
 #ifdef USE_ALSA_MIDI_IN
 			if (!elementFound && (xmlStrcmp(cur->name, (xmlChar *) "midi_connections")==0)) {
@@ -369,6 +371,7 @@ void store_globals() {
 		store_float("vu_meter_border_intensity", globals.vu_meter_border_intensity);
 
 		store_int("quit_confirm", globals.quit_confirm);
+		store_int("use_realtime", globals.use_realtime);
 		
 #ifdef USE_ALSA_MIDI_IN
 		tX_midiin_store_connections(rc, indent);

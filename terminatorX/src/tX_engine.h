@@ -28,6 +28,7 @@
 #include "tX_mouse.h"
 #include "tX_audiodevice.h"
 #include "tX_midiin.h"
+#include <sys/types.h>
 
 #define ENG_ERR 4
 
@@ -81,6 +82,15 @@ class tX_engine {
 	tX_midiin *get_midi() { return midi; }
 #endif	
 
+#ifdef USE_SCHEDULER
+	private:
+	pid_t pid;
+	
+	public:
+	pid_t get_pid() { return pid; }
+	void set_pid(pid_t value) { pid=value; }
+#endif
+	
 	static tX_engine *get_instance();
 	tX_engine();
 	~tX_engine();
