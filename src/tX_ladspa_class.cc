@@ -68,6 +68,7 @@ void LADSPA_Class::init() {
 #ifdef USE_LRDF
 	/* Scanning every dir in path */
 	start = globals.lrdf_path;
+	lrdf_init();
 	
 	while (*start != '\0') {
 		end = start;
@@ -93,15 +94,11 @@ void LADSPA_Class::init() {
 			uris[t]=(*i);
 		}
 		uris[t]=NULL;
-		
-		lrdf_init();
-	
+			
 		if (lrdf_read_files((const char **) uris)) {
 			tX_error("liblrdf had problems reading the rdf files - cannot provide structured menu");
 			liblrdf_error=true;
 		}
-
-		lrdf_cleanup();
 	} else {
 		tX_error("No RDF files found");
 	}
@@ -111,6 +108,10 @@ void LADSPA_Class::init() {
 	unclassified=new LADSPA_Class();
 	/* This is the last class to accpet all plugins not accepted by other classes. */
 	root->subclasses.push_back(unclassified);
+	
+#ifdef USE_LRDF
+	lrdf_cleanup();
+#endif
 }
 
 void LADSPA_Class::scandir(char *dirname) {
