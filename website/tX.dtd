@@ -1,4 +1,4 @@
-<!ELEMENT section (linkdb?, (main|download|screenshots|scratches|links|faq|turntable|aseqjoy|docs))>
+<!ELEMENT section (linkdb?, (main|bugs|download|screenshots|scratches|links|faq|turntable|aseqjoy|docs))>
 <!ATTLIST section
   name CDATA #REQUIRED>
 
@@ -10,6 +10,7 @@
 <!ELEMENT turntable (para*, turntabletable, para*)>
 <!ELEMENT aseqjoy (para*)>
 <!ELEMENT docs (para*)>
+<!ELEMENT bugs (subsection)+>
 <!ELEMENT screenshots (subsection)+>
 
 <!ELEMENT linkdb (dlink*)>

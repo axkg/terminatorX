@@ -14,7 +14,7 @@
           (*.wav, *.au, *.ogg, *.mp3, etc.) the way hiphop-DJs scratch on vinyl records. It features
           multiple turntables, realtime effects (buit-in as well as <dblink id="ladspa"/> plugin
           effects), a sequencer and MIDI interface - all accessible through an easy-to-use gtk+ GUI.
-            <bold>This sofware is designed to run under Linux, FreeBSD and the like</bold>. If you
+            <bold>This software is designed to run under Linux, FreeBSD and the like</bold>. If you
           have more questions read the <dblink id="faq"/>, <dblink id="manual">Manual</dblink>,
             <dblink id="tutorial">Tutorial</dblink>, <dblink id="license">License</dblink> and if
           you have further questions, suggestions, patches, <dblink
@@ -24,15 +24,17 @@
     </general>
     <news>
       <newsitem>
-        <newsheader date="Jul 23">Updates, 3.81 on the way</newsheader>
+        <newsheader date="August 05">Updates, 3.81 on the way</newsheader>
         <newstext>
           <para>As shown in this <link ref="http://www.securityfocus.com/archive/1/328469">bugtraq
             post</link> by <person>
               <name>Andrew</name>
               <email/>
-            </person> installing terminatorX suid root is exploitable. Although you had been
-            warned before, I decided to change my <link ref="faq.html#11">recommendation</link>.</para>
-          <para>The website now features a new <dblink id="links"/>.</para>
+            </person> installing terminatorX suid root is <bold>exploitable</bold>. Although you had been
+            warned before, I decided to change my <link ref="faq.html#11">recommendation</link>.
+            To make bug tracking easier in the future I've setup a 
+            <dblink id="bugs">bugzilla</dblink> for terminatorX.</para>
+          <para>Additionally the website now features a new <dblink id="links"/>.</para>
           <para>
             <person>
               <name>Arthur Moore</name>
@@ -43,9 +45,9 @@
             the author and his music check out his <link ref="http://infinitybox.net">site</link>.</para>
           <para>The friendly people of <dblink id="sonar"/> invited me to do a demonstration at this
             year's festival. As a side effect I was actually forced to <bold>use</bold> terminatorX,
-            so I found and fixed quite some annoying bugs with the upcomming 3.81 release.
+            so I found and fixed quite some annoying bugs with the upcoming 3.81 release.
             Additionally it will feature MIDI and sequencer improvements and a <dblink id="jack"/> 
-            backend.</para>
+            back-end.</para>
         </newstext>
       </newsitem>
       <newsitem>
@@ -59,13 +61,13 @@
               <listitem>
                 <para>Finally terminatorX has a <bold>native</bold>
                   <dblink id="alsa"/>
-                  <bold>backend</bold>. See the new <italic>Preferences</italic> dialog and the
-                  online manual for details. The ALSA and the OSS backends now both support
+                  <bold>back-end</bold>. See the new <italic>Preferences</italic> dialog and the
+                  online manual for details. The ALSA and the OSS back-ends now both support
                   operating at an <bold>arbitrary sampling rate</bold>.</para>
               </listitem>
             </itemizedlist>
             <screenshot filename="shot-3.80-1.png">
-              <nopara>Scrolling audio data, a menubar and even less space consumption for small
+              <nopara>Scrolling audio data, a menu bar and even less space consumption for small
                 displays. </nopara>
             </screenshot>
             <itemizedlist>
@@ -94,12 +96,12 @@
                   id="aseqjoy"/> that emits MIDI controller messages based on Joystick motion.</para>
               </listitem>
               <listitem>
-                <para>I finally untied audio rendering and audio backend. terminatorX now operates
-                  at a <bold>fixed internal blocksize</bold> of 1 ms. So now it doesn't matter
-                  anymore with which blocksize events were recorded - they will be played back
-                  correctly with any audio device blocksize.</para>
+                <para>I finally untied audio rendering and audio back-end. terminatorX now operates
+                  at a <bold>fixed internal block size</bold> of 1 ms. So now it doesn't matter
+                  anymore with which block size events were recorded - they will be played back
+                  correctly with any audio device block size.</para>
                 <para>Note that a minor problem remains: the sampling rate has an effect on the
-                  blocksize, too. While there is no problem switching from 22 or 32 kHz to 48 kHz,
+                  block size, too. While there is no problem switching from 22 or 32 kHz to 48 kHz,
                   there will be a slight rounding error switching from or to 44.1 kHz. So if you
                   record and playback events I suggest you keep the sampling rate the same, or use
                   &quot;straight&quot; sampling rates like 22, 32 and 48 kHz only.</para>
@@ -108,7 +110,7 @@
                 <para>I added a little <bold>pitch calculator</bold> that allows adjusting the
                   playback speed of a turntable to that of the master turntable so it is very easy
                   to synchronize (<italic>precisely cut</italic>) loops now. Note that this feature
-                  is probably useless with large audiofiles (like complete songs).</para>
+                  is probably useless with large audio files (like complete songs).</para>
               </listitem>
               <listitem>
                 <para>Advancing the use of XML: many XML-related bugs have been fixed, and I moved
@@ -126,8 +128,8 @@
               </listitem>
               <listitem>
                 <para>Further cleaning up the layout for small DJ laptop displays: moved some
-                  buttons to a <bold>menu bar</bold> to waste less space. Addtionally you can now
-                  hit <screen>F11</screen> to enter <bold>fullscreen</bold> mode - if your window
+                  buttons to a <bold>menu bar</bold> to waste less space. Additionally you can now
+                  hit <screen>F11</screen> to enter <bold>full screen</bold> mode - if your window
                   manager supports <italic>NETWM</italic>.</para>
               </listitem>
               <listitem>
@@ -137,7 +139,7 @@
           </para>
           <para>This release has seen quite some <link
             ref="http://developer.kde.org/~sewardj">valgrinding</link> so it should run rather
-            stable and a major mem leak has been fixed, too. Unlike 3.73 this one compiles with gcc
+            stable and a major memory leak has been fixed, too. Unlike 3.73 this one compiles with gcc
             &gt; 3.0 with <screen>-Wall</screen> and <screen>-Werror</screen> enabled. Well, the
             version number ends in a zero, which means lots of new code with possibly lots of new
             and yet undiscovered bugs. </para>
@@ -162,15 +164,15 @@
                 <para>I reworked the GUI a bit in order to make terminatorX fit better on those
                   small DJ-laptop displays. Audio and control panels can now be minimized to a
                     <bold>panel bar</bold> to save space - works just like GNOME's window list. The
-                  panel bar status is stored within setfiles and restored upon loading. Additionally
+                  panel bar status is stored within set files and restored upon loading. Additionally
                   the buttons of the audio panel have been restructured. To lighten up the GUI five
                   buttons have been merged into <bold>two</bold> - on clicking one of these you'll
                   get a popup menu with all previous functionality.</para>
               </listitem>
               <listitem>
                 <para>After spending an evening with Adrian in front of his big endian system fixing
-                  the audiofile loading routines, I decided that loading audiofiles through a pipe
-                  is an ugly hack. Therefor I wrote <bold>three new audiodfile loading
+                  the audio file loading routines, I decided that loading audio files through a pipe
+                  is an ugly hack. Therefor I wrote <bold>three new audio file loading
                   methods</bold> that utilize libraries instead of pipes. These are <link
                     ref="http://www.mars.org/home/rob/proj/mpeg/"> mad</link> (for mp3 files), <link
                   ref="http://www.xiph.org/ogg/vorbis/">libvorbis</link> (for OGG/Vorbis files) and
@@ -178,20 +180,20 @@
                   wav/aiff/au etc.). Using these routines instead of the old ones brings the
                   following advantages: <itemizedlist>
                     <listitem>
-                      <para>loading audiofiles is significantly <bold>faster</bold>
+                      <para>loading audio files is significantly <bold>faster</bold>
                       </para>
                     </listitem>
                     <listitem>
-                      <para>terminatorX now evaluates the <bold>sample rate</bold> of an audiofile
+                      <para>terminatorX now evaluates the <bold>sample rate</bold> of an audio file
                         and adjusts the turntable's pitch accordingly (this does not affect the
-                        regular &quot;pitch&quot; setting btw)</para>
+                        regular &quot;pitch&quot; setting BTW)</para>
                     </listitem>
                     <listitem>
                       <para>the new routines provide much better <bold>visual feedback</bold> on the
                         loading progress</para>
                     </listitem>
                   </itemizedlist>Additionally more file formats are supported, so I strongly
-                  recommend installing the libraries mentioned above to improve terminatorX' usabilty.</para>
+                  recommend installing the libraries mentioned above to improve terminatorX' usability.</para>
               </listitem>
               <listitem>
                 <para>Slowly approaching terminator <bold>XML</bold>: the configuration file (now
@@ -199,7 +201,7 @@
                   is necessary to become more flexible in the future - and it allows editing your
                   terminatorX configuration with a text editor - if you want to. Of course,
                   terminatorX now requires <link ref="http://www.libxml.org">libxml</link> to be
-                  installed. For convenience this release still reads the old binary config and
+                  installed. For convenience this release still reads the old binary con figuration and
                   stores it as an XML document on exit. I plan to move the set file format to XML
                   soon, too.</para>
               </listitem>
@@ -230,7 +232,7 @@
                 <para>An old clipping bug in the <italic>tX_dial</italic> widget code has been fixed.</para>
               </listitem>
               <listitem>
-                <para>This release builds, runs and loads audiofiles on big endian architectures.</para>
+                <para>This release builds, runs and loads audio files on big endian architectures.</para>
               </listitem>
               <listitem>
                 <para>terminatorX should now build from scratch not only on Linux but on FreeBSD,
@@ -243,7 +245,7 @@
                 <para>Many other fixes.</para>
               </listitem>
             </itemizedlist>Have a look at the <link ref="ChangeLog">ChangeLog</link> for more
-            details and grab the tarball or the RPMS from the <link
+            details and grab the tarball or the RPMs from the <link
               ref="download.html#Current Version">download section</link>.</para>
           <para>Aside of the release I'd like to bring to your attention that <person>
               <name>Mike Furr</name>
@@ -300,7 +302,7 @@
                     <name>Matthew Evans</name>
                     <email>activesx@hotmail.com</email>
                   </person>terminatorX finally supports loading <link
-                    ref="http://www.vorbis.com">Ogg Vorbis</link> audiofiles. Note that this feature
+                    ref="http://www.vorbis.com">Ogg Vorbis</link> audio files. Note that this feature
                   requires ogg123 (&gt;= RC2) and <link
                   ref="http://sox.sourceforge.net">sox</link> installed. The very fresh RC3 release
                   of Ogg Vorbis works just fine, too.</para>
@@ -347,15 +349,15 @@
           <para>Initially I planned to integrate native <link
             ref="http://www.alsa-project.org">ALSA</link>-support into this release but I simply
             failed to finish. As many people wanted to have some of the above features early I
-            decided to release it without ALSA now, as I'll be busy for the upcomming weeks. I
+            decided to release it without ALSA now, as I'll be busy for the upcoming weeks. I
             haven't given up on ALSA though, hopefully the next terminatorX release will feature a
-            new audiodevice backend that supports ALSA (V0.9) <bold>and</bold> OSS and brings many
-            other adtvantages.</para>
+            new audio device back-end that supports ALSA (V0.9) <bold>and</bold> OSS and brings many
+            other advantages.</para>
           <para>The website has undergone minor updates, too: <itemizedlist>
               <listitem>
                 <para>The section header's now should look fine with <link
                   ref="http://www.mozilla.org">Mozilla</link>-based browsers. They might look funny
-                  with older netscapes, though.</para>
+                  with older Netscape releases, though.</para>
               </listitem>
               <listitem>
                 <para>Updated the <link ref="screenshots.html">screenshots</link> as people started

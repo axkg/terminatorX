@@ -40,10 +40,10 @@
               requires a working <dblink id="alsa"/> setup</nopara>
           </listitem>
           <listitem>
-            <para>To enhance audiofile support I strongly recommend installing: <itemizedlist>
+            <para>To enhance audio file support I strongly recommend installing: <itemizedlist>
                 <listitem>
                   <nopara>
-                    <link ref="http://www.68k.org/~michael/audiofile/"> libaudiofile</link> for
+                    <link ref="http://www.68k.org/~michael/audiofile/">libaudiofile</link> for
                     loading wav, aiff and au files and <link
                     ref="http://sox.sourceforge.net">sox</link> for pre-listening and loading of
                     file formats not supported by libaudiofile.</nopara>
@@ -56,7 +56,7 @@
                 </listitem>
                 <listitem>
                   <nopara>The <link ref="http://www.mars.org/home/rob/proj/mpeg/"> mad</link> (MPEG
-                    Audio Decocder) library for loading mp3 streams and <link
+                    Audio Decoder) library for loading mp3 streams and <link
                     ref="http://www.mpg123.de">mpg123</link> or <link
                     ref="http://mpg321.sourceforge.net">mpg321</link> for pre-listening of these.</nopara>
                 </listitem>
