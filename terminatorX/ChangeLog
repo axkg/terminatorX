@@ -4,15 +4,25 @@ This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.72]
+- Well, I am allowed to change my mind, aren't I? Anyway, 3DNow! enhanced
+  mixing is back. I virtually "ported" the old code to the new stereo
+  algorithm. Ensure you run configure with the --enable-3dnow switch
+  if your CPU supports 3DNow - it accelerates mixing quite a lot.
 - Applied a patch from Matthew Evans <activesx@hotmail.com> that introduces 
   support for Ogg Vorbis audiofiles. It requires ogg123 and sox to work.
   Autodetection is supported via configure (--enable-ogg123).
 - Experimental support for input devices other than the core-pointer
   under XFree86 > 4. This uses the xsetpointer executable that comes with
-  XFree86. configure should autodetect this correct, in case it doesn't
-  use --enable-xetpointer switch.
-- Adrian sent me a patch introducing two new buttons: mute and solo. It's
-  not yet finished though.
+  XFree86. configure should autodetect this correctly, in case it doesn't
+  use the --enable-xetpointer switch.
+- Adrian sent me a patch introducing two new buttons: mute and solo. As it
+  didn't fully harmonize with the sequencer I rewrote parts of it and added new
+  functionality to the turntables: They can now be switched to mix_solo or
+  mix_mute - these settings affect current mixing only - their values will
+  neither be saved nor will changes to those control be recorded in the
+  sequencer - if you want to record muting events either use the mute button
+  from the turntable's trigger menu, the keyboard short-cuts (alt/strg), or
+  your middle mouse button.
 - fixed a bug that produced corrupt wavfiles on big endian machines
 
 [v3.71]

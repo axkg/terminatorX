@@ -117,7 +117,6 @@ typedef struct vtt_gui
 
 extern void cleanup_all_vtts();
 extern void update_all_vtts();
-extern void show_all_guis(int);
 /*extern void vg_update_sync(void *);*/
 extern void vg_enable_critical_buttons(int enable);
 extern void vg_init_all_non_seqpars();

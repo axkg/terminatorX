@@ -584,7 +584,7 @@ void show_about(int nag)
 		
 		label=gtk_label_new(
 		"\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999, 2000 by Alexander König" 
-		"\n\nSend comments, patches and scratches to: alkoit00@fht-esslingen.de\n"
+		"\n\nSend comments, patches and scratches to: alex@lisas.de\n"
 		"terminatorX-homepage: http://www.terminatorX.cx\n\nThis binary has been compiled with the following flags: "
 		"Sox support: "
 #ifdef USE_SOX_INPUT
@@ -598,7 +598,14 @@ void show_about(int nag)
 #else
 		"OFF"
 #endif
-		" - \n3DNow!: "
+		" - \nogg123 support: "
+#ifdef USE_OGG123_INPUT
+		"ON"
+#else
+		"OFF"
+#endif
+
+		" - 3DNow!: "
 #ifdef USE_3DNOW
 		"ON"
 #else
@@ -607,12 +614,6 @@ void show_about(int nag)
 		
 		" - enhanced scheduling: "
 #ifdef USE_SCHEDULER
-		"ON"
-#else
-		"OFF"
-#endif
-		" - keep device open: "
-#ifdef KEEP_DEV_OPEN
 		"ON"
 #else
 		"OFF"
