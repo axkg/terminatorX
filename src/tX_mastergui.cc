@@ -40,6 +40,7 @@
 #include "tX_pbutton.h"
 #include "tX_sequencer.h"
 #include "tX_mastergui.h"
+#include "tX_knobloader.h"
 
 /* I don't know a display that can handle that, but
    just to be on the safe side...
@@ -1192,6 +1193,8 @@ void display_mastergui()
 	GtkWidget *top;
 	gtk_widget_realize(main_window);
 	tX_set_icon(main_window, "terminatorX");
+	load_knob_pixs(main_window);
+
 	gtk_widget_show(main_window);
 	top=gtk_widget_get_toplevel(main_window);
 	xwindow=GDK_WINDOW_XWINDOW(top->window);

@@ -68,10 +68,6 @@
 #include "tX_vtt.h"
 #endif
 
-#ifdef USE_DIAL
-#include "tX_knobloader.h"
-#endif
-
 GTimer *my_time;
 gint idle_tag;
 
@@ -422,9 +418,6 @@ int main(int argc, char **argv)
 	}
 		
 #ifndef CREATE_BENCHMARK
-#ifdef USE_DIAL
-	load_knob_pixs(main_window);
-#endif	
 
 //	gdk_input_init();
 

@@ -54,6 +54,18 @@ if test "$no_threads_flags" = "yes"; then
 	tX_threads=auto
 fi
 
+dnl Some machines prefer the -lpthread...
+
+if test "$tX_threads" = "no"; then
+	pthread_lib=no
+	AC_CHECK_LIB(pthread, pthread_detach, pthread_lib=yes, pthread_lib=no)
+	
+	if test "$pthread_lib" = "yes"; then
+		tX_threads=lpthread
+		LIBS="$LIBS -lpthread"
+	fi
+fi
+
 dnl Some machines prefer a -pthread...
 
 if test "$tX_threads" = "no"; then
@@ -74,17 +86,6 @@ if test "$tX_threads" = "no"; then
 	if test "$use_gcc_threads" = "yes"; then
 		tX_threads=gcc
 		CFLAGS="$CFLAGS -pthread"
-	fi
-fi
-
-dnl If we haven't found pthreads yet will try -lpthread...
-
-if test "$tX_threads" = "no"; then
-	pthread_lib=no
-	AC_CHECK_LIB(pthread, pthread_detach, pthread_lib=yes, pthread_lib=no)
-	
-	if test "$pthread_lib" = "yes"; then
-		tX_threads=lpthread
 	fi
 fi
 
