@@ -86,6 +86,8 @@
     </subsection>
     <subsection>
       <title>Old Sources</title>
+      <para>These are <bold>old</bold> releases - for the current version see the 
+      section <link ref="#Current Version">above</link>.</para>
       <tarfiles>
         <tar havebz2="yes" version="3.81"/>
         <tar havebz2="yes" version="3.80"/>
