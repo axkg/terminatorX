@@ -1,0 +1,19 @@
+chapters	= manual.sgml
+DSL		= terminatorX.dsl
+
+all: index.html manual.ps
+
+manual.ps: manual.dvi manual.sgml
+	dvips -f < manual.dvi > manual.ps
+
+manual.tex: manual.sgml tex.dsl
+	jade -t tex -d tex.dsl manual.sgml
+ 
+index.html: manual.sgml html.dsl
+	jade -t sgml -d html.dsl -o manual.html manual.sgml 
+
+manual.dvi: manual.tex manual.sgml $(KAPITEL)
+	jadetex manual.tex; jadetex manual.tex;	jadetex manual.tex
+	
+clean:
+	rm -f *.aux *.tex *.log *.dvi *.rtf *.ps *.html;
