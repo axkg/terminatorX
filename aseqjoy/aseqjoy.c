@@ -1,5 +1,5 @@
 /**
- * aseqjoy - Tiny Jostick -> MIDI Controller Tool
+ * aseqjoy - Tiny Jostick -> MIDI Controller
  * Copyright 2003 by Alexander Koenig - alex@lisas.de
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * Note: that these sources contain a few lines of Vojtech Pavlik's jstest.c 
- * example.
  */
 
 #include <sys/ioctl.h>
@@ -54,8 +51,7 @@ snd_seq_event_t ev;
 int controllers[4];
 int verbose=0;
 
-int open_alsa_seq()
-{
+int open_alsa_seq() {
 	char client_name[32];
 	char port_name[48];
 	snd_seq_addr_t src;
@@ -89,8 +85,7 @@ int axes;
 int joy_fd;
 int buttons;
 
-int open_joystick()
-{
+int open_joystick() {
 	char device[256];
 	char name[NAME_LENGTH] = "Unknown";	
 	
@@ -115,8 +110,7 @@ int open_joystick()
 	return 0;
 }
 
-void loop()
-{
+void loop() {
 	struct js_event js;
 	int current_channel=1;
 	double val_d;
@@ -148,7 +142,8 @@ void loop()
 			exit (-5);
 		}
 
-		switch(js.type & ~JS_EVENT_INIT) {		
+		switch(js.type & ~JS_EVENT_INIT) {
+		
 			case JS_EVENT_BUTTON:
 				if (js.value) {			
 					current_channel=js.number+1;
