@@ -70,8 +70,10 @@ void apply_options(GtkWidget *dialog) {
 	
 	/* Audio: ALSA */
 	strcpy(globals.alsa_device, gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "alsa_audio_device"))->entry)));
-	globals.alsa_buff_no=(int) gtk_spin_button_get_value(GTK_SPIN_BUTTON(lookup_widget(dialog, "alsa_buffers")));
-	globals.alsa_buff_size=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "alsa_buffersize")));
+	globals.alsa_buffer_time=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "alsa_buffer_time")));
+	globals.alsa_buffer_time*=1000;
+	globals.alsa_period_time=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "alsa_period_time")));
+	globals.alsa_period_time*=1000;
 	globals.alsa_samplerate=atoi(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "alsa_samplerate"))->entry)));	
 	
 	/* TODO: JACK
@@ -294,8 +296,8 @@ void init_tx_options(GtkWidget *dialog) {
 	gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "alsa_audio_device")), get_alsa_device_list());
 	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "alsa_audio_device"))->entry), globals.alsa_device);
 
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget(dialog, "alsa_buffers")), globals.alsa_buff_no);
-	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "alsa_buffersize")), globals.alsa_buff_size);
+	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "alsa_buffer_time")), globals.alsa_buffer_time/1000);
+	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "alsa_period_time")), globals.alsa_period_time/1000);
 
 	gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "alsa_samplerate")), get_sampling_rates_list());
 	sprintf(tmp, "%i", globals.alsa_samplerate);
@@ -347,6 +349,7 @@ void init_tx_options(GtkWidget *dialog) {
 void create_options()
 {
 	opt_dialog=create_tx_options();
+	gtk_widget_hide(lookup_widget(opt_dialog, "jack_driver"));	
 	init_tx_options(opt_dialog);
 	gtk_widget_show(opt_dialog);
 }
@@ -440,8 +443,6 @@ void show_about(int nag)
 	pmap=gdk_pixmap_create_from_xpm_d(window->window, &mask, &style->bg[GTK_STATE_NORMAL], (gchar **)logo_xpm);
 
   	pwid = gtk_pixmap_new( pmap, mask );
-	
-	printf("pixmap: %08x %08x.\n", pwid, pmap);
 	
 	if (nag) {
 		GtkWidget *box=gtk_vbox_new(FALSE, 2);

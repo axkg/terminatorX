@@ -127,8 +127,8 @@ typedef struct {
 	
 	/* ALSA specific options */
 	char alsa_device[PATH_MAX];
-	int alsa_buff_no;
-	int alsa_buff_size; // In Samples
+	int alsa_buffer_time;
+	int alsa_period_time;
 	int alsa_samplerate;
 	
 	char lrdf_path[PATH_MAX];

@@ -217,7 +217,11 @@ int tX_audiodevice_alsa :: open()
 	}
   	
 	/* Setting INTERLEAVED stereo... */
+#ifdef USE_ALSA_MEMCPY
 	if (snd_pcm_hw_params_set_access(pcm_handle, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED) < 0) {
+#else
+	if (snd_pcm_hw_params_set_access(pcm_handle, hw_params, SND_PCM_ACCESS_MMAP_INTERLEAVED) < 0) {
+#endif	
 		tX_error("ALSA: Failed to set interleaved access for PCM device \"%s\"", pcm_name);
 		snd_pcm_hw_params_free (hw_params);
 		return -1;
@@ -248,42 +252,42 @@ int tX_audiodevice_alsa :: open()
 		snd_pcm_hw_params_free (hw_params);
 		return -1;
 	}
-
-	/* Setting the number of buffers... */
-	/* if (snd_pcm_hw_params_set_periods(pcm_handle, hw_params, globals.alsa_buff_no, 0) < 0) {
-		tX_error("ALSA: Failed to set %i periods for PCM device \"%s\"", globals.alsa_buff_no, pcm_name);
-		snd_pcm_hw_params_free (hw_params);
-		return -1;
-	} */
-
-	/* Setting the buffersize - ALSA cripples my mind, really... */
-	long unsigned int samples;
-	long unsigned int periodsize;
-
-	periodsize = globals.alsa_buff_size * 2;
 	
-	samples = snd_pcm_hw_params_set_buffer_size_near(pcm_handle, hw_params, &periodsize);
-	if (samples < 0) {
-		tX_error("ALSA: Failed to set buffersize %li", globals.alsa_buff_size);
+	unsigned int buffer_time=globals.alsa_buffer_time;
+	unsigned int period_time=globals.alsa_period_time;
+	
+	if (snd_pcm_hw_params_set_buffer_time_near(pcm_handle, hw_params, &buffer_time, &dir) < 0) {
+		tX_error("ALSA: failed to set the buffer time opf %lu usecs", globals.alsa_buffer_time);
 		return -1;
 	}
 
-	samples_per_buffer=periodsize;//hw_buffsize/sizeof(int16_t);
-	
-	periodsize /= 2;
-	if (snd_pcm_hw_params_set_period_size_near(pcm_handle, hw_params, &periodsize, 0) < 0) {
-		tX_error("ALSA: Failed to set periodsize %li", periodsize);
+	long unsigned int buffer_size;
+
+	if (snd_pcm_hw_params_get_buffer_size(hw_params, &buffer_size) < 0) {
+		tX_error("ALSA: failed to retreive buffer size");
 		return -1;
 	}
-
+	
+	tX_debug("ALSA: buffer size is %i", buffer_size);
+	
+	if (snd_pcm_hw_params_set_period_time_near(pcm_handle, hw_params, &period_time, &dir) < 0) {
+		tX_error("ALSA: failed to set period time %i", globals.alsa_period_time);
+		return -1;
+	}
+	
+	if (snd_pcm_hw_params_get_period_size(hw_params, &period_size, &dir)<0) {
+		tX_error("ALSA: failed to retreive period size");
+		return -1;
+	}
+	
+	samples_per_buffer=period_size;
+	
 	/* Apply all that setup work.. */
 	if (snd_pcm_hw_params(pcm_handle, hw_params) < 0) {
 		tX_error("ALSA: Failed to apply settings to PCM device \"%s\"", pcm_name);
 		snd_pcm_hw_params_free (hw_params);
 		return -1;
 	}
-	
-	tX_debug("ALSA: samples_per_buffer: %i, period=%i", samples_per_buffer, periodsize);
 	
 	snd_pcm_hw_params_free (hw_params);
 	return 0;
@@ -312,11 +316,20 @@ void tX_audiodevice_alsa :: play(int16_t *buffer)
 	swapbuffer (buffer, samples_per_buffer);
 #endif
 	
-	pcmreturn = snd_pcm_writei(pcm_handle, buffer, samples_per_buffer/2);
+#ifdef USE_ALSA_MEMCPY
+	pcmreturn = snd_pcm_writei(pcm_handle, buffer, samples_per_buffer >> 1);
+#else	
+	pcmreturn = snd_pcm_mmap_writei(pcm_handle, buffer, samples_per_buffer >> 1);
+#endif
 	
 	while (pcmreturn==-EPIPE) {
 		snd_pcm_prepare(pcm_handle);
-		pcmreturn=snd_pcm_writei(pcm_handle, buffer, samples_per_buffer/2);
+		
+#ifdef USE_ALSA_MEMCPY
+		pcmreturn = snd_pcm_writei(pcm_handle, buffer, samples_per_buffer >> 1);
+#else	
+		pcmreturn = snd_pcm_mmap_writei(pcm_handle, buffer, samples_per_buffer >> 1);
+#endif
 		//tX_warning("ALSA: ** buffer underrun **");
 	}
 	

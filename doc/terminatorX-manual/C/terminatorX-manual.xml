@@ -4,7 +4,7 @@
 <!ENTITY legal SYSTEM "legal.xml">
 
 ]>
-<article id="index" lang="en">
+<article lang="en" id="index">
   <articleinfo>
     <title>terminatorX - Manual</title>
 
@@ -97,7 +97,7 @@
 
       <para>Try the following steps:</para>
 
-      <orderedlist continuation="restarts" inheritnum="ignore">
+      <orderedlist inheritnum="ignore" continuation="restarts">
         <listitem>
           <para>If you don&#39;t have <application moreinfo="none">LADSPA</application>
           (Linux Audio Developer&#39;s Simple Plugin API) installed, go and
@@ -1311,10 +1311,16 @@
     <sect2>
       <title><emphasis>Audio: ALSA</emphasis> Tab</title>
 
-      <para>Configuring the ALSA backend works pretty similar to configuring
-      the OSS backend (see above) - except that ALSA doesn&#39;t use crappy
-      &#34;2^x&#34; semantics for the buffer size setting: you can specify the
-      buffer size in plain bytes.</para>
+      <para>Using ALSA for audio output allows specifing the buffer sizes in
+      microseconds. ALSA uses a ring-buffer to process audio. The
+      <emphasis>Buffer Time</emphasis> option lets you set the size for the
+      complete ring buffer, while the <emphasis>Period Time</emphasis>
+      determines how many audio samples will be transferred to the audio
+      device per cycle.</para>
+
+      <para>It&#39;s advisable to set the <emphasis>Buffer Time</emphasis> to
+      at least the double of the <emphasis>Period Time</emphasis>, but for a
+      more detailed description check out the ALSA documentation.</para>
     </sect2>
 
     <sect2>

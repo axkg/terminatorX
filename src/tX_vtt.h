@@ -298,6 +298,7 @@ class vtt_class
 	static int save_all(FILE *);
 	int load(xmlDocPtr, xmlNodePtr);
 	static int load_all(xmlDocPtr doc, char *fname);
+	static void delete_all();
 
 #ifdef ENABLE_TX_LEGACY
 	int load_10(FILE *);

@@ -81,8 +81,8 @@ void set_global_defaults() {
 	globals.oss_samplerate=44100;
 
 	strcpy(globals.alsa_device, "00-00: Default");	
-	globals.alsa_buff_no=2;
-	globals.alsa_buff_size=1024;
+	globals.alsa_buffer_time=10000;
+	globals.alsa_period_time=5000;
 	globals.alsa_samplerate=44100;
 	
 	globals.sense_cycles=12;
@@ -178,8 +178,8 @@ int load_globals_xml() {
 			restore_int("oss_samplerate", globals.oss_samplerate);
 
 			restore_string("alsa_device", globals.alsa_device);
-			restore_int("alsa_buff_no", globals.alsa_buff_no);
-			restore_int("alsa_buff_size", globals.alsa_buff_size);
+			restore_int("alsa_buffer_time", globals.alsa_buffer_time);
+			restore_int("alsa_period_time", globals.alsa_period_time);
 			restore_int("alsa_samplerate", globals.alsa_samplerate);
 
 			restore_string("xinput_device", globals.xinput_device);
@@ -260,8 +260,8 @@ void store_globals() {
 		store_int("oss_samplerate", globals.oss_samplerate);
 
 		store_string("alsa_device", globals.alsa_device);
-		store_int("alsa_buff_no", globals.alsa_buff_no);
-		store_int("alsa_buff_size", globals.alsa_buff_size);
+		store_int("alsa_buffer_time", globals.alsa_buffer_time);
+		store_int("alsa_period_time", globals.alsa_period_time);
 		store_int("alsa_samplerate", globals.alsa_samplerate);		
 		
 		store_string("xinput_device", globals.xinput_device);

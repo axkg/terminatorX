@@ -233,14 +233,12 @@ tX_engine_error tX_engine :: run() {
 	switch (globals.audiodevice_type) {
 #ifdef USE_OSS	
 		case OSS:
-			puts("Using OSS output...");
 			device=new tX_audiodevice_oss(); 
 		break;
 #endif			
 
 #ifdef USE_ALSA			
 		case ALSA:
-			puts("Using ALSA output...");
 			device=new tX_audiodevice_alsa(); 
 		break;
 #endif

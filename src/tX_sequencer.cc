@@ -199,6 +199,14 @@ void tX_sequencer :: trig_stop()
 	seq_update();
 }
 
+void tX_sequencer :: delete_all_events() {
+	while (song_list.size()) {
+		list <tX_event *> :: iterator ev=song_list.begin();
+		delete (*ev);
+		song_list.erase(ev);
+	}
+}
+
 void tX_sequencer :: delete_all_events_for_sp(tX_seqpar *sp)
 {
 	list <tX_event *> :: iterator song_event;
