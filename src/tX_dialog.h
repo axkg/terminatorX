@@ -25,8 +25,11 @@
 #define _H_TX_DIALOG_
 //#include <gdk/gdk.h>
 #include <gtk/gtk.h>
+extern GtkWidget *opt_dialog;
+
 extern void display_options();
 extern void show_about(int nag);
 extern void destroy_about();
 extern void tX_set_icon(GtkWidget *widget, char *);
+extern void apply_options(GtkWidget *);
 #endif

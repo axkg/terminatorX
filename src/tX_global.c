@@ -67,11 +67,6 @@ void set_global_defaults() {
 	globals.no_gui = 0;
 	globals.alternate_rc = 0;
 	
-#ifdef USE_ALSA	
-	strcpy(globals.audio_device, "plughw:0,0");	
-#else	
-	strcpy(globals.audio_device, "/dev/dsp");
-#endif	
 	
 	strcpy(globals.xinput_device, "");
 	globals.xinput_enable=0;
@@ -79,8 +74,15 @@ void set_global_defaults() {
 	globals.update_idle=18;
 	globals.update_delay=1;
 	
-	globals.buff_no=2;
-	globals.buff_size=9;
+	strcpy(globals.oss_device, "/dev/dsp");
+	globals.oss_buff_no=2;
+	globals.oss_buff_size=9;
+	globals.oss_samplerate=44100;
+
+	strcpy(globals.alsa_device, "plughw:0,0");	
+	globals.alsa_buff_no=2;
+	globals.alsa_buff_size=1024;
+	globals.alsa_samplerate=44100;
 	
 	globals.sense_cycles=12;
 	
@@ -120,22 +122,18 @@ void set_global_defaults() {
 	globals.audiodevice_type=ALSA;
 #endif	
 #endif		
-	globals.audiodevice_buffersize=4096;
-	strcpy(globals.audiodevice_oss_devicename, "/dev/dsp");
-	globals.audiodevice_alsa_card=0;
-	globals.audiodevice_alsa_pcm=0;		
-
 	globals.use_stdout_cmdline=0;
 	globals.current_path = NULL;
 	globals.pitch=1.0;
 	globals.volume=1.0;
 	globals.fullscreen_enabled=1;
-	if (!globals.true_block_size) globals.true_block_size=1<globals.buff_size;
-
+	
+	if (!globals.true_block_size) globals.true_block_size=1<globals.oss_buff_size;
 }
 
 int load_globals_xml() {
 	char rc_name[PATH_MAX]="";	
+	char device_type[16]="oss";
 	xmlDocPtr doc;
 	xmlNodePtr cur;
 	int elementFound;
@@ -163,19 +161,29 @@ int load_globals_xml() {
 		xmlFreeDoc(doc);
 		return 3;
 	}
-	
+		
 	for (cur=cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
 		if (cur->type == XML_ELEMENT_NODE) {			
 			elementFound=0;
 
 			restore_int("store_globals", globals.store_globals);
-			restore_string("audio_device", globals.audio_device);
+
+			restore_string("audio_driver", device_type);
+			
+			restore_string("oss_device", globals.oss_device);
+			restore_int("oss_buff_no", globals.oss_buff_no);
+			restore_int("oss_buff_size", globals.oss_buff_size);
+			restore_int("oss_samplerate", globals.oss_samplerate);
+
+			restore_string("alsa_device", globals.alsa_device);
+			restore_int("alsa_buff_no", globals.alsa_buff_no);
+			restore_int("alsa_buff_size", globals.alsa_buff_size);
+			restore_int("alsa_samplerate", globals.alsa_samplerate);
+
 			restore_string("xinput_device", globals.xinput_device);
 			restore_int("xinput_enable", globals.xinput_enable);
 			restore_int("update_idle", globals.update_idle);
 			restore_int("update_delay", globals.update_delay);
-			restore_int("buff_no", globals.buff_no);
-			restore_int("buff_size", globals.buff_size);
 			restore_int("sense_cycles", globals.sense_cycles);
 			restore_float("mouse_speed", globals.mouse_speed);
 			restore_int("width", globals.width);
@@ -203,11 +211,16 @@ int load_globals_xml() {
 
 	xmlFreeDoc(doc);
 	
+	if (strcmp(device_type, "alsa")==0) globals.audiodevice_type=ALSA;
+	else if (strcmp(device_type, "jack")==0) globals.audiodevice_type=JACK;
+	else globals.audiodevice_type=OSS;
+	
 	return 0;
 }
 
 void store_globals() {
 	char rc_name[PATH_MAX]="";
+	char device_type[16];
 	char indent[]="\t";
 	FILE *rc;
 	char tmp_xml_buffer[4096];
@@ -216,19 +229,42 @@ void store_globals() {
 
 	rc=fopen(rc_name, "w");
 	
+	switch (globals.audiodevice_type) {
+		case JACK:
+			strcpy(device_type, "jack");
+			break;
+		case ALSA:
+			strcpy(device_type, "alsa");
+			break;
+		case OSS:
+		default:
+			strcpy(device_type, "oss");
+		
+	}
+	
 	if (rc) {		
 		fprintf(rc, "<?xml version=\"1.0\" encoding=\"US-ASCII\"?>\n\n");
 		fprintf(rc, "<!-- Warning: this file will be rewritten by terminatorX on exit!\n     Don\'t waste your time adding comments - they will be erased -->\n\n" );
 		fprintf(rc, "<terminatorXrc version=\"%s\">\n", TX_XML_RC_VERSION);
 
 		store_int("store_globals", globals.store_globals);
-		store_string("audio_device", globals.audio_device);
+
+		store_string("audio_driver", device_type);
+		
+		store_string("oss_device", globals.oss_device);
+		store_int("oss_buff_no", globals.oss_buff_no);
+		store_int("oss_buff_size", globals.oss_buff_size);
+		store_int("oss_samplerate", globals.oss_samplerate);
+
+		store_string("alsa_device", globals.alsa_device);
+		store_int("alsa_buff_no", globals.alsa_buff_no);
+		store_int("alsa_buff_size", globals.alsa_buff_size);
+		store_int("alsa_samplerate", globals.alsa_samplerate);		
+		
 		store_string("xinput_device", globals.xinput_device);
 		store_int("xinput_enable", globals.xinput_enable);
 		store_int("update_idle", globals.update_idle);
 		store_int("update_delay", globals.update_delay);
-		store_int("buff_no", globals.buff_no);
-		store_int("buff_size", globals.buff_size);
 		store_int("sense_cycles", globals.sense_cycles);
 		store_float("mouse_speed", globals.mouse_speed);
 		store_int("width", globals.width);

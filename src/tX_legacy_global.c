@@ -66,7 +66,7 @@ void load_globals_old() {
 	globals.current_path = NULL;
 	globals.pitch=1.0;
 	globals.volume=1.0;	
-	if (!globals.true_block_size) globals.true_block_size=1<globals.buff_size;
+	if (!globals.true_block_size) globals.true_block_size=1<globals.oss_buff_size;
 }
 
 #endif

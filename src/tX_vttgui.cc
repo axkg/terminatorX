@@ -613,12 +613,7 @@ void vg_file_button_pressed(GtkWidget *wid, vtt_class *vtt) {
 
 void vg_adjust_zoom(GtkWidget *wid, vtt_class *vtt) {	
 	GtkAdjustment *adj=gtk_range_get_adjustment(GTK_RANGE(vtt->gui.zoom));
-	printf("setting zoom %lf.\n", adj->value);
 	gtk_tx_set_zoom(GTK_TX(vtt->gui.display), adj->value/100.0);
-}
-
-static gchar* vg_format_zoom(GtkScale *scale, gdouble   value) {
-  return g_strdup_printf ("%g", (gdouble) (99-value));
 }
 
 static vtt_class * fx_vtt;
