@@ -242,6 +242,7 @@ int main(int argc, char **argv)
 
 	LADSPA_Class::init();
 	LADSPA_Plugin::init();
+	//LADSPA_Class::dump();
 #ifdef USE_JACK	
 	tX_jack_client::init();
 #endif	

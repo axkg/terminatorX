@@ -202,12 +202,16 @@ LADSPA_Class :: LADSPA_Class() : label("Unclassified"), accept_all(true) {
 }
 
 bool LADSPA_Class :: add_plugin(LADSPA_Plugin *plugin) {
-	return root->add_plugin_instance(plugin);
+	return root->add_plugin_instance(plugin, MONO);
 }
 
-bool LADSPA_Class :: add_plugin_instance(LADSPA_Plugin *plugin) {
+bool LADSPA_Class :: add_stereo_plugin(LADSPA_Stereo_Plugin *plugin) {
+	return root->add_plugin_instance(plugin, STEREO);
+}
+
+bool LADSPA_Class :: add_plugin_instance(LADSPA_Plugin *plugin, LADSPA_Plugin_Type type) {
 	if (accept_all) {
-		insert_plugin(plugin);
+		insert_plugin(plugin, type);
 		return true;
 	}
 	
@@ -219,7 +223,7 @@ bool LADSPA_Class :: add_plugin_instance(LADSPA_Plugin *plugin) {
 	for (i=registered_ids.begin(); i!=registered_ids.end(); i++) {
 		if ((*i)==id) {
 			/* The plugin belongs to this class... */
-			insert_plugin(plugin);
+			insert_plugin(plugin, type);
 			return true;
 		}
 	}
@@ -230,7 +234,7 @@ bool LADSPA_Class :: add_plugin_instance(LADSPA_Plugin *plugin) {
 	for (cls=subclasses.begin(); cls!=subclasses.end(); cls++) {
 		LADSPA_Class *lrdf_class=(*cls);
 		
-		if (lrdf_class->add_plugin_instance(plugin)) return true;
+		if (lrdf_class->add_plugin_instance(plugin, type)) return true;
 	}
 	
 	/* Giving up... */
@@ -238,20 +242,27 @@ bool LADSPA_Class :: add_plugin_instance(LADSPA_Plugin *plugin) {
 	return false;
 }
 
-void LADSPA_Class::insert_plugin(LADSPA_Plugin *plugin) {
+void LADSPA_Class::insert_plugin(LADSPA_Plugin *plugin, LADSPA_Plugin_Type type) {
 	std::list <LADSPA_Plugin *> :: iterator i;
+	std::list <LADSPA_Plugin *> *list;
 	
-	for (i=plugins.begin(); i!=plugins.end(); i++) {
+	if (type==MONO) {
+		list=&plugins;
+	} else {
+		list=(std::list <LADSPA_Plugin *> *) &stereo_plugins;
+	}
+	
+	for (i=list->begin(); i!=list->end(); i++) {
 		LADSPA_Plugin *a_plug=(*i);
 		int res=compare(plugin->getName(), a_plug->getName());
 		
 		if (res < 2) {
-			plugins.insert(i, plugin);
+			list->insert(i, plugin);
 			return;
 		}
 	}
 	
-	plugins.push_back(plugin);
+	list->push_back(plugin);
 }
 
 void LADSPA_Class::list(char *buffer) {
@@ -263,6 +274,11 @@ void LADSPA_Class::list(char *buffer) {
 	
 	for (i=plugins.begin(); i!=plugins.end(); i++) {
 		printf("%s - plugin: %s\n", buffer, (*i)->getName());
+	}
+	
+	std::list <LADSPA_Stereo_Plugin *> :: iterator s;	
+	for (s=stereo_plugins.begin(); s!=stereo_plugins.end(); s++) {
+		printf("%s - stereo plugin: %s\n", buffer, (*s)->getName());
 	}
 	
 	std::list <LADSPA_Class *> :: iterator c;
@@ -289,25 +305,63 @@ static void menu_callback(GtkWidget *wid, LADSPA_Plugin *plugin) {
 	}
 }
 
+static void stereo_menu_callback(GtkWidget *wid, LADSPA_Stereo_Plugin *plugin) {
+	vtt_class *vtt=LADSPA_Class::get_current_vtt();
+	
+	if (vtt) {
+		vtt->add_stereo_effect(plugin);
+	} else {
+		tX_error("LADSPA_Class::menu_callback() no vtt");
+	}
+}
 
-GtkWidget * LADSPA_Class :: get_menu() {
+int LADSPA_Class :: plugins_in_class(LADSPA_Plugin_Type type) {
+	std::list <LADSPA_Class *> :: iterator cls;
+	std::list <LADSPA_Plugin *> *list;
+	int counter=0;
+	
+	if (type==MONO) {
+		list=&plugins;
+	} else {
+		list=(std::list <LADSPA_Plugin *> *) &stereo_plugins;
+	}
+	counter=list->size();
+	
+	for (cls=subclasses.begin(); cls!=subclasses.end(); cls++) {
+		counter+=(*cls)->plugins_in_class(type);
+	}
+	
+	return counter;
+}
+
+GtkWidget * LADSPA_Class :: get_menu(LADSPA_Plugin_Type type) {
 	std::list <LADSPA_Class *> :: iterator cls;
 	GtkWidget *menu=gtk_menu_new();
 	GtkWidget *item;
+	bool need_separator=false;
 	
 	for (cls=subclasses.begin(); cls!=subclasses.end(); cls++) {
 		LADSPA_Class *c=(*cls);
 		
-		if (c->plugins.size() || c->subclasses.size()) {
+		if (c->plugins_in_class(type)>0) {
 			item=gtk_menu_item_new_with_label(c->label);
-			GtkWidget *submenu=c->get_menu();
+			GtkWidget *submenu=c->get_menu(type);
 			gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), submenu);
 			gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 			gtk_widget_show(item);
+			need_separator=true;
 		}
 	}
 	
-	if (subclasses.size() && plugins.size()) {
+	std::list <LADSPA_Plugin *> *list;
+	
+	if (type==MONO) {
+		list=&plugins;
+	} else {
+		list=(std::list <LADSPA_Plugin *> *) &stereo_plugins;
+	}
+
+	if (need_separator && list->size()) {
 		item = gtk_menu_item_new();
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 		gtk_widget_set_sensitive (item, FALSE);
@@ -316,14 +370,14 @@ GtkWidget * LADSPA_Class :: get_menu() {
 	
 	std::list <LADSPA_Plugin *> :: iterator plugin;
 	
-	for (plugin=plugins.begin(); plugin != plugins.end(); plugin++) {
+	for (plugin=list->begin(); plugin!=list->end(); plugin++) {
 		char buffer[512];
 		LADSPA_Plugin *p=(*plugin);
 		
 		sprintf(buffer, "%s - (%s, %li)", p->getName(), p->getLabel(), p->getUniqueID());
 		item=gtk_menu_item_new_with_label(buffer);
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(menu_callback), p);		
+		g_signal_connect(G_OBJECT(item), "activate", (type == MONO) ? G_CALLBACK(menu_callback) : G_CALLBACK(stereo_menu_callback), p);		
 		gtk_widget_show(item);
 	}
 	
@@ -331,5 +385,9 @@ GtkWidget * LADSPA_Class :: get_menu() {
 }
 
 GtkWidget * LADSPA_Class :: get_ladspa_menu() {
-	return root->get_menu();
+	return root->get_menu(MONO);
+}
+
+GtkWidget * LADSPA_Class :: get_stereo_ladspa_menu() {
+	return root->get_menu(STEREO);
 }

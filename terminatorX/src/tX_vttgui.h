@@ -43,6 +43,8 @@ typedef struct vtt_gui
 	GtkWidget *control_minimize;
 	GtkWidget *scrolled_win;
 	GtkWidget *control_subbox;
+	GtkWidget *fx_box;
+	GtkWidget *stereo_fx_box;
 	GtkWidget *ladspa_menu;
 	GtkWidget *par_menu;
 
@@ -53,6 +55,7 @@ typedef struct vtt_gui
 	GtkWidget *del;
 	GtkWidget *adjust_button;
 	GtkWidget *fx_button;
+	GtkWidget *stereo_fx_button;
 	
 	/* Trigger */
 	tX_panel  *trigger_panel;
