@@ -622,6 +622,17 @@ void vg_file_button_pressed(GtkWidget *wid, vtt_class *vtt) {
 #endif	
 }
 
+void vg_adjust_zoom(GtkWidget *wid, vtt_class *vtt) {	
+	GtkAdjustment *adj=gtk_range_get_adjustment(GTK_RANGE(vtt->gui.zoom));
+	gdouble real_value=99-adj->value;
+	
+	real_value/=100;
+	gtk_tx_set_zoom(GTK_TX(vtt->gui.display),  real_value);
+}
+
+static gchar* vg_format_zoom(GtkScale *scale, gdouble   value) {
+  return g_strdup_printf ("%g", (gdouble) (99-value));
+}
 
 static vtt_class * fx_vtt;
 
@@ -675,6 +686,8 @@ void fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
 #define connect_entry(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "activate", (GtkSignalFunc) func, (void *) vtt);
 #define connect_adj(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "value_changed", (GtkSignalFunc) func, (void *) vtt);
 #define connect_button(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "clicked", (GtkSignalFunc) func, (void *) vtt);
+#define connect_range(wid, func); gtk_signal_connect(GTK_OBJECT(gtk_range_get_adjustment(GTK_RANGE(g->wid))), "value_changed", (GtkSignalFunc) func, (void *) vtt);
+#define connect_scale_format(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "format-value", (GtkSignalFunc) func, (void *) vtt);
 
 #ifdef USE_GTK2
 #define connect_press_button(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "pressed", (GtkSignalFunc) func, (void *) vtt);
@@ -719,6 +732,8 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_adj(ec_feedback, ec_feedback_changed);
 	connect_adj(ec_pan, ec_pan_changed);
 	connect_adj(ec_volume, ec_volume_changed);	
+	connect_range(zoom, vg_adjust_zoom);
+	connect_scale_format(zoom, vg_format_zoom);
 	connect_press_button(mouse_mapping, vg_mouse_mapping_pressed);
 	connect_button(control_minimize, minimize_control_panel);
 	connect_button(audio_minimize, minimize_audio_panel);
@@ -796,10 +811,24 @@ void build_vtt_gui(vtt_class *vtt)
 	gui_set_tooltip(g->mouse_mapping, "Determines what parameters should be affected on mouse moition in mouse grab mode.");
    
 	gtk_box_pack_start(GTK_BOX(tempbox), g->mouse_mapping, WID_DYN);
-   
+
+	tempbox=gtk_hbox_new(FALSE, 2);
+
 	g->display=gtk_tx_new(vtt->buffer, vtt->samples_in_buffer);
-	gtk_box_pack_start(GTK_BOX(g->audio_box), g->display, WID_DYN);
+	gtk_box_pack_start(GTK_BOX(tempbox), g->display, WID_DYN);
 	gtk_widget_show(g->display);	
+	
+	g->zoom=gtk_vscale_new_with_range(0,99.0,1.0);
+	gtk_scale_set_draw_value(GTK_SCALE(g->zoom), TRUE);
+	gtk_scale_set_digits(GTK_SCALE(g->zoom), 0);
+	gtk_scale_set_value_pos(GTK_SCALE(g->zoom), GTK_POS_BOTTOM);
+	gtk_adjustment_set_value(gtk_range_get_adjustment(GTK_RANGE(g->zoom)), 99);
+	gui_set_tooltip(g->zoom, "Set the zoom-level for the audio data display.");
+	gtk_box_pack_start(GTK_BOX(tempbox), g->zoom, WID_FIX);
+	gtk_widget_show(g->zoom);
+	
+	gtk_box_pack_start(GTK_BOX(g->audio_box), tempbox, WID_DYN);
+	gtk_widget_show(tempbox);
 	
 	/* Building Control Box */
 	

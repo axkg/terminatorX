@@ -23,14 +23,12 @@
 		 the GTK+ 1.2 tutorial.
 */
 
-#define FR_SIZE 3
-#define DBL_FR_SIZE 6
-
 #include <math.h>
 
 #include <gtk/gtkwindow.h>
 #include "tX_widget.h"
 #include "tX_types.h"
+#include "tX_global.h"
 #include <malloc.h>
 
 #ifndef WIN32
@@ -106,7 +104,7 @@ void gtk_tx_mk_col(GtkTx * tx, GdkColor * col, float r, float g, float b) {
 	col->green = (gint) (g * max);
 	col->blue = (gint) (b * max);
 		
-	gdk_colormap_alloc_color(gtk_widget_get_colormap(GTK_WIDGET(tx)), col, 1, 1);
+	gdk_colormap_alloc_color(gtk_widget_get_colormap(GTK_WIDGET(tx)), col, 0, 1);
 }
 
 static void gtk_tx_init(GtkTx * tx) {
@@ -116,17 +114,23 @@ static void gtk_tx_init(GtkTx * tx) {
 	tx->data = NULL;
 	tx->samples = 0;
 	tx->do_showframe = 0;
-
+#ifdef USE_DISPLAY_NORMALIZE
+	tx->max_value=-1;
+#endif
+	
 	priv = gdk_colormap_new(gtk_widget_get_visual(GTK_WIDGET(tx)), 6);
 	gtk_widget_set_colormap(GTK_WIDGET(tx), priv);
-
+	
 	gtk_tx_mk_col(tx, &tx->bg, 0, 0, 0);
 	gtk_tx_mk_col(tx, &tx->fg, 0, 1, 0);
-	gtk_tx_mk_col(tx, &tx->busy_fg, 1, 1, 1);
-	gtk_tx_mk_col(tx, &tx->busy_bg, 1, 0.4, 0.4);
-	gtk_tx_mk_col(tx, &tx->mute_fg, 0, 1, 1);
-	gtk_tx_mk_col(tx, &tx->mute_bg, 0, 0, 1);
-	gtk_tx_mk_col(tx, &tx->framecol, 1, 0, 0);
+	gtk_tx_mk_col(tx, &tx->focus_fg, 1, 1, 0);
+	gtk_tx_mk_col(tx, &tx->focus_bg, 0, 0, 0.3);	
+	
+	gtk_tx_mk_col(tx, &tx->busy, 1, 0.4, 0.4);
+	gtk_tx_mk_col(tx, &tx->mute, 1, 1, 1);
+	
+	tx->current_fg=&tx->fg;
+	tx->current_bg=&tx->bg;
 }
 
 GtkWidget *gtk_tx_new(int16_t * wavdata, int wavsamples) {
@@ -136,7 +140,10 @@ GtkWidget *gtk_tx_new(int16_t * wavdata, int wavsamples) {
 
 	tx->data = wavdata;
 	tx->samples = wavsamples;
-
+	tx->zoom=0;
+	tx->zoom_scale=1;
+	tx->display_x_offset=0;
+	
 	return GTK_WIDGET(tx);
 }
 
@@ -149,6 +156,7 @@ static void gtk_tx_destroy(GtkObject * object) {
 	}
 }
 
+#define MAX_ZOOM_WIDTH 500000.0
 
 void gtk_tx_set_data(GtkTx * tx, int16_t * wavdata, int wavsamples) {
 	g_return_if_fail(tx != NULL);
@@ -156,7 +164,10 @@ void gtk_tx_set_data(GtkTx * tx, int16_t * wavdata, int wavsamples) {
 
 	tx->data = wavdata;
 	tx->samples = wavsamples;
-
+#ifdef USE_DISPLAY_NORMALIZE	
+	tx->max_value=-1;
+#endif
+	
 	gtk_tx_prepare(GTK_WIDGET(tx));
 	gtk_tx_update(tx);
 }
@@ -200,36 +211,81 @@ static void gtk_tx_prepare(GtkWidget * widget) {
 	int x, sample;
 	f_prec temp;
 	int16_t *ptr;
-	int16_t value;
+	f_prec value;
 	GtkTx *tx;
-
+	int avg_pos;
+	double scale;
+	
 	g_return_if_fail(widget != NULL);
 	g_return_if_fail(GTK_IS_TX(widget));
 
 	tx = GTK_TX(widget);
-
-	tx->spp = tx->samples / (widget->allocation.width - DBL_FR_SIZE);
+	
 	tx->yc = widget->allocation.height / 2;
 
 	if (tx->disp_data) free(tx->disp_data);
 
 	if (tx->data) {
-	    tx->disp_data = (int16_t *) malloc((widget->allocation.width - DBL_FR_SIZE) * sizeof(int16_t));
+		int max_spp=tx->samples/widget->allocation.width;
+		int min_spp=tx->samples/MAX_ZOOM_WIDTH;
+		gdouble diff;
+		
+		if (min_spp==0) min_spp=1;
+		
+		diff=max_spp-min_spp;
+		
+		tx->spp=min_spp+diff*(1.0-tx->zoom);
+		tx->display_width = tx->samples/tx->spp;
+		
+#ifdef USE_DISPLAY_NORMALIZE	
+		tx->max_value=-1;
+#endif		
+		
+	    tx->disp_data = (int16_t *) malloc(tx->display_width * sizeof(int16_t));
 
-	    if (tx->disp_data) {
-			for (x = 0, ptr = tx->disp_data; x < widget->allocation.width - DBL_FR_SIZE; ptr++, x++) {
-				value = tx->data[x * tx->spp];
-					for (sample = x * tx->spp; sample < (x + 1) * tx->spp; sample++) {
-						value = (value + tx->data[sample]) / 2;
+	    if (tx->disp_data) {			
+#ifdef USE_DISPLAY_NORMALIZE		
+			if (tx->max_value==-1) {
+				/* We haven't figured a max value yet... */
+				//puts("searching max...");
+		
+				for (x = 0, ptr = tx->disp_data; x < tx->display_width; ptr++, x++) {
+					value = 0;
+					for (sample = x * tx->spp, avg_pos=1; sample < (x + 1) * tx->spp; sample++) {
+						value += (abs(tx->data[sample])-value)/(double) avg_pos++;
+					}
+					if (value>tx->max_value) tx->max_value=value;
+					tx->disp_data[x] = value; 
 				}
-				temp = ((f_prec) value) / 32767.0;
-				tx->disp_data[x] =
-				(int) (temp * (f_prec) (tx->yc - FR_SIZE));
+				for (x = 0; x < tx->display_width; x++) {
+					f_prec t=tx->disp_data[x]/(double) tx->max_value;
+					tx->disp_data[x]=(int) (t * (f_prec) (tx->yc));
+				}
+			} else {
+#endif				
+				//puts("have max...");
+				/* We have a max value... */
+				for (x = 0, ptr = tx->disp_data; x < tx->display_width; ptr++, x++) {
+					f_prec t;
+					value = 0;
+					for (sample = x * tx->spp, avg_pos=1; sample < (x + 1) * tx->spp; sample++) {
+						value += (abs(tx->data[sample])-value)/(double) avg_pos++;
+					}
+#ifdef USE_DISPLAY_NORMALIZE					
+					t=value/(double) tx->max_value;
+#else
+					t=value/32768.0;
+#endif					
+					tx->disp_data[x] = (int) (t * (f_prec) (tx->yc)); 
+				}
+#ifdef USE_DISPLAY_NORMALIZE
 			}
+#endif			
 		}
 	} else {
 	    tx->disp_data = NULL;
 	}
+	//tX_warning("spp: %i samples: %i width %i x %i", tx->spp, tx->samples, tx->display_width, x);
 }
 
 static void gtk_tx_size_allocate(GtkWidget * widget, GtkAllocation * allocation) {
@@ -245,47 +301,66 @@ static void gtk_tx_size_allocate(GtkWidget * widget, GtkAllocation * allocation)
 
 	if (GTK_WIDGET_REALIZED(widget)) {
 	    tx = GTK_TX(widget);
-
+#ifdef USE_DISPLAY_NORMALIZE		
+		tx->max_value=-1;
+#endif		
 	    gdk_window_move_resize(widget->window, allocation->x, allocation->y, allocation->width, allocation->height);
 	}
 }
 
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#define max(a,b) ((a) > (b) ? (a) : (b))
+
 static gint gtk_tx_expose(GtkWidget * widget, GdkEventExpose * event) {
 	GtkTx *tx;
 	gint x, pos;
-
+	GdkRectangle *area;
+	
 	g_return_val_if_fail(widget != NULL, FALSE);
 	g_return_val_if_fail(GTK_IS_TX(widget), FALSE);
 	g_return_val_if_fail(event != NULL, FALSE);
 
-	if (event->count > 0) return FALSE;
+/*	if (event->count > 0) { 
+		fprintf(stderr, "Ignoring %i expose events.\n", event->count);
+		return FALSE;
+	}*/
+
+	area=&event->area;
 
 	tx = GTK_TX(widget);
 
-	gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx->bg);
+	gdk_gc_set_foreground(widget->style->fg_gc[widget->state], tx->current_bg);
 
 	gdk_draw_rectangle(widget->window,
-			   widget->style->fg_gc[widget->state], 1, 0, 0,
-			   widget->allocation.width,
-			   widget->allocation.height);
+		widget->style->fg_gc[widget->state], 1, 
+		area->x, area->y,
+		area->width, area->height);
 
-	gdk_gc_set_foreground(widget->style->fg_gc[widget->state], &tx->fg);
+	gdk_gc_set_foreground(widget->style->fg_gc[widget->state], tx->current_fg);
 
 	if (tx->disp_data) {
-	    for (x = FR_SIZE, pos = 0; x < widget->allocation.width - FR_SIZE; x++, pos++) {
+		int max_x=area->x+area->width;
+
+	    for (x =area->x; x < max_x; x++) {
 			gdk_draw_line(widget->window,
 				widget->style->fg_gc[widget->state], x,
-				tx->yc - tx->disp_data[pos], x,
-				tx->yc + tx->disp_data[pos]);
+				tx->yc - tx->disp_data[tx->display_x_offset+x], x,
+				tx->yc + tx->disp_data[tx->display_x_offset+x]);
 	    }
 	} else {
 	    gdk_draw_line(widget->window, widget->style->fg_gc[widget->state],
-			  FR_SIZE, tx->yc, widget->allocation.width - FR_SIZE, tx->yc);
+			 0, tx->yc, widget->allocation.width, tx->yc);
 	}
 
-	gtk_tx_show_frame(tx, tx->do_showframe);
-	
 	return FALSE;
+}
+
+void gtk_tx_set_zoom(GtkTx *tx, f_prec zoom) {
+	GtkWidget *wid=GTK_WIDGET(tx);
+	
+	tx->zoom=zoom;
+	gtk_tx_prepare(wid);
+	gtk_widget_queue_draw_area(wid, 0, 0, wid->allocation.width, wid->allocation.height);
 }
 
 static void gtk_tx_update(GtkTx * tx) {
@@ -296,7 +371,7 @@ static void gtk_tx_update(GtkTx * tx) {
 }
 
 void gtk_tx_prepare_pos_display(GtkTx * tx) {
-	tx->lastpos = -1;
+	tx->cursor_pos=-1;
 }
 
 void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
@@ -304,13 +379,16 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	GdkWindow *window;
 	GdkGC *gc;
 
-	int current_x, x, y, yc, ymax;
+	int current_x, x, y, yc, ymax, tmp;
+	int current_pos, current_pos_x, x_offset;
+	int force_draw=0;
 
 	/* Don't update if not required */
 
-	current_x = sample / tx->spp + FR_SIZE;
-
-	if ((current_x == tx->lastpos) && (tx->lastmute == mute)) return;
+	//current_x = sample / tx->spp + FR_SIZE;
+	current_pos = sample / tx->spp;
+	
+	if ((current_pos == tx->cursor_pos) && (tx->lastmute == mute)) return;
 	tx->lastmute = mute;
 
 	/* speedup + easyness */
@@ -318,36 +396,73 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	widget = GTK_WIDGET(tx);
 	window = widget->window;
 
-	if (current_x > widget->allocation.width - FR_SIZE - 2) return;
-
 	gc = widget->style->fg_gc[widget->state];
 	yc = tx->yc;
-	ymax = widget->allocation.height - FR_SIZE - 1;
+	ymax = widget->allocation.height-1;
 
-	/* Clean up last pos */
+	/* clean up last pos */
 
-	x = tx->lastpos;
+	x = tx->cursor_x_pos;
+	
+	if (x >= 0) {
+	    gdk_gc_set_foreground(gc, tx->current_bg);
+	    gdk_draw_line(window, gc, x, 0, x, ymax);
 
-	if (x >= FR_SIZE) {
-	    gdk_gc_set_foreground(gc, &tx->bg);
-	    gdk_draw_line(window, gc, x, FR_SIZE, x, ymax);
-
-	    gdk_gc_set_foreground(gc, &tx->fg);
-	    y = tx->disp_data[x - FR_SIZE];
+	    gdk_gc_set_foreground(gc, tx->current_fg);
+	    y = tx->disp_data[x+tx->display_x_offset];
 	    gdk_draw_line(window, gc, x, yc + y, x, yc - y);
 	}
+	
+	/* compute new position */
+	if (tx->zoom==0) {
+		current_pos_x=current_pos;
+		x_offset=0;		
+	} else {		
+		tmp=widget->allocation.width/2+1;
+		
+		if (current_pos>tmp) {
+			x_offset=current_pos-tmp;
+			
+			if (x_offset+widget->allocation.width>=tx->display_width) {
+				x_offset=tx->display_width-widget->allocation.width;
+			}
+			
+			current_pos_x=current_pos-x_offset;
+		} else {
+			x_offset=0;
+			current_pos_x=current_pos;
+		}
+		
+		if (x_offset!=tx->display_x_offset) {
+			int x_move=tx->display_x_offset-x_offset;
+			
+			if (abs(x_move)<widget->allocation.width) {
+				gdk_window_scroll(window, x_move, 0);
+			} else {
+				/* we've moved so far that there's nothing to keep from our current display */
+				force_draw=1;
+			}
+		}
+	}
+	
 	/* store current_pos */
 
-	tx->lastpos = current_x;
+	tx->cursor_pos = current_pos;
+	tx->cursor_x_pos = current_pos_x;
+	tx->display_x_offset = x_offset;
+	
+	/* not drawing current pos - let expose() take care of this... */
 
-	/* draw current_pos */
+	x = current_pos_x;
 
-	x = current_x;
+	if (mute) gdk_gc_set_foreground(gc, &tx->mute);
+	else gdk_gc_set_foreground(gc, &tx->busy);
 
-	if (mute) gdk_gc_set_foreground(gc, &tx->mute_bg);
-	else gdk_gc_set_foreground(gc, &tx->busy_bg);
-
-	gdk_draw_line(window, gc, x, FR_SIZE, x, ymax);
+	gdk_draw_line(window, gc, x, 0, x, ymax);
+	
+	if (force_draw) {
+		gtk_widget_queue_draw_area(widget, 0, 0, widget->allocation.width, widget->allocation.height);
+	}
 }
 
 void gtk_tx_cleanup_pos_display(GtkTx * tx) {
@@ -360,39 +475,25 @@ void gtk_tx_cleanup_pos_display(GtkTx * tx) {
 	window = widget->window;
 	gc = widget->style->fg_gc[widget->state];
 	yc = tx->yc;
-	ymax = widget->allocation.height - FR_SIZE - 1;
+	ymax = widget->allocation.height - 1;
 
-	x = tx->lastpos;
-
-	if (x >= FR_SIZE) {
-	    gdk_gc_set_foreground(gc, &tx->bg);
-	    gdk_draw_line(window, gc, x, FR_SIZE, x, ymax);
-
-	    gdk_gc_set_foreground(gc, &tx->fg);
-	    y = tx->disp_data[x - FR_SIZE];
-	    gdk_draw_line(window, gc, x, yc + y, x, yc - y);
-	}
+	tx->display_x_offset=0;
+	tx->cursor_pos=-1;
+	tx->cursor_x_pos=-1;
+	tx->do_showframe=0;
+	//tx->current_fg=&tx->fg;
+	
+	gtk_widget_queue_draw(widget);
 }
 
-void gtk_tx_show_frame(GtkTx * tx, int show) {
-	GtkWidget *widget;
-	GdkWindow *window;
-	GdkGC *gc;
-	int i;
-
-	widget = GTK_WIDGET(tx);
-	window = widget->window;
-	gc = widget->style->fg_gc[widget->state];
-
-
-	tx->do_showframe = show;
-
-	if (show) gdk_gc_set_foreground(gc, &tx->framecol);
-	else gdk_gc_set_foreground(gc, &tx->bg);
-
-	for (i = 0; i < FR_SIZE; i++) {
-	    gdk_draw_rectangle(window, gc, 0, i, i,
-			       widget->allocation.width - (2 * i + 1),
-			       widget->allocation.height - (2 * i + 1));
+void gtk_tx_show_frame(GtkTx *tx, int show) {
+	if (show) {
+		tx->current_fg=&tx->focus_fg;
+		tx->current_bg=&tx->focus_bg;
+	} else {
+		tx->current_fg=&tx->fg;
+		tx->current_bg=&tx->bg;
 	}
+	
+	gtk_widget_queue_draw(GTK_WIDGET(tx));	
 }
