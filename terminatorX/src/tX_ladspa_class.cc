@@ -35,6 +35,7 @@ LADSPA_Class * LADSPA_Class::root=NULL;
 LADSPA_Class * LADSPA_Class::unclassified=NULL;
 std::list <char *> LADSPA_Class::rdf_files;
 vtt_class *LADSPA_Class::current_vtt;
+bool LADSPA_Class::liblrdf_error=false;
 
 /* Why do have to code this myself? */
 static int compare(const char *a, const char *b) {
@@ -95,7 +96,8 @@ void LADSPA_Class::init() {
 		lrdf_init();
 	
 		if (lrdf_read_files((const char **) uris)) {
-			tX_error("liblrdf had problems reading the rdf files");
+			tX_error("liblrdf had problems reading the rdf files - cannot provide structured menu");
+			liblrdf_error=true;
         }
 #endif
 		root=new LADSPA_Class("http://ladspa.org/ontology#Plugin");
@@ -167,30 +169,32 @@ LADSPA_Class :: LADSPA_Class (char *uri) : label(NULL), accept_all(false) {
 	lrdf_uris *ulist;
 	char *urilabel;
 	int i;
-	
-	urilabel=lrdf_get_label(uri);
-	
-	if (urilabel) {
-		label=strdup(urilabel);
-	}
-	
-	/* Finding subclasses... */
-	ulist = lrdf_get_subclasses(uri);
-	
-	for (i = 0; ulist && i < ulist->count; i++) {
-		insert_class(new LADSPA_Class(ulist->items[i]));
-	}
 
-	lrdf_free_uris(ulist);
-
-	/* Finding instances... */
-	ulist=lrdf_get_instances(uri);
+	if (!liblrdf_error) {
+		urilabel=lrdf_get_label(uri);
+		
+		if (urilabel) {
+			label=strdup(urilabel);
+		}
+		
+		/* Finding subclasses... */
+		ulist = lrdf_get_subclasses(uri);
+		
+		for (i = 0; ulist && i < ulist->count; i++) {
+			insert_class(new LADSPA_Class(ulist->items[i]));
+		}
 	
-	for (i = 0; ulist && i < ulist->count; i++) {
-		registered_ids.push_back(lrdf_get_uid(ulist->items[i]));
+		lrdf_free_uris(ulist);
+	
+		/* Finding instances... */
+		ulist=lrdf_get_instances(uri);
+		
+		for (i = 0; ulist && i < ulist->count; i++) {
+			registered_ids.push_back(lrdf_get_uid(ulist->items[i]));
+		}
+	
+		lrdf_free_uris(ulist);
 	}
-
-	lrdf_free_uris(ulist);
 #endif	
 }
 

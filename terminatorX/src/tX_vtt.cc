@@ -1652,7 +1652,7 @@ int  vtt_class :: save_all(FILE* rc) {
 	
 	tX_seqpar :: create_persistence_ids();
 
-	fprintf(rc, "<?xml version=\"1.0\" encoding=\"US-ASCII\"?>\n\n");
+	fprintf(rc, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n");
 	fprintf(rc, "<terminatorXset version=\"%s\">\n", TX_XML_SETFILE_VERSION);
 	
 	strcpy(indent, "\t");
@@ -1683,6 +1683,7 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 	int pid;
 	double dvalue;
 	double tmp;
+	char tmp_xml_buffer[4096];
 	
 	for (xmlNodePtr cur=node->xmlChildrenNode; cur != NULL; cur = cur->next) {
 		if (cur->type == XML_ELEMENT_NODE) {

@@ -141,19 +141,20 @@ extern tx_global globals;
 extern void load_globals();
 extern void store_globals();
 extern char *encode_xml(char *dest, const char *src);
+extern char *decode_xml(char *dest, const char *src);
 
 #define nop
 
 /* some ugly XML macros... */
 #define restore_int(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) { sscanf((char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%i", &i); }}
 #define restore_float(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if  (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {sscanf((char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%lf", &dvalue); i=dvalue;}}
-#define restore_string(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {strcpy(i, (const char *)  xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)); }}
+#define restore_string(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {strcpy(i, decode_xml(tmp_xml_buffer, (const char *)  xmlNodeListGetString(doc, cur->xmlChildrenNode, 1))); }}
 #define restore_bool(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {if (xmlStrcmp(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1),  (const xmlChar *) "true")==0) i=true; else i=false; }}
 #define restore_id(s, sp); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; pid_attr=(char* ) xmlGetProp(cur, (xmlChar *) "id"); if (pid_attr) { sscanf(pid_attr, "%i",  &pid); sp.set_persistence_id(pid); }}
 
 #define restore_int_ac(s, i, init); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) { sscanf((char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%i", &i); init; }}
 #define restore_float_ac(s, i, init); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if  (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {sscanf((char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%lf", &dvalue); i=dvalue; init; }}
-#define restore_string_ac(s, i, init); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {strcpy(i, (const char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)); init; }}
+#define restore_string_ac(s, i, init); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {strcpy(i, decode_xml(tmp_xml_buffer, (const char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1))); init; }}
 #define restore_bool_ac(s, i, init); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {if (xmlStrcmp(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), (const xmlChar *) "true")==0) i=true; else i=false; init; }}
 
 //#define restore_int_id(s, i, sp, init); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) { sscanf((char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%i", &i); pid_attr=(char* ) xmlGetProp(cur, (xmlChar *) "id"); if (pid_attr) { sscanf(pid_attr, "%i",  &pid); sp.set_persistence_id(pid); } init; }}

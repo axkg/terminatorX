@@ -37,6 +37,8 @@
 #include "string.h"
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
+#include <libxml/encoding.h>
+
 
 #define TX_XML_RC_VERSION "1.0"
 
@@ -137,7 +139,8 @@ int load_globals_xml() {
 	xmlNodePtr cur;
 	int elementFound;
 	double dvalue;
-
+	char tmp_xml_buffer[4096];
+	
 	get_rc_name(rc_name);
 	
 	doc = xmlParseFile(rc_name);
@@ -243,7 +246,7 @@ void store_globals() {
 	}
 	
 	if (rc) {		
-		fprintf(rc, "<?xml version=\"1.0\" encoding=\"US-ASCII\"?>\n\n");
+		fprintf(rc, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n");
 		fprintf(rc, "<!-- Warning: this file will be rewritten by terminatorX on exit!\n     Don\'t waste your time adding comments - they will be erased -->\n\n" );
 		fprintf(rc, "<terminatorXrc version=\"%s\">\n", TX_XML_RC_VERSION);
 
@@ -306,23 +309,48 @@ void load_globals() {
 
 char *encode_xml(char *dest, const char *src) {
 	int i, t, max;
+	char tmp[4096];
 	
-	dest[0]=0;
+	tmp[0]=0;
 	t=0;
 	max=strlen(src);
 	
 	for (i=0; i<max; i++) {
 		switch (src[i]) {
-			case '<': dest[t]=0; strcat(dest, "&lt;"); t+=4; break;
-			case '>': dest[t]=0; strcat(dest, "&gt;"); t+=4; break;
-			case '&': dest[t]=0; strcat(dest, "&amp;"); t+=5; break;
-			case '"': dest[t]=0; strcat(dest, "&quot;"); t+=6; break;
-			case '\'': strcat(dest, "&apos;"); t+=7; break;
-			default: dest[t]=src[i]; t++;
+			case '<': tmp[t]=0; strcat(tmp, "&lt;"); t+=4; break;
+			case '>': tmp[t]=0; strcat(tmp, "&gt;"); t+=4; break;
+			case '&': tmp[t]=0; strcat(tmp, "&amp;"); t+=5; break;
+			case '"': tmp[t]=0; strcat(tmp, "&quot;"); t+=6; break;
+			case '\'': strcat(tmp, "&apos;"); t+=7; break;
+			default: tmp[t]=src[i]; t++;
 		}
 	}
-	dest[t]=0;
+	tmp[t]=0;
+
+	int outlen=4096;
+	int inlen=t;
+	
+	int res=isolat1ToUTF8((unsigned char *) dest, &outlen, (unsigned char *) tmp, &inlen);
+	dest[outlen]=0;
+	if (res<0) {
+		tX_error("failed to encode string (%s) to UTF-8.", src);
+	}
 	
 	//tX_debug("encode_xml: from \"%s\" to \"%s\".", src, dest); 
 	return dest;
 }
+
+char *decode_xml(char *dest, const char *src) {
+	int inlen=strlen(src);
+	int outlen=4096;
+	
+	int res=UTF8Toisolat1(dest, &outlen, src, &inlen);
+	dest[outlen]=0;
+	
+	if (res<0) {
+		tX_error("failed to decode UTF-8 string (%s).", src);
+	}
+	
+	return dest;
+}
+	
