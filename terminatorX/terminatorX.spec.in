@@ -22,6 +22,8 @@ scratch on vinyl records. It features multiple turntables, realtime effects
 gtk+ GUI.
 
 %changelog
+* Fri May 31 2002 Alexander König <alex@lisas.de>
+ - Added Adrian's man page
 * Tue Mar 20 2001 Adrian Reber <adrian@lisas.de>
  - Updated to 3.71
 * Sat Dec 09 2000 Adrian Reber <adrian@lisas.de>
@@ -82,6 +84,7 @@ find . -name "Makefile*" -print -exec rm -rf {} \;
 %defattr(0644,root,root,0755)
 %doc COPYING AUTHORS ChangeLog INSTALL NEWS README THANKS TODO README.GNOME README.PERFORMANCE doc
 %attr(0755,root,root) %{_bindir}/terminatorX
+%{_mandir}/man1/terminatorX.1*
 %{_datadir}/mime-info/terminatorX.keys
 %{_datadir}/mime-info/terminatorX.mime
 %{_datadir}/pixmaps/terminatorX-app.xpm
