@@ -234,8 +234,8 @@ create_tx_options (void)
   GtkWidget *label56;
   GtkWidget *vu_meter_border_intensity;
   GtkWidget *vu_meter_bg;
-  GtkWidget *vu_meter_loud;
   GtkWidget *vu_meter_normal;
+  GtkWidget *vu_meter_loud;
   GtkWidget *label52;
   GtkWidget *table3;
   GtkWidget *label13;
@@ -864,15 +864,15 @@ create_tx_options (void)
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
 
-  vu_meter_loud = gtk_button_new_with_mnemonic ("button8");
-  gtk_widget_show (vu_meter_loud);
-  gtk_table_attach (GTK_TABLE (table9), vu_meter_loud, 1, 2, 1, 2,
+  vu_meter_normal = gtk_button_new_with_mnemonic ("button8");
+  gtk_widget_show (vu_meter_normal);
+  gtk_table_attach (GTK_TABLE (table9), vu_meter_normal, 1, 2, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
 
-  vu_meter_normal = gtk_button_new_with_mnemonic ("button9");
-  gtk_widget_show (vu_meter_normal);
-  gtk_table_attach (GTK_TABLE (table9), vu_meter_normal, 1, 2, 2, 3,
+  vu_meter_loud = gtk_button_new_with_mnemonic ("button9");
+  gtk_widget_show (vu_meter_loud);
+  gtk_table_attach (GTK_TABLE (table9), vu_meter_loud, 1, 2, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
 
@@ -1017,12 +1017,12 @@ create_tx_options (void)
   g_signal_connect_swapped ((gpointer) vu_meter_bg, "clicked",
                             G_CALLBACK (color_clicked),
                             GTK_OBJECT (vu_meter_bg));
-  g_signal_connect_swapped ((gpointer) vu_meter_loud, "clicked",
-                            G_CALLBACK (color_clicked),
-                            GTK_OBJECT (vu_meter_loud));
   g_signal_connect_swapped ((gpointer) vu_meter_normal, "clicked",
                             G_CALLBACK (color_clicked),
                             GTK_OBJECT (vu_meter_normal));
+  g_signal_connect_swapped ((gpointer) vu_meter_loud, "clicked",
+                            G_CALLBACK (color_clicked),
+                            GTK_OBJECT (vu_meter_loud));
   g_signal_connect ((gpointer) pref_reset, "clicked",
                     G_CALLBACK (on_pref_reset_clicked),
                     NULL);
@@ -1126,8 +1126,8 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, label56, "label56");
   GLADE_HOOKUP_OBJECT (tx_options, vu_meter_border_intensity, "vu_meter_border_intensity");
   GLADE_HOOKUP_OBJECT (tx_options, vu_meter_bg, "vu_meter_bg");
-  GLADE_HOOKUP_OBJECT (tx_options, vu_meter_loud, "vu_meter_loud");
   GLADE_HOOKUP_OBJECT (tx_options, vu_meter_normal, "vu_meter_normal");
+  GLADE_HOOKUP_OBJECT (tx_options, vu_meter_loud, "vu_meter_loud");
   GLADE_HOOKUP_OBJECT (tx_options, label52, "label52");
   GLADE_HOOKUP_OBJECT (tx_options, table3, "table3");
   GLADE_HOOKUP_OBJECT (tx_options, label13, "label13");
