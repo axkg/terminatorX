@@ -34,15 +34,15 @@ Howto:
 
 In some cases the joystick may not utilize the full range of available 
 controller values - in this case you should use "jscal" from the joystick
-pacakge (most distributions feature this package) to calibrate your joystick 
+package (most distributions feature this package) to calibrate your joystick 
 before running aseqjoy. Note: Analog PC joysticks are no high-precision 
 devices - so even after calibrating the device you might not always be able
 to reach "0" or "127" controller values - depending on the joystick you
 use.
 
 Start aseqjoy - if you have a working Joystick (Nr. 0 - use the -d switch to
-select other joysticks) aseqjoy will detect that and each axis to a controller
-from 10 on upwards:
+select other joysticks) aseqjoy will detect that and map each axis of that 
+joystick to a controller from 10 on upwards:
 
 Axis -> Controller
    0 -> 10
@@ -52,7 +52,7 @@ Axis -> Controller
 From now on aseqjoy emits events over the "Joystick0" output port. To make use
 of these events in another application use for example the alsa-patch-bay
 to connect that output port to another application's input sequencer port
-(for example the "terminatorX" input port for terminatorX). After you bound
+(for example the "terminatorX" input port for terminatorX). After you've bound
 the controllers to certain controls you should see how moving the joystick
 affects the corresponding control.
 
