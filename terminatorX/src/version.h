@@ -25,17 +25,12 @@
 #ifndef _H_VERSION
 #define _H_VERSION
 
-#ifdef WIN32
-#define PACKAGE "terminatorX"
-#define VERSION "3.55"
-#endif
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #define VERSIONSTRING PACKAGE " Release " VERSION
 #else 
-#define VERSION "3.70"
-#define VERSIONSTRING "terminatorX Release 3.70"
+#define VERSION "3.82"
+#define VERSIONSTRING "terminatorX Release 3.82"
 #endif
 
 

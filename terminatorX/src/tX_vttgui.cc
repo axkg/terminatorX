@@ -278,8 +278,10 @@ GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 {	
 #ifdef USE_FILECHOOSER
 	char *extensions[]={ "mp3", "wav", "ogg", "iff", "aiff", "voc", "au", NULL };
+	char name_buf[512];
+	sprintf(name_buf, "Select Audio File for %s", vtt->name);
 	
-	GtkWidget * dialog = gtk_file_chooser_dialog_new ("Open Set File",
+	GtkWidget * dialog = gtk_file_chooser_dialog_new (name_buf,
 		GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_OPEN, 
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
 		GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
