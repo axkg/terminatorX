@@ -118,7 +118,7 @@ if test "$gtk2" = "yes"; then
 	AC_DEFINE(USE_GTK2)
 else
 	if test "$gtk12" = "yes"; then
-		AC_MSG_RESULT([using gtk+ version 1.2 (outdated) as widget toolkit.])
+		AC_MSG_RESULT([using gtk+ version 1.2 as widget toolkit.])
 	else
 		AC_MSG_ERROR([** couldn't find gtk+ > Version 1.2.5 **])
 	fi
@@ -127,7 +127,32 @@ fi
 dnl Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h limits.h malloc.h unistd.h)
-AC_CHECK_HEADERS(ladspa.h,, AC_MSG_ERROR([** couldn't find ladspa.h - install the ladspa SDK - get it from http://www.ladspa.org **]))
+
+dnl Disable LADSPA caching..
+unset ac_cv_header_ladspa_h
+
+have_ladspa=no
+AC_CHECK_HEADERS(ladspa.h, have_ladspa=yes, have_ladspa=no)
+
+dnl Disable LADSPA caching..
+unset ac_cv_header_ladspa_h
+
+dnl Some people install LADSPA in /usr/local
+
+if test "$have_ladspa" = "no"; then
+	ac_save_CFLAGS=$CFLAGS
+	CFLAGS="$CFLAGS -I/usr/local/include"
+	AC_CHECK_HEADERS(ladspa.h, have_ladspa=yes, have_ladspa=no)
+	CFLAGS=$ac_save_CFLAGS
+	
+	if test "$have_ladspa" = "yes"; then
+		CFLAGS="$CFLAGS -I/usr/local/include"
+	fi
+fi
+
+if test "$have_ladspa" = "no"; then
+	AC_MSG_ERROR([** couldn't find ladspa.h - Install the LADSPA SDK from http://www.ladspa.org first. **])
+fi
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
