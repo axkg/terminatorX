@@ -41,7 +41,6 @@
 #include "3dnow.h"
 #endif
 
-#define DEBUG 1
 
 #ifdef DEBUG
 #define tX_freemem(ptr, varname, comment); fprintf(stderr, "** free() [%s] at %08x. %s.\n", varname, ptr, comment); free(ptr);
@@ -126,6 +125,7 @@ vtt_class :: vtt_class (int do_create_gui)
 	lp_freq=0.3;
 	lp_gain=1;
 	lp_setup(lp_gain, lp_reso, lp_freq);
+	lp_reset();
 	
 	ec_enable=0;
 	ec_length=0.5;
@@ -133,6 +133,7 @@ vtt_class :: vtt_class (int do_create_gui)
 	ec_clear_buffer();
 	ec_set_length(0.5);
 	ec_set_pan(0);
+	ec_set_volume(1);
 	
 //	pthread_mutex_lock(&main_lock);
 	main_list.push_back(this);
@@ -156,6 +157,7 @@ vtt_class :: vtt_class (int do_create_gui)
 	sp_ec_enable.set_vtt((void *) this);	
 	sp_ec_length.set_vtt((void *) this);
 	sp_ec_pan.set_vtt((void *) this);
+	sp_ec_volume.set_vtt((void *) this);
 	sp_ec_feedback.set_vtt((void *) this);		
 	sp_mute.set_vtt((void *) this);
 	sp_spin.set_vtt((void *) this);
@@ -283,6 +285,7 @@ void vtt_class :: set_volume(f_prec newvol)
 void vtt_class :: recalc_volume()
 {
 	res_volume=rel_volume*res_master_volume;
+	f_prec ec_res_volume=res_volume*ec_volume;
 	
 	if (pan>0.0)
 	{
@@ -299,19 +302,20 @@ void vtt_class :: recalc_volume()
 		res_volume_left=res_volume_right=res_volume;
 	}
 	
+	
 	if (ec_pan>0.0)
 	{
-		ec_volume_left=(1.0-ec_pan)*res_volume;
-		ec_volume_right=res_volume;
+		ec_volume_left=(1.0-ec_pan)*ec_res_volume;
+		ec_volume_right=ec_res_volume;
 	}
 	else if (ec_pan<0.0)
 	{
-		ec_volume_left=res_volume;
-		ec_volume_right=(1.0+ec_pan)*res_volume;
+		ec_volume_left=ec_res_volume;
+		ec_volume_right=(1.0+ec_pan)*ec_res_volume;
 	}
 	else
 	{
-		ec_volume_left=ec_volume_right=res_volume;
+		ec_volume_left=ec_volume_right=ec_res_volume;
 	}	
 //	printf("vtt_volume: %f, %f, l: %f, r: %f\n", rel_volume, res_volume, res_volume_left, res_volume_right);
 	
@@ -367,6 +371,12 @@ void vtt_class :: set_mute(int newstate)
 void vtt_class :: lp_set_enable (int newstate)
 {
 	lp_enable=newstate;
+	lp_reset();
+}
+
+void vtt_class :: lp_reset()
+{
+	lp_buf0=lp_buf1=0;
 }
 
 void vtt_class :: lp_set_gain (f_prec gain)
@@ -409,6 +419,7 @@ void vtt_class :: lp_setup(f_prec gain, f_prec reso, f_prec freq)
 void vtt_class :: ec_set_enable(int newstate)
 {
 	ec_enable=newstate;
+	ec_clear_buffer();
 }
 
 
@@ -453,13 +464,20 @@ void vtt_class :: ec_set_feedback(f_prec feedback)
 	ec_feedback=feedback;
 }
 
+
+void vtt_class :: ec_set_volume(f_prec volume)
+{
+	ec_volume=volume;
+	recalc_volume();
+}
+
 void vtt_class :: ec_clear_buffer()
 {
-	int i;
+	f_prec *ptr;
 	
-	for (i=0; i<EC_MAX_BUFFER; i++)
+	for (ptr=ec_buffer; ptr<=ec_delay; ptr++)
 	{
-		ec_buffer[i]=0.0;
+		*ptr=0.0;
 	}
 	ec_ptr=ec_buffer;
 }
@@ -801,21 +819,21 @@ int vtt_class :: set_mix_buffer_size(int no_samples)
 	list <vtt_class *> :: iterator vtt;
 	int res=0;
 	
-	printf("vtt_class::set_mix_buffer_size(), mix_buffer: %12x, mix_out: %12x, samples: %i\n", mix_buffer, mix_out_buffer, no_samples);
+//	printf("vtt_class::set_mix_buffer_size(), mix_buffer: %12x, mix_out: %12x, samples: %i\n", mix_buffer, mix_out_buffer, no_samples);
 	
 	if (mix_buffer) tX_freemem(mix_buffer, "mix_buffer", "vtt set_mix_buffer_size()");
 	samples_in_mix_buffer=no_samples*2;
 	//mix_buffer=(float *) malloc (sizeof(float)*samples_in_mix_buffer);
 	tX_malloc(mix_buffer, "mix_buffer", "vtt set_mix_buffer_size()", sizeof(float)*samples_in_mix_buffer, (float *));
 	mix_buffer_end=mix_buffer+samples_in_mix_buffer;
-	printf("mix_buffer: %12x\n", mix_buffer);
+//	printf("mix_buffer: %12x\n", mix_buffer);
 	
-	printf("mix_samples: %i, out_samples: %i", samples_in_mix_buffer, no_samples);
+//	printf("mix_samples: %i, out_samples: %i", samples_in_mix_buffer, no_samples);
 	
 	if (mix_out_buffer) tX_freemem(mix_out_buffer, "mix_out_buffer", "vtt set_mix_buffer_size()");
 	//mix_out_buffer=(int16_t *) malloc (sizeof(int16_t)*samples_in_mix_buffer + 4); /* extra 4 for 3DNow! */
 	tX_malloc(mix_out_buffer, "mix_out_buffer", "vtt set_mix_buffer_size()", sizeof(int16_t)*samples_in_mix_buffer + 4, (int16_t *));
-	printf("mix_out_buffer: %12x\n", mix_out_buffer);
+//	printf("mix_out_buffer: %12x\n", mix_out_buffer);
 	
 	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++)
 	{
@@ -1374,6 +1392,7 @@ int  vtt_class :: save(FILE * output)
 	store(ec_length);
 	store(ec_feedback);
 	store(ec_pan);
+	store(ec_volume);
 
 	pid=sp_speed.get_persistence_id();
 	store(pid);
@@ -1402,6 +1421,8 @@ int  vtt_class :: save(FILE * output)
 	pid=sp_ec_length.get_persistence_id();
 	store(pid);
 	pid=sp_ec_feedback.get_persistence_id();
+	store(pid);
+	pid=sp_ec_volume.get_persistence_id();
 	store(pid);
 	pid=sp_ec_pan.get_persistence_id();
 	store(pid);
@@ -1746,7 +1767,6 @@ int vtt_class :: load_13(FILE * input)
 	
 	atload(mute);
 	atload(pan);
-	recalc_volume();
 	
 	atload(lp_enable);
 	atload(lp_gain);
@@ -1761,6 +1781,10 @@ int vtt_class :: load_13(FILE * input)
 	ec_set_feedback(ec_feedback);
 	atload(ec_pan);
 	ec_set_pan(ec_pan);
+	atload(ec_volume);
+	ec_set_volume(ec_volume);
+
+	recalc_volume();
 
 	atload(pid);
 	sp_speed.set_persistence_id(pid);
@@ -1790,6 +1814,8 @@ int vtt_class :: load_13(FILE * input)
 	sp_ec_length.set_persistence_id(pid);
 	atload(pid);
 	sp_ec_feedback.set_persistence_id(pid);
+	atload(pid);
+	sp_ec_volume.set_persistence_id(pid);
 	atload(pid);
 	sp_ec_pan.set_persistence_id(pid);
 	atload(pid);

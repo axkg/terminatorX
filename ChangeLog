@@ -4,10 +4,42 @@ This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.71]
-- applied a huge patch from Adrian Reber (adrian@lisas.de). This patch includes:
-  - mostly compile fixes (tX should compile in FreeBSD now, too)
-  - fixed
-- yes now it actually is: STEREO
+- applied a big patch from Adrian Reber (adrian@lisas.de). This patch includes:
+  o compile fixes for the newer gcc releases
+  o enhancements to the commandline switches (try --help for more details)
+  o bug fixes for tX_global.c
+- the bigNewThang (TM) is STEREO output. The Pan-Buttons now actually do what
+  you'd expect them to. Therefore your soundcard must have stereo support of
+  course but I guess in 2001 this really shouldn't be a problem, right? 
+  The recorded wavfiles will now be stereo wavfiles of course.
+  Note that stereo output means double audio-bandwith, so if you tuned your
+  old terminatorX setup to smallest latency you might get clicks now. You can
+  easily fix this by increasing the buffer size in the options dialog by one - 
+  this will result in the same latency as before btw.
+- The echo effect has undergone some enhancements to profit from the new stereo
+  output. It's signal will now be mixed seperately so you can choose a different
+  stereo panorama position for the echo signal. So the new echo effect now 
+  features it's own PAN-knob. This does have some sideeffects though, for more
+  details on this check the manual.
+  Additionally the echo effect now has it's own volume setting to influence
+  the dry/wet ratio of this effect.
+- Some LADSPA effects tend to create NAN (Not A Number) float values under
+  certain conditions. This is bad as all following operations will result in 
+  NANs, so there will be no audio output no more. Now I will not introduce code
+  to check for NANs as this is a waste of CPU-power, producing NANs is IMHO
+  a faulty behaviour for LADSPA plugins and it should be fixed in there.
+  Now a problem with the previous release was that the echo and lowpass effects
+  "ate" those NANs resulting in NANs in those effects' buffers. So once a NAN
+  got in there these effects caused the whole audio output to mute (forever). 
+  Which is why I now introduced some code to clear the buffers in echo and
+  lowpass whenever you dis- and reenable them.
+- The GUI does have two master vu-meters now. The turntable's still have one
+  vu-meter only. Note that the echo-signal is *not* included in the turntable's
+  vu-meter now, as it's mixed seperately.
+- The 3DNow!-Optimizations are gone. And they'll proabably never come back as
+  I don't have time to maintain the same algorithm twice.
+- The documentation has been updated to meet the new features. A lot of typos
+  have been fixed as well.
 
 [v3.70]
 - this list may be incomplete

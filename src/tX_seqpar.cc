@@ -753,6 +753,31 @@ const char * tX_seqpar_vtt_ec_pan :: get_name()
         return "Echo: Pan";
 }
 
+/**** Sequencable Parameter: TURNTABLE ECHO VOLUME ****/
+
+tX_seqpar_vtt_ec_volume :: tX_seqpar_vtt_ec_volume()
+{
+	set_mapping_parameters(0.0, 3.0, TX_SEQPAR_DEFAULT_SCALE, 1);
+}
+
+float tX_seqpar_vtt_ec_volume :: get_value() { return tt->ec_volume; }
+
+void tX_seqpar_vtt_ec_volume :: do_exec(const float value)
+{
+	tt->ec_set_volume(value);
+}
+
+void tX_seqpar_vtt_ec_volume :: do_update_graphics ()
+{
+	gtk_adjustment_set_value(tt->gui.ec_volume, tt->ec_volume);
+}
+
+const char * tX_seqpar_vtt_ec_volume :: get_name()
+{
+        return "Echo: Volume";
+}
+
+
 /**** Sequencable Parameter: TURNTABLE MUTE ****/
 
 tX_seqpar_vtt_mute :: tX_seqpar_vtt_mute()

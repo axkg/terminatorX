@@ -12,13 +12,13 @@
 to lockup X11 or cause other problems under rare conditions. Don't use it on production servers. You have been warned!</PARA></PREFACE>
 <CHAPTER ID="INTRODUCTION"><TITLE>Introduction</TITLE>
 <SECTION ID="WHATITIS"><TITLE>What it is</TITLE>
-<PARA><APPLICATION MOREINFO="NONE">terminatorX</APPLICATION> is a realtime audio synthesizer that allows you to "scratch" on digitally sampled audio data (*.wav, *.au, *.mp3, etc.) the way hiphop-DJs scratch on vinyl records. It features multiple turntables, realtime effects (buit-in as well as LADSPA plugin effects), a sequencer and an easy-to-use gtk+ GUI.</PARA>
+<PARA><APPLICATION MOREINFO="NONE">terminatorX</APPLICATION> is a realtime audio synthesizer that allows you to "scratch" on digitally sampled audio data (*.wav, *.au, *.mp3, etc.) the way hiphop-DJs scratch on vinyl records. It features multiple turntables, realtime effects (built-in as well as LADSPA plugin effects), a sequencer and an easy-to-use gtk+ GUI.</PARA>
 <PARA>This is <EMPHASIS>beta</EMPHASIS> Software please help me fix bugs. See <XREF LINKEND="CONTACT"> (Contact/Download). Please read this <FILENAME MOREINFO="NONE">README</FILENAME> and take a look at the <ULINK URL="http://www.terminatorX.cx">homepage</ULINK>.</PARA></SECTION>
 <SECTION ID="QUICKSTART"><TITLE>Quickstart</TITLE>
 <ORDEREDLIST CONTINUATION="RESTARTS" INHERITNUM="IGNORE"><LISTITEM><PARA>If you don't have <APPLICATION MOREINFO="NONE">LADSPA</APPLICATION> (Linux Audio Developer's Simple Plugin API) installed, go and get it from the <ULINK URL="http://www.ladspa.org">LADSPA-homepage</ULINK> and install the SDK. terminatorX requires <FILENAME MOREINFO="NONE">ladspa.h</FILENAME>.</PARA></LISTITEM>
 <LISTITEM><PARA>Install terminatorX (see <FILENAME MOREINFO="NONE">INSTALL</FILENAME>)</PARA></LISTITEM>
 <LISTITEM><PARA>Run terminatorX</PARA></LISTITEM>
-<LISTITEM><PARA>Load an audiofile into the available turntable (you can add more turntables if you want) (Hint: Click on the button that holds "NONE" )</PARA></LISTITEM>
+	<LISTITEM><PARA>Load an audiofile into the available turntable (you can add more turntables if you want) (Hint: Click on the button that holds "NONE" to load an audiofile, or drop one over the audiofile display from your filemanager if your filemanager is efm, gmc, Nautilus or compatible (kfm does <emphasis>not</emphasis> work))</PARA></LISTITEM>
 <LISTITEM><PARA>Click on the "Audio Engine"-button to start playback.</PARA></LISTITEM>
 <LISTITEM><PARA>Click on the "Mouse-Grab"-button to enter grab mode. The turntable with the red border has the input focus.</PARA></LISTITEM>
 <LISTITEM><PARA>Press <KEYCAP MOREINFO="NONE">SPACE</KEYCAP> or left mouse button to scratch.</PARA></LISTITEM>
@@ -32,9 +32,9 @@ to lockup X11 or cause other problems under rare conditions. Don't use it on pro
 <LISTITEM><PARA>Effects (Lowpass/Echo) configurable for each turntable</PARA></LISTITEM>
 <LISTITEM><PARA>Syncing tables to one master turntable</PARA></LISTITEM>
 <LISTITEM><PARA>Broad audiofile-type support through the use of sox and mpg123</PARA></LISTITEM>
-<LISTITEM><PARA>Recording (straight to disk now)Recording (straight to disk now)</PARA></LISTITEM>
+<LISTITEM><PARA>Recording (straight to disk now)</PARA></LISTITEM>
 <LISTITEM><PARA>Save turntable sets (.tX - files)</PARA></LISTITEM>
-<LISTITEM><PARA>Since Version 3.70 terminatorX supports the LADSPA-plugin-standard.</PARA></LISTITEM>
+<LISTITEM><PARA>Support for the LADSPA-plugin-standard.</PARA></LISTITEM>
 <LISTITEM><PARA>and more</PARA></LISTITEM></ITEMIZEDLIST></SECTION>
 <SECTION ID="REQUIREMENTS"><TITLE>Requirements</TITLE>
 <ITEMIZEDLIST><LISTITEM><PARA>Software</PARA>
@@ -49,7 +49,7 @@ to lockup X11 or cause other problems under rare conditions. Don't use it on pro
 <ITEMIZEDLIST><LISTITEM><PARA><ULINK URL="http://home.sprynet.com/~cbagwell/sox.html">sox</ULINK> for enhanced audio file support</PARA></LISTITEM>
 <LISTITEM><PARA><ULINK URL="http://www-ti.informatik.uni-tuebingen.de/~hippm/mpg123.html">mpg123</ULINK> for mp3 support</PARA></LISTITEM></ITEMIZEDLIST></LISTITEM></ITEMIZEDLIST></LISTITEM>
 <LISTITEM><PARA>Hardware</PARA>
-<ITEMIZEDLIST><LISTITEM><PARA>A OSS compatible soundcard. This includes <EMPHASIS>all</EMPHASIS> <ULINK URL="http://www.alsa-project.org">ALSA-driven</ULINK> soundcards as this enhanced audio device interface includes support for the OSS API.</PARA></LISTITEM>
+<ITEMIZEDLIST><LISTITEM><PARA>A OSS compatible soundcard capable of stereo output. This includes <EMPHASIS>all</EMPHASIS> <ULINK URL="http://www.alsa-project.org">ALSA-driven</ULINK> soundcards as this enhanced audio device interface includes support for the OSS API.</PARA></LISTITEM>
 <LISTITEM><PARA>A good clean mouse and pad, a good X-Pointer setup.</PARA></LISTITEM></ITEMIZEDLIST></LISTITEM></ITEMIZEDLIST>
 <PARA>A note on performance: terminatorX is known to run satisfyingly on pentium-class (~100 MHz) systems (or above of course). Increasing the number of turntables or plugins will of course require more performant systems.</PARA></SECTION>
 <SECTION ID="INSTALLATION"><TITLE>Installation</TITLE>
@@ -64,9 +64,7 @@ to lockup X11 or cause other problems under rare conditions. Don't use it on pro
 <LISTITEM><PARA><EMPHASIS>Record (Audio Engine)</EMPHASIS></PARA>
 <PARA>To enable recording you have to enable the "Record"-toggle button BEFORE you 
 start the audio engine. You will be prompted for a filename after enabling the
-button. Audio will then be recorded to that file in RIFF/WAV format from the
-moment you turn the audio engine on until you turn it off again. Please be aware
-of the fact that recording audio requires <EMPHASIS>a lot</EMPHASIS> of harddisk space!</PARA></LISTITEM>
+button. Audio will then be recorded to that file in stereo RIFF/WAV format from the moment you turn the audio engine on until you turn it off again. Please be aware of the fact that recording audio requires <EMPHASIS>a lot</EMPHASIS> of harddisk space!</PARA></LISTITEM>
 <LISTITEM><PARA><EMPHASIS>Sequencer Play / Record / Stop</EMPHASIS></PARA>
 <PARA>Please read the Sequencer-Section to find out more about the sequencer.</PARA></LISTITEM>
 <LISTITEM><PARA><EMPHASIS>Master Volume / Pitch</EMPHASIS></PARA>
@@ -104,7 +102,7 @@ putting that set together.</PARA></LISTITEM>
 <LISTITEM><PARA><EMPHASIS>X/Y Mapping Selection</EMPHASIS></PARA>
 <PARA>terminatorX allows mapping misc parameters to the mouse axis of your choice. These mappings will be activated in grab mode. Since Version 3.70 this mappings are no longer hardcoded to built-in controls but available for all parameters that qualify as &quot;mappable&quot;. Note that this includes plugins' controls as well.</PARA></LISTITEM></ITEMIZEDLIST></SECTION>
 <SECTION><TITLE>Turntable Controls</TITLE>
-<PARA>These controls are now grouped within functional panels. The number of panel depends on the number of plugins loaded. terminatorX allows hiding the controls not required via the yellow arrow button. To un-hide just click the button again. The first panels are the standard controls for a turntable, then follows the dynamic FX-section and below that follow the pitch and volume controls.</PARA>
+<PARA>These controls are now grouped within functional panels. The number of panels depends on the number of plugins loaded. terminatorX allows hiding the controls not required via the yellow triangle button. To un-hide just click the button again. The first panels are the standard controls for a turntable, then follows the dynamic FX-section and below that follow the pitch and volume controls.</PARA>
 <SECTION><TITLE>Main Panel</TITLE>
 <ITEMIZEDLIST><LISTITEM><PARA><EMPHASIS>Name Field</EMPHASIS></PARA>
 <PARA>The main panel features a text entry field that allows setting a name for the related turntable. The Labels for the controls and the audio-display will update accordingly.</PARA></LISTITEM>
@@ -121,16 +119,29 @@ putting that set together.</PARA></LISTITEM>
 <LISTITEM><PARA><EMPHASIS>Client Button</EMPHASIS></PARA>
 <PARA>This button marks the turntable as <EMPHASIS>sync-client</EMPHASIS>, so it will be triggerd with the master automatically.</PARA></LISTITEM>
 <LISTITEM><PARA><EMPHASIS>Sync-Cycles Selection</EMPHASIS></PARA>
-<PARA>The sync cycles determine how often a sync-client should be triggered. With a setting of zero the sync-client will be (re-)triggered with <EMPHASIS>every</EMPHASIS> trigger of the sync-master. A setting of 1 will (re-)trigger the client every <EMPHASIS>second</EMPHASIS> master-triger and so on.</PARA></LISTITEM></ITEMIZEDLIST></SECTION></SECTION>
+<PARA>The sync cycles determine how often a sync-client should be triggered. With a setting of zero the sync-client will be (re-)triggered with <EMPHASIS>every</EMPHASIS> trigger of the sync-master. A setting of 1 will (re-)trigger the client every <EMPHASIS>second</EMPHASIS> master-triger and so on.</PARA></LISTITEM></ITEMIZEDLIST>
+<para>Below the effect queue a turntable shows some more controls:
+
+</para>
+
+</SECTION></SECTION>
 <SECTION><TITLE>The Effect Queue</TITLE>
 <PARA>With release 3.70 the effects are no longer hardcoded into the turntable. The effects are now arranged within an per-turntable effect-queue. The effect sequence is configurable by the user. To move an effect to higher position within the queue, press the <EMPHASIS>blue upward arrow button</EMPHASIS>. This will cause the effect to be renderd <EMPHASIS>before</EMPHASIS> the following effects. The <EMPHASIS>blue downward arrow button</EMPHASIS> will move the effect down by one position. It will then be rendered <EMPHASIS>after</EMPHASIS> the preceding effects.</PARA>
-<PARA>There are two types of effects: the traditional built-in effects (Lowpass and Echo) and LADSPA plugins. The built-in effects are always available and cannot be removed (but disabled). There can be only one instance of a built-in effect. The LADSPA plugins on the other hand may be intanciated multiple times and can be removed from the effect queue. Press the <EMPHASIS>blue cross button</EMPHASIS> to achieve this.</PARA>
+
+<PARA>There are two types of effects: the traditional built-in effects (Lowpass and Echo) and LADSPA plugins. The built-in effects are always available and cannot be removed (but disabled). There can be only one instance of a built-in effect. The LADSPA plugins on the other hand may be instanciated multiple times and can be removed from the effect queue. Press the <EMPHASIS>blue cross button</EMPHASIS> to achieve this.</PARA>
+
+	<para>Now since release 3.71 the built-in echo effect is treated differently from other effects. Where all other effects feed their signal back into the effect queue the echo effect doesn't touch the input signal. It's echo-signal is mixed seperately from the turntable's main signal to allow a different panning value for the echo-signal. This mode of operation does have some side-effects: imagine a lowpass filter with a position after the echo effect in the effect queue. This will result in the turntable's main signal being lowpassed but it will leave the echo-signal un-lowpassed.</para>
+	<para>Some may call this behaviour a bug - whereas I would consider it a feature ;). Anyway if the above description didn't clear things up maybe the following figure does. It shows a schematic effect queue with the built-in effects and two LADSPA effects enabled. Now with this setup you will not hear anything from the second LADSPA effect in the echo-signal.</para>
+	<figure float="0">
+	  <title>An example for a terminatorX effect queue</title>
+	  <graphic fileref="img/signalflow" scale="27">
+	</figure>
 <PARA>For more information on a LADSPA plugin, press it's panel's label and a small info box will pop up.</PARA>
 <ITEMIZEDLIST><LISTITEM><PARA><EMPHASIS>FX Button</EMPHASIS></PARA>
 <PARA>Press this button to load a LADSPA plugin into the effect queue of the turntable. A menu holding the available (terminatorX-&quot;compatible&quot;) LADSPA-plugins will pop up. The plugins are grouped within submenus according to the modules the plugins are contained in. Simply select the plugin you want to load from this menu and a panel for it will pop up at the end of the effect queue.</PARA>
 <PARA>Note that due to the wide parameter ranges some LADSPA plugins have they sometimes might be hard to control with the knob widget. In these cases you might want to use the text field to enter values. For more details on Plugins see <XREF LINKEND="LADSPAPLUGINS"> (LASDPA).</PARA></LISTITEM></ITEMIZEDLIST></SECTION>
 <SECTION><TITLE>Lowpass Panel</TITLE>
-<PARA>terminatorX features a buitlin resonating lowpass filter that can be configured with this panel.</PARA>
+<PARA>terminatorX features a builtin resonating lowpass filter that can be configured with this panel.</PARA>
 <ITEMIZEDLIST><LISTITEM><PARA><EMPHASIS>Enable Button</EMPHASIS></PARA>
 <PARA>Activating this button will enable the lowpass filter for this turntable.</PARA></LISTITEM>
 <LISTITEM><PARA><EMPHASIS>Input Gain Control</EMPHASIS></PARA>
@@ -146,7 +157,13 @@ putting that set together.</PARA></LISTITEM>
 <LISTITEM><PARA><EMPHASIS>Duration Control</EMPHASIS></PARA>
 <PARA>Use this parameter to set the length of the echo. The duration parameter scales to the actual sample length: so if you set it to 0.5 you will hear the echo when the red playback cursor is half way  through the sample. This is true for samples that are shorter than terminatorX' maximum echo buffer size only.</PARA></LISTITEM>
 <LISTITEM><PARA><EMPHASIS>Feedback Control</EMPHASIS></PARA>
-<PARA>Set the echo's feedback amount with this parameter.</PARA></LISTITEM></ITEMIZEDLIST></SECTION></SECTION>
+<PARA>Set the echo's feedback amount with this parameter.</PARA></LISTITEM>
+<LISTITEM><PARA><EMPHASIS>Volume Control</EMPHASIS></PARA>
+<PARA>This parameter can additionally amplify the echo signal. Unlike the feedback parameter above this parameter has no influence on the signal fed back into the echo-buffer, it effects merely the playback volume of the echo signal.</PARA></LISTITEM>
+<LISTITEM><PARA><EMPHASIS>Pan Control</EMPHASIS></PARA>
+<PARA>The echo effect differs from other effects as it's output signal will be mixed seperately. The main goal here is to allow positioning the echo signal at a position in the stereo panorama that differs from the main panning positon of the turntable to achieve a somewhat spacial effect. The easy example is: turntable's panning left, echo's panning right. As both pan parameters are sequencable you can create nice motion effects from this starting point.</PARA></LISTITEM>
+
+</ITEMIZEDLIST></SECTION></SECTION>
 <SECTION ID="SYNCHRONIZATION"><TITLE>Synchronization</TITLE>
 <PARA>Let's start off with an example: Say you have two drumloops and one bassline loaded in three turntables. Of course you want these samples to be triggered at the same time but you don't want to invest time to cut them to the exact length. Therefore you decide which of the drumloops to make the sync master. You'll have to do this before you enable the audio engine (for now). Only one turntable can be the sync master. Now you can make the other two sync clients which will cause them to be (re-)triggered whenever the master is (re-)triggered. The number you can select to the right of the <EMPHASIS>client button</EMPHASIS> sets the trigger delay for the button: if it's set to zero the turntable will be triggered with every master trigger, if it's set to 1 it'll be triggered every 2nd master trigger and so on.</PARA>
 <PARA>A nice side effect of this feature is: you can now scratch the second (sync client) drum loop and no matter whether you're scratching is good or not the beat will be triggered correctly again ;)</PARA></SECTION>

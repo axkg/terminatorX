@@ -193,6 +193,7 @@ class vtt_class
 	f_prec ec_res_length;
 	f_prec ec_feedback;
 	f_prec ec_pan;
+	f_prec ec_volume;
 	f_prec ec_volume_left;
 	f_prec ec_volume_right;
 	
@@ -213,6 +214,7 @@ class vtt_class
 	tX_seqpar_vtt_ec_length sp_ec_length;
 	tX_seqpar_vtt_ec_feedback sp_ec_feedback;
 	tX_seqpar_vtt_ec_pan sp_ec_pan;
+	tX_seqpar_vtt_ec_volume sp_ec_volume;
 	tX_seqpar_vtt_mute sp_mute;
 	tX_seqpar_spin sp_spin;
 
@@ -249,6 +251,7 @@ class vtt_class
 	void set_y_input_parameter(tX_seqpar *);
 	void set_x_input_parameter(tX_seqpar *);
 	
+	void lp_reset();
 	void lp_set_enable(int);
 	void lp_set_gain(f_prec);
 	void lp_set_reso(f_prec);
@@ -258,6 +261,7 @@ class vtt_class
 	void ec_set_enable(int);
 	void ec_set_length(f_prec);	
 	void ec_set_feedback(f_prec);
+	void ec_set_volume(f_prec);
 	void ec_set_pan(f_prec);
 	void ec_clear_buffer();
 	

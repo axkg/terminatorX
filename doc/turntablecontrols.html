@@ -82,7 +82,7 @@ CLASS="SECTION"
 ><H2
 CLASS="SECTION"
 ><A
-NAME="AEN184"
+NAME="AEN185"
 >2.2.1. Turntable Audio-Display</A
 ></H2
 ><P
@@ -144,17 +144,17 @@ CLASS="SECTION"
 ><H2
 CLASS="SECTION"
 ><A
-NAME="AEN209"
+NAME="AEN210"
 >2.2.2. Turntable Controls</A
 ></H2
 ><P
->These controls are now grouped within functional panels. The number of panel depends on the number of plugins loaded. terminatorX allows hiding the controls not required via the yellow arrow button. To un-hide just click the button again. The first panels are the standard controls for a turntable, then follows the dynamic FX-section and below that follow the pitch and volume controls.</P
+>These controls are now grouped within functional panels. The number of panels depends on the number of plugins loaded. terminatorX allows hiding the controls not required via the yellow triangle button. To un-hide just click the button again. The first panels are the standard controls for a turntable, then follows the dynamic FX-section and below that follow the pitch and volume controls.</P
 ><DIV
 CLASS="SECTION"
 ><H3
 CLASS="SECTION"
 ><A
-NAME="AEN212"
+NAME="AEN213"
 >2.2.2.1. Main Panel</A
 ></H3
 ><P
@@ -185,7 +185,7 @@ CLASS="SECTION"
 ><H3
 CLASS="SECTION"
 ><A
-NAME="AEN223"
+NAME="AEN224"
 >2.2.2.2. Trigger Panel</A
 ></H3
 ><P
@@ -264,7 +264,7 @@ CLASS="SECTION"
 ><H2
 CLASS="SECTION"
 ><A
-NAME="AEN253"
+NAME="AEN254"
 >2.2.3. The Effect Queue</A
 ></H2
 ><P
@@ -282,10 +282,27 @@ CLASS="EMPHASIS"
 >after</I
 > the preceding effects.</P
 ><P
->There are two types of effects: the traditional built-in effects (Lowpass and Echo) and LADSPA plugins. The built-in effects are always available and cannot be removed (but disabled). There can be only one instance of a built-in effect. The LADSPA plugins on the other hand may be intanciated multiple times and can be removed from the effect queue. Press the <I
+>There are two types of effects: the traditional built-in effects (Lowpass and Echo) and LADSPA plugins. The built-in effects are always available and cannot be removed (but disabled). There can be only one instance of a built-in effect. The LADSPA plugins on the other hand may be instanciated multiple times and can be removed from the effect queue. Press the <I
 CLASS="EMPHASIS"
 >blue cross button</I
 > to achieve this.</P
+><P
+>Now since release 3.71 the built-in echo effect is treated differently from other effects. Where all other effects feed their signal back into the effect queue the echo effect doesn't touch the input signal. It's echo-signal is mixed seperately from the turntable's main signal to allow a different panning value for the echo-signal. This mode of operation does have some side-effects: imagine a lowpass filter with a position after the echo effect in the effect queue. This will result in the turntable's main signal being lowpassed but it will leave the echo-signal un-lowpassed.</P
+><P
+>Some may call this behaviour a bug - whereas I would consider it a feature ;). Anyway if the above description didn't clear things up maybe the following figure does. It shows a schematic effect queue with the built-in effects and two LADSPA effects enabled. Now with this setup you will not hear anything from the second LADSPA effect in the echo-signal.</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="AEN265"
+></A
+><P
+><B
+>Figure 2-1. An example for a terminatorX effect queue</B
+></P
+><P
+><IMG
+SRC="img/signalflow.jpg"></P
+></DIV
 ><P
 >For more information on a LADSPA plugin, press it's panel's label and a small info box will pop up.</P
 ><P
@@ -312,11 +329,11 @@ CLASS="SECTION"
 ><H2
 CLASS="SECTION"
 ><A
-NAME="AEN270"
+NAME="AEN276"
 >2.2.4. Lowpass Panel</A
 ></H2
 ><P
->terminatorX features a buitlin resonating lowpass filter that can be configured with this panel.</P
+>terminatorX features a builtin resonating lowpass filter that can be configured with this panel.</P
 ><P
 ></P
 ><UL
@@ -363,7 +380,7 @@ CLASS="SECTION"
 ><H2
 CLASS="SECTION"
 ><A
-NAME="AEN290"
+NAME="AEN296"
 >2.2.5. Echo Panel</A
 ></H2
 ><P
@@ -397,6 +414,24 @@ CLASS="EMPHASIS"
 ></P
 ><P
 >Set the echo's feedback amount with this parameter.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Volume Control</I
+></P
+><P
+>This parameter can additionally amplify the echo signal. Unlike the feedback parameter above this parameter has no influence on the signal fed back into the echo-buffer, it effects merely the playback volume of the echo signal.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Pan Control</I
+></P
+><P
+>The echo effect differs from other effects as it's output signal will be mixed seperately. The main goal here is to allow positioning the echo signal at a position in the stereo panorama that differs from the main panning positon of the turntable to achieve a somewhat spacial effect. The easy example is: turntable's panning left, echo's panning right. As both pan parameters are sequencable you can create nice motion effects from this starting point.</P
 ></LI
 ></UL
 ></DIV
