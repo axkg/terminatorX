@@ -131,6 +131,11 @@ Step 1: Configure terminatorX.
 		Other options:
 		-------------
 		
+		--with-docdir
+		
+		If you intend to package terminatorX this flag will allow terminatorX
+		to find the XML documentation in order to display it online.
+		
 		--disable-gtk2
 		
 		If you've got gtk+ V2 installed but you want terminatorX to use
@@ -164,4 +169,4 @@ Step 3: Install the binary:
 	
 	You need root privileges though. If you don't have them simply copy
 	the terminatorX-binary (in src/terminatorX) to a directory of your
-	choice and run terminatorX form there.	
+	choice and run terminatorX form there.

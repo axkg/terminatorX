@@ -41,6 +41,8 @@ using namespace std;
 static gboolean midi_callback(GIOChannel *source, GIOCondition condition, gpointer data) {
 	tX_midiin *midi=(tX_midiin *) data;
 	midi->check_event();
+	
+	return false;
 }
 
 tX_midiin::tX_midiin()

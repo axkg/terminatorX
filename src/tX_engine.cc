@@ -113,9 +113,6 @@ int16_t* tX_engine :: render_cycle() {
 }
 
 void tX_engine :: loop() {
-	int16_t *temp=NULL;
-	int result;
-	
 	while (!thread_terminate) {
 		/* Waiting for the trigger */
 		pthread_mutex_lock(&start);

@@ -1,9 +1,16 @@
 terminatorX - ChangeLog
-All changes were done by me (Alexander Kï¿½nig) if not stated otherwise.
+All changes were done by me (Alexander König) if not stated otherwise.
 This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.80 - prerelease]
+- I've invested quite some time in valgrinding this release, among other things
+  a major mem leak showed up - the sample memory wasn't being free'd correctly
+  which is now corrected along with many other things. valgrind is a very 
+  helpful tool indeed.
+- Added a new Pitch Calculator that allows adjusting a turntable's pitch to that 
+  of the master turntable. This makes synchronizing finely cut loop samples
+  really easy
 - XML based set files can get rather huge when they contain a lot of sequencer
   events - to solve this terminatorX now uses zlib to save compressed set
   files if enabled in the preferences dialog.

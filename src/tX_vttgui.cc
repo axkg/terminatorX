@@ -667,12 +667,6 @@ void vg_adjust_zoom(GtkWidget *wid, vtt_class *vtt) {
 void fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt_gui *g=&vtt->gui;
-	GtkWidget *item;
-	int i;
-	LADSPA_Plugin *plugin;
-	char buffer[1024];
-	char oldfile[1024]="";
-	GtkWidget *submenu=NULL;
 
 	LADSPA_Class::set_current_vtt(vtt);
 

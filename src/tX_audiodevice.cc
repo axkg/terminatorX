@@ -238,7 +238,11 @@ int tX_audiodevice_alsa :: open()
 	unsigned int hw_rate=(unsigned int)globals.alsa_samplerate;
 	int dir;
 	
-	int res = snd_pcm_hw_params_set_rate_near(pcm_handle, hw_params, &hw_rate, &dir);
+	if (snd_pcm_hw_params_set_rate_near(pcm_handle, hw_params, &hw_rate, &dir) < 0) {
+		tX_error("ALSA: Failed setting sample rate: %i", globals.alsa_samplerate);
+		snd_pcm_hw_params_free (hw_params);
+		return -1;
+	}
 	
 	if (dir != 0) {
 		tX_warning("ALSA: The PCM device \"%s\" doesnt support 44100 Hz playback - using %i instead", pcm_name, hw_rate);
@@ -257,7 +261,7 @@ int tX_audiodevice_alsa :: open()
 	unsigned int period_time=globals.alsa_period_time;
 	
 	if (snd_pcm_hw_params_set_buffer_time_near(pcm_handle, hw_params, &buffer_time, &dir) < 0) {
-		tX_error("ALSA: failed to set the buffer time opf %lu usecs", globals.alsa_buffer_time);
+		tX_error("ALSA: failed to set the buffer time opf %i usecs", globals.alsa_buffer_time);
 		return -1;
 	}
 
@@ -268,7 +272,7 @@ int tX_audiodevice_alsa :: open()
 		return -1;
 	}
 	
-	tX_debug("ALSA: buffer size is %i", buffer_size);
+	tX_debug("ALSA: buffer size is %lu", buffer_size);
 	
 	if (snd_pcm_hw_params_set_period_time_near(pcm_handle, hw_params, &period_time, &dir) < 0) {
 		tX_error("ALSA: failed to set period time %i", globals.alsa_period_time);

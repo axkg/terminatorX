@@ -320,7 +320,7 @@ GtkWidget * LADSPA_Class :: get_menu() {
 		char buffer[512];
 		LADSPA_Plugin *p=(*plugin);
 		
-		sprintf(buffer, "%s - (%s, %i)", p->getName(), p->getLabel(), p->getUniqueID());
+		sprintf(buffer, "%s - (%s, %li)", p->getName(), p->getLabel(), p->getUniqueID());
 		item=gtk_menu_item_new_with_label(buffer);
 		gtk_menu_append(menu, item);
 		gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(menu_callback), p);		
