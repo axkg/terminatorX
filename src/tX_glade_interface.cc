@@ -997,7 +997,7 @@ create_tX_midilearn (void)
   GtkWidget *vbox4;
   GtkWidget *midilabel;
   GtkWidget *dialog_action_area5;
-  GtkWidget *button1;
+  GtkWidget *cancel;
 
   tX_midilearn = gtk_dialog_new ();
   gtk_window_set_title (GTK_WINDOW (tX_midilearn), "MIDI Learn");
@@ -1019,10 +1019,10 @@ create_tX_midilearn (void)
   gtk_widget_show (dialog_action_area5);
   gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area5), GTK_BUTTONBOX_END);
 
-  button1 = gtk_button_new_from_stock ("gtk-cancel");
-  gtk_widget_show (button1);
-  gtk_dialog_add_action_widget (GTK_DIALOG (tX_midilearn), button1, GTK_RESPONSE_CANCEL);
-  GTK_WIDGET_SET_FLAGS (button1, GTK_CAN_DEFAULT);
+  cancel = gtk_button_new_from_stock ("gtk-cancel");
+  gtk_widget_show (cancel);
+  gtk_dialog_add_action_widget (GTK_DIALOG (tX_midilearn), cancel, GTK_RESPONSE_CANCEL);
+  GTK_WIDGET_SET_FLAGS (cancel, GTK_CAN_DEFAULT);
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (tX_midilearn, tX_midilearn, "tX_midilearn");
@@ -1030,7 +1030,7 @@ create_tX_midilearn (void)
   GLADE_HOOKUP_OBJECT (tX_midilearn, vbox4, "vbox4");
   GLADE_HOOKUP_OBJECT (tX_midilearn, midilabel, "midilabel");
   GLADE_HOOKUP_OBJECT_NO_REF (tX_midilearn, dialog_action_area5, "dialog_action_area5");
-  GLADE_HOOKUP_OBJECT (tX_midilearn, button1, "button1");
+  GLADE_HOOKUP_OBJECT (tX_midilearn, cancel, "cancel");
 
   return tX_midilearn;
 }
