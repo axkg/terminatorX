@@ -118,7 +118,11 @@ typedef struct vtt_gui
 	GtkWidget *mouse_mapping_menu;
 	GtkWidget *mouse_mapping_menu_x;
 	GtkWidget *mouse_mapping_menu_y;
-	
+
+#ifdef USE_ALSA_MIDI_IN
+	GtkWidget *midi_mapping;
+#endif	
+
 	GtkWidget *audio_minimized_panel_bar_button;
 	GtkWidget *control_minimized_panel_bar_button;
 

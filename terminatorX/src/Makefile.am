@@ -30,4 +30,5 @@ terminatorX_SOURCES =	tX_endian.c tX_dialog.cc tX_widget.c wav_write.c \
 			tX_knobloader.h tX_knobloader.c tX_dial.c tX_dial.h \
 			tX_extdial.h tX_extdial.cc tX_panel.h tX_panel.cc \
 			tX_ladspa.h tX_ladspa.cc tX_vttfx.h tX_vttfx.cc \
-			tX_legacy_vtt.cc tX_legacy_global.c
+			tX_legacy_vtt.cc tX_legacy_global.c \
+			tX_midiin.h tX_midiin.cc
