@@ -52,15 +52,7 @@ class audiodevice
 	void eat(int16_t*);
 	
 	audiodevice();
-
-#ifdef USE_WRITER_THREAD	
-	pthread_mutex_t stop_mutex;
-	pthread_mutex_t write_mutex;
-	pthread_mutex_t buffer_ready_mutex;
-	pthread_mutex_t buffer_read_mutex;
-	int16_t *current_buffer;
-	pthread_t writer;
-#endif	
+	
 };
 
 #endif
