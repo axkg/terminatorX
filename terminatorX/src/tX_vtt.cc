@@ -217,9 +217,9 @@ void vtt_class :: set_name(char *newname)
 	gui_set_name(this, name);	
 }
 
-int vtt_class :: load_file(char *fname)
+tX_audio_error vtt_class :: load_file(char *fname)
 {
-	int res;
+	tX_audio_error res;
 	int was_playing=is_playing;
 	
 	if (is_playing) stop();
@@ -1887,14 +1887,14 @@ int vtt_class :: load_12(FILE * input)
 				}
 				else
 				{
-					sprintf(buffer,"Fatal Error: Couldn't find required plugin with ID [%li].", id);
-					tx_note(buffer);
+					sprintf(buffer,"Couldn't find required plugin with ID [%li].", id);
+					tx_note(buffer, true);
 					res++;
 				}
 			break;
 			
 			default:
-				tx_note("Fatal Error loading set: unknown effect type!");
+				tx_note("Fatal error loading set: unknown effect type!", true);
 				res++;
 		}		
 	}
@@ -2044,14 +2044,14 @@ int vtt_class :: load_13(FILE * input)
 				}
 				else
 				{
-					sprintf(buffer,"Fatal Error: Couldn't find required plugin with ID [%li].", id);
-					tx_note(buffer);
+					sprintf(buffer,"Couldn't find required plugin with ID [%li].", id);
+					tx_note(buffer, true);
 					res++;
 				}
 			break;
 			
 			default:
-				tx_note("Fatal Error loading set: unknown effect type!");
+				tx_note("Fatal error loading set: unknown effect type!", true);
 				res++;
 		}		
 	}
@@ -2204,14 +2204,14 @@ int vtt_class :: load_14(FILE * input)
 				}
 				else
 				{
-					sprintf(buffer,"Fatal Error: Couldn't find required plugin with ID [%li].", id);
-					tx_note(buffer);
+					sprintf(buffer,"Couldn't find required plugin with ID [%li].", id);
+					tx_note(buffer, true);
 					res++;
 				}
 			break;
 			
 			default:
-				tx_note("Fatal Error loading set: unknown effect type!");
+				tx_note("Fatal error loading set: unknown effect type!", true);
 				res++;
 		}		
 	}
@@ -2310,7 +2310,7 @@ int  vtt_class :: load_all_10(FILE* input, char *fname)
 			ld_set_filename(ftmp);
 			
 			//restmp=load_wav(newvtt->filename, &newbuffer, &size);
-			restmp=newvtt->load_file(ftmp);
+			restmp=(int) newvtt->load_file(ftmp);
 			res+=restmp;
 		}
 		gtk_box_pack_start(GTK_BOX(control_parent), newvtt->gui.control_box, TRUE, TRUE, 0);
@@ -2364,7 +2364,7 @@ int  vtt_class :: load_all_11(FILE* input, char *fname)
 			ld_set_filename(ftmp);
 			
 			//restmp=load_wav(newvtt->filename, &newbuffer, &size);
-			restmp=newvtt->load_file(ftmp);
+			restmp=(int) newvtt->load_file(ftmp);
 			res+=restmp;
 		}
 		gtk_box_pack_start(GTK_BOX(control_parent), newvtt->gui.control_box, TRUE, TRUE, 0);
@@ -2419,7 +2419,7 @@ int  vtt_class :: load_all_12(FILE* input, char *fname)
 			ld_set_filename(ftmp);
 			
 			//restmp=load_wav(newvtt->filename, &newbuffer, &size);
-			restmp=newvtt->load_file(ftmp);
+			restmp=(int) newvtt->load_file(ftmp);
 			res+=restmp;
 		}
 		gtk_box_pack_start(GTK_BOX(control_parent), newvtt->gui.control_box, TRUE, TRUE, 0);
@@ -2473,7 +2473,7 @@ int  vtt_class :: load_all_13(FILE* input, char *fname)
 			ld_set_filename(ftmp);
 			
 			//restmp=load_wav(newvtt->filename, &newbuffer, &size);
-			restmp=newvtt->load_file(ftmp);
+			restmp=(int) newvtt->load_file(ftmp);
 			res+=restmp;
 		}
 		gtk_box_pack_start(GTK_BOX(control_parent), newvtt->gui.control_box, TRUE, TRUE, 0);
@@ -2527,7 +2527,7 @@ int  vtt_class :: load_all_14(FILE* input, char *fname)
 			ld_set_filename(ftmp);
 			
 			//restmp=load_wav(newvtt->filename, &newbuffer, &size);
-			restmp=newvtt->load_file(ftmp);
+			restmp=(int) newvtt->load_file(ftmp);
 			res+=restmp;
 		}
 		gtk_box_pack_start(GTK_BOX(control_parent), newvtt->gui.control_box, TRUE, TRUE, 0);

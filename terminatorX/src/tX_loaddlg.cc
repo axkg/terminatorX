@@ -61,14 +61,19 @@ int ld_create_loaddlg(int mode, int count)
 	
 	if (ld_loaddlg) return(1);
 	
-//	if(needinit) ld_init();
-	
 	ld_mode=mode;
 	ld_count=count;
-	
-	ld_loaddlg=gtk_dialog_new();
+
+#ifdef USE_GTK2
+	ld_loaddlg=gtk_dialog_new_with_buttons("terminatorX - loading",
+		GTK_WINDOW(main_window), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_STOCK_CANCEL, GTK_RESPONSE_NONE, NULL);
+#else	
+	ld_loaddlg=gtk_dialog_new();	
+#endif	
 	ld_window=&(GTK_DIALOG(ld_loaddlg)->window);
-	gtk_window_set_title(ld_window, "terminatorX - Loading");
+#ifndef 	USE_GTK2
+	gtk_window_set_title(ld_window, "terminatorX - loading");	
+#endif	
 	gtk_container_set_border_width(GTK_CONTAINER(ld_window), 5);
 	
 	vbox=GTK_WIDGET(GTK_DIALOG(ld_loaddlg)->vbox);
@@ -97,27 +102,24 @@ int ld_create_loaddlg(int mode, int count)
 		
 	ld_single_p=gtk_progress_bar_new();
 	add_widget_fix(ld_single_p);
-	
+
+#ifndef USE_GTK2	
 	dummy=gtk_button_new_with_label("Cancel");
 	gtk_box_pack_start(GTK_BOX(actionarea), dummy, WID_DYN);
 	gtk_widget_show(dummy);
-
-	dummy=gtk_widget_get_toplevel(dummy);
-
-
+#endif	
 	gtk_window_set_modal(ld_window, TRUE);
 	gtk_window_set_default_size(ld_window, 400, 100);
+#ifndef USE_GTK2
 	gtk_window_set_position(ld_window, GTK_WIN_POS_CENTER_ALWAYS);
+#endif	
 	gtk_widget_realize(ld_loaddlg);
 	gdk_window_set_decorations(gtk_widget_get_parent_window(vbox),(GdkWMDecoration) 0);
-
-//	gtk_window_reposition(ld_window, gdk_screen_width()/2-200, gdk_screen_height()/2-50);
-	//gtk_window_reposition(ld_window, gdk_screen_width()/2-200, gdk_screen_height()/2-50);
 	gtk_widget_show(ld_loaddlg);
 
 	gtk_flush();
 		
-	return(0);
+	return 0;
 }
 
 char *strip_path(char *name)
