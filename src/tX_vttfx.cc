@@ -31,38 +31,9 @@
 
 float ladspa_dummy_output_port;
 
-void vtt_fx :: activate ()
-{
-	fprintf(stderr, "tX: Oops: activate() abstract vtt_fx?");
-}
-
-void vtt_fx :: deactivate ()
-{
-	fprintf(stderr, "tX: Oops: deactivate() abstract vtt_fx?");
-}
-
-void vtt_fx :: run ()
-{
-	fprintf(stderr, "tX: Oops: run() abstract vtt_fx?");
-}
-
-void vtt_fx :: save(FILE *rc, gzFile rz, char *indent) {
-	fprintf(stderr, "tX: Oops: run() abstract vtt_fx?");
-}
-
 void vtt_fx :: reconnect_buffer()
 {
-}
-
-int vtt_fx :: isEnabled ()
-{
-	fprintf(stderr, "tX: Oops: isEnabled() abstract vtt_fx?");
-	return 0;
-}
-
-const char * vtt_fx :: get_info_string()
-{
-	return "tX: Oops: Why do you see this info string?";
+	/* NOP */
 }
 
 vtt_fx :: ~vtt_fx() {}

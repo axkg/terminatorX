@@ -513,8 +513,7 @@ void vtt_class :: ec_clear_buffer()
 {
 	f_prec *ptr;
 	
-	for (ptr=ec_buffer; ptr<=ec_delay; ptr++)
-	{
+	for (ptr=ec_buffer; ptr<=ec_delay; ptr++) {
 		*ptr=0.0;
 	}
 	ec_ptr=ec_buffer;
@@ -524,18 +523,15 @@ void vtt_class :: render()
 {
 	list <vtt_fx *> :: iterator effect;
 
-	if (do_scratch)
-	{
-		if (sense_cycles>0)
-		{
+	if (do_scratch) {
+		if (sense_cycles>0) {
 			sense_cycles--;
 			if (sense_cycles==0) sp_speed.receive_input_value(0);
 		}
 	}
 	render_scratch();
 	
-	for (effect=fx_list.begin(); effect != fx_list.end(); effect++)
-	{
+	for (effect=fx_list.begin(); effect != fx_list.end(); effect++) {
 		if ((*effect)->isEnabled()) (*effect)->run();
 	}
 }
@@ -562,33 +558,26 @@ void vtt_class :: calc_speed()
 	fade_out=0;
 	fade_in=0;
 
-	if (speed != speed_target)
-	{
+	if (speed != speed_target) {
 		speed_target=speed;
 		speed_step=speed_target-speed_real;
-		speed_step/=10.0;
+		speed_step/=globals.vtt_inertia;
+		tX_error("dingens - step: %lf", speed_step);
 	}
 			
-	if (speed_target != speed_real)
-	{
+	if (speed_target != speed_real) {
 		speed_real+=speed_step;
 		if ((speed_step<0) && (speed_real<speed_target)) speed_real=speed_target;
-		else
-		if ((speed_step>0) && (speed_real>speed_target)) speed_real=speed_target;			
+		else if ((speed_step>0) && (speed_real>speed_target)) speed_real=speed_target;			
 	}
 	
-	if (fade)
-	{
-		if ((speed_last==0) && (speed_real !=0))
-		{
+	if (fade) {
+		if ((speed_last==0) && (speed_real !=0)) {
 			fade_in=1;
 			fade=NEED_FADE_OUT;
 		}
-	}
-	else
-	{
-		if ((speed_last!=0) && (speed_real==0))
-		{
+	} else {
+		if ((speed_last!=0) && (speed_real==0)) {
 			fade_out=1;
 			fade=NEED_FADE_IN;
 		}
@@ -596,22 +585,16 @@ void vtt_class :: calc_speed()
 
 	speed_last = speed_real;
 
-	if (res_mute != res_mute_old)
-	{
-		if (res_mute)
-		{
+	if (res_mute != res_mute_old) {
+		if (res_mute) {
 			fade_out=1; fade_in=0;
 			fade=NEED_FADE_IN;
-		}
-		else
-		{
+		} else {
 			fade_in=1; fade_out=0;
 			fade=NEED_FADE_OUT;
 		}
 		res_mute_old=res_mute;
-	}
-	else
-	{
+	} else {
 		if (res_mute) do_mute=1;
 	}	
 }
@@ -637,48 +620,34 @@ void vtt_class :: render_scratch()
 
 	calc_speed();
 					
-	for (sample =0,out=output_buffer, fade_vol=0.0; sample < samples_in_outputbuffer;sample++, out++, fade_vol+=inv_samples_in_outputbuffer)
-	{
-		if ((speed_real!=0) || (fade_out))
-		{
+	for (sample =0,out=output_buffer, fade_vol=0.0; sample < samples_in_outputbuffer;sample++, out++, fade_vol+=inv_samples_in_outputbuffer) {
+		if ((speed_real!=0) || (fade_out)) {
 
 			pos_f+=speed_real;
 
-			if (pos_f>maxpos)
-			{
+			if (pos_f>maxpos) {
 				pos_f-=maxpos;
-				if (res_pitch>0)
-				{
-					if (loop)
-					{
-					if (is_sync_master)
-					{
-						master_triggered=1;
-						master_triggered_at=sample;
-					}
-					}
-					else
-					{
+				if (res_pitch>0) {
+					if (loop) {
+						if (is_sync_master)
+						{
+							master_triggered=1;
+							master_triggered_at=sample;
+						}
+					} else {
 						want_stop=1;
 					}
-					
 				}
-			}
-			else if (pos_f<0)
-			{
+			} else if (pos_f<0) {
 				pos_f+=maxpos;
-				if (res_pitch<0)
-				{
-					if (loop)
-					{
-					if (is_sync_master)
-					{
-						master_triggered=1;
-						master_triggered_at=sample;
-					}
-					}
-					else
-					{
+				if (res_pitch<0) {
+					if (loop) {
+						if (is_sync_master)
+						{
+							master_triggered=1;
+							master_triggered_at=sample;
+						}
+					} else {
 						want_stop=1;
 					}
 				}
@@ -690,42 +659,30 @@ void vtt_class :: render_scratch()
 			amount_b=pos_f-pos_a_f;				
 			amount_a=1.0-amount_b;				
 				
-			if (do_mute)
-			{
+			if (do_mute) {
 				*out=0.0;
-			}
-			else
-			{
+			} else {
 				ptr=&buffer[pos_i];
 				sample_a=(f_prec) *ptr;
 			
-				if (pos_i == pos_i_max) 
-				{
+				if (pos_i == pos_i_max)  {
 					sample_b=*buffer;
-				}
-				else
-				{
+				} else {
 					ptr++;
 					sample_b=(f_prec) *ptr;
 				}
 				
 				sample_res=(sample_a*amount_a)+(sample_b*amount_b);
 								
-				if (fade_in)
-				{
+				if (fade_in) {
 					sample_res*=fade_vol;
-				}
-				else
-				if (fade_out)
-				{
+				} else if (fade_out) {
 					sample_res*=1.0-fade_vol;
 				}
  
 				*out=sample_res;
 			}
-		}
-		else
-		{
+		} else {
 				*out=0;
 		}
 	}
@@ -756,8 +713,7 @@ void vtt_class :: forward_turntable()
 	
 	pos_f_tmp=pos_f+speed_real*samples_in_outputbuffer;
 	
-	if ((pos_f_tmp > 0) && (pos_f_tmp < maxpos))
-	{
+	if ((pos_f_tmp > 0) && (pos_f_tmp < maxpos)) {
 #ifdef pos_f_test
 		show=1;
 #else	
@@ -768,54 +724,37 @@ void vtt_class :: forward_turntable()
 				
 	/* now the slow way ;) */
 	
-	for (sample =0; sample < samples_in_outputbuffer; sample++)
-	{
-			pos_f+=speed_real;
+	for (sample =0; sample < samples_in_outputbuffer; sample++) {
+		pos_f+=speed_real;
 
-			if (pos_f>maxpos)
-			{
-				pos_f-=maxpos;
-				if (res_pitch>0)
-				{
-					if (loop)
-					{
-					if (is_sync_master)
-					{
+		if (pos_f>maxpos) {
+			pos_f-=maxpos;
+			if (res_pitch>0) {
+				if (loop) {
+					if (is_sync_master) {
 						master_triggered=1;
 						master_triggered_at=sample;
 					}
-					}
-					else
-					{
-						want_stop=1;
-					}
-					
+				} else {
+					want_stop=1;
 				}
 			}
-			else if (pos_f<0)
-			{
-				pos_f+=maxpos;
-				if (res_pitch<0)
-				{
-					if (loop)
-					{
-					if (is_sync_master)
-					{
+		} else if (pos_f<0) {
+			pos_f+=maxpos;
+			if (res_pitch<0) {
+				if (loop) {
+					if (is_sync_master) {
 						master_triggered=1;
 						master_triggered_at=sample;
 					}
-					}
-					else
-					{
-						want_stop=1;
-					}
+				} else {
+					want_stop=1;
 				}
 			}
-		
+		}
 	}
 #ifdef pos_f_test
-	if (show)
-	{
+	if (show) {
 		diff=pos_f_tmp-pos_f;
 		if (diff!=0) printf("fast: %f, slow: %f, diff: %f, tt: %s\n", pos_f_tmp, pos_f, diff, name);
 	}
@@ -831,8 +770,7 @@ void vtt_class :: render_lp()
 {
 	f_prec *sample;
 		
-	for (sample = output_buffer; sample<end_of_outputbuffer; sample++)
-	{
+	for (sample = output_buffer; sample<end_of_outputbuffer; sample++) {
 		lp_buf0 = lp_a * lp_buf0 + lp_freq * ((*sample)*lp_resgain + lp_b * (lp_buf0 - lp_buf1));
 		lp_buf1 = lp_a * lp_buf1 + lp_freq * lp_buf0;
 		
@@ -846,8 +784,7 @@ void vtt_class :: render_ec()
 	f_prec *ec_sample;
 	int i;
 
-	for (i=0, sample = output_buffer, ec_sample=ec_output_buffer; i<samples_in_outputbuffer; i++, ec_sample++,sample++, ec_ptr++)
-	{
+	for (i=0, sample = output_buffer, ec_sample=ec_output_buffer; i<samples_in_outputbuffer; i++, ec_sample++,sample++, ec_ptr++) {
 		if (ec_ptr>ec_delay) ec_ptr=ec_buffer;
 		*ec_sample=(*ec_ptr) *ec_feedback;
 		*ec_ptr=*sample+*ec_sample;
@@ -1163,8 +1100,7 @@ int vtt_class :: stop_nolock()
 {
 	list <vtt_fx *> :: iterator effect;
 
-	if ((!is_playing) && do_unlock)
-	{
+	if ((!is_playing) && do_unlock) {
 		pthread_mutex_unlock(&render_lock);
 		return(1);
 	}
@@ -1175,11 +1111,10 @@ int vtt_class :: stop_nolock()
 	max_value=0;
 
 	cleanup_vtt(this);
-	sync_countdown=0;
+	//sync_countdown=0;
 	
 	/* deactivating plugins */
-	for (effect=fx_list.begin(); effect != fx_list.end(); effect++)
-	{
+	for (effect=fx_list.begin(); effect != fx_list.end(); effect++) {
 		(*effect)->deactivate();
 	}
 	

@@ -56,15 +56,15 @@ class vtt_fx
 	void set_vtt(void *v) { vtt=v;}
 	void *get_vtt() { return vtt; }
 	
-	virtual void activate();
-	virtual void deactivate();
-	virtual void run();	
-	virtual int isEnabled();
+	virtual void activate()=NULL;
+	virtual void deactivate()=NULL;
+	virtual void run()=NULL;	
+	virtual int isEnabled()=NULL;
 	virtual void reconnect_buffer();
 	
-	virtual const char *get_info_string();
+	virtual const char *get_info_string()=NULL;
 	
-	virtual void save(FILE *rc, gzFile rz, char *indent);
+	virtual void save(FILE *rc, gzFile rz, char *indent)=NULL;
 	
 	GtkWidget* get_panel_widget() { return panel_widget; }
 	void set_panel_widget(GtkWidget *widget) { panel_widget=widget; }

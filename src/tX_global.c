@@ -133,6 +133,8 @@ void set_global_defaults() {
 	globals.fullscreen_enabled=0;
 	globals.confirm_events=0;
 	globals.compress_set_files=0;
+	
+	globals.vtt_inertia=10.0;
 }
 
 int load_globals_xml() {
@@ -210,6 +212,7 @@ int load_globals_xml() {
 			restore_int("compress_set_files", globals.compress_set_files);
 			restore_int("fullscreen_enabled", globals.fullscreen_enabled);
 			restore_int("confirm_events", globals.confirm_events);
+			restore_float("vtt_inertia", globals.vtt_inertia);
 
 			if (!elementFound) {
 				fprintf(stderr, "tX: Unhandled XML element: \"%s\"\n", cur->name);
@@ -296,7 +299,8 @@ void store_globals() {
 		store_int("compress_set_files", globals.compress_set_files);
 		store_int("fullscreen_enabled", globals.fullscreen_enabled);
 		store_int("confirm_events", globals.confirm_events);
-		
+		store_float("vtt_inertia", globals.vtt_inertia);
+
 		fprintf(rc,"</terminatorXrc>\n");
 	}
 }
