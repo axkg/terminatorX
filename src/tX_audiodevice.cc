@@ -130,6 +130,11 @@ int tX_audiodevice_oss :: open()
         return(i);	
 }
 
+inline int closewrapper(int fd)
+{
+	return close(fd);
+}
+
 int tX_audiodevice_oss :: close()
 {
 	void *dummy;
@@ -138,7 +143,7 @@ int tX_audiodevice_oss :: close()
 	{	
 		return(1);		
 	}
-
+	closewrapper(fd);
 	fd=0;
 	blocksize=0;
 		
