@@ -574,9 +574,43 @@ void show_about(int nag)
 	
 	gtk_widget_show( pwid );
 
-	if (nag)
-	{
-		gtk_container_add(GTK_CONTAINER(window), pwid);
+	if (nag) {
+		GtkWidget *box=gtk_vbox_new(FALSE, 2);
+		GtkWidget *box2=gtk_hbox_new(FALSE, 2);
+		GtkWidget *seph=gtk_hseparator_new();
+		GtkWidget *label;
+#ifndef USE_GTK2		
+		char about_prefix_umlaut[]="Copyright (C) 1999-2002 by Alexander König";
+		char about_prefix_broken_umlaut[]="Copyright (C) 1999-2002 by Alexander Ko\"nig";
+		char *str;
+#endif		
+		
+		gtk_container_add(GTK_CONTAINER(window), box);
+		gtk_box_pack_start(GTK_BOX(box), pwid, WID_FIX);
+		gtk_box_pack_start(GTK_BOX(box), seph, WID_FIX);
+		gtk_box_pack_start(GTK_BOX(box), box2, WID_FIX);
+		
+		label=gtk_label_new(PACKAGE" release "VERSION);
+		gtk_box_pack_start(GTK_BOX(box2), label, WID_DYN);
+		gtk_misc_set_alignment(GTK_MISC(label), 0.1, 0.5);
+		gtk_widget_show(label);
+
+#ifdef USE_GTK2
+		label=gtk_label_new("Copyright (C) 1999-2002 by Alexander K\xC3\xB6nig");
+#else
+		label=gtk_label_new(about_prefix_umlaut);
+		gtk_label_get(GTK_LABEL(label), &str);
+		if (strlen(str)==0) {
+			gtk_label_set(GTK_LABEL(label), about_prefix_broken_umlaut);
+		}
+#endif		
+		gtk_box_pack_start(GTK_BOX(box2), label, WID_DYN);
+		gtk_misc_set_alignment(GTK_MISC(label), 0.9, 0.5);
+		gtk_widget_show(label);
+		
+		gtk_widget_show(seph);
+		gtk_widget_show(box2);
+		gtk_widget_show(box);
 		gtk_widget_show(window);
 		
 		while (gtk_events_pending()) gtk_main_iteration();	
@@ -645,13 +679,14 @@ void show_about(int nag)
 		label=gtk_label_new(buffer);
 
 #ifndef USE_GTK2
+		char *str;
 		gtk_label_get(GTK_LABEL(label), &str);
 		
 		/* Fixing a strange gtk+ bug that appears at least on my system.
 		*/
 		if (strlen(str)==0) 
 		{
-			fprintf (stderr, "tX: Warning: this gtk+ has broken umlauts.\n");
+			tX_warning( "This gtk+ has broken umlauts.");
 			strcpy(buffer, about_prefix_broken_umlaut);
 			strcat(buffer, about_rest);
 			gtk_label_set(GTK_LABEL(label), buffer);		
@@ -706,7 +741,6 @@ void show_about(int nag)
 		gtk_box_pack_start(GTK_BOX(hbox), scroll, WID_FIX);
 		gtk_widget_show(scroll);
 #endif		
-
 		
 		add_about_wid(hbox);
 
