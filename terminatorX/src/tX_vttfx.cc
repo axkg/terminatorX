@@ -333,7 +333,7 @@ void vtt_fx_ladspa :: load(xmlDocPtr doc, xmlNodePtr node) {
 		}
 	}
 	
-	panel->hide(hidden);
+	panel->hide(!hidden);
 }
 
 void vtt_fx_ladspa :: toggle_drywet() {
