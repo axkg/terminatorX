@@ -136,6 +136,7 @@ extern tx_global globals;
 
 extern void load_globals();
 extern void store_globals();
+extern char *encode_xml(char *dest, const char *src);
 
 #define nop
 
@@ -157,7 +158,7 @@ extern void store_globals();
 
 #define store_int(s, i); fprintf(rc, "%s<%s>%i</%s>\n", indent, s,(int) i, s);
 #define store_float(s, i); fprintf(rc, "%s<%s>%lf</%s>\n", indent, s,(double) i, s);
-#define store_string(s, i); fprintf(rc, "%s<%s>%s</%s>\n", indent, s, i, s);
+#define store_string(s, i); fprintf(rc, "%s<%s>%s</%s>\n", indent, s, encode_xml(tmp_xml_buffer, i) , s);
 #define store_bool(s, i); fprintf(rc, "%s<%s>%s</%s>\n", indent, s, i ? "true" : "false", s);
 
 #define store_id(s, id); fprintf(rc, "%s<%s id=\"%i\"/>\n", indent, s, id);

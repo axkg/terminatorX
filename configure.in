@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/tX_global.h)
-AM_INIT_AUTOMAKE(terminatorX, 3.73)
+AM_INIT_AUTOMAKE(terminatorX, 3.74)
 AM_CONFIG_HEADER(config.h)
 
 dnl AC_ARG_ENABLE(closedev, [  --enable-closedev       close audio device if not in use. [default=yes] ])
@@ -17,9 +17,6 @@ AC_ARG_ENABLE(xsetpointer,  [  --enable-xsetpointer    enables executing of xset
 dnl AC_ARG_ENABLE(alsa,         [  --enable-alsa           use ALSA for sound output (default=auto) ])
 AC_ARG_ENABLE(oss,          [  --enable-oss            use OSS for sound output (default=auto) ])
 dnl AC_ARG_ENABLE(movqfix,	    [  --disable-movqfix       don't use movq fix for gcc >= 2.96 [default=on] ])
-AC_ARG_ENABLE(gtk2,	    [  --disable-gtk2          use gtk+ 1.2 even if verion 2 detected (default=auto) ])
-dnl AC_ARG_ENABLE(dial,         [  --enable-dial           use dials instead of scales for effects (default=yes) ])
-dnl AC_ARG_ENABLE(bigdial,      [  --enable-bigdial        use BIG dials (default=yes) ])
 dnl AC_ARG_ENABLE(dga2,     [  --enable-dga2           use DGA2 instead of DGA1. (experimental) (default=no) ])
 AC_ARG_ENABLE(libxml2,	    [  --disable-libxml2       use libxml even if verion 2 detected (default=auto) ])
 AC_ARG_ENABLE(mad,		[  --disable-mad           disable mad for mp3 support (default=auto) ])
@@ -42,7 +39,6 @@ OPTION_OGG123="no"
 OPTION_VORBIS="no"
 OPTION_AUDIOFILE="no"
 OPTION_WAV="no"
-OPTION_GTK_VERSION="none"
 OPTION_GNOME="no"
 OPTION_SCHEDULER="no"
 
@@ -111,36 +107,15 @@ if test "$tX_threads" = "no"; then
 	AC_MSG_ERROR([** failed to detect pthreads implementation **])
 fi
 
-gtk2="no"
-gtk12="no"
-
-if test "$enable_gtk2" != "no"; then
-	AM_PATH_GTK_2_0(, [
-	  GTK2_CFLAGS="$GTK_CFLAGS"
-	  GTK2_LIBS="$GTK_LIBS"
-	  gtk2="yes"
-	  GTK2_VERSION="`$PKG_CONFIG --modversion gtk+-2.0`"], [ gtk2="no" ]) 
-	  OPTION_GTK_VERSION="Version 2 - ($GTK2_VERSION)"
-fi
+AM_PATH_GTK_2_0(, [
+  GTK2_CFLAGS="$GTK_CFLAGS"
+  GTK2_LIBS="$GTK_LIBS"
+  gtk2="yes"
+  GTK2_VERSION="`$PKG_CONFIG --modversion gtk+-2.0`"], [ gtk2="yes" ]) 
+  OPTION_GTK_VERSION="Version 2 - ($GTK2_VERSION)"
 
 if test "$gtk2" = "no"; then
-	AM_PATH_GTK([1.2.5], [
-	  GTK12_CFLAGS="$GTK_CFLAGS"
-	  GTK12_LIBS="$GTK_LIBS"
-	  gtk12="yes"
-	  GTK12_VERSION="`$GTK_CONFIG $gtk_config_args --version`"], [ gtk12="no" ])
-	  OPTION_GTK_VERSION="Version 1.2 - ($GTK12_VERSION)"	  
-fi
-
-if test "$gtk2" = "yes"; then
-	AC_MSG_RESULT([using gtk+ version 2 as widget toolkit.])
-	AC_DEFINE(USE_GTK2)
-else
-	if test "$gtk12" = "yes"; then
-		AC_MSG_RESULT([using gtk+ version 1.2 as widget toolkit.])
-	else
-		AC_MSG_ERROR([** couldn't find gtk+ > Version 1.2.5 **])
-	fi
+	AC_MSG_ERROR([** couldn't find gtk+ > Version 2. Please upgrade (http://www.gtk.org). **])
 fi
 
 dnl Checks for header files.
@@ -519,7 +494,6 @@ option_info;
 
 echo "builtin-wav support: $OPTION_WAV"
 echo "enhanced scheduling support: $OPTION_SCHEDULER"
-echo "gtk+ Version: $OPTION_GTK_VERSION"
 echo "GNOME support: $OPTION_GNOME"
 echo
 echo You can now run \'make\' to compile terminatorX
