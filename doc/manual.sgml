@@ -121,6 +121,25 @@ putting that set together.</PARA></LISTITEM>
 <LISTITEM><PARA><EMPHASIS>Sync-Cycles Selection</EMPHASIS></PARA>
 <PARA>The sync cycles determine how often a sync-client should be triggered. With a setting of zero the sync-client will be (re-)triggered with <EMPHASIS>every</EMPHASIS> trigger of the sync-master. A setting of 1 will (re-)trigger the client every <EMPHASIS>second</EMPHASIS> master-triger and so on.</PARA></LISTITEM></ITEMIZEDLIST>
 <para>Below the effect queue a turntable shows some more controls:
+	    <itemizedlist>
+	      <listitem>
+		<para><emphasis>Pitch Control</emphasis></para>
+		<para>The pitch control allows setting the default playback
+		speed for that turntable (the "motor" speed). Negative values
+		will result in the sample being played backwards.</para>
+	      </listitem>
+	      <listitem>
+		<para><emphasis>PAN Control</emphasis></para>
+		<para>This parameter allows setting the position of the
+		turntable's main signal within the stereo panorama.</para>
+	      </listitem>
+	      <listitem>
+		<para><emphasis>VU Meter</emphasis></para>
+		<para>The displayed signal shows the turntable's current
+		signal not including the echo-signal which is mixed
+		separately.</para>
+	      </listitem>
+	    </itemizedlist>
 
 </para>
 
@@ -129,13 +148,13 @@ putting that set together.</PARA></LISTITEM>
 <PARA>With release 3.70 the effects are no longer hardcoded into the turntable. The effects are now arranged within an per-turntable effect-queue. The effect sequence is configurable by the user. To move an effect to higher position within the queue, press the <EMPHASIS>blue upward arrow button</EMPHASIS>. This will cause the effect to be renderd <EMPHASIS>before</EMPHASIS> the following effects. The <EMPHASIS>blue downward arrow button</EMPHASIS> will move the effect down by one position. It will then be rendered <EMPHASIS>after</EMPHASIS> the preceding effects.</PARA>
 
 <PARA>There are two types of effects: the traditional built-in effects (Lowpass and Echo) and LADSPA plugins. The built-in effects are always available and cannot be removed (but disabled). There can be only one instance of a built-in effect. The LADSPA plugins on the other hand may be instanciated multiple times and can be removed from the effect queue. Press the <EMPHASIS>blue cross button</EMPHASIS> to achieve this.</PARA>
-
-	<para>Now since release 3.71 the built-in echo effect is treated differently from other effects. Where all other effects feed their signal back into the effect queue the echo effect doesn't touch the input signal. It's echo-signal is mixed seperately from the turntable's main signal to allow a different panning value for the echo-signal. This mode of operation does have some side-effects: imagine a lowpass filter with a position after the echo effect in the effect queue. This will result in the turntable's main signal being lowpassed but it will leave the echo-signal un-lowpassed.</para>
-	<para>Some may call this behaviour a bug - whereas I would consider it a feature ;). Anyway if the above description didn't clear things up maybe the following figure does. It shows a schematic effect queue with the built-in effects and two LADSPA effects enabled. Now with this setup you will not hear anything from the second LADSPA effect in the echo-signal.</para>
 	<figure float="0">
 	  <title>An example for a terminatorX effect queue</title>
 	  <graphic fileref="img/signalflow" scale="27">
 	</figure>
+	<para>Now since release 3.71 the built-in echo effect is treated differently from other effects. Where all other effects feed their signal back into the effect queue the echo effect doesn't touch the input signal. It's echo-signal is mixed seperately from the turntable's main signal to allow a different panning value for the echo-signal. This mode of operation does have some side-effects: imagine a lowpass filter with a position after the echo effect in the effect queue. This will result in the turntable's main signal being lowpassed but it will leave the echo-signal un-lowpassed.</para>
+	<para>Some may call this behaviour a bug - whereas I would consider it a feature ;). Anyway if the above description didn't clear things up maybe the displayed figure does. It shows a schematic effect queue with the built-in effects and two LADSPA effects enabled. Now with this setup you will not hear anything from the second LADSPA effect in the echo-signal.</para>
+
 <PARA>For more information on a LADSPA plugin, press it's panel's label and a small info box will pop up.</PARA>
 <ITEMIZEDLIST><LISTITEM><PARA><EMPHASIS>FX Button</EMPHASIS></PARA>
 <PARA>Press this button to load a LADSPA plugin into the effect queue of the turntable. A menu holding the available (terminatorX-&quot;compatible&quot;) LADSPA-plugins will pop up. The plugins are grouped within submenus according to the modules the plugins are contained in. Simply select the plugin you want to load from this menu and a panel for it will pop up at the end of the effect queue.</PARA>
