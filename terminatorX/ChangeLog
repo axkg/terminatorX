@@ -25,9 +25,13 @@ changed.
   Nevertheless newer gcc releases seem to have a bug in handling movq and
   the current 3DNow! stereo implementation does not seem to be very efficient.
   So use --enable-3dnow only if you want to help me improve perfomance.
-- workaround for a gtk+ bug that causes empty labels when strings contain
-  umlauts - unluckily my name features one of these so I had to write this
-  workaround.
+- Modified the mpg123 loader in order to make it work with mpg321, too.
+  mpg321 lacks support for mpg123's -m switch ("singlemix") therefor 
+  mpg?2?'s output is now piped into sox to convert the signal to mono.
+  For this reason mpg?2? support now requires sox to be installed, too.
+- added a workaround for a gtk+ bug that causes empty labels when strings
+  contain umlauts - unluckily my name features one of these so I had to write
+  this workaround.
 
 [v3.71]
 - applied a big patch from Adrian Reber (adrian@lisas.de). This patch includes:
