@@ -92,6 +92,7 @@ class tX_audiodevice_oss : public tX_audiodevice
 class tX_audiodevice_alsa : public tX_audiodevice
 {
 	snd_pcm_t *pcm_handle;
+	snd_pcm_uframes_t period_size;
 	
 	public:
 	virtual int open();

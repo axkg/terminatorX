@@ -19,6 +19,10 @@
     File: tX_midiin.h
  
     Description: Header to tX_midiin.cc
+	
+	Changes (Alexander König <alex@lisas.de>:
+	- Default Constructor for tX_midievents
+	- new handlers for destroy and remove binding events
 */    
 
 #ifndef _tx_midiin_h
@@ -54,9 +58,6 @@ class tX_midievent
 	}
 	
 	tX_midievent() : channel(0), type(NONE), value(0.0), is_noteon(false) {}
-	
-	/* not being used anyway */
-	// void print( const char* prefix ) const;
 };
 
 #include <config.h>
