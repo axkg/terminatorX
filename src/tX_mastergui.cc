@@ -580,6 +580,8 @@ void mg_enable_critical_buttons(int enable)
 
 GtkSignalFunc seq_stop(GtkWidget *w, void *);
 
+static bool stop_override=false;
+
 GtkSignalFunc audio_on(GtkWidget *w, void *d)
 {
 	tX_engine_error res;
@@ -589,11 +591,14 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 		sequencer_ready=0;
 		mg_enable_critical_buttons(0);
 		res=tX_engine::get_instance()->run();
-		sequencer_ready=1;
 
 		if (res!=NO_ERROR)
 		{
 			mg_enable_critical_buttons(1);
+			stop_override=true;
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w), 0);
+			stop_override=false;			
+
 			switch(res)
 			{
 				case ERROR_BUSY:
@@ -607,9 +612,11 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 				break;
 				default:tx_note("Error starting engine: Unknown error.", true);
 			}
+			
 			return 0;
 		}
-
+		
+		sequencer_ready=1;
 		stop_update=0;
 		audioon=1;
 		update_delay=globals.update_delay;
@@ -617,7 +624,8 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 		gtk_widget_set_sensitive(grab_button, 1);
 	}
 	else
-	{		
+	{	
+		if (stop_override) return NULL;
 		if (!sequencer_ready) return NULL;
 		gtk_widget_set_sensitive(grab_button, 0);
 		tX_engine::get_instance()->stop();
@@ -927,6 +935,7 @@ void create_master_menu() {
 	menu_item = gtk_menu_item_new_with_mnemonic("_Add Turntable");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_A, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);	
 	g_signal_connect(menu_item, "activate", (GCallback) new_table, NULL);
 
 	menu_item = gtk_check_menu_item_new_with_mnemonic("_Record Audio To Disk");

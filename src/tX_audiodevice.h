@@ -46,6 +46,7 @@ class tX_audiodevice
 	int16_t *sample_buffer[2];
 	int current_buffer;
 	int buffer_pos;
+	int vtt_buffer_size;
 	tX_engine *engine;
 	
 	int sample_rate;

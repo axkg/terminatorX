@@ -333,8 +333,6 @@ void tX_midiin::midi_binding_gui::close_clicked( GtkButton *button, gpointer _th
 	tX_midiin::midi_binding_gui* this_ = (tX_midiin::midi_binding_gui*)_this;
 	
 	gtk_widget_destroy( this_->window );
-
-	delete this_;
 }
 
 gint tX_midiin::midi_binding_gui::timer( gpointer _this )

@@ -719,17 +719,20 @@ create_tx_adjust (void)
   GtkWidget *dialog_vbox2;
   GtkWidget *vbox1;
   GtkWidget *label34;
-  GtkWidget *hbox3;
-  GtkWidget *label35;
+  GtkWidget *table7;
   GtkObject *master_cycles_adj;
   GtkWidget *master_cycles;
   GtkWidget *label36;
+  GtkWidget *label35;
   GtkObject *cycles_adj;
   GtkWidget *cycles;
   GtkWidget *create_event;
   GtkWidget *dialog_action_area2;
   GtkWidget *cancel;
   GtkWidget *ok;
+  GtkTooltips *tooltips;
+
+  tooltips = gtk_tooltips_new ();
 
   tx_adjust = gtk_dialog_new ();
   gtk_window_set_title (GTK_WINDOW (tx_adjust), "Compute Pitch");
@@ -742,35 +745,46 @@ create_tx_adjust (void)
   gtk_box_pack_start (GTK_BOX (dialog_vbox2), vbox1, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (vbox1), 4);
 
-  label34 = gtk_label_new ("To compute the pitch value, please specify with how many cycles of the master turntable this turntable should be re-triggered:");
+  label34 = gtk_label_new ("In order to compute the optimum pitch value, please specify how many loops of this turntable should play as fast as how many loops of the masterturntable:");
   gtk_widget_show (label34);
   gtk_box_pack_start (GTK_BOX (vbox1), label34, FALSE, FALSE, 0);
   gtk_label_set_justify (GTK_LABEL (label34), GTK_JUSTIFY_LEFT);
   gtk_label_set_line_wrap (GTK_LABEL (label34), TRUE);
 
-  hbox3 = gtk_hbox_new (FALSE, 4);
-  gtk_widget_show (hbox3);
-  gtk_box_pack_start (GTK_BOX (vbox1), hbox3, FALSE, FALSE, 0);
-
-  label35 = gtk_label_new ("Master Cycles:");
-  gtk_widget_show (label35);
-  gtk_box_pack_start (GTK_BOX (hbox3), label35, FALSE, FALSE, 0);
-  gtk_label_set_justify (GTK_LABEL (label35), GTK_JUSTIFY_LEFT);
+  table7 = gtk_table_new (2, 2, FALSE);
+  gtk_widget_show (table7);
+  gtk_box_pack_start (GTK_BOX (vbox1), table7, TRUE, TRUE, 0);
+  gtk_table_set_col_spacings (GTK_TABLE (table7), 3);
 
   master_cycles_adj = gtk_adjustment_new (1, 1, 100, 1, 10, 10);
   master_cycles = gtk_spin_button_new (GTK_ADJUSTMENT (master_cycles_adj), 1, 0);
   gtk_widget_show (master_cycles);
-  gtk_box_pack_start (GTK_BOX (hbox3), master_cycles, TRUE, TRUE, 0);
+  gtk_table_attach (GTK_TABLE (table7), master_cycles, 1, 2, 1, 2,
+                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_tooltips_set_tip (tooltips, master_cycles, "Specify the number of loops for the master turntable.", NULL);
 
-  label36 = gtk_label_new ("Cycles:");
+  label36 = gtk_label_new ("Loops of the master turntable:");
   gtk_widget_show (label36);
-  gtk_box_pack_start (GTK_BOX (hbox3), label36, FALSE, FALSE, 0);
+  gtk_table_attach (GTK_TABLE (table7), label36, 0, 1, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
   gtk_label_set_justify (GTK_LABEL (label36), GTK_JUSTIFY_LEFT);
+
+  label35 = gtk_label_new ("Loops of this turntable turntable:");
+  gtk_widget_show (label35);
+  gtk_table_attach (GTK_TABLE (table7), label35, 0, 1, 0, 1,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label35), GTK_JUSTIFY_LEFT);
 
   cycles_adj = gtk_adjustment_new (1, 1, 100, 1, 10, 10);
   cycles = gtk_spin_button_new (GTK_ADJUSTMENT (cycles_adj), 1, 0);
   gtk_widget_show (cycles);
-  gtk_box_pack_start (GTK_BOX (hbox3), cycles, TRUE, TRUE, 0);
+  gtk_table_attach (GTK_TABLE (table7), cycles, 1, 2, 0, 1,
+                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_tooltips_set_tip (tooltips, cycles, "Specify the number of loops of _this_ turntable.", NULL);
 
   create_event = gtk_check_button_new_with_mnemonic ("Record a sequencer event");
   gtk_widget_show (create_event);
@@ -796,15 +810,16 @@ create_tx_adjust (void)
   GLADE_HOOKUP_OBJECT_NO_REF (tx_adjust, dialog_vbox2, "dialog_vbox2");
   GLADE_HOOKUP_OBJECT (tx_adjust, vbox1, "vbox1");
   GLADE_HOOKUP_OBJECT (tx_adjust, label34, "label34");
-  GLADE_HOOKUP_OBJECT (tx_adjust, hbox3, "hbox3");
-  GLADE_HOOKUP_OBJECT (tx_adjust, label35, "label35");
+  GLADE_HOOKUP_OBJECT (tx_adjust, table7, "table7");
   GLADE_HOOKUP_OBJECT (tx_adjust, master_cycles, "master_cycles");
   GLADE_HOOKUP_OBJECT (tx_adjust, label36, "label36");
+  GLADE_HOOKUP_OBJECT (tx_adjust, label35, "label35");
   GLADE_HOOKUP_OBJECT (tx_adjust, cycles, "cycles");
   GLADE_HOOKUP_OBJECT (tx_adjust, create_event, "create_event");
   GLADE_HOOKUP_OBJECT_NO_REF (tx_adjust, dialog_action_area2, "dialog_action_area2");
   GLADE_HOOKUP_OBJECT (tx_adjust, cancel, "cancel");
   GLADE_HOOKUP_OBJECT (tx_adjust, ok, "ok");
+  GLADE_HOOKUP_OBJECT_NO_REF (tx_adjust, tooltips, "tooltips");
 
   return tx_adjust;
 }
