@@ -1,0 +1,462 @@
+<HTML
+><HEAD
+><TITLE
+>Turntable Controls</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.59"><LINK
+REL="HOME"
+TITLE="terminatorX - Manual"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Operation"
+HREF="operation.html"><LINK
+REL="PREVIOUS"
+TITLE="Operation"
+HREF="operation.html"><LINK
+REL="NEXT"
+TITLE="Synchronization"
+HREF="synchronization.html"></HEAD
+><BODY
+CLASS="SECTION"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>terminatorX - Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="operation.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 2. Operation</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="synchronization.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="TURNTABLECONTROLS"
+>2.2. Turntable Controls</A
+></H1
+><P
+>The turntable GUI contains multiple controls and the realtime displays for each turntable. To save some space on your desktop and to give terminatorX the traditional audio-application look, terminatorX features &quot;knob&quot;-widgets. These widgets work pretty straight-forward: click somewhere within the widget and keep the left mouse-button pressed. Now move the mouse up and down or left and right to increase/decrease the control's value. All those widget are coupled with a text entry field since 3.70, which allows you to enter values directly.</P
+><P
+>A turntable is visualized by two panels: the controls and the audio-display. These are no longer combined for better layout management.</P
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN184"
+>2.2.1. Turntable Audio-Display</A
+></H2
+><P
+>The complete audio-file loaded into a turntable is displayed in the green-on-black audio-widget. When playing terminatorX will indicate the current position within the sample with a red cursor (a blue/green cursor indicates the turntable is muted).</P
+><P
+>Additionaly there are some controls above the audio-display:</P
+><P
+></P
+><UL
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Turntable Label</I
+></P
+><P
+>This label indicates the turntables name. The name can be set via the control panel</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>File Button</I
+></P
+><P
+>This button holds the name of the audio-file currently loaded. When there's no sample loaded the button will read &quot;NONE&quot; to indicate the current status. Click on this button to select a file to load from a file-selection-dialog. Alternatively you can drag'n'drop files over the audio-display to load them.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Edit Button</I
+></P
+><P
+>This button will run the external audiofile-editor (that can be specified via the options-dialog) with the current audio-file as a parameter. Click the reload button after editing and saving the file.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Reload Button</I
+></P
+><P
+>Click this button to re-read the audio-file.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>X/Y Mapping Selection</I
+></P
+><P
+>terminatorX allows mapping misc parameters to the mouse axis of your choice. These mappings will be activated in grab mode. Since Version 3.70 this mappings are no longer hardcoded to built-in controls but available for all parameters that qualify as &quot;mappable&quot;. Note that this includes plugins' controls as well.</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN209"
+>2.2.2. Turntable Controls</A
+></H2
+><P
+>These controls are now grouped within functional panels. The number of panel depends on the number of plugins loaded. terminatorX allows hiding the controls not required via the yellow arrow button. To un-hide just click the button again. The first panels are the standard controls for a turntable, then follows the dynamic FX-section and below that follow the pitch and volume controls.</P
+><DIV
+CLASS="SECTION"
+><H3
+CLASS="SECTION"
+><A
+NAME="AEN212"
+>2.2.2.1. Main Panel</A
+></H3
+><P
+></P
+><UL
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Name Field</I
+></P
+><P
+>The main panel features a text entry field that allows setting a name for the related turntable. The Labels for the controls and the audio-display will update accordingly.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Delete Button</I
+></P
+><P
+>Pressing this button remove the tunrtable from the current setup. Note that all sequencer events recorded for this turntable will be erased, too.</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="SECTION"
+><H3
+CLASS="SECTION"
+><A
+NAME="AEN223"
+>2.2.2.2. Trigger Panel</A
+></H3
+><P
+>The trigger panel holds all controls related to triggering the turntable. For more details on synchronization see <A
+HREF="synchronization.html"
+>Section 2.3</A
+> (synchronization).</P
+><P
+></P
+><UL
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Trigger! Button</I
+></P
+><P
+>Pressing this button triggers the turntable now. With the audio engine enabled this will cause the turntable to start playing back audio from the beginning of the sample.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Stop Button</I
+></P
+><P
+>Guess what, this stops this turntable's audio-playback.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Master Button</I
+></P
+><P
+>Enabling this button makes this turntable the <I
+CLASS="EMPHASIS"
+>sync-master</I
+>. Note that only <I
+CLASS="EMPHASIS"
+>one</I
+> turntable at a time can be the sync-master.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Client Button</I
+></P
+><P
+>This button marks the turntable as <I
+CLASS="EMPHASIS"
+>sync-client</I
+>, so it will be triggerd with the master automatically.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Sync-Cycles Selection</I
+></P
+><P
+>The sync cycles determine how often a sync-client should be triggered. With a setting of zero the sync-client will be (re-)triggered with <I
+CLASS="EMPHASIS"
+>every</I
+> trigger of the sync-master. A setting of 1 will (re-)trigger the client every <I
+CLASS="EMPHASIS"
+>second</I
+> master-triger and so on.</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN253"
+>2.2.3. The Effect Queue</A
+></H2
+><P
+>With release 3.70 the effects are no longer hardcoded into the turntable. The effects are now arranged within an per-turntable effect-queue. The effect sequence is configurable by the user. To move an effect to higher position within the queue, press the <I
+CLASS="EMPHASIS"
+>blue upward arrow button</I
+>. This will cause the effect to be renderd <I
+CLASS="EMPHASIS"
+>before</I
+> the following effects. The <I
+CLASS="EMPHASIS"
+>blue downward arrow button</I
+> will move the effect down by one position. It will then be rendered <I
+CLASS="EMPHASIS"
+>after</I
+> the preceding effects.</P
+><P
+>There are two types of effects: the traditional built-in effects (Lowpass and Echo) and LADSPA plugins. The built-in effects are always available and cannot be removed (but disabled). There can be only one instance of a built-in effect. The LADSPA plugins on the other hand may be intanciated multiple times and can be removed from the effect queue. Press the <I
+CLASS="EMPHASIS"
+>blue cross button</I
+> to achieve this.</P
+><P
+>For more information on a LADSPA plugin, press it's panel's label and a small info box will pop up.</P
+><P
+></P
+><UL
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>FX Button</I
+></P
+><P
+>Press this button to load a LADSPA plugin into the effect queue of the turntable. A menu holding the available (terminatorX-&quot;compatible&quot;) LADSPA-plugins will pop up. The plugins are grouped within submenus according to the modules the plugins are contained in. Simply select the plugin you want to load from this menu and a panel for it will pop up at the end of the effect queue.</P
+><P
+>Note that due to the wide parameter ranges some LADSPA plugins have they sometimes might be hard to control with the knob widget. In these cases you might want to use the text field to enter values. For more details on Plugins see <A
+HREF="ladspaplugins.html"
+>Section 2.7</A
+> (LASDPA).</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN270"
+>2.2.4. Lowpass Panel</A
+></H2
+><P
+>terminatorX features a buitlin resonating lowpass filter that can be configured with this panel.</P
+><P
+></P
+><UL
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Enable Button</I
+></P
+><P
+>Activating this button will enable the lowpass filter for this turntable.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Input Gain Control</I
+></P
+><P
+>With this parameter you can amplify the signal that goes into the lowpass filter if required.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Frequency Control</I
+></P
+><P
+>Use this parameter to set the cutoff frequency for the lowpass filter. Minimum: 0=0Hz, Maximum: 1=22KHz.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Resonance</I
+></P
+><P
+>Use this parameter to set the resonance-value. Minimum: 0=no resonance, Maximum: 1=max resonance.</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="SECTION"
+><H2
+CLASS="SECTION"
+><A
+NAME="AEN290"
+>2.2.5. Echo Panel</A
+></H2
+><P
+>Additionaly terminatorX features a built-in echo effect. It can be configured with this panel.</P
+><P
+></P
+><UL
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Enable Button</I
+></P
+><P
+>Activating this button will enable the echo effect for this turntable.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Duration Control</I
+></P
+><P
+>Use this parameter to set the length of the echo. The duration parameter scales to the actual sample length: so if you set it to 0.5 you will hear the echo when the red playback cursor is half way  through the sample. This is true for samples that are shorter than terminatorX' maximum echo buffer size only.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Feedback Control</I
+></P
+><P
+>Set the echo's feedback amount with this parameter.</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="operation.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="synchronization.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Operation</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="operation.html"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Synchronization</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

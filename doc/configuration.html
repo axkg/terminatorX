@@ -1,0 +1,180 @@
+<HTML
+><HEAD
+><TITLE
+>Configuration</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.59"><LINK
+REL="HOME"
+TITLE="terminatorX - Manual"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Plugins (LADSPA)"
+HREF="ladspaplugins.html"><LINK
+REL="NEXT"
+TITLE="Mouse/Input Setup"
+HREF="mouseinputsetup.html"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>terminatorX - Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="ladspaplugins.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="mouseinputsetup.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CONFIGURATION"
+>Chapter 3. Configuration</A
+></H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>3.1. <A
+HREF="configuration.html#AUDIOSETUP"
+>Audio Setup</A
+></DT
+><DT
+>3.2. <A
+HREF="mouseinputsetup.html"
+>Mouse/Input Setup</A
+></DT
+><DT
+>3.3. <A
+HREF="guisetup.html"
+>GUI Setup</A
+></DT
+><DT
+>3.4. <A
+HREF="soundfileeditor.html"
+>Soundfile-Editor integration</A
+></DT
+></DL
+></DIV
+><P
+>All configuration business now happens in the Options-dialog. The features that are not completely self-explaining do have tooltips.</P
+><P
+>A word on the settings in general: your settings are stored in the file <TT
+CLASS="FILENAME"
+>~/.terminatorX3rc.bin</TT
+> so if you think you completely messed up your settings you will have to exit terminatorX - delete this file - and then re-run terminatorX with the default settings.</P
+><DIV
+CLASS="SECTION"
+><H1
+CLASS="SECTION"
+><A
+NAME="AUDIOSETUP"
+>3.1. Audio Setup</A
+></H1
+><P
+>TerminatorX renders audio blockwise. If you want to have near-realtime operation you need to have really small blocks. The values of these blocks can be influenced via the <I
+CLASS="EMPHASIS"
+>buffer size</I
+> option. The setting you select actually results in a 2^x blocksize (size-setting == 8 -&#62; true buffer size in bytes is 2^8=256).</P
+><P
+>The problem is the smaller the value you select is the faster your machine has to be. So if you here "clicks", or "drops" in audio output that are not related to your sample-material you will have to increase the buffer size. On the other hand if you believe terminatorX does not react fast enough you have to decrease this parameter. The default value is 8, but as my machine handles 7 nicely (running with root privileges for realtime scheduling) I use 7.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ladspaplugins.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="mouseinputsetup.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Plugins (LADSPA)</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Mouse/Input Setup</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
