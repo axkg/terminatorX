@@ -42,11 +42,6 @@
 #include "tX_mastergui.h"
 #include "tX_knobloader.h"
 
-/* I don't know a display that can handle that, but
-   just to be on the safe side...
-*/
-#define MAX_ROWS 25
-
 #ifdef USE_SCHEDULER
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -689,19 +684,27 @@ void quit()
 }
 
 void mplcfitx()
-/* Most Probably Least Called Function In Terminator X :) */
+/* Most Probably Least Called Function In terminatorX :) */
 {
 	show_about(0);
 }
 
 GtkSignalFunc seq_play(GtkWidget *w, void *)
 {
-	if (seq_stop_override) return NULL;
-	seq_adj_care=0;
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w), 1);
-	sequencer.trig_play();
+	if (sequencer.is_empty()) {
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
+			tx_note("Sequencer playback triggered - but no events\nrecorded yet - nothing to playback!\n\nTo perform live with terminatorX just activate the\naudio engine with the \"Power\" button.");
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w), 0);
+		}
+	} else {
+		if (seq_stop_override) return NULL;
+			
+		seq_adj_care=0;
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w), 1);
+		sequencer.trig_play();
 	
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(engine_btn), 1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(engine_btn), 1);
+	}
 }
 
 GtkSignalFunc seq_stop(GtkWidget *w, void *)
@@ -1128,25 +1131,39 @@ void note_destroy(GtkWidget *widget, GtkWidget *mbox)
 
 void tx_note(const char *message)
 {
-	char buffer[4096]="\n     [ terminatorX Message: ]     \n\n";
+	char buffer[4096]="\nterminatorX Note:\n\n";
 	
 	GtkWidget *mbox;
 	GtkWidget *label;
 	GtkWidget *btn;
+	GtkWidget *sp;
 	GtkWindow *win;
 	
 	mbox=gtk_dialog_new();
 	win=&(GTK_DIALOG(mbox)->window);
-	strcat(buffer, "   ");	
-	strcat(buffer, message);
-	strcat(buffer, "   ");
-	label=gtk_label_new(buffer);
+
+	gtk_box_set_spacing(GTK_BOX(GTK_DIALOG(mbox)->vbox), 2);
+	gtk_container_set_border_width(GTK_CONTAINER(mbox), 10);
+	
+	label=gtk_label_new("terminatorX Note");
+	gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->vbox), label, TRUE, TRUE, 0);
 	gtk_widget_show(label);
-	
+
+	sp=gtk_hseparator_new();
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->vbox), sp, TRUE, TRUE, 0);
+	gtk_widget_show(sp);
+
+	strcpy(buffer, "\n");
+	strcat(buffer, message);
+	strcat(buffer, "\n");
+	label=gtk_label_new(buffer);
+	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->vbox), label, TRUE, TRUE, 0);
+	gtk_widget_show(label);	
+
 	btn = gtk_button_new_with_label("Ok");
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->action_area), btn, TRUE, TRUE, 0);
-	
+
 	gtk_signal_connect(GTK_OBJECT(btn), "clicked", GtkSignalFunc(note_destroy), mbox);
 
 	gtk_window_set_default_size(win, 200, 100);
@@ -1176,7 +1193,7 @@ void tx_l_note(const char *message)
 	gtk_label_set_justify (GTK_LABEL(label),  GTK_JUSTIFY_LEFT);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->vbox), label, TRUE, TRUE, 0);
 	gtk_widget_show(label);
-	
+
 	btn = gtk_button_new_with_label("Ok");
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->action_area), btn, TRUE, TRUE, 0);
 	gtk_widget_show(btn);

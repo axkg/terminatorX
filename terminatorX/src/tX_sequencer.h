@@ -84,6 +84,7 @@ class tX_sequencer
 	
 	guint32 set_start_timestamp(float pos);
 	void forward_to_start_timestamp(int dont_fake);
+	bool is_empty() { return song_list.empty(); }
 };
 
 extern tX_sequencer sequencer;

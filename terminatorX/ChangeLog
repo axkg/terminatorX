@@ -24,6 +24,11 @@ changed.
 - This release should compile and run on FreeBSD systems and possibly
   OpenBSD, too. Thanks for help and testing this goes to 
   Tilman Linneweh <tilman@arved.de>.
+- Sequencer now refuses to play when no events available - and displays
+  a dialog that suggests running the audio engine.
+- De-uglified the terminatorX note dialog.
+- Fixed gtk+2 signals for load file dialog
+- Pre-listen support for mpg321
 
 [v3.72]
 - Applied a patch from Matthew Evans <activesx@hotmail.com> that introduces 
