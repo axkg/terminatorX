@@ -302,7 +302,7 @@ void vtt_fx_ladspa :: save (FILE *rc, gzFile rz, char *indent) {
 
 void vtt_fx_ladspa :: load(xmlDocPtr doc, xmlNodePtr node) {
 	int dummy;
-	bool hidden;
+	bool hidden=false;
 	list <tX_seqpar_vttfx *> :: iterator sp=controls.begin();
 	int elementFound;
 	guint32 pid=0;

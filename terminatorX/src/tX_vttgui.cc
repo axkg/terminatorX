@@ -1243,7 +1243,7 @@ void gui_hide_control_panel(vtt_class *vtt, bool hide) {
 	} else {
 		gtk_widget_show(vtt->gui.control_box);
 		remove_from_panel_bar(vtt->gui.control_minimized_panel_bar_button);
-		gtk_widget_destroy(vtt->gui.control_minimized_panel_bar_button);
+		if (!tX_shutdown) gtk_widget_destroy(vtt->gui.control_minimized_panel_bar_button);
 		vtt->gui.control_minimized_panel_bar_button=NULL;
 	}
 }
@@ -1258,7 +1258,7 @@ void gui_hide_audio_panel(vtt_class *vtt, bool hide) {
 	} else {
 		gtk_widget_show(vtt->gui.audio_box);
 		remove_from_panel_bar(vtt->gui.audio_minimized_panel_bar_button);
-		gtk_widget_destroy(vtt->gui.audio_minimized_panel_bar_button);
+		if (!tX_shutdown) gtk_widget_destroy(vtt->gui.audio_minimized_panel_bar_button);
 		vtt->gui.audio_minimized_panel_bar_button=NULL;
 	}
 }

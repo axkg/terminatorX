@@ -1422,6 +1422,9 @@ int  vtt_class :: save(FILE *rc, gzFile rz, char *indent) {
 	store_bool("trigger_panel_hidden", gui.trigger_panel->is_hidden());
 	store_bool("lowpass_panel_hidden", gui.lp_panel->is_hidden());
 	store_bool("echo_panel_hidden", gui.ec_panel->is_hidden());
+	
+	store_bool("mix_mute", mix_mute);
+	store_bool("mix_solo", mix_solo);
 
 	store_float("audio_x_zoom", gui_get_audio_x_zoom(this));
 	
@@ -1515,6 +1518,9 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 	
 			restore_int("x_axis_mapping", xpar_id);
 			restore_int("y_axis_mapping", ypar_id);
+			
+			restore_bool("mix_mute", mix_mute);
+			restore_bool("mix_solo", mix_solo);
 	
 			restore_bool("audio_panel_hidden", audio_hidden);
 			restore_bool("control_panel_hidden", control_hidden);
@@ -1591,7 +1597,10 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 		set_y_input_parameter(tX_seqpar :: get_sp_by_persistence_id(ypar_id));
 	}
 	else set_y_input_parameter(NULL);
-		
+	
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gui.mute), mix_mute);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gui.solo), mix_solo);
+	
 	return 0;
 }
 
