@@ -125,7 +125,7 @@ static void wrapstr(char *str)
 	
 	while(token)
 	{
-		if (strlen(token)+strlen(temp)<12)
+		if (strlen(token)+strlen(temp)<10)
 		{
 			if (strlen(temp)) strcat(temp, " ");
 			strcat(temp, token);
@@ -135,12 +135,12 @@ static void wrapstr(char *str)
 			if (strlen(temp))
 			{
 				if(strlen(target)) strcat(target, "\n");
-				if(strlen(temp)>12)
+				if(strlen(temp)>10)
 				{
+					temp[8]='.';
 					temp[9]='.';
 					temp[10]='.';
-					temp[11]='.';
-					temp[12]=0;
+					temp[11]=0;
 				}
 				strcat(target, temp);
 				strcpy(temp,token);
