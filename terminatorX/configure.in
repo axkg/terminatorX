@@ -21,6 +21,7 @@ AC_ARG_ENABLE(gtk2,	    [  --disable-gtk2          use gtk+ 1.2 even if verion 2
 dnl AC_ARG_ENABLE(dial,         [  --enable-dial           use dials instead of scales for effects (default=yes) ])
 dnl AC_ARG_ENABLE(bigdial,      [  --enable-bigdial        use BIG dials (default=yes) ])
 dnl AC_ARG_ENABLE(dga2,     [  --enable-dga2           use DGA2 instead of DGA1. (experimental) (default=no) ])
+AC_ARG_ENABLE(libxml2,	    [  --disable-libxml2       use libxml even if verion 2 detected (default=auto) ])
 
 dnl Checks for programs.
 AC_PROG_AWK
@@ -325,6 +326,57 @@ AC_MSG_CHECKING(for GNOME)
    		AC_MSG_RESULT([GNOME not found.])
     	fi
 
+
+dnl Detecting libxml. Based on dia's test.
+found_libxml=false
+
+if test "$enable_libxml2" != "no"; then
+	if ! $found_libxml; then
+	  AC_CHECK_PROG(XML2_CONFIG, xml2-config, xml2-config)
+	  if test "x$XML2_CONFIG" != x ; then
+	    AC_MSG_CHECKING(for libxml >= 2.3.9)
+	    vers=`$XML2_CONFIG --version | sed -e "s/libxml //" | awk 'BEGIN {FS=".";} { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
+
+	    if test "$vers" -ge 2003009; then
+	      AC_MSG_RESULT(yes)
+	      found_libxml=true
+	      XML_LIBS="`$XML2_CONFIG --libs`"
+	      XML_CFLAGS="`$XML2_CONFIG --cflags`"
+	    else
+	      AC_MSG_RESULT(no)
+	    fi
+	  fi
+	fi
+fi	
+
+if ! $found_libxml 
+then
+	AC_CHECK_PROG(XML_CONFIG, xml-config, xml-config)
+	if test "x$XML_CONFIG" != x ; then
+	  AC_MSG_CHECKING(for libxml >= 1.8.14)
+	  vers=`$XML_CONFIG --version | sed -e "s/libxml //" | awk 'BEGIN {FS=".";} { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
+
+	  dnl 1.18.14 is required for xmlUseNewParser()    
+	  if test "$vers" -ge 1008014; then
+	    AC_MSG_RESULT(yes)
+	    found_libxml=true
+	    XML_LIBS="`$XML_CONFIG --libs`"
+	    XML_CFLAGS="`$XML_CONFIG --cflags`"
+	  else
+	    AC_MSG_RESULT(no)
+	  fi
+	fi
+fi
+
+if ! $found_libxml; then
+    AC_MSG_ERROR([** libxml not found. Get libxml(2) at http://www.libxml.org **])
+fi
+
+AC_SUBST(XML_LIBS)
+AC_SUBST(XML_CFLAGS)
+
+CFLAGS="$XML_CFLAGS $CFLAGS"
+LIBS="$XML_LIBS $LIBS"
 
 dnl Now Check for Xlibs - I do this here as other tests fail if these run earlier
 AC_PATH_XTRA
