@@ -98,6 +98,8 @@ int vtt_class::mix_buffer_size=0;
 vtt_class :: vtt_class (int do_create_gui)
 {	
 	vtt_amount++;
+	cleanup_required=false;
+	
 	sprintf (name, "Turntable %i", vtt_amount);
 	strcpy(filename, "NONE");
 	buffer=NULL;
@@ -872,18 +874,16 @@ int16_t * vtt_class :: render_all_turntables()
 			}
 			
 			if (master_triggered) {
-				pthread_mutex_unlock(&render_lock);
 				for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
 					if ((*vtt)->is_sync_client)	{
 						if ((*vtt)->sync_countdown)	{
 							(*vtt)->sync_countdown--;
 						} else {
 							(*vtt)->sync_countdown=(*vtt)->sync_cycles;
-							(*vtt)->trigger();
+							(*vtt)->trigger(false);
 						}
 					}
 				}
-				pthread_mutex_lock(&render_lock);
 			}
 			
 			vtt=render_list.begin();
@@ -1027,79 +1027,77 @@ void vtt_class :: forward_all_turntables()
 	}
 }
 
-
-int vtt_class :: trigger()
+void vtt_class :: retrigger() 
 {
-	list <vtt_fx *> :: iterator effect;
-
-	if (!buffer) return (1);
-	
-	if (!is_playing) pthread_mutex_lock(&render_lock);
-	
 	if (res_pitch>=0) pos_f=0;
 	else pos_f=maxpos;
+		
 	fade=NEED_FADE_OUT;
 	speed=res_pitch;
 	speed_real=res_pitch;
 	speed_target=res_pitch;
 	want_stop=0;
 
-	/* activating plugins */
-	for (effect=fx_list.begin(); effect != fx_list.end(); effect++)
-	{
-		(*effect)->activate();
-	}
-
 	max_value=0;
 	
-	if (is_sync_master)
-	{
+	if (is_sync_master)	{
 		master_triggered=1;
 		master_triggered_at=0;
 	}
-	
-	if (!is_playing)
-	{
-		is_playing=1;
-	
-		if (is_sync_master) 
-		{
-			render_list.push_front(this);		
-		}		
-		else
-		{
-			render_list.push_back(this);
-		}
-		pthread_mutex_unlock(&render_lock);
-	}
-	return(0);
 }
 
-static bool do_unlock=true;
+int vtt_class :: trigger(bool need_lock)
+{
+	list <vtt_fx *> :: iterator effect;
 
+	if (!buffer) return 1;
+	
+	retrigger();
+	
+	if (!is_playing) {
+		if (need_lock) pthread_mutex_lock(&render_lock);
+		is_playing=1;
+		cleanup_required=false;
+		
+		/* activating plugins */
+		for (effect=fx_list.begin(); effect != fx_list.end(); effect++) {
+			(*effect)->activate();
+		}
+		
+		if (is_sync_master)  {
+			render_list.push_front(this);		
+		} else {
+			render_list.push_back(this);
+		}
+		
+		if (need_lock) pthread_mutex_unlock(&render_lock);		
+	}
+
+	return 0;
+}
+
+/* call this only when owning render_lock. */
 int vtt_class :: stop_nolock()
 {
 	list <vtt_fx *> :: iterator effect;
 
-	if ((!is_playing) && do_unlock) {
-		pthread_mutex_unlock(&render_lock);
-		return(1);
+	if (!is_playing) {
+		return 1;
 	}
+	
 	render_list.remove(this);
 	want_stop=0;
-
 	is_playing=0;
 	max_value=0;
 
-	cleanup_vtt(this);
-	//sync_countdown=0;
+	cleanup_required=true;
 	
 	/* deactivating plugins */
 	for (effect=fx_list.begin(); effect != fx_list.end(); effect++) {
 		(*effect)->deactivate();
 	}
 	
-	return(0);
+	return 0;
 }
 
 int vtt_class :: stop()
@@ -1107,13 +1105,7 @@ int vtt_class :: stop()
 	int res;
 	
 	pthread_mutex_lock(&render_lock);
-
-	do_unlock=false;
-	
 	res=stop_nolock();
-
-	do_unlock=true;
-	
 	pthread_mutex_unlock(&render_lock);
 
 	return(res);
@@ -1121,14 +1113,11 @@ int vtt_class :: stop()
 
 void vtt_class :: set_sync_master(int master)
 {
-	if (master)
-	{
+	if (master) {
 		if (sync_master) sync_master->set_sync_master(0);
 		sync_master=this;
 		is_sync_master=1;
-	}
-	else
-	{
+	} else {
 		if (sync_master==this) sync_master=0;
 		is_sync_master=0;
 		gui_clear_master_button(this);
@@ -1156,14 +1145,12 @@ void vtt_class :: set_master_volume(f_prec new_volume)
 	master_volume=new_volume;
 	globals.volume=new_volume;
 	
-	if (main_list.size()>0)
-	{
+	if (main_list.size()>0) {
 		vol_channel_adjust=sqrt((f_prec) main_list.size());
 		res_master_volume=master_volume/vol_channel_adjust;		
 	}
 		
-	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++)
-	{
+	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
 		(*vtt)->recalc_volume();
 	}
 }
@@ -1173,8 +1160,7 @@ void vtt_class :: set_master_pitch(f_prec new_pitch)
 	list <vtt_class *> :: iterator vtt;
 	
 	globals.pitch=new_pitch;
-	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++)
-	{
+	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
 		(*vtt)->recalc_pitch();
 	}
 }
@@ -1186,8 +1172,7 @@ void vtt_class :: focus_no(int no)
 
 	focused_vtt=NULL;
 	
-	for (i=0, vtt=main_list.begin(); vtt!=main_list.end(); vtt++, i++)
-	{
+	for (i=0, vtt=main_list.begin(); vtt!=main_list.end(); vtt++, i++) {
 		if (i==no) {
 			focused_vtt=(*vtt);
 		}
@@ -1198,10 +1183,8 @@ void vtt_class :: focus_next()
 {
 	list <vtt_class *> :: iterator vtt;
 	
-	if (!focused_vtt)
-	{
-		if (main_list.size())
-		{
+	if (!focused_vtt) {
+		if (main_list.size()) {
 			focused_vtt=(*main_list.begin());
 		}
 		return;
@@ -1240,14 +1223,11 @@ void vtt_class :: focus_next()
 
 void vtt_class :: set_scratch(int newstate)
 {
-	if (newstate)
-	{
+	if (newstate) {
 		sp_spin.receive_input_value(0);
 		do_scratch=1;
 		sense_cycles=globals.sense_cycles;
-	}
-	else
-	{
+	} else {
 		sp_spin.receive_input_value(1);
 		do_scratch=0;
 	}
@@ -1546,7 +1526,6 @@ void vtt_class :: delete_all()
 	seq_update();
 }
 
-
 int vtt_class :: load_all(xmlDocPtr doc, char *fname) {
 	xmlNodePtr root=xmlDocGetRootElement(doc);
 	int elementFound=0;
@@ -1641,11 +1620,11 @@ int vtt_class :: load_all(xmlDocPtr doc, char *fname) {
 
 void add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn)
 {
-	vtt_class *hmmpg;
-	hmmpg = new vtt_class(1);
-	gtk_box_pack_start(GTK_BOX(ctrl), hmmpg->gui.control_box, TRUE, TRUE, 0);
-	gtk_box_pack_start(GTK_BOX(audio), hmmpg->gui.audio_box, TRUE, TRUE, 0);
-	if (fn) hmmpg->load_file(fn);
+	vtt_class *new_tt;
+	new_tt = new vtt_class(1);
+	gtk_box_pack_start(GTK_BOX(ctrl), new_tt->gui.control_box, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(audio), new_tt->gui.audio_box, TRUE, TRUE, 0);
+	if (fn) new_tt->load_file(fn);
 }
 
 extern void vg_move_fx_panel_up(GtkWidget *wid, vtt_class *vtt);
@@ -1664,18 +1643,15 @@ void vtt_class :: effect_up(vtt_fx *effect)
 	
 	if ((*fx_list.begin())==effect) return;
 	
-	for (previous=i=fx_list.begin(); i != fx_list.end(); i++)
-	{
-		if ((*i) == effect)
-		{
+	for (previous=i=fx_list.begin(); i != fx_list.end(); i++) {
+		if ((*i) == effect) {
 			ok=1;
 			break;
 		}
 		previous=i;
 	}
 	
-	if (ok)
-	{	
+	if (ok) {	
 		pthread_mutex_lock(&render_lock);
 		fx_list.remove(effect);
 		fx_list.insert(previous, effect);
@@ -1694,17 +1670,14 @@ void vtt_class :: effect_down(vtt_fx *effect)
 
 	debug_fx_stack();
 		
-	for (i=fx_list.begin(); i != fx_list.end(); i++)
-	{
-		if ((*i) == effect)
-		{
+	for (i=fx_list.begin(); i != fx_list.end(); i++) {
+		if ((*i) == effect) {
 			ok=1;
 			break;
 		}
 	}
 	
-	if ((ok) && (i!=fx_list.end()))
-	{
+	if ((ok) && (i!=fx_list.end())) {
 		i++;
 		if (i==fx_list.end()) return;
 		i++;
@@ -1717,7 +1690,7 @@ void vtt_class :: effect_down(vtt_fx *effect)
 		pthread_mutex_unlock(&render_lock);
 	}
 	
-debug_fx_stack();	
+	debug_fx_stack();	
 }
 
 void vtt_class ::  effect_remove(vtt_fx_ladspa *effect)

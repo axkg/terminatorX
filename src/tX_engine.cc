@@ -158,15 +158,15 @@ void *engine_thread_entry(void *engine_void) {
 
 #ifdef USE_SCHEDULER
 	pid_t pid=getpid();
+	struct sched_param parm;
 
 #ifdef USE_CAPABILITIES
 	if (have_nice_capability()) {
 		if (globals.use_realtime) {
-			struct sched_param parm;
-	
 			sched_getparam(pid, &parm);
 			parm.sched_priority=sched_get_priority_max(SCHED_FIFO);
-			if (sched_setscheduler(pid, SCHED_FIFO, &parm)) {
+						
+			if (pthread_setschedparam(pthread_self(), SCHED_FIFO, &parm)) {
 				tX_error("engine_thread_entry(): failed to set realtime priority.");
 			} else {
 				tX_debug("engine_thread_entry(): set SCHED_FIFO via capabilities.");
@@ -176,9 +176,10 @@ void *engine_thread_entry(void *engine_void) {
 		tX_warning("engine_thread_entry(): can't set SCHED_FIFO -> lacking capabilities.");
 	}
 #endif //USE_CAPABILITIES
-	engine->set_pid(pid);
+	int policy=0;
 	
-	if (sched_getscheduler(pid)!=SCHED_FIFO) {
+	pthread_getschedparam(pthread_self(), &policy, &parm);
+	if (policy!=SCHED_FIFO) {
 		tX_warning("engine_thread_entry() - engine has no realtime priority scheduling.");
 	}
 #endif //USE_SCHEDULER
@@ -187,10 +188,14 @@ void *engine_thread_entry(void *engine_void) {
 	/* Create the client now, so the user has something to connect to. */
 	tX_jack_client::get_instance();
 #endif	
+
+#ifdef USE_SCHEDULER
+	tX_debug("engine_thread_entry() engine thread is p: %i, t: %i and has policy %i.", getpid(), pthread_self(), sched_getscheduler(getpid()));
+#endif
 	
 	engine->loop();
 	
-	tX_debug("engine_thread_entry() - Engine thread terminating.");
+	tX_debug("engine_thread_entry() engine thread terminating.");
 	
 	pthread_exit(NULL);
 }
@@ -201,9 +206,6 @@ tX_engine :: tX_engine() {
 	pthread_mutex_init(&start, NULL);
 	pthread_mutex_lock(&start);
 	thread_terminate=false;
-#ifdef USE_SCHEDULER
-	pid=-1;
-#endif	
 	
 	/* Creating the actual engine thread.. */
 #ifdef USE_SCHEDULER	
@@ -211,7 +213,7 @@ tX_engine :: tX_engine() {
 		pthread_attr_t pattr;
 		struct sched_param sparm;
 		
-		tX_debug("tX_engine() - Have root privileges - using SCHED_FIFO.");
+		tX_debug("tX_engine() - setting SCHED_FIFO.");
 		
 		pthread_attr_init(&pattr);
 		pthread_attr_setdetachstate(&pattr, PTHREAD_CREATE_JOINABLE);

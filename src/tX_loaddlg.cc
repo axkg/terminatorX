@@ -111,6 +111,8 @@ int ld_create_loaddlg(int mode, int count)
 char *strip_path(char *name)
 {
 	char *tmp;
+
+	if (!name) return NULL;
 	
 	tmp=strrchr(name, (int) '/');
 	

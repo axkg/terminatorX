@@ -55,6 +55,7 @@
 
 #ifdef USE_SCHEDULER
 #include <sched.h>
+#include <pthread.h>
 #endif
 
 #ifdef USE_JACK
@@ -699,10 +700,14 @@ void show_about(int nag)
 		add_about_wid_fix(sep);
 
 		char buffer[4096];
-		int prio=sched_getscheduler(tX_engine::get_instance()->get_pid());
+		
+		int policy=-1;
+		struct sched_param parm;
+		
+		pthread_getschedparam(tX_engine::get_instance()->get_thread_id(), &policy, &parm);
 		char prio_str[32]="";
 		
-		switch (prio) {
+		switch (policy) {
 			case SCHED_OTHER:
 				strcpy(prio_str, "SCHED_OTHER");
 				break;
@@ -716,7 +721,7 @@ void show_about(int nag)
 				break;
 			
 			default:
-				sprintf(prio_str, "UNKOWN (%i)", prio);
+				sprintf(prio_str, "UNKOWN (%i)", policy);
 		}
 		
 		sprintf(buffer, "Audio engine scheduling policy: %s.\n(Note: SCHED_FIFO equals realtime scheduling.)", prio_str);
