@@ -1208,10 +1208,11 @@ void vtt_class :: focus_no(int no)
 	list <vtt_class *> :: iterator vtt;
 	int i;
 
+	focused_vtt=NULL;
+	
 	for (i=0, vtt=main_list.begin(); vtt!=main_list.end(); vtt++, i++)
 	{
-		if (i==no)
-		{
+		if (i==no) {
 			focused_vtt=(*vtt);
 		}
 	}
