@@ -27,6 +27,8 @@
 #include <list>
 #include <ladspa.h>
 
+using namespace std;
+
 class LADSPA_Plugin
 {
 	private:
