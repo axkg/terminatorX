@@ -24,6 +24,7 @@
 #define ALSA_PCM_NEW_HW_PARAMS_API
 
 #include "tX_audiodevice.h"
+#include "tX_vtt.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -45,12 +46,61 @@
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
+#include "tX_engine.h"
 
-void tX_audiodevice :: init()
+tX_audiodevice :: tX_audiodevice() : samples_per_buffer(0),
+current_buffer(0), buffer_pos(0)
 {
-	samples_per_buffer=0;
-	//set_buffersize_near(globals.audiodevice_buffersize);
+	sample_buffer[0]=NULL;
+	sample_buffer[1]=NULL;
+	engine=tX_engine::get_instance();
 }
+
+void tX_audiodevice :: start() {
+	sample_buffer[0]=new int16_t[samples_per_buffer*2];
+	sample_buffer[1]=new int16_t[samples_per_buffer*2];
+	int current=0;
+	
+	while (!engine->is_stopped()) {
+		current=current ? 0 : 1;
+		
+		int16_t *current_buffer=sample_buffer[current];
+		int16_t *next_buffer=sample_buffer[current ? 0 : 1];
+		
+		fill_buffer(current_buffer, next_buffer);
+		play(current_buffer);
+	}
+	
+	delete [] sample_buffer[0];
+	delete [] sample_buffer[1];
+}
+
+void tX_audiodevice :: fill_buffer(int16_t *target_buffer, int16_t *next_target_buffer) {
+	int vtt_buffer_size=vtt_class::get_mix_buffer_size()<<1;
+	int prefill;
+	
+	while (buffer_pos < samples_per_buffer) {
+		int16_t *data=engine->render_cycle();
+		
+		int rest=samples_per_buffer-(buffer_pos+vtt_buffer_size);		
+		
+		if (rest>0) {
+			memcpy(&target_buffer[buffer_pos], data, samples_per_buffer << 1);
+		} else {
+			rest*=-1;
+					
+			memcpy(&target_buffer[buffer_pos], data, (vtt_buffer_size-rest) << 1);
+			memcpy(next_target_buffer, &data[vtt_buffer_size-rest], rest << 1);
+			prefill=rest;
+		}
+		
+		buffer_pos+=vtt_buffer_size;
+	}
+	
+	buffer_pos=prefill;
+}
+
+/* Driver Specific Code follows.. */
 
 #ifdef USE_OSS
 
@@ -116,12 +166,8 @@ int tX_audiodevice_oss :: close()
 	return 0;
 }
 
-tX_audiodevice_oss :: tX_audiodevice_oss()
-{
-	fd=0;
-	blocksize=0;
-	init();
-}
+tX_audiodevice_oss :: tX_audiodevice_oss() : tX_audiodevice(),
+fd(0), blocksize(0) {}
 
 double tX_audiodevice_oss :: get_latency()
 {
@@ -259,11 +305,8 @@ double tX_audiodevice_alsa :: get_latency()
 }
 
 
-tX_audiodevice_alsa :: tX_audiodevice_alsa()
-{
-	pcm_handle=NULL;	
-	init();
-}
+tX_audiodevice_alsa :: tX_audiodevice_alsa() : tX_audiodevice(),
+pcm_handle(NULL) {}
 
 void tX_audiodevice_alsa :: play(int16_t *buffer)
 {

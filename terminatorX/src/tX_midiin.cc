@@ -203,11 +203,12 @@ tX_midiin::midi_binding_gui::midi_binding_gui ( GtkTreeModel* _model, tX_midiin*
 	
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (window), "Configure MIDI Bindings");
-	gtk_window_set_default_size(GTK_WINDOW(window), 400, 260);
+	gtk_window_set_default_size(GTK_WINDOW(window), 600, 260);
 	
-	hbox1 = gtk_hbox_new (FALSE, 0);
+	hbox1 = gtk_hbox_new (FALSE, 2);
 	gtk_widget_show (hbox1);
 	gtk_container_add (GTK_CONTAINER (window), hbox1);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox1), 4);
 	
 	scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
 	gtk_widget_show (scrolledwindow1);
@@ -240,7 +241,7 @@ tX_midiin::midi_binding_gui::midi_binding_gui ( GtkTreeModel* _model, tX_midiin*
 	frame1 = gtk_frame_new (NULL);
 	gtk_widget_show (frame1);
 	gtk_box_pack_start (GTK_BOX (vbox1), frame1, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (frame1), 1);
+	gtk_container_set_border_width (GTK_CONTAINER (frame1), 2);
 	gtk_frame_set_label_align (GTK_FRAME (frame1), 0, 0);
 	gtk_frame_set_shadow_type (GTK_FRAME (frame1), GTK_SHADOW_IN);
 	
