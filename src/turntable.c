@@ -293,11 +293,11 @@ void vtt_play_block(Virtual_TurnTable *vtt, int16_t *buffer)
 {
 #ifdef BIG_ENDIAN_MACHINE
 #ifndef BIG_ENDIAN_AUDIO
-	swapbuffer(vtt->buffer, vtt->samples_per_block);
+	swapbuffer(buffer, vtt->samples_per_block);
 #endif	
 #else
 #ifdef BIG_ENDIAN_AUDIO
-	swapbuffer(vtt->buffer, vtt->samples_per_block);
+	swapbuffer(buffer, vtt->samples_per_block);
 #endif
 #endif
 
