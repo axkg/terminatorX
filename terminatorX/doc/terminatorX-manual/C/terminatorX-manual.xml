@@ -556,7 +556,19 @@
 
           <listitem>
 
-            <para><emphasis>New</emphasis></para>
+            <para><emphasis>Load Audio File</emphasis></para>
+
+            <para>The "official" position functionality is located at 
+            the file button (that reads "NONE" on startup) for each 
+            turntable. However, a lot of people expect to find this 
+            functionality in the menu, so you can load an audio file 
+            from here, too.</para>
+
+          </listitem>
+
+          <listitem>
+
+            <para><emphasis>New Set</emphasis></para>
 
             <para>Erases all existing turntables and sequencer events 
             and creates a new and untouched turntable.</para>
@@ -565,7 +577,7 @@
 
           <listitem>
 
-            <para><emphasis>Open</emphasis></para>
+            <para><emphasis>Open Set File</emphasis></para>
 
             <para>Allows restoring of a previously saved terminatorX 
             set file.</para>
@@ -574,7 +586,7 @@
 
           <listitem>
 
-            <para><emphasis>Save</emphasis></para>
+            <para><emphasis>Save Set</emphasis></para>
 
             <para>Saves the current turntables and events in a 
             terminatorX set file.</para>
@@ -583,7 +595,7 @@
 
           <listitem>
 
-            <para><emphasis>Save As</emphasis></para>
+            <para><emphasis>Save Set As</emphasis></para>
 
             <para>Like <emphasis>Save</emphasis> but prompts for a new 
             file name.</para>
@@ -771,7 +783,7 @@
             <para><emphasis>Preferences</emphasis></para>
 
             <para>Will pop up the Preferences dialog. For more details 
-            on configuration itself see <xref linkend="CONFIGURATION"/>
+            on configuration itself see <xref linkend="CONFIGURATION"/> 
             .</para>
 
           </listitem>
@@ -1007,7 +1019,7 @@
             <para>This button is available only if terminatorX was 
             built with ALSA MIDI support and the sequencer input port 
             was created successfully on startup. For more information 
-            on terminatorX' MIDI interface see <xref linkend="MIDI"/>
+            on terminatorX' MIDI interface see <xref linkend="MIDI"/> 
             .</para>
 
           </listitem>
@@ -1806,7 +1818,7 @@
       when the <emphasis>FX</emphasis> button is clicked or in the 
       stereo plugin menu when the <emphasis>Stereo FX</emphasis> button 
       si clicked. Depending on whether the terminatorX binary you're 
-      using was built with or without liblrdf (
+      using was built with or without liblrdf ( 
       <xref linkend="LIBLRDF"/>) support the plugin menu will either 
       contain sub-menus with plugin categories (with liblrdf) or just a 
       single menu with the <emphasis>Unclassified</emphasis> 
@@ -1827,8 +1839,8 @@
       /home/yourlogin/plugins</filename> then you would have to 
       set:</para>
 
-      <para><envar>LADSPA_PATH</envar>=
-      <filename>/usr/lib/ladspa:/home/yourlogin/plugins</filename></para>
+      <para><envar>LADSPA_PATH</envar>= <filename>
+      /usr/lib/ladspa:/home/yourlogin/plugins</filename></para>
 
       <para>As a fallback terminatorX will look in the standard 
       directories <filename>/usr/lib/ladspa</filename> and <filename>
