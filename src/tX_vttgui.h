@@ -135,4 +135,5 @@ extern void update_all_vtts();
 extern void vg_enable_critical_buttons(int enable);
 extern void vg_init_all_non_seqpars();
 extern void vg_adjust_zoom(GtkWidget *wid, vtt_class *vtt);
+extern GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt);
 #endif

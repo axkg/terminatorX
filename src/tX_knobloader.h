@@ -43,7 +43,7 @@ extern "C" {
 #ifdef USE_BIG_BUTTONS
 #define KNOB_SIZE 51
 #else
-#define KNOB_SIZE 31
+#define KNOB_SIZE 42
 #endif
 
 extern GdkPixbuf *knob_pixmaps[MAX_KNOB_PIX];

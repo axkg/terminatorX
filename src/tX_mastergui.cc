@@ -450,7 +450,76 @@ GtkSignalFunc load_tables()
 	return NULL;
 }
 
+vtt_class* choose_vtt() {
+	GtkWidget *dialog = gtk_dialog_new_with_buttons("Select Turntable",
+		GTK_WINDOW(main_window), GTK_DIALOG_MODAL, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+		GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,  NULL);	
 
+	GtkWidget *label = gtk_label_new ("Select turntable to load audio file to:");
+	gtk_widget_show(label);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), label);
+	gtk_container_set_border_width(GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), 10);
+	
+	list <GtkWidget *> radio_buttons;
+	list <vtt_class *> :: iterator iter;
+	bool first = true;
+	GtkWidget *radio;
+	vtt_class *res_vtt = NULL;
+	
+	pthread_mutex_lock(&vtt_class::render_lock);
+	
+	for (iter = vtt_class::main_list.begin(); iter!=vtt_class::main_list.end(); iter++)  {
+		if (first) {
+			first = false;
+			radio = gtk_radio_button_new_with_label(NULL, (*iter)->name);
+		} else {
+			radio = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio), (*iter)->name);
+		}
+		g_object_set_data(G_OBJECT(radio), "tX_vtt", (*iter));
+		gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), radio);
+		gtk_widget_show(radio);
+		radio_buttons.push_back(radio);
+	}	
+	
+	pthread_mutex_unlock(&vtt_class::render_lock);
+	
+	// Giving up the lock here is necessary if we want audio to keep running
+	// however it is also wrong. Anyway as it is a modal dialog not too many
+	// evil things can happen. This sounds like some famous last words...
+	
+	gint result = gtk_dialog_run (GTK_DIALOG (dialog));
+	
+	if (result == GTK_RESPONSE_ACCEPT) {
+		list <GtkWidget *> :: iterator radio;
+		
+		for (radio = radio_buttons.begin(); radio!=radio_buttons.end(); radio++) {
+			if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON((*radio)))) {
+				res_vtt = (vtt_class*) g_object_get_data(G_OBJECT(*radio), "tX_vtt");
+			}
+		}
+	} 
+	
+	gtk_widget_destroy(dialog);
+	
+	return res_vtt;
+}
+
+
+GtkSignalFunc load_audio() {
+	vtt_class *vtt = NULL;
+	
+	pthread_mutex_lock(&vtt_class::render_lock);
+	if (vtt_class::main_list.size()==1) {
+		vtt=(* vtt_class::main_list.begin());
+	}
+	pthread_mutex_unlock(&vtt_class::render_lock);
+	
+	if (vtt==NULL) {
+		vtt = choose_vtt();
+	}
+	
+	if (vtt!=NULL) load_file(NULL, vtt);
+}
 
 GtkSignalFunc drop_set(GtkWidget *widget, GdkDragContext *context,
 		gint x, gint y, GtkSelectionData *selection_data,
@@ -1078,6 +1147,8 @@ void create_master_menu()
 {
 	GtkWidget *menu_item;
 	GtkWidget *sub_menu;
+	GtkWidget *label;
+	
 	GtkAccelGroup* accel_group=gtk_accel_group_new();
 	gtk_window_add_accel_group(GTK_WINDOW(main_window), accel_group);
 
@@ -1089,22 +1160,45 @@ void create_master_menu()
 	sub_menu = gtk_menu_new ();
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), sub_menu);
 
+	menu_item = gtk_image_menu_item_new_from_stock ("gtk-open", accel_group);
+	label = gtk_bin_get_child(GTK_BIN(menu_item));
+	gtk_label_set_text(GTK_LABEL(label), "Load Audio File");
+	// Warning: gtk+ stock hacks ahead...
+	gtk_widget_remove_accelerator(menu_item, accel_group, GDK_O, GDK_CONTROL_MASK);
+	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_F, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	g_signal_connect(menu_item, "activate", (GCallback) load_audio, NULL);
+
+	menu_item = gtk_menu_item_new ();
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	gtk_widget_set_sensitive (menu_item, FALSE);
+
 	menu_item = gtk_image_menu_item_new_from_stock ("gtk-new", accel_group);
+	label = gtk_bin_get_child(GTK_BIN(menu_item));
+	gtk_label_set_text(GTK_LABEL(label), "New Set");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) new_tables, NULL);
 
 	menu_item = gtk_image_menu_item_new_from_stock ("gtk-open", accel_group);
+	label = gtk_bin_get_child(GTK_BIN(menu_item));
+	gtk_label_set_text(GTK_LABEL(label), "Open Set File");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) load_tables, NULL);
 
 	menu_item = gtk_image_menu_item_new_from_stock ("gtk-save", accel_group);
+	label = gtk_bin_get_child(GTK_BIN(menu_item));
+	gtk_label_set_text(GTK_LABEL(label), "Save Set");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) save_tables, NULL);
 
 	menu_item = gtk_image_menu_item_new_from_stock ("gtk-save-as", accel_group);
+	label = gtk_bin_get_child(GTK_BIN(menu_item));
+	gtk_label_set_text(GTK_LABEL(label), "Save Set As");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) save_tables_as, NULL);
