@@ -116,7 +116,7 @@ class tX_audiodevice_jack : public tX_audiodevice
 	private:
 	tX_jack_client *client;
 	jack_default_audio_sample_t *overrun_buffer;
-	int samples_in_overrun_buffer;
+	unsigned int samples_in_overrun_buffer;
 	
 	public:
 	virtual int open();

@@ -151,7 +151,7 @@ void *engine_thread_entry(void *engine_void) {
 	
 #ifdef USE_JACK
 	/* Create the client now, so the user has something to connect to. */
-	tX_jack_client *jack_client=tX_jack_client::get_instance();
+	tX_jack_client::get_instance();
 #endif	
 	
 	engine->loop();

@@ -51,24 +51,11 @@ gchar ** tx_icons[]={ tx_audioengine_xpm, tx_power_xpm, tx_grab_xpm,
 
 GtkWidget *tx_pixmap_widget(int icon_id)
 {
-    GtkWidget *pixmapwid;
-    GdkPixmap *pixmap;
-    GdkBitmap *mask;
-    GtkStyle *style;
+	GdkPixbuf *pixbuf=gdk_pixbuf_new_from_xpm_data((const char **) tx_icons[icon_id]);
+    GtkWidget *widget=gtk_image_new();
+	gtk_image_set_from_pixbuf(GTK_IMAGE(widget), pixbuf);
 
-	// printf("id: %i, addr: %08x\n", icon_id, tx_icons[icon_id]);
-
-    /* Get the style of the button to get the
-     * background color. */
-    style = gtk_widget_get_style(main_window);
-
-    /* Now on to the xpm stuff */
-    pixmap = gdk_pixmap_create_from_xpm_d(main_window->window, &mask,
-					 &style->bg[GTK_STATE_NORMAL],
-					 (gchar **) tx_icons[icon_id]);
-    pixmapwid = gtk_pixmap_new (pixmap, mask);
-
-    return pixmapwid;
+    return widget;
 }
 
 GtkWidget *tx_xpm_label_box(int	icon_id, gchar *label_text, GtkWidget **labelwidget=(GtkWidget **) NULL)
@@ -118,4 +105,3 @@ extern GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle, GtkWid
 	
 	return(button);
 }
-

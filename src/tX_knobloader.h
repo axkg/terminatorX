@@ -46,9 +46,10 @@ extern "C" {
 #define KNOB_SIZE 31
 #endif
 
-extern GdkPixmap *knob_pixmaps[MAX_KNOB_PIX];
+extern GdkPixbuf *knob_pixmaps[MAX_KNOB_PIX];
 extern GdkBitmap *knob_mask;
-extern void load_knob_pixs(GtkWidget *);
+	
+extern void load_knob_pixs();
 
 #ifdef __cplusplus
 }

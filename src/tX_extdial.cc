@@ -29,7 +29,8 @@ tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, tX_seqpar * sp, bool t
 	f2s();
 	if (l) label=gtk_label_new(l);
 	dial=gtk_tx_dial_new(adj);
-	entry=gtk_entry_new_with_max_length(5);
+	entry=gtk_entry_new();
+	gtk_entry_set_max_length(GTK_ENTRY(entry), 5);
 	gtk_entry_set_text(GTK_ENTRY(entry), sval);
 	ignore_adj=0;
 	
@@ -51,14 +52,13 @@ tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, tX_seqpar * sp, bool t
 	gtk_widget_show(mainbox);
 	gtk_widget_show(eventbox);
 	
-	gtk_signal_connect(GTK_OBJECT(entry), "activate", (GtkSignalFunc) tX_extdial::f_entry, (void *) this);
-	gtk_signal_connect(GTK_OBJECT(adj), "value_changed", (GtkSignalFunc) tX_extdial::f_adjustment, (void *) this);
+	g_signal_connect(G_OBJECT(entry), "activate", G_CALLBACK(tX_extdial::f_entry), (void *) this);
+	g_signal_connect(G_OBJECT(adj), "value_changed", G_CALLBACK(tX_extdial::f_adjustment), (void *) this);
 	
 	if (sp) {
-		gtk_signal_connect(GTK_OBJECT(dial), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, sp);
-		gtk_signal_connect(GTK_OBJECT(entry), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, sp);			
-		gtk_signal_connect(GTK_OBJECT(eventbox), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, sp);			
-		//if (l) gtk_signal_connect(GTK_OBJECT(label), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, sp);	
+		g_signal_connect(G_OBJECT(dial), "button_press_event", G_CALLBACK(tX_seqpar::tX_seqpar_press), sp);
+		g_signal_connect(G_OBJECT(entry), "button_press_event", G_CALLBACK(tX_seqpar::tX_seqpar_press), sp);			
+		g_signal_connect(G_OBJECT(eventbox), "button_press_event", G_CALLBACK(tX_seqpar::tX_seqpar_press), sp);			
 	}
 }
 

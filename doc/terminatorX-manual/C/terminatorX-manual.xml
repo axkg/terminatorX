@@ -86,10 +86,10 @@
       url="http://www.ladspa.org">LADSPA</ulink> plugin effects), a sequencer
       and MIDI interface - all accessible through an easy-to-use gtk+ GUI.</para>
 
-      <para>This is <emphasis>beta</emphasis> Software please help me fix
-      <ulink url="http://terminatorX.cx/bugs.html">bugs</ulink>. See <xref
-      linkend="CONTACT" /> (Contact/Download). Please read this manual and
-      take a look at the <ulink url="http://www.terminatorX.cx">homepage</ulink>.</para>
+      <para>This is software may have <ulink
+      url="http://terminatorX.cx/bugs.html">bugs</ulink> please help fixing
+      them. See <xref linkend="CONTACT" />. Please read this manual and visit
+      the <ulink url="http://www.terminatorX.cx">homepage</ulink>.</para>
     </sect2>
 
     <sect2 id="QUICKSTART">
@@ -97,7 +97,7 @@
 
       <para>Try the following steps:</para>
 
-      <orderedlist inheritnum="ignore" continuation="restarts">
+      <orderedlist continuation="restarts" inheritnum="ignore">
         <listitem>
           <para>If you don&#39;t have <application moreinfo="none">LADSPA</application>
           (Linux Audio Developer&#39;s Simple Plugin API) installed, go and
@@ -182,7 +182,7 @@
         </listitem>
 
         <listitem>
-          <para>MIDI Interface (Input)</para>
+          <para>MIDI Interface</para>
         </listitem>
 
         <listitem>
@@ -198,19 +198,23 @@
         </listitem>
 
         <listitem>
-          <para>Broad audiofile-type support through the use of sox and mpg123</para>
+          <para>Broad audiofile-type support</para>
         </listitem>
 
         <listitem>
-          <para>Recording to</para>
+          <para>Record to disk</para>
         </listitem>
 
         <listitem>
-          <para>Save turntable sets (.tX - files)</para>
+          <para>Save and Load turntable sets (.tX - files)</para>
         </listitem>
 
         <listitem>
-          <para>Support for the LADSPA-plugin-standard.</para>
+          <para>Support for LADSPA plugins.</para>
+        </listitem>
+
+        <listitem>
+          <para>Support for the <emphasis>JACK Audio Connection Kit</emphasis></para>
         </listitem>
 
         <listitem>
@@ -235,8 +239,7 @@
 
               <itemizedlist>
                 <listitem>
-                  <para>The Linux Operating System (Version &#62;= 2.0) or
-                  FreeBSD</para>
+                  <para>Linux, FreeBSD or the like</para>
                 </listitem>
 
                 <listitem>
@@ -366,20 +369,19 @@
   <sect1 id="OPERATION">
     <title>Operation</title>
 
-    <para>With Release Version 3.70 the terminatorX has undergone some
-    redesign again. It&#39;s split up in the main controls (master, sequencer,
-    engine controls and menu buttons) and the individual turntable&#39;s
-    controls. Each turntable has it&#39;s own GUI split up into control and
-    audio panel.</para>
+    <para>TerminatorX&#39; user interface is split up into the main controls
+    (master, sequencer, engine controls and menu buttons) and the individual
+    turntable&#39;s controls. Each turntable has it&#39;s own interface split
+    up into a control and a audio panel (see <xref linkend="TURNTABLECONTROLS" />).</para>
 
-    <sect2>
+    <sect2 id="MENU">
       <title>Menu</title>
 
       <para>To clean-up the user interface a bit further some functions have
       been moved into a more standard menu bar for the main window (with
       release 3.80). The following sub-menus are available:</para>
 
-      <sect3>
+      <sect3 id="FILEMENU">
         <title><emphasis>File</emphasis> Menu</title>
 
         <para>The <emphasis>File</emphasis> menu features these functions:</para>
@@ -418,7 +420,7 @@
         </itemizedlist>
       </sect3>
 
-      <sect3>
+      <sect3 id="TURNTABLESMENU">
         <title><emphasis>Turntables</emphasis> Menu</title>
 
         <para>The <emphasis>Turntables</emphasis> menu features these
@@ -449,7 +451,7 @@
         <title><emphasis>Sequencer</emphasis> Menu</title>
 
         <para>The <emphasis>Sequencer</emphasis> (see the <xref
-        linkend="SEQUENCER" />section for general information on the
+        linkend="SEQUENCER" /> section for general information on the
         sequencer) menu features these functions:</para>
 
         <itemizedlist>
@@ -498,7 +500,7 @@
         </itemizedlist>
       </sect3>
 
-      <sect3>
+      <sect3 id="OPTIONSMENU">
         <title><emphasis>Options</emphasis> Menu</title>
 
         <para>The <emphasis>Options</emphasis> menu features these functions:</para>
@@ -518,13 +520,12 @@
             <para><emphasis>Preferences</emphasis></para>
 
             <para>Will pop up the Preferences dialog. For more details on
-            configuration itself see the <xref linkend="CONFIGURATION" />
-            section.</para>
+            configuration itself see <xref linkend="CONFIGURATION" />.</para>
           </listitem>
         </itemizedlist>
       </sect3>
 
-      <sect3>
+      <sect3 id="HELPMENU">
         <title><emphasis>Help</emphasis> Menu</title>
 
         <para>The <emphasis>Help</emphasis> menu features these functions:</para>
@@ -576,15 +577,15 @@
           <para>Some functions are not available when the audio engine is on,
           their controls will be marked insensitive when you enable the
           engine. To actually enter grab mode you&#39;ll have to click on the
-          &#34;Mouse Grab&#34; button. See <xref linkend="GRABMODE" /> (Grab
-          Mode Operation) to find out how to control the software then.</para>
+          &#34;Mouse Grab&#34; button. See <xref linkend="GRABMODE" /> to find
+          out how to control the software then.</para>
         </listitem>
 
         <listitem>
           <para><emphasis>Sequencer Play / Record / Stop</emphasis></para>
 
-          <para>Please read the <link linkend="SEQUENCER">sequencer</link>
-          section to find out more about the sequencer.</para>
+          <para>Please read the <xref linkend="SEQUENCER" /> section to find
+          out more about the sequencer.</para>
         </listitem>
 
         <listitem>
@@ -597,7 +598,7 @@
       </itemizedlist>
     </sect2>
 
-    <sect2 id="TURNtableCONTROLS">
+    <sect2 id="TURNTABLECONTROLS">
       <title>Turntable Controls</title>
 
       <para>The turntable GUI contains multiple controls and the real time
@@ -765,7 +766,7 @@
 
           <para>The trigger panel holds all controls related to triggering the
           turntable. For more details on synchronization see <xref
-          linkend="SYNCHRONIZATION" /> (synchronization).</para>
+          linkend="SYNCHRONIZATION" />.</para>
 
           <itemizedlist>
             <listitem>
@@ -821,42 +822,41 @@
           displayed signal shows the turntable&#39;s current signal not
           including the echo-signal which is mixed separately.</para></listitem></itemizedlist></para>
         </sect4>
+      </sect3>
 
-        <sect4>
-          <title>Parameter Menus</title>
+      <sect3 id="PARAMETERMENU">
+        <title>Parameter Menu</title>
 
-          <para>TerminatorX can record events for nearly all parameters of a
-          turntable. All of these so-called &#34;sequencable&#34; parameters
-          have an extra pop-up menu since Version 3.81. Simply right-click on
-          the knob, button, slider of the parameter you want to setup, and a
-          menu with the following options will appear:<itemizedlist><listitem><para><emphasis>MIDI
-          Learn</emphasis></para><para>This options provides an easy method to
-          select the MIDI control to modify the parameter you select. If you
-          choose this menu entry, a tiny dialog box will pop up that reads
-          <emphasis>&#34;Waiting for MIDI Event...&#34;</emphasis>. The first
-          MIDI event terminatorX receives will now be mapped to control this
-          parameter.</para></listitem><listitem><para><emphasis>Remove MIDI
-          Binding</emphasis></para><para>If a MIDI event has been bound to a
-          parameter it can be removed by selecting this menu entry.</para></listitem><listitem><para><emphasis>Set
-          Upper MIDI Bound</emphasis></para><para>Sometimes it is preferable
-          to modify a certain parameter only within a specific value range -
-          this can be achieved with this option - by setting an upper and a
-          lower bound for the MIDI control of this parameter. When you select
-          this menu entry, the current setting of this parameter will be used
-          as the upper bound for the parameter&#39;s MIDI mapping.</para></listitem><listitem><para><emphasis>Reset
-          Upper MIDI Bound</emphasis></para><para>If an upper MIDI bound was
-          set for this parameter it can be removed by selecting this menu
-          entry.</para></listitem><listitem><para><emphasis>Set Lower MIDI
-          Bound</emphasis></para><para>Works just like setting the uper MIDI
-          bound: when you select this menu entry, the current setting of this
-          parameter will be used as the lower bound for the parameter&#39;s
-          MIDI mapping.</para></listitem><listitem><para><emphasis>Reset Lower
-          MIDI Bound</emphasis></para><para>If a lower MIDI bound was set for
-          this parameter it can be removed by selecting this menu entry.</para></listitem><listitem><para><emphasis>Delete
-          Sequencer Events</emphasis></para><para>Just like the <xref
-          linkend="SEQUENCERMENU" /> this entry allows you to delete events
-          recorded for this specific parameter.</para></listitem></itemizedlist></para>
-        </sect4>
+        <para>TerminatorX can record events for nearly all parameters of a
+        turntable. All of these so-called &#34;sequencable&#34; parameters
+        have an extra pop-up menu since Version 3.81. Simply right-click on
+        the knob, button, slider of the parameter you want to setup, and a
+        menu with the following options will appear:<itemizedlist><listitem><para><emphasis>MIDI
+        Learn</emphasis></para><para>This options provides an easy method to
+        select the MIDI control to modify the parameter you select. If you
+        choose this menu entry, a tiny dialog box will pop up that reads
+        <emphasis>&#34;Waiting for MIDI Event...&#34;</emphasis>. The first
+        MIDI event terminatorX receives will now be mapped to control this
+        parameter.</para></listitem><listitem><para><emphasis>Remove MIDI
+        Binding</emphasis></para><para>If a MIDI event has been bound to a
+        parameter it can be removed by selecting this menu entry.</para></listitem><listitem><para><emphasis>Set
+        Upper MIDI Bound</emphasis></para><para>Sometimes it is preferable to
+        modify a certain parameter only within a specific value range - this
+        can be achieved with this option - by setting an upper and a lower
+        bound for the MIDI control of this parameter. When you select this
+        menu entry, the current setting of this parameter will be used as the
+        upper bound for the parameter&#39;s MIDI mapping.</para></listitem><listitem><para><emphasis>Reset
+        Upper MIDI Bound</emphasis></para><para>If an upper MIDI bound was set
+        for this parameter it can be removed by selecting this menu entry.</para></listitem><listitem><para><emphasis>Set
+        Lower MIDI Bound</emphasis></para><para>Works just like setting the
+        uper MIDI bound: when you select this menu entry, the current setting
+        of this parameter will be used as the lower bound for the
+        parameter&#39;s MIDI mapping.</para></listitem><listitem><para><emphasis>Reset
+        Lower MIDI Bound</emphasis></para><para>If a lower MIDI bound was set
+        for this parameter it can be removed by selecting this menu entry.</para></listitem><listitem><para><emphasis>Delete
+        Sequencer Events</emphasis></para><para>Just like the <xref
+        linkend="SEQUENCERMENU" /> this entry allows you to delete events
+        recorded for this specific parameter.</para></listitem></itemizedlist></para>
       </sect3>
 
       <sect3>
@@ -883,7 +883,7 @@
         <figure float="0">
           <title>An example for a terminatorX effect queue</title>
 
-          <graphic format="PNG" fileref="figures/signalflow.png" />
+          <graphic fileref="figures/signalflow.png" format="PNG" />
         </figure>
 
         <para>Now since release 3.71 the built-in echo effect is treated
@@ -923,7 +923,7 @@
             plugins have they sometimes might be hard to control with the knob
             widget. In these cases you might want to use the text field to
             enter values. For more details on Plugins see <xref
-            linkend="LADSPAPLUGINS" /> (LADSPA).</para>
+            linkend="LADSPAPLUGINS" />.</para>
           </listitem>
         </itemizedlist>
       </sect3>
@@ -1260,8 +1260,8 @@
       move the sequencer-scale to that position, press <emphasis>Record,</emphasis>
       set the parameter and press <emphasis>Stop</emphasis> again.</para>
 
-      <para>To selectively delete events from the sequencer use the <xref
-      linkend="SEQUENCERMENU" />.</para>
+      <para>To selectively delete events from the sequencer use see <xref
+      linkend="SEQUENCERMENU" /> and <xref linkend="PARAMETERMENU" />.</para>
     </sect2>
 
     <sect2 id="LADSPAPLUGINS">
@@ -1355,21 +1355,29 @@
       url="http://pkl.net/%7Enode/alsa-patch-bay.html">alsa-patch-pay</ulink>
       to connect an output port of your choice (either a hardware MIDI input
       device or a software generating midi events) to the terminatorX input
-      port.</para>
+      port. If the &#34;<emphasis>Restore MIDI Connections</emphasis>&#34;
+      option is activated terminatorX will try to re-connect to the MIDI ports
+      it was connected to with the last run. However this approach is purely
+      address-based and might fail miserably with software ports, in this case
+      just disable the configuration options re-wire manually.</para>
+
+      <para>There are two ways to map MIDI events to a parameter:<itemizedlist><listitem><para>Via
+      the <emphasis>Configure MIDI Bindings</emphasis> dialog as described
+      below</para></listitem><listitem><para>Via the the a parameter&#39;s
+      menu (see <xref linkend="PARAMETERMENU" />) </para></listitem></itemizedlist></para>
 
       <para>Once the connection is set up terminatorX receives MIDI events
       through the input port. To configure what MIDI events will have which
       effect on a terminatorX turntable you can bind MIDI events to parameters
-      of your choice by clicking the <emphasis>MIDI Mapping</emphasis> button
-      of the turntable&#39;s audio panel. As a result the
-      <emphasis>Configure MIDI Bindings</emphasis> dialog will pop up which
-      features a field labelled <emphasis>Selected MIDI Event</emphasis> that
-      will frequently update to display the contents of the last MIDI event
-      received by terminatorX. So in order to map a MIDI controller to a
-      specific turntable parameter select the parameter of your choice from
-      the parameter list, cause your MIDI event sending device to emit the
-      event you want to map the parameter on and click the
-      <emphasis>Bind</emphasis> button.</para>
+      of your choice by clicking the <emphasis>MIDI</emphasis> button of the
+      turntable&#39;s audio panel. As a result the <emphasis>Configure MIDI
+      Bindings</emphasis> dialog will pop up which features a field labelled
+      <emphasis>Selected MIDI Event</emphasis> that will frequently update to
+      display the contents of the last MIDI event received by terminatorX. So
+      in order to map a MIDI controller to a specific turntable parameter
+      select the parameter of your choice from the parameter list, cause your
+      MIDI event sending device to emit the event you want to map the
+      parameter on and click the <emphasis>Bind</emphasis> button.</para>
 
       <para>Immediately after binding the event you should see that the
       <emphasis>Event</emphasis> column entry of the selected parameter is
@@ -1390,6 +1398,24 @@
       url="http://terminatorX.cx/aseqjoy.html">terminatorX website</ulink>,
       too.</para>
     </sect2>
+
+    <sect2 id="JACKSUPPORT">
+      <title>JACK Support</title>
+
+      <para>TerminatorX Version 3.81 brings support for the
+      <emphasis>JACK Audio Connection Kit</emphasis>. Instead of writing audio
+      data directly to some audio device terminatorX can send data to the JACK
+      Daemon for further processing.</para>
+
+      <para>To use the JACK backend you have to ensure that the JACK Daemon is
+      up and running before you start terminatorX. The JACK backend is only
+      available if terminatorX was capable of connecting to the JACK Daemon on
+      startup. By default the two output ports of terminatorX will be
+      connected to physical ports if available. You can then re-wire the ports
+      whatever way you want. They will not be deactivated - when
+      terminatorX&#39; audio engine is turned off , the audio backend emits
+      continuous silence.</para>
+    </sect2>
   </sect1>
 
   <sect1 id="CONFIGURATION">
@@ -1407,16 +1433,22 @@
     default settings. Note: is this file is now an XML file you can edit with
     an editor of your choice.</para>
 
-    <sect2>
+    <sect2 id="AUDIOTAB">
       <title><emphasis>Audio</emphasis> Tab</title>
 
-      <para>This tab allows to select which audio backend to use. Currently
-      there are two of these: one for the OSS (Open Sound System) backend and
-      one for ALSA (Advanced Linux Sound Architecture) backend. Hopefully
-      future releases will feature a JACK backend too.</para>
+      <para>This tab allows to select which audio backend terminatorX should
+      use. Currently there are three options: the OSS (Open Sound System)
+      backend, the ALSA (Advanced Linux Sound Architecture) backend and the
+      JACK (JACK Audio Connection Kit) backend. Some of these options might
+      not be available, if your terminatorX binary wasn&#39;t compiled to
+      support a certain backend.</para>
+
+      <para>The OSS and ALSA backends have dedicated configuration tabs, JACK
+      requires no further configuration - for more details on JACK support see
+      <xref linkend="JACKSUPPORT" />.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="OSSTAB">
       <title><emphasis>Audio: OSS</emphasis> Tab</title>
 
       <para>Select the audio device you are going to use from the available
@@ -1446,7 +1478,7 @@
       rate.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="ALSATAB">
       <title><emphasis>Audio: ALSA</emphasis> Tab</title>
 
       <para>Using ALSA for audio output allows specifing the buffer sizes in
@@ -1464,7 +1496,7 @@
       more detailed description check out the ALSA documentation.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="INPUTTAB">
       <title><emphasis>Input</emphasis> Tab</title>
 
       <para>Between rendering and outputting these blocks terminatorX checks
@@ -1485,7 +1517,7 @@
       homepage for details.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="USERINTERFACETAB">
       <title><emphasis>User Interface</emphasis> Tab</title>
 
       <para>With <emphasis>Update Idle</emphasis> / <emphasis>Update Delay</emphasis>
@@ -1496,6 +1528,15 @@
     </sect2>
 
     <sect2>
+      <title><emphasis>Audio Colors</emphasis> and <emphasis>VU Colors</emphasis>
+      Tab</title>
+
+      <para>Since Version 3.81 it is possible to configure the colors
+      terminatorX&#39; audio widgets. Simply click on the color you want to
+      modify and select the tone you prefer.</para>
+    </sect2>
+
+    <sect2 id="MISCTAB">
       <title><emphasis>Misc</emphasis> Tab</title>
 
       <para>You can now enter the soundfile editor of your choice in the
@@ -1503,6 +1544,18 @@
       clicking the <emphasis>Edit</emphasis>-button in the main panel of the
       vtt-gui. If you enter for example &#34;myeditor&#34; terminatorX will
       run &#34;myeditor sample_in_vtt.wav&#34;.</para>
+
+      <para>The <emphasis>LADSPA RDF Path</emphasis> defines where liblrdf
+      will look for the RDF files for LADPSA Plugins.</para>
+
+      <para>If <emphasis>Compress set files</emphasis> is activated
+      terminatorX will use zlib to compress set files. This is very usefull
+      for sets that have many events recorded.</para>
+
+      <para>See <xref linkend="MIDI" /> for more details on
+      <emphasis>Restore MIDI Connections</emphasis>. If you disable the
+      <emphasis>Ask for &#34;Quit&#34; Confirmation</emphasis> option
+      terminatorX will no longer ask if you really want to quit.</para>
     </sect2>
   </sect1>
 
