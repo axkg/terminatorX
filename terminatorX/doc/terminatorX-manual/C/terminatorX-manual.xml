@@ -18,6 +18,7 @@
       <year>2001</year>
       <year>2002</year>
       <year>2003</year>
+      <year>2004</year>
 
       <holder role="mailto:alex@lisas.de">Alexander König</holder>
     </copyright>
@@ -785,9 +786,9 @@
         </sect4>
 
         <sect4>
-          <title>Trigger Panel</title>
+          <title>Playback Panel</title>
 
-          <para>The trigger panel holds all controls related to triggering the
+          <para>The playback panel holds all controls related to triggering the
           turntable. For more details on synchronization see <xref
           linkend="SYNCHRONIZATION" />.</para>
 

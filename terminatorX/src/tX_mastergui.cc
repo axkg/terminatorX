@@ -557,7 +557,7 @@ GtkSignalFunc save_tables_as()
 		GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,NULL);
 	
 	if (tx_mg_have_setname) {
-		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER (dialog), tx_mg_current_setname);
+		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER (dialog), tx_mg_current_setname);
 	}
 				      
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {

@@ -223,6 +223,11 @@ int main(int argc, char **argv)
 	gtk_init (&argc, &argv);
 	gtk_set_locale();
 	
+#ifdef USE_STARTUP_NOTIFICATION
+	// startup isn't really finished with the nagbox alone...
+	gtk_window_set_auto_startup_notification(FALSE);
+#endif	
+	
 	parse_args(&argc, argv); // loads settings
 
 	if (globals.show_nag) {	
@@ -269,6 +274,10 @@ int main(int argc, char **argv)
 #endif		
 	}
 
+#ifdef USE_STARTUP_NOTIFICATION
+	gdk_notify_startup_complete();
+#endif	
+	
 #ifndef CREATE_BENCHMARK
 	gtk_main();
 
