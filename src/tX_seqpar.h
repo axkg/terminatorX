@@ -32,6 +32,9 @@
 #define NO_MOUSE_MAPPING 0
 #define MOUSE_MAPPING_OK 1
 
+/* required for gcc>=3.0 */
+using namespace std;
+
 class tX_seqpar
 {	
 	public:

@@ -22,6 +22,16 @@
     		 class implemented in tX_vtt.cc. This code is not in tX_vtt.cc
 		 for mainly to keep the GUI code divided from the audio-rendering
 		 code and as gtk+ callback to C++ method call wrapper.
+		 
+    Changes:
+    
+    before 11-26-2001: too many changes.
+    
+    11-26-2001: applied Adrian's solo/mute patch - Alex
+    
+    11-27-2001: modified solo/mute to use the set_mix_mute/solo function
+    		of the vtts. The previous approach messed up the sequencer
+		and more. Removed some old unnecessary code, too.
 */    
 
 #include <gdk/gdk.h>
@@ -173,8 +183,6 @@ void load_part(char *newfile, vtt_class *vtt)
 	else
 	{
 		nicer_filename(global_filename_buffer, newfile);
-//		strcpy(global_filename_buffer, fn);
-		
 		gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.file)->child), global_filename_buffer);
 	}	
 }
@@ -235,7 +243,6 @@ GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 	
 	if (vtt->gui.file_dialog)
 	{
-		//puts("praise");
 		gdk_window_raise(vtt->gui.file_dialog);
 		return(0);
 	}
@@ -261,7 +268,6 @@ GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 	gtk_signal_connect (GTK_OBJECT(vtt->gui.fs), "delete-event", GTK_SIGNAL_FUNC(quit_load_file), vtt);	
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->file_list), "select_row", GTK_SIGNAL_FUNC(trigger_prelis), vtt->gui.fs);
 }
-
 
 void delete_vtt(GtkWidget *wid, vtt_class *vtt)
 {
@@ -296,7 +302,6 @@ void reload_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 	
 	while (gtk_events_pending()) gtk_main_iteration();
 	
-//	puts(vtt->filename);
 	if (vtt->samples_in_buffer > 0)
 	{
 		strcpy(reload_buffer, vtt->filename);
@@ -399,35 +404,28 @@ void client_setup_number(GtkWidget *wid, vtt_class *vtt)
 
 void mute_volume(GtkWidget *widget, vtt_class *vtt)
 {
-       if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)))
-	       vtt->set_mute(1);
-       else
-	       vtt->set_mute(0);
-       //vtt->sp_volume.receive_gui_value(0);
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)))
+	{
+		vtt->set_mix_mute(1);
+	}
+	else
+	{
+		vtt->set_mix_mute(0);
+	}
 }
 
 void solo_vtt(GtkWidget *widget, vtt_class *vtt)
 {
-       list <vtt_class *> :: iterator it_vtt;
+	list <vtt_class *> :: iterator it_vtt;
 
-       if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-	       
-	       for (it_vtt=vtt_class::main_list.begin(); it_vtt!=vtt_class::main_list.end(); it_vtt++) {
-		       (*it_vtt)->set_mute(1);
-		       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON((*it_vtt)->gui.mute), TRUE);
-	       }
-	       
-	       vtt->set_mute(0);
-	       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(vtt->gui.mute), FALSE);
-
-       }
-       else {
-	       for (it_vtt=vtt_class::main_list.begin(); it_vtt!=vtt_class::main_list.end(); it_vtt++) {
-		       (*it_vtt)->set_mute(0);
-		       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON((*it_vtt)->gui.mute), FALSE);
-	       }
-       }
-
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) 
+	{
+		vtt->set_mix_solo(1);
+	}
+	else
+	{
+		vtt->set_mix_solo(0);
+	}
 }      
 
 void vg_display_xcontrol(vtt_class *vtt)
@@ -601,7 +599,6 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_button(file, load_file);
 	
 	connect_button(del, delete_vtt);
-//	connect_button(clone, clone_vtt);
 	connect_button(trigger, trigger_vtt);
 	connect_button(stop, stop_vtt);
 	connect_button(autotrigger, autotrigger_toggled);
@@ -609,19 +606,6 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_button(sync_master, master_setup);
 	connect_button(sync_client, client_setup);
 	connect_adj(cycles, client_setup_number);
-/*	
-	connect_button(x_scratch, control_changed);
-	connect_button(x_volume, control_changed);
-	connect_button(x_lp_cutoff, control_changed);
-	connect_button(x_ec_feedback, control_changed);
-	connect_button(x_nothing, control_changed);
-
-	connect_button(y_scratch, control_changed);
-	connect_button(y_volume, control_changed);
-	connect_button(y_lp_cutoff, control_changed);
-	connect_button(y_ec_feedback, control_changed);
-	connect_button(y_nothing, control_changed);
-*/	
 	connect_button(fx_button, fx_button_pressed);
 	
 	connect_button(lp_enable, lp_enabled);
@@ -908,15 +892,17 @@ void build_vtt_gui(vtt_class *vtt)
 	tempbox3=gtk_hbox_new(FALSE,2);
 	gtk_widget_show(tempbox3);
 
-	g->mute=gtk_check_button_new_with_label("m");
+	g->mute=gtk_check_button_new_with_label("M");
 	gtk_box_pack_start(GTK_BOX(tempbox3), g->mute, WID_FIX);
 	gtk_signal_connect(GTK_OBJECT(g->mute),"clicked", (GtkSignalFunc) mute_volume, vtt);
 	gtk_widget_show(g->mute);
+	gui_set_tooltip(g->mute, "Mute this turntable's mixer output.");
 
-	g->solo=gtk_check_button_new_with_label("s");
+	g->solo=gtk_check_button_new_with_label("S");
 	gtk_box_pack_start(GTK_BOX(tempbox3), g->solo, WID_FIX);
 	gtk_signal_connect(GTK_OBJECT(g->solo),"clicked", (GtkSignalFunc) solo_vtt, vtt);
 	gtk_widget_show(g->solo);
+	gui_set_tooltip(g->mute, "Allow only this and other solo-switched turntabels' signal to be routed to the mixer.");
 
 	gtk_box_pack_start(GTK_BOX(tempbox2), tempbox3, WID_FIX);
 
@@ -938,8 +924,6 @@ void build_vtt_gui(vtt_class *vtt)
 
 	g->file_dialog=NULL;
 
-//	gtk_notebook_set_page(GTK_NOTEBOOK(vtt->gui.notebook), g->current_gui);
-	
 	gui_connect_signals(vtt);
 }
 
@@ -958,7 +942,6 @@ void fx_down(GtkWidget *wid, vtt_fx *effect)
 	vtt=(vtt_class*)effect->get_vtt();
 	vtt->effect_down(effect);
 }
-
 
 void fx_kill(GtkWidget *wid, vtt_fx_ladspa *effect)
 {
@@ -1120,20 +1103,6 @@ void delete_gui(vtt_class *vtt)
 	gtk_widget_destroy(vtt->gui.audio_box);
 }
 
-/*
-void recreate_gui(vtt_class *vtt, GtkWidget *ctrl, GtkWidget *audio)
-{
-	build_vtt_gui(vtt);
-//	gtk_notebook_set_page(GTK_NOTEBOOK(vtt->gui.notebook), g->current_gui);
-	gtk_box_pack_start(GTK_BOX(daddy), vtt->gui.frame, TRUE, TRUE, 0);
-	gtk_widget_show(vtt->gui.frame);
-}
-
-void delete_gui(vtt_class *vtt)
-{
-	gtk_widget_destroy(vtt->gui.frame);
-}*/
-
 void update_all_vtts()
 {
 	list <vtt_class *> :: iterator vtt;
@@ -1186,32 +1155,6 @@ void gui_show_frame(vtt_class *vtt, int show)
 	gtk_tx_show_frame(GTK_TX(vtt->gui.display), show);
 }
 
-void show_all_guis(int show)
-{
-	list <vtt_class *> :: iterator vtt;
-/*	
-	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++)
-	{
-		if (show)
-		{
-			gtk_widget_show((*vtt)->gui.notebook);
-		}
-		else
-		{
-			gtk_widget_hide((*vtt)->gui.notebook);		
-		}
-	}
-	*/
-}
-/*
-void vg_update_sync(void *p)
-{
-	vtt_class *vtt=(vtt_class*) p;
-	
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(vtt->gui.sync_client), vtt->is_sync_client);
-//	gtk_adjustment_set_value(vtt->gui.cycles
-}
-*/
 #define vgui (*vtt)->gui
 #define v (*vtt)
 
@@ -1225,16 +1168,6 @@ void vg_enable_critical_buttons(int enable)
 	}
 }
 
-
-int vg_get_current_page(vtt_class *vtt)
-{
-	return (0);
-}
-
-void vg_set_current_page(vtt_class *vtt, int page)
-{
-	vtt->gui.current_gui=page;
-}
 
 void vg_init_all_non_seqpars()
 {
