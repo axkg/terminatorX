@@ -78,7 +78,7 @@ void LADSPA_Plugin :: init ()
 void LADSPA_Plugin :: handlelib(void *lib, LADSPA_Descriptor_Function desc_func, char *filename)
 {
 	long i;
-	long port;
+	unsigned long port;
 	const LADSPA_Descriptor *descriptor;
 	int in_audio, out_audio, in_ctrl;	
 	
@@ -163,7 +163,7 @@ void LADSPA_Plugin :: scandir(char *dirname)
 			}
 			else
 			{
-				fprintf(stderr, "tX: Error: %s is not a LADSPA plugin library.");
+				fprintf(stderr, "tX: Error: %s is not a LADSPA plugin library.", filename);
 				dlclose(handle);
 			}
 		}
@@ -184,7 +184,7 @@ void LADSPA_Plugin :: debug_display()
 	
 	for (plugin=plugin_list.begin(); plugin != plugin_list.end(); plugin++)
 	{
-		printf("plugin: %60s | id: %5i | ports: %2i\n", (*plugin)->getName(), (*plugin)->getUniqueID(), (*plugin)->getPortCount());
+		printf("plugin: %60s | id: %5li | ports: %2li\n", (*plugin)->getName(), (*plugin)->getUniqueID(), (*plugin)->getPortCount());
 	}
 }
 
@@ -193,7 +193,7 @@ LADSPA_Plugin :: LADSPA_Plugin (const LADSPA_Descriptor *ld, char *filename)
 	ladspa_descriptor = ld;
 	plugin_list.push_back(this);
 	strcpy(file, filename);
-	sprintf (info_string, "   LADSPA-Plugin: %s   \n   Label: %s   \n   File: %s   \n   Unique ID: %i   \n   Maker: %s   \n   Copyright: %s   ", ld->Name, ld->Label, file, ld->UniqueID, ld->Maker, ld->Copyright);
+	sprintf (info_string, "   LADSPA-Plugin: %s   \n   Label: %s   \n   File: %s   \n   Unique ID: %li   \n   Maker: %s   \n   Copyright: %s   ", ld->Name, ld->Label, file, ld->UniqueID, ld->Maker, ld->Copyright);
 }
 
 LADSPA_Plugin * LADSPA_Plugin :: getPluginByIndex(int i)

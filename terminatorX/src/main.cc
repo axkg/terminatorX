@@ -363,8 +363,6 @@ int parse_args(int *argc, char **argv)
 
 int main(int argc, char **argv)
 {
-	FILE *gtk_rc_file;
-	
 	fprintf(stderr, "%s - Copyright (C) 1999-2002 by Alexander König\n", VERSIONSTRING);
 	fprintf(stderr, "terminatorX comes with ABSOLUTELY NO WARRANTY - for details read the license.\n");
 

@@ -48,6 +48,9 @@
 /* Use libvorbis for ogg support */
 #undef USE_VORBIS_INPUT
 
+/* Use libaudiofile support */
+#undef USE_AUDIOFILE_INPUT
+
 /* Use ALSA*/
 #undef USE_ALSA
 

@@ -180,6 +180,7 @@ vtt_class :: vtt_class (int do_create_gui)
 	set_output_buffer_size(samples_in_mix_buffer/2);
 	
 	audiofile = NULL;
+	audiofile_pitch_correction=0;
 	mix_solo=0;
 	mix_mute=0;
 	res_mute=mute;
@@ -233,9 +234,11 @@ int vtt_class :: load_file(char *fname)
 	audiofile=new tx_audiofile();
 	res=audiofile->load(fname);	
 	
-	if (res==TX_AUDIO_SUCCESS)
-	{
+	if (res==TX_AUDIO_SUCCESS) {
 		buffer=audiofile->get_buffer();
+		double file_rate=audiofile->get_sample_rate();
+		audiofile_pitch_correction=file_rate/44100.0;
+		recalc_pitch();
 		samples_in_buffer=audiofile->get_no_samples();
 		maxpos=audiofile->get_no_samples();
 		strcpy(filename, fname);
@@ -342,6 +345,7 @@ void vtt_class :: recalc_pitch()
 {
 //	res_pitch=fabs(globals.pitch)*rel_pitch;
 	res_pitch=globals.pitch*rel_pitch;
+	res_pitch*=audiofile_pitch_correction;
 	speed=res_pitch;
 	ec_set_length(ec_length);
 }
@@ -458,8 +462,7 @@ void vtt_class :: ec_set_pan(f_prec pan)
 void vtt_class :: ec_set_length(f_prec length)
 {
 	int delay;
-	int i=0;
-	
+
 	ec_length=length;
 	if (res_pitch==0) 
 	{
@@ -1791,7 +1794,8 @@ int vtt_class :: load_12(FILE * input)
 	int32_t counter;
 	int32_t type;
 	long id;
-	int i,t;
+	int i;
+	unsigned int t;
 	LADSPA_Plugin *plugin;
 	char buffer[256];
 	vtt_fx_ladspa *ladspa_effect;
@@ -1883,7 +1887,7 @@ int vtt_class :: load_12(FILE * input)
 				}
 				else
 				{
-					sprintf(buffer,"Fatal Error: Couldn't find required plugin with ID [%i].", id);
+					sprintf(buffer,"Fatal Error: Couldn't find required plugin with ID [%li].", id);
 					tx_note(buffer);
 					res++;
 				}
@@ -1935,7 +1939,8 @@ int vtt_class :: load_13(FILE * input)
 	int32_t counter;
 	int32_t type;
 	long id;
-	int i,t;
+	int i;
+	unsigned int t;
 	LADSPA_Plugin *plugin;
 	char buffer[256];
 	vtt_fx_ladspa *ladspa_effect;
@@ -2039,7 +2044,7 @@ int vtt_class :: load_13(FILE * input)
 				}
 				else
 				{
-					sprintf(buffer,"Fatal Error: Couldn't find required plugin with ID [%i].", id);
+					sprintf(buffer,"Fatal Error: Couldn't find required plugin with ID [%li].", id);
 					tx_note(buffer);
 					res++;
 				}
@@ -2091,7 +2096,8 @@ int vtt_class :: load_14(FILE * input)
 	int32_t counter;
 	int32_t type;
 	long id;
-	int i,t;
+	int i;
+	unsigned int t;
 	LADSPA_Plugin *plugin;
 	char buffer[256];
 	vtt_fx_ladspa *ladspa_effect;
@@ -2198,7 +2204,7 @@ int vtt_class :: load_14(FILE * input)
 				}
 				else
 				{
-					sprintf(buffer,"Fatal Error: Couldn't find required plugin with ID [%i].", id);
+					sprintf(buffer,"Fatal Error: Couldn't find required plugin with ID [%li].", id);
 					tx_note(buffer);
 					res++;
 				}
@@ -2273,9 +2279,7 @@ int  vtt_class :: save_all(FILE* output)
 int  vtt_class :: load_all_10(FILE* input, char *fname)
 {
 	int res=0, restmp=0;
-	list <vtt_class *> :: iterator vtt;
-	unsigned int i, max, size;
-	int16_t *newbuffer;
+	unsigned int i, max;
 	vtt_class *newvtt;
 	char ftmp[PATH_MAX];
 	
@@ -2324,9 +2328,7 @@ int  vtt_class :: load_all_10(FILE* input, char *fname)
 int  vtt_class :: load_all_11(FILE* input, char *fname)
 {
 	int res=0, restmp=0;
-	list <vtt_class *> :: iterator vtt;
-	unsigned int i, max, size;
-	int16_t *newbuffer;
+	unsigned int i, max;
 	vtt_class *newvtt;
 	char ftmp[PATH_MAX];
 	guint32 pid;
@@ -2381,9 +2383,7 @@ int  vtt_class :: load_all_11(FILE* input, char *fname)
 int  vtt_class :: load_all_12(FILE* input, char *fname)
 {
 	int res=0, restmp=0;
-	list <vtt_class *> :: iterator vtt;
-	unsigned int i, max, size;
-	int16_t *newbuffer;
+	unsigned int i, max;
 	vtt_class *newvtt;
 	char ftmp[PATH_MAX];
 	guint32 pid;
@@ -2437,9 +2437,7 @@ int  vtt_class :: load_all_12(FILE* input, char *fname)
 int  vtt_class :: load_all_13(FILE* input, char *fname)
 {
 	int res=0, restmp=0;
-	list <vtt_class *> :: iterator vtt;
-	unsigned int i, max, size;
-	int16_t *newbuffer;
+	unsigned int i, max;
 	vtt_class *newvtt;
 	char ftmp[PATH_MAX];
 	guint32 pid;
@@ -2493,9 +2491,7 @@ int  vtt_class :: load_all_13(FILE* input, char *fname)
 int  vtt_class :: load_all_14(FILE* input, char *fname)
 {
 	int res=0, restmp=0;
-	list <vtt_class *> :: iterator vtt;
-	unsigned int i, max, size;
-	int16_t *newbuffer;
+	unsigned int i, max;
 	vtt_class *newvtt;
 	char ftmp[PATH_MAX];
 	guint32 pid;
