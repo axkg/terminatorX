@@ -4,7 +4,7 @@ This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.82] (pre-release)
-- merged a patch from Martin <errandir_news@mph.eclipse.co.uk>
+- merged a patch from Martin Habets <errandir_news@mph.eclipse.co.uk>
   that fixes big endian audio playback with ALSA.
 - applied a fix from Juha Erkkila <erkkila@cc.jyu.fi> that makes tX work on
   systems that don't have procfs mounted.
