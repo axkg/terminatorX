@@ -227,6 +227,7 @@ void drop_file(GtkWidget *widget, GdkDragContext *context,
 	void *prr;
 	
 	strncpy(filename, (char *) selection_data->data, (size_t) selection_data->length);
+	gtk_drag_finish(context, TRUE, FALSE, time);
 	filename[selection_data->length]=0;
 
 	fn = strchr (filename, '\r');
