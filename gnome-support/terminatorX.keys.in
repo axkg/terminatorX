@@ -1,0 +1,5 @@
+application/x-terminatorX:
+	open=terminatorX %f
+	view=terminatorX %f
+	edit=terminatorX %f
+	icon-filename=@prefix@/share/pixmaps/terminatorX-mime.xpm

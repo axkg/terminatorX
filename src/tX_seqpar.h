@@ -49,8 +49,8 @@ class tX_seqpar
 	
 	float fwd_value;
 	
-	u_int32_t persistence_id;
-	u_int32_t touch_timestamp;		
+	guint32 persistence_id;
+	guint32 touch_timestamp;		
 	void *last_event_recorded;
 
 	void default_constructor();
@@ -80,11 +80,11 @@ class tX_seqpar
 	static void untouch_all();
 	
 	int is_gui_active() { return gui_active; }
-	u_int32_t get_touch_timestamp() { return touch_timestamp; }
+	guint32 get_touch_timestamp() { return touch_timestamp; }
 	
 	static void create_persistence_ids();
-	u_int32_t get_persistence_id() { return persistence_id; }
-	unsigned int set_persistence_id(u_int32_t pid) { persistence_id=pid; }
+	guint32 get_persistence_id() { return persistence_id; }
+	unsigned int set_persistence_id(guint32 pid) { persistence_id=pid; }
 	static tX_seqpar *get_sp_by_persistence_id(int pid);
 
 	void record_value (const float value);

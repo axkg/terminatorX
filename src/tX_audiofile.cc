@@ -348,7 +348,7 @@ int tx_audiofile :: load_wav()
 		bytes = fread(p, 1, min(1024, wav_in.len-allbytes), wav_in.handle);
 
 #ifdef BIG_ENDIAN_MACHINE
-//		if (!wav_in.has_host_order) swapbuffer(p, bytes/sizeof(int16_t));
+		swapbuffer(p, bytes/sizeof(int16_t));
 #endif		
 		if (bytes<=0)
 		{

@@ -80,8 +80,9 @@ gtk_tx_flash_get_type ()
 	sizeof (GtkTxFlashClass),
 	(GtkClassInitFunc) gtk_tx_flash_class_init,
 	(GtkObjectInitFunc) gtk_tx_flash_init,
-	(GtkArgSetFunc) NULL,
-	(GtkArgGetFunc) NULL,
+	/* reserved */ NULL,
+	/* reserved */ NULL,
+	/* reserved */ NULL
       };
 
       tx_flash_type = gtk_type_unique (gtk_widget_get_type (), &tx_flash_info);

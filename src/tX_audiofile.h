@@ -71,7 +71,7 @@ but mpg321 doesn't support -m yet.
 #define TX_FILE_MPG123 2
 #define TX_FILE_OGG123 3
 
-#include <linux/limits.h>
+#include <limits.h>
 #include "tX_types.h"
 #include <stdio.h>
 

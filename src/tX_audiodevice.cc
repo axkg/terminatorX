@@ -160,7 +160,7 @@ tX_audiodevice_oss :: tX_audiodevice_oss()
 void tX_audiodevice_oss :: play(int16_t *buffer)
 {
 #ifdef BIG_ENDIAN_MACHINE
-	swapbuffer (buffer, samples);
+	swapbuffer (buffer, samples_per_buffer);
 #endif
 	write(fd, buffer, blocksize);	
 }
@@ -187,7 +187,7 @@ tX_audiodevice_alsa :: tX_audiodevice_alsa()
 void tX_audiodevice_alsa :: play(int16_t *buffer)
 {
 #ifdef BIG_ENDIAN_MACHINE
-	swapbuffer (buffer, samples);
+	swapbuffer (buffer, samples_per_buffer);
 #endif
 	/***/
 }
