@@ -153,7 +153,7 @@
         </para>
         
         <para>
-          <red><bold>Again:</bold></red> this methods might have yet unknown flaws so if you 
+          <red><bold>Again:</bold></red> this method might have yet unknown flaws so if you 
           want to be 100% sure that your terminatorX installation is no security
           threat <bold>do not install terminatorX suid-root</bold>.
         </para>
