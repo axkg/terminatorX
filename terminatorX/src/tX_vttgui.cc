@@ -62,8 +62,6 @@
 #define WID_DYN TRUE, TRUE, 0
 #define WID_FIX FALSE, FALSE, 0
 
-#define FILENAME_BUTTON_MAX 20
-
 void nicer_filename(char *dest, char *source)
 {
 		char *fn;
@@ -78,12 +76,12 @@ void nicer_filename(char *dest, char *source)
 		fn=strrchr(temp, '.');
 		if (fn) *fn=0;
 		
-		if (strlen(temp) > FILENAME_BUTTON_MAX)
+		if (strlen(temp) > globals.filename_length)
 		{
-			temp[FILENAME_BUTTON_MAX-3]='.';
-			temp[FILENAME_BUTTON_MAX-2]='.';
-			temp[FILENAME_BUTTON_MAX-1]='.';
-			temp[FILENAME_BUTTON_MAX]=0;
+			temp[globals.filename_length-3]='.';
+			temp[globals.filename_length-2]='.';
+			temp[globals.filename_length-1]='.';
+			temp[globals.filename_length]=0;
 		} 
 		strcpy (dest, temp);
 }
@@ -779,7 +777,7 @@ void build_vtt_gui(vtt_class *vtt)
 	GtkWidget *tempbox2;
 	GtkWidget *tempbox3;
 	GtkWidget *dummy;
-	char nice_name[FILENAME_BUTTON_MAX];
+	char nice_name[256];
 	
 	vtt_gui *g;
 	
@@ -820,13 +818,13 @@ void build_vtt_gui(vtt_class *vtt)
 	gui_set_tooltip(g->file, "Click to Load/Edit/Reload a sample for this turntable. To load you can also drag a file and drop it over this button or the sound data display below.");
 	gtk_box_pack_start(GTK_BOX(tempbox), g->file, WID_DYN);
 
-	g->mouse_mapping=gtk_button_new_with_label("Mouse Mapping");
+	g->mouse_mapping=gtk_button_new_with_label("Mouse");
 	gtk_widget_show(g->mouse_mapping);
 	gui_set_tooltip(g->mouse_mapping, "Determines what parameters should be affected on mouse moition in mouse grab mode.");
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->mouse_mapping, WID_FIX);
 
 #ifdef USE_ALSA_MIDI_IN
-	g->midi_mapping=gtk_button_new_with_label("MIDI Mapping");
+	g->midi_mapping=gtk_button_new_with_label("MIDI");
 	gtk_widget_show(g->midi_mapping);
 	gui_set_tooltip(g->midi_mapping, "Determines what parameters should be bound to what MIDI events.");
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->midi_mapping, WID_FIX);

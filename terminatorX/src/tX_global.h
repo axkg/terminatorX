@@ -142,6 +142,9 @@ typedef struct {
 	
 	double vtt_inertia;
 	
+	int alsa_free_hwstats;
+	int filename_length;
+	
 } tx_global;
 
 extern tx_global globals;
