@@ -257,12 +257,14 @@ gtk_tx_dial_realize (GtkWidget *widget)
 				   &attributes,
 				   attributes_mask);
 
-  widget->style = gtk_style_attach (widget->style, widget->window);
-
   gdk_window_set_user_data (widget->window, widget);
+  widget->style = gtk_style_attach (widget->style, widget->window);
+  gtk_widget_set_style(widget, gtk_widget_get_default_style());
+  gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
 
-//  gtk_widget_set_style(widget, gtk_widget_get_default_style());
-  gtk_style_set_background (widget->style, widget->window, GTK_WIDGET_STATE (widget));
+  gdk_window_set_background (widget->window, 
+                             &widget->style->base[GTK_STATE_NORMAL]); 
+  gtk_widget_shape_combine_mask (widget, knob_mask, 0,0);
 }
 
 static void 
@@ -301,9 +303,10 @@ gtk_tx_dial_size_allocate (GtkWidget     *widget,
 inline void
 gtk_tx_dial_draw (GtkTxDial *tx_dial, GtkWidget *widget)
 {
-	if (GTK_WIDGET_DRAWABLE (widget))
-	gdk_draw_pixmap(widget->window, widget->style->fg_gc[GTK_WIDGET_STATE(widget)],
-                 knob_pixmaps[tx_dial->old_image], 0, 0, tx_dial->xofs, tx_dial->yofs, KNOB_SIZE, KNOB_SIZE);
+	if (GTK_WIDGET_DRAWABLE (widget)) {
+		gdk_draw_pixmap(widget->window, widget->style->bg_gc[GTK_WIDGET_STATE(widget)],
+        	         knob_pixmaps[tx_dial->old_image], 0, 0, tx_dial->xofs, tx_dial->yofs, KNOB_SIZE, KNOB_SIZE);
+	}		 
 }
 
 static gint
@@ -320,14 +323,6 @@ gtk_tx_dial_expose (GtkWidget	*widget,
     return FALSE;
   
   tx_dial = GTK_TX_DIAL (widget);
-
-/*  gdk_window_clear_area (widget->window,
-			 0, 0,
-			 widget->allocation.width,
-			 widget->allocation.height);
-gdk_draw_rectangle(widget->window, widget->style->fg_gc[widget->state], 1, 0, 0,
-			 widget->allocation.width,
-			 widget->allocation.height);*/
 
   gtk_tx_dial_draw(tx_dial, widget);
 		  

@@ -6,6 +6,8 @@ changed.
 [v3.73]
 - Fixed a compilation bug ocurring on big endian systems only.
 - Fixed the built-in wav loading routines for big endian systems (again).
+- Finally traced down and fixed a long outstanding bug in the dial widget,
+  the background of the dials is now drawn correctly.
 - Ported terminatorX to gtk+ Version 2. The code for gtk2 will be enabled
   when gtk2 is detected by configure. To force terminatorX to use the good
   old gtk 1.2.x (x>=5) run configure with the '--disable-gtk2' switch.

@@ -183,18 +183,18 @@ char ** knob_pixs[MAX_KNOB_PIX]={
 	};
 
 GdkPixmap *knob_pixmaps[MAX_KNOB_PIX];
+GdkBitmap *knob_mask;
 
 void load_knob_pixs(GtkWidget *wid_for_style)
 {
 	int i;
-	GdkBitmap *mask;
 	GtkStyle *style;
 	
 	style = gtk_widget_get_style(wid_for_style);
 	
 	for (i=0; i<MAX_KNOB_PIX; i++)
 	{
-		knob_pixmaps[i]=gdk_pixmap_create_from_xpm_d(wid_for_style->window, &mask,
+		knob_pixmaps[i]=gdk_pixmap_create_from_xpm_d(wid_for_style->window, &knob_mask,
 					 &style->bg[GTK_STATE_NORMAL],
 					 (gchar **) knob_pixs[i]);
 	}
