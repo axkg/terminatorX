@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -83,9 +83,9 @@ void LADSPA_Plugin :: handlelib(void *lib, LADSPA_Descriptor_Function desc_func,
 	
 	for (i=0; (descriptor = desc_func(i)) != NULL; i++) {		
 		if (LADSPA_IS_INPLACE_BROKEN(descriptor->Properties)) {
-			tX_warning("Plugin \"%s\" disabled. No in-place processing support.", descriptor->Name);
+			tX_warning("Plugin \"%s\" [%i] disabled: No in-place processing support.", descriptor->Label, descriptor->UniqueID);
 		} else if (!LADSPA_IS_HARD_RT_CAPABLE(descriptor->Properties)) {
-			tX_warning("Plugin \"%s\" disabled. Not realtime capable.", descriptor->Name);			
+			tX_warning("Plugin \"%s\" [%i] disabled: Not realtime capable.", descriptor->Label, descriptor->UniqueID);			
 		} else {		
 			in_audio=0; out_audio=0; in_ctrl=0;
 		
@@ -103,7 +103,7 @@ void LADSPA_Plugin :: handlelib(void *lib, LADSPA_Descriptor_Function desc_func,
 			} if ((in_audio == 2) && (out_audio == 2)) {
 				new LADSPA_Stereo_Plugin(descriptor, filename);
 			}
-			else { tX_warning("Plugin \"%s\" disabled. Neither mono nor stereo.", descriptor->Name); }
+			else { tX_warning("Plugin \"%s\" [%i] disabled: Neither mono nor stereo.", descriptor->Label, descriptor->UniqueID); }
 		}
 	}
 }

@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -186,7 +186,7 @@ void checkenv(const char *name)
 
 int main(int argc, char **argv)
 {
-	fprintf(stderr, "%s - Copyright (C) 1999-2003 by Alexander König\n", VERSIONSTRING);
+	fprintf(stderr, "%s - Copyright (C) 1999-2004 by Alexander König\n", VERSIONSTRING);
 	fprintf(stderr, "terminatorX comes with ABSOLUTELY NO WARRANTY - for details read the license.\n");
 
 #ifdef USE_CAPABILITIES	
@@ -196,9 +196,10 @@ int main(int argc, char **argv)
 		}
 		set_nice_capability(CAP_PERMITTED);
 	}
-	
+#endif
+
 	if ((!geteuid()) && (getuid() != geteuid())) {
-		tX_debug("main() - capabilites set, dropping root privileges.");
+		tX_msg("runnig suid-root - dropping root privileges.");
 		
 		int result=setuid(getuid());
 		
@@ -208,20 +209,16 @@ int main(int argc, char **argv)
 		}
 	}
 	
+	/* No suidroot below this comment. */
+	
+#ifdef USE_CAPABILITIES		
 	set_nice_capability(CAP_EFFECTIVE);	
 #endif
 	
+	/* Theses checks are now sort of unecessary... Anyway... */
 	checkenv("HOME");
 	checkenv("XLOCALEDIR");	
 
-#ifndef USE_CAPABILITIES
-	/* If we're not using capabilities we're still 
-	   running suid-root here. So we get rid of root
-	   before doing anything esle.
-	*/
-	tX_engine *engine=tX_engine::get_instance();
-#endif	
-	
 	gtk_init (&argc, &argv);
 	gtk_set_locale();
 	
@@ -231,18 +228,11 @@ int main(int argc, char **argv)
 		show_about(1);
 		g_timeout_add(2000, (GSourceFunc) timeout, NULL);
 	}
-
-#ifdef USE_CAPABILITIES
-	/* If we have capabilities it's save to
-	   first read the config and then create 
-	   the engine.
-	*/
+	
 	tX_engine *engine=tX_engine::get_instance();
-#endif	
-
 	LADSPA_Class::init();
 	LADSPA_Plugin::init();
-	//LADSPA_Class::dump();
+
 #ifdef USE_JACK	
 	tX_jack_client::init();
 #endif	

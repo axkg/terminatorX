@@ -1,5 +1,5 @@
 terminatorX INSTALL:
-Copyright (C) 1999 - 2003 by Alexander König <alex@lisas.de>
+Copyright (C) 1999-2004 by Alexander König <alex@lisas.de>
 http://terminatorX.cx
 
 Note: As of Version 3.70 you need to have LADSPA installed to compile
@@ -97,12 +97,6 @@ Step 1: Configure terminatorX.
 		
 		Allows running terminatorX suid-root to gain realtime scheduling
 		(see README.PERFORMANCE).
-		
-		--enable-suidroot
-		
-		Allows running terminatorX suid-root to gain realtime scheduling
-		(see README.PERFORMANCE) - if your Linux system has capabilities
-		you should prefer that method.
 		
 		--with-docdir
 		

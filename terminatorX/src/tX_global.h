@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,6 +41,9 @@ extern "C" {
 #define PATH_MAX 1024
 #endif
 
+#define FL_SHRT_MAX 32767.0
+#define FL_SHRT_MIN -32768.0
+
 #define BUTTON_TYPE_ICON 1
 #define BUTTON_TYPE_TEXT 2
 #define BUTTON_TYPE_BOTH 3
@@ -52,13 +55,14 @@ extern "C" {
 #include <zlib.h>
 	
 #ifdef ENABLE_DEBUG_OUTPUT	
-#define tX_debug(fmt, args...); { fprintf(stderr, "- tX_debug: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
+#define tX_debug(fmt, args...); { fprintf(stderr, "~ tX_debug: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
 #else
 #define tX_debug(fmt, args...);
 #endif
 	
 #define tX_error(fmt, args...); { fprintf(stderr, "* tX_error: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
 #define tX_warning(fmt, args...); { fprintf(stderr, "+ tX_warning: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
+#define tX_msg(fmt, args...); { fprintf(stderr, "- tX_msg: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
 
 #ifdef MEM_DEBUG
 #define tX_freemem(ptr, varname, comment); fprintf(stderr, "** free() [%s] at %08x. %s.\n", varname, ptr, comment); free(ptr);

@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -68,8 +68,7 @@ GtkWidget *control_parent;
 GtkWidget *audio_parent;
 GtkWidget *main_window;
 GtkWidget *grab_button;
-GtkWidget *main_flash_l;
-GtkWidget *main_flash_r;
+GtkWidget *main_flash;
 
 GtkWidget *seq_rec_btn;
 GtkWidget *seq_play_btn;
@@ -119,7 +118,7 @@ GtkWidget *load_dialog=NULL;
 GdkWindow *rec_dialog_win=NULL;
 GtkWidget *rec_dialog=NULL;
 
-GtkWidget *no_of_vtts=NULL;
+//GtkWidget *no_of_vtts=NULL;
 GtkWidget *used_mem=NULL;
 
 int stop_update=0;
@@ -148,34 +147,29 @@ void turn_audio_off(void)
 	}
 }
 
-
 gint pos_update(gpointer data)
 {
-	f_prec temp;
+	f_prec temp,temp2;
 
 	if (stop_update) {		
 		cleanup_all_vtts();
 		tX_seqpar :: update_all_graphics();
 		if (old_focus) gui_show_frame(old_focus, 0);
 		old_focus=NULL;
-		gtk_tx_flash_clear(main_flash_l);
-		gtk_tx_flash_clear(main_flash_r);
+		gtk_tx_flash_clear(main_flash);
 		gdk_flush();	
 		update_tag=0;
-		return(FALSE);
+		return FALSE;
 	} else {
 		update_all_vtts();
 		
-		/*left vu meter */
+		/*main vu meter */
 		temp=vtt_class::mix_max_l;
 		vtt_class::mix_max_l=0;
-		gtk_tx_flash_set_level(main_flash_l, temp);
-
-		/*right vu meter */
-		temp=vtt_class::mix_max_r;
+		temp2=vtt_class::mix_max_r;
 		vtt_class::mix_max_r=0;
-		gtk_tx_flash_set_level(main_flash_r, temp);
-		
+		gtk_tx_flash_set_level(main_flash, temp/FL_SHRT_MAX, temp2/FL_SHRT_MAX);
+
 		if (vtt_class::focused_vtt!=old_focus) {
 			if (old_focus) gui_show_frame(old_focus, 0);
 			old_focus=vtt_class::focused_vtt;
@@ -192,10 +186,17 @@ gint pos_update(gpointer data)
 		
 		if (update_delay < 0) {
 			seq_update();
-			tX_seqpar :: update_all_graphics();
+			tX_seqpar::update_all_graphics();
 			update_delay=globals.update_delay;
 		}
-		return(TRUE);
+		
+		if (tX_engine::get_instance()->get_runtime_error()) {
+			tX_error("ouch - error while playback...");
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(engine_btn), 0);			
+			return FALSE;
+		}		
+		
+		return TRUE;
 	}
 }
 
@@ -227,8 +228,8 @@ void mg_update_status()
 		gtk_label_set_text(GTK_LABEL(used_mem), "");
 	}
 	
-	sprintf(buffer, "%i", vtt_class::vtt_amount);
-	gtk_label_set_text(GTK_LABEL(no_of_vtts), buffer);
+	/*sprintf(buffer, "%i", vtt_class::vtt_amount);
+	gtk_label_set_text(GTK_LABEL(no_of_vtts), buffer);*/
 }
 
 GtkSignalFunc new_table(GtkWidget *, char *fn)
@@ -330,7 +331,7 @@ void load_tt_part(char * buffer)
 			}
 			fclose(in);	
 		} else {
-			strcpy(idbuff, "Failed to access file: \"");	// I'm stealing the unrelated sting for a temp :)
+			strcpy(idbuff, "Failed to access file: \"");	// I'm stealing the unrelated string for a temp :)
 			strcat(idbuff, globals.tables_filename);
 			strcat(idbuff, "\"");
 			tx_note(idbuff, true);
@@ -428,7 +429,6 @@ GtkSignalFunc drop_set(GtkWidget *widget, GdkDragContext *context,
 	strcpy (filename, "dont segfault workaround ;)");
 	return NULL;
 }
-
 
 /* save tables */
 
@@ -558,7 +558,6 @@ void mg_enable_critical_buttons(int enable)
 	vg_enable_critical_buttons(enable);
 }
 
-
 GtkSignalFunc seq_stop(GtkWidget *w, void *);
 
 static bool stop_override=false;
@@ -616,6 +615,10 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 		
 		seq_stop(NULL, NULL);
 		mg_enable_critical_buttons(1);
+		
+		if (tX_engine::get_instance()->get_runtime_error()) {
+			tx_note("Fatal: The audio device broke down while playing\nback audio. Note that that some audio devices can not\nrecover from such a breakdown.", true);
+		}
 	}
 	
 	return NULL;
@@ -1401,13 +1404,9 @@ void create_mastergui(int x, int y)
 	gtk_widget_show(dummy);	
 	gui_set_tooltip(dummy, "Adjust the master volume. This parameter will effect *all* turntables in the set.");
 	
-	main_flash_r=gtk_tx_flash_new();
-	gtk_box_pack_end(GTK_BOX(master_vol_box), main_flash_r, WID_DYN);
-	gtk_widget_show(main_flash_r);
-
-	main_flash_l=gtk_tx_flash_new();
-	gtk_box_pack_end(GTK_BOX(master_vol_box), main_flash_l, WID_DYN);
-	gtk_widget_show(main_flash_l);
+	main_flash=gtk_tx_flash_new();
+	gtk_box_pack_end(GTK_BOX(master_vol_box), main_flash, WID_DYN);
+	gtk_widget_show(main_flash);
 
 	dummy=gtk_label_new("Volume");
 	gtk_misc_set_alignment(GTK_MISC(dummy), 0.5, 0.5);
@@ -1434,7 +1433,7 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 	
-	add_sep2();
+	/*add_sep2();
 
 	dummy=gtk_label_new("1");
 	no_of_vtts=dummy;
@@ -1445,19 +1444,19 @@ void create_mastergui(int x, int y)
 	dummy=gtk_label_new("Vtts:");
 	gtk_misc_set_alignment(GTK_MISC(dummy), 0, 0.5);
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
-	gtk_widget_show(dummy);
+	gtk_widget_show(dummy);*/
 
 	add_sep2();
 
-	dummy=gtk_label_new(VERSION);
+	dummy=gtk_label_new("V "VERSION);
 	gtk_misc_set_alignment(GTK_MISC(dummy), 1, 0.5);
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
-	dummy=gtk_label_new("Release:");
+	/*dummy=gtk_label_new("Release:");
 	gtk_misc_set_alignment(GTK_MISC(dummy), 0, 0.5);
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
-	gtk_widget_show(dummy);
+	gtk_widget_show(dummy);*/
 	
 	add_sep2();
 
@@ -1487,7 +1486,7 @@ void note_destroy(GtkWidget *widget, GtkWidget *mbox)
 	gtk_widget_destroy(GTK_WIDGET(mbox));
 }
 
-void tx_note(const char *message, bool isError)
+void tx_note(const char *message, bool isError, GtkWindow *window)
 {
 	char buffer[4096]="terminatorX ";
 	if (isError) {
@@ -1496,8 +1495,10 @@ void tx_note(const char *message, bool isError)
 		strcat(buffer, "error:\n\n");
 	}
 	
+	if (!window) window==GTK_WINDOW(main_window);
+	
 	strcat(buffer, message);
-	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window),
+	GtkWidget *dialog=gtk_message_dialog_new(window,
 		GTK_DIALOG_DESTROY_WITH_PARENT,
 		isError ? GTK_MESSAGE_ERROR : GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, message);
 	gtk_dialog_run(GTK_DIALOG(dialog));

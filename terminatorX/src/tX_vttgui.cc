@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -374,7 +374,7 @@ void ec_enabled(GtkWidget *wid, vtt_class *vtt)
 #ifdef USE_ALSA_MIDI_IN
 void midi_mapping_clicked(GtkWidget *wid, vtt_class *vtt)
 {
-	tX_engine::get_instance()->midi->configure_bindings(vtt);
+	tX_engine::get_instance()->get_midi()->configure_bindings(vtt);
 }
 #endif
 
@@ -1370,7 +1370,7 @@ void delete_gui(vtt_class *vtt)
 void cleanup_vtt(vtt_class *vtt)
 {
 	gtk_tx_cleanup_pos_display(GTK_TX(vtt->gui.display));	
-	gtk_tx_flash_set_level(vtt->gui.flash, 0.0);
+	gtk_tx_flash_set_level(vtt->gui.flash, 0.0, 0.0);
 	gtk_tx_flash_clear(vtt->gui.flash);
 	vtt->cleanup_required=false;
 }
@@ -1378,7 +1378,7 @@ void cleanup_vtt(vtt_class *vtt)
 void update_all_vtts()
 {
 	list <vtt_class *> :: iterator vtt;
-	f_prec temp;
+	f_prec temp,temp2;
 	
 	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++)
 	{
@@ -1386,7 +1386,9 @@ void update_all_vtts()
 			gtk_tx_update_pos_display(GTK_TX((*vtt)->gui.display), (*vtt)->pos_i, (*vtt)->mute);
 			temp=(*vtt)->max_value*(*vtt)->res_volume*vtt_class::vol_channel_adjust;
 			(*vtt)->max_value=0;
-			gtk_tx_flash_set_level((*vtt)->gui.flash, temp);
+			temp2=(*vtt)->max_value2*(*vtt)->res_volume*vtt_class::vol_channel_adjust;
+			(*vtt)->max_value2=0;
+			gtk_tx_flash_set_level((*vtt)->gui.flash, temp, temp2);
 		}
 		
 		if ((*vtt)->needs_cleaning_up()) {
@@ -1402,7 +1404,7 @@ void cleanup_all_vtts()
 	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++)
 	{
 		if ((*vtt)->buffer) gtk_tx_cleanup_pos_display(GTK_TX((*vtt)->gui.display));
-		gtk_tx_flash_set_level((*vtt)->gui.flash, 0.0);
+		gtk_tx_flash_set_level((*vtt)->gui.flash, 0.0, 0.0);
 		gtk_tx_flash_clear((*vtt)->gui.flash);
 	}
 }

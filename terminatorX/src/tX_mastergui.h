@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,10 +35,7 @@ extern GtkWidget *main_window;
 
 extern GtkAdjustment *volume_adj;
 extern GtkAdjustment *pitch_adj;
-
-
-extern GtkWidget *main_flash_l;
-extern GtkWidget *main_flash_r;
+extern GtkWidget *main_flash;
 
 extern tX_seqpar_master_volume sp_master_volume;
 extern tX_seqpar_master_pitch sp_master_pitch;
@@ -46,7 +43,7 @@ extern tX_seqpar_master_pitch sp_master_pitch;
 extern void create_mastergui(int x, int y);
 extern void wav_progress_update(gfloat percent);
 extern void note_destroy(GtkWidget *widget, GtkWidget *mbox);
-extern void tx_note(const char *message, bool isError=false);
+extern void tx_note(const char *message, bool isError=false, GtkWindow *window=NULL);
 extern void tx_l_note(const char *message);
 extern void display_mastergui();
 extern void grab_off();

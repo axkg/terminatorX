@@ -8,7 +8,9 @@ High priority milestones:
 
 I'd like to have this in 4.0:
 
-- Support stereo LADSPA plugins somehow.
+- Now, that stereo LADSPA plugins are done, I'd really like to:
+  Find a replacement for DGA mouse grabbing as that has some problems and 
+  might be gone sometime from now.
 
 Low priority milestones:
 ------------------------
@@ -17,9 +19,6 @@ This might come after 4.0:
 
 - Implement a sequencer editor GUI to delete, copy & paste, edit event etc.
 
-- Find a replacement for DGA mouse grabbing as that has some problems and 
-  might be gone sometime from now.
-    
 - Support other languages.
 
 - Support multiple audio devices in parallel maybe?
