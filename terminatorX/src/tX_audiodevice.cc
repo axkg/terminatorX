@@ -211,7 +211,7 @@ int tX_audiodevice_alsa :: open()
 	sscanf(globals.alsa_device, "%i-%i: %s", &card, &device, foo);
 	sprintf(pcm_name, "hw:%i,%i", card, device);
 	
-	if (snd_pcm_open(&pcm_handle, pcm_name, stream, SND_PCM_NONBLOCK) < 0) {
+	if (snd_pcm_open(&pcm_handle, pcm_name, stream, NULL) < 0) {
 		tX_error("ALSA: Failed to access PCM device \"%s\"", pcm_name);
 		return -1;
 	}
