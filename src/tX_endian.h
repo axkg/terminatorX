@@ -50,6 +50,19 @@
 
 #define swapbuffer(b, s) swab((void *) b, (void *) b, (ssize_t) s<<1)
 
+static inline void swap32_inline(int32_t *val) {
+	int8_t temp;
+	int8_t *p=(int8_t *) val;
+	
+	temp=p[0];
+	p[0]=p[3];
+	p[3]=temp;
+	
+	temp=p[1];
+	p[1]=p[2];
+	p[2]=temp;	
+}
+
 #	ifdef __cplusplus
 extern "C" {
 #	endif /* __cplusplus */
