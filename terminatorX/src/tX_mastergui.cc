@@ -747,6 +747,8 @@ gboolean quit()
 	}
 
 	turn_audio_off();
+	vtt_class::delete_all();
+	
 	if (update_tag)
 	gtk_timeout_remove(update_tag);
 	globals.width=main_window->allocation.width;

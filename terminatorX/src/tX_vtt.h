@@ -141,6 +141,7 @@ class vtt_class
 		
 	d_prec pos_f;
 	unsigned int pos_i;
+	unsigned int pos_i_max;
 	d_prec maxpos;
 	
 	bool mute;

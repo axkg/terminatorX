@@ -103,6 +103,7 @@ vtt_class :: vtt_class (int do_create_gui)
 	strcpy(filename, "NONE");
 	buffer=NULL;
 	samples_in_buffer=0;
+	pos_i_max=0;
 
 	pan=0;
 	rel_pitch=1; 
@@ -246,6 +247,7 @@ tX_audio_error vtt_class :: load_file(char *fname)
 	buffer=NULL;
 	samples_in_buffer=0;
 	maxpos=0;
+	pos_i_max=0;
 	strcpy(filename,"");
 
 	audiofile=new tx_audiofile();
@@ -257,6 +259,7 @@ tX_audio_error vtt_class :: load_file(char *fname)
 		audiofile_pitch_correction=file_rate/((double) last_sample_rate);
 		recalc_pitch();
 		samples_in_buffer=audiofile->get_no_samples();
+		pos_i_max=samples_in_buffer-1;
 		maxpos=audiofile->get_no_samples();
 		strcpy(filename, fname);
 		if (was_playing) trigger();
@@ -697,7 +700,7 @@ void vtt_class :: render_scratch()
 				ptr=&buffer[pos_i];
 				sample_a=(f_prec) *ptr;
 			
-				if (pos_i == samples_in_buffer) 
+				if (pos_i == pos_i_max) 
 				{
 					sample_b=*buffer;
 				}
