@@ -192,6 +192,8 @@ void tX_audiodevice_oss :: play(int16_t *buffer)
 
 #ifdef USE_ALSA
 
+#define tX_abs(x) (x<0 ? -x : x)
+
 int tX_audiodevice_alsa :: open()
 {
 	snd_pcm_stream_t stream = SND_PCM_STREAM_PLAYBACK;
@@ -246,7 +248,9 @@ int tX_audiodevice_alsa :: open()
 	}
 	
 	if (dir != 0) {
-		tX_warning("ALSA: The PCM device \"%s\" doesnt support 44100 Hz playback - using %i instead", pcm_name, hw_rate);
+		if (tX_abs(globals.alsa_samplerate - hw_rate) > 2) {
+			tX_warning("ALSA: The PCM device \"%s\" doesn\'t support %i Hz playback - using %i instead", pcm_name, globals.alsa_samplerate, hw_rate);
+		}
 	}	
 
 	sample_rate=hw_rate;
