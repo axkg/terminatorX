@@ -205,6 +205,10 @@ void tX_sequencer :: delete_all_events() {
 		delete (*ev);
 		song_list.erase(ev);
 	}
+
+	start_timestamp=0;
+	current_timestamp=0;
+	max_timestamp=0;
 }
 
 void tX_sequencer :: delete_all_events_for_sp(tX_seqpar *sp)
@@ -254,19 +258,6 @@ void tX_sequencer :: save(FILE *rc, gzFile rz, char *indent) {
 	indent[strlen(indent)-1]=0;
 	tX_store("%s</sequencer>\n", indent);
 }
-
-
-void tX_sequencer :: clear()
-{
-	if (song_list.size()==0) return;
-	
-  	song_list.erase(song_list.begin(), song_list.end());
-	
-	current_timestamp=0;
-	max_timestamp=0;
-	start_timestamp=0;
-}
-
 
 guint32 tX_sequencer :: set_start_timestamp(float pos)
 {

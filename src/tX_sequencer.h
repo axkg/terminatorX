@@ -87,7 +87,6 @@ class tX_sequencer
 	void load(FILE *);
 #endif	
 	void load(xmlDocPtr, xmlNodePtr);
-	void clear();
 	
 	guint32 set_start_timestamp(float pos);
 	void forward_to_start_timestamp(int dont_fake);
