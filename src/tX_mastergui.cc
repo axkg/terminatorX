@@ -1530,10 +1530,10 @@ void create_mastergui(int x, int y)
 	
 	tt_parent=dummy;
 
-    panel_bar=gtk_hbox_new(TRUE,2);
+    panel_bar=gtk_hbox_new(TRUE,0);
 	gtk_box_pack_start(GTK_BOX(left_hbox), panel_bar, WID_FIX);
 
-	control_parent=gtk_hbox_new(FALSE,0);
+	control_parent=gtk_hbox_new(FALSE,4);
 	gtk_box_pack_start(GTK_BOX(tt_parent), control_parent, WID_FIX);
 	gtk_widget_show(control_parent);
 

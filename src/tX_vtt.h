@@ -97,6 +97,7 @@ class vtt_class
 	
 	bool control_hidden;
 	bool audio_hidden;
+	double control_scroll_adjustment;
 	
 	/* builtin fx */
 	vtt_fx* lp_fx;

@@ -4,6 +4,8 @@
    Copyright (C) 1999-2004 Alexander König
 
    Version 3.82
+     * the position of the audio control scrollbars is now saved within
+       set files and restored upon loading.
      * fixed a liblrdf related issue resulting in use of previously
        free'd memory.
      * rendered a new knob with the wonderful povray - all images are now
