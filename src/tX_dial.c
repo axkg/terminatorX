@@ -152,6 +152,7 @@ gtk_tx_dial_new (GtkAdjustment *adjustment)
 						      0.0, 0.0, 0.0);
 
   gtk_tx_dial_set_adjustment (tx_dial, adjustment);
+  gtk_object_ref (GTK_OBJECT (tx_dial->adjustment));
 
   return GTK_WIDGET (tx_dial);
 }
