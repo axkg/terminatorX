@@ -581,10 +581,9 @@ void show_about(int nag)
 		
 		sep=gtk_hseparator_new();
 		add_about_wid(sep);
-		
-		label=gtk_label_new(
-		"\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999, 2000 by Alexander König" 
-		"\n\nSend comments, patches and scratches to: alex@lisas.de\n"
+		char about_prefix_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999, 2000 by Alexander König";
+		char about_prefix_broken_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999, 2000 by Alexander Ko\"nig";
+		char about_rest[]="\n\nSend comments, patches and scratches to: alex@lisas.de\n"
 		"terminatorX-homepage: http://www.terminatorX.cx\n\nThis binary has been compiled with the following flags: "
 		"Sox support: "
 #ifdef USE_SOX_INPUT
@@ -625,8 +624,27 @@ void show_about(int nag)
 #else
 		"little"
 #endif
-		" endian machine.\n"	
-		);
+		" endian machine.\n";
+		
+		char buffer[4096];
+		char *str;
+		
+		strcpy(buffer, about_prefix_umlaut);
+		strcat(buffer, about_rest);
+		
+		label=gtk_label_new(buffer);
+		gtk_label_get(GTK_LABEL(label), &str);
+		
+		/* Fixng a strange gtk+ bug that appears at least on my system.
+		*/
+		if (strlen(str)==0) 
+		{
+			fprintf (stderr, "tX: Warning: this gtk+ has broken umlauts.\n");
+			strcpy(buffer, about_prefix_broken_umlaut);
+			strcat(buffer, about_rest);
+			gtk_label_set(GTK_LABEL(label), buffer);		
+		}
+		
 		gtk_misc_set_alignment (GTK_MISC(label), 0.5 ,0.5);
 		add_about_wid(label);
 		
