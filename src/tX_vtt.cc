@@ -1561,19 +1561,14 @@ void vtt_class :: unfocus()
 	focused_vtt=NULL;
 }
 
-extern void vg_display_ycontrol(vtt_class *vtt);
-extern void vg_display_xcontrol(vtt_class *vtt);
-
 void vtt_class :: set_x_input_parameter(tX_seqpar *sp)
 {
 	x_par = sp;
-	vg_display_xcontrol(this);
 }
 
 void vtt_class :: set_y_input_parameter(tX_seqpar *sp)
 {
 	y_par = sp;
-	vg_display_ycontrol(this);
 }
 
 void vtt_class :: xy_input(f_prec x_value, f_prec y_value)
@@ -2167,10 +2162,7 @@ int vtt_class :: load_14(FILE * input)
 	ec_set_volume(ec_volume);
 
 	atload(audio_hidden);
-	hide_audio(audio_hidden);
-	
 	atload(control_hidden);
-	hide_control(control_hidden);
 	
 	recalc_volume();
 
@@ -2351,7 +2343,6 @@ int  vtt_class :: load_all_10(FILE* input, char *fname)
 		}
 		gtk_box_pack_start(GTK_BOX(control_parent), newvtt->gui.control_box, TRUE, TRUE, 0);
 		gtk_box_pack_start(GTK_BOX(audio_parent), newvtt->gui.audio_box, TRUE, TRUE, 0);
-	
 	}
 	
 	sequencer.clear();
@@ -2577,7 +2568,8 @@ int  vtt_class :: load_all_14(FILE* input, char *fname)
 		}
 		gtk_box_pack_start(GTK_BOX(control_parent), newvtt->gui.control_box, TRUE, TRUE, 0);
 		gtk_box_pack_start(GTK_BOX(audio_parent), newvtt->gui.audio_box, TRUE, TRUE, 0);
-		
+	    if (newvtt->audio_hidden) newvtt->hide_audio(newvtt->audio_hidden);
+	    if (newvtt->control_hidden) newvtt->hide_control(newvtt->control_hidden);
 	}
 	
 	sequencer.load(input);
