@@ -28,7 +28,7 @@
       <holder role="mailto:alex@lisas.de">Alexander König</holder>
     </copyright>
 
-    <releaseinfo>Version 3.80</releaseinfo>
+    <releaseinfo>Version 3.81</releaseinfo>
 
     <legalnotice id="legalnotice">
       <para>Permission is granted to copy, distribute and/or modify this
@@ -36,7 +36,7 @@
       Version 1.1 or any later version published by the Free Software
       Foundation with no Invariant Sections, no Front-Cover Texts, and no
       Back-Cover Texts. You can find a copy of the GFDL at this <ulink
-      url="ghelp:fdl" type="help">link</ulink> or in the file COPYING-DOCS
+      type="help" url="ghelp:fdl">link</ulink> or in the file COPYING-DOCS
       distributed with this manual.</para>
 
       <para>Many of the names used by companies to distinguish their products
@@ -87,9 +87,9 @@
       and MIDI interface - all accessible through an easy-to-use gtk+ GUI.</para>
 
       <para>This is <emphasis>beta</emphasis> Software please help me fix
-      bugs. See <xref linkend="CONTACT" /> (Contact/Download). Please read
-      this manual and take a look at the <ulink
-      url="http://www.terminatorX.cx">homepage</ulink>.</para>
+      <ulink url="http://terminatorX.cx/bugs.html">bugs</ulink>. See <xref
+      linkend="CONTACT" /> (Contact/Download). Please read this manual and
+      take a look at the <ulink url="http://www.terminatorX.cx">homepage</ulink>.</para>
     </sect2>
 
     <sect2 id="QUICKSTART">
@@ -111,15 +111,24 @@
         </listitem>
 
         <listitem>
+          <para>If you want to use the <ulink
+          url="http://jackit.sourceforge.net">JACK</ulink> backend run jackd
+          before starting terminatorX.</para>
+        </listitem>
+
+        <listitem>
           <para>Run terminatorX</para>
+        </listitem>
+
+        <listitem>
+          <para>Setup Audio Output via <emphasis>Options/Preferences</emphasis>.</para>
         </listitem>
 
         <listitem>
           <para>Load an audiofile into the available turntable (you can add
           more turntables if you want) (Hint: Click on the button that holds
           &#34;NONE&#34; to load an audiofile, or drop one over the audiofile
-          display from your filemanager if your filemanager is efm, gmc,
-          Nautilus or compatible (kfm does <emphasis>not</emphasis> work))</para>
+          display from your GNOME filemanager.</para>
         </listitem>
 
         <listitem>
@@ -161,7 +170,7 @@
 
       <itemizedlist>
         <listitem>
-          <para>Scratching ;)</para>
+          <para>Scratching</para>
         </listitem>
 
         <listitem>
@@ -278,6 +287,11 @@
                 <listitem>
                   <para><ulink url="http://www.xiph.org/ogg/vorbis/">libvorbis</ulink>
                   for loading ogg files.</para>
+                </listitem>
+
+                <listitem>
+                  <para><ulink url="http://jackit.sourceforge.net">libjack</ulink>
+                  for JACK support.</para>
                 </listitem>
 
                 <listitem>
@@ -431,6 +445,59 @@
         </itemizedlist>
       </sect3>
 
+      <sect3 id="SEQUENCERMENU">
+        <title><emphasis>Sequencer</emphasis> Menu</title>
+
+        <para>The <emphasis>Sequencer</emphasis> (see the <xref
+        linkend="SEQUENCER" />section for general information on the
+        sequencer) menu features these functions:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><emphasis>Delete All</emphasis> submenus</para>
+
+            <para>These submenus allow you to delete sequencer events of a
+            specific parameter or all events for a complete turntable. After
+            selecting the the parameter/turntable of your choice a dialog will
+            pop-up that allows you to delete all events from either:</para>
+
+            <itemizedlist>
+              <listitem>
+                <para>the beginning of the song upto the current song position</para>
+              </listitem>
+
+              <listitem>
+                <para>the current song position upto the end of the song</para>
+              </listitem>
+
+              <listitem>
+                <para>the beginning to the end of the song (all events)</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+
+          <listitem>
+            <para><emphasis>Delete All Events</emphasis></para>
+
+            <para>Works the same as the <emphasis>Delete All</emphasis>
+            submenus but selects <emphasis>all</emphasis> events for
+            <emphasis>all</emphasis> turntables.</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis>Confirm Recorded Events</emphasis></para>
+
+            <para>Usually terminatorX will add all recorded events of a take
+            to the song event list as soon as you hit the
+            <emphasis>Stop</emphasis> button for the sequencer. If you enable
+            <emphasis>Confirm Recorded Events</emphasis> terminatorX will ask
+            you whether the recorded events should really be fed into the song
+            list. This makes it much easier to record a certain part over and
+            over again until you get it right.</para>
+          </listitem>
+        </itemizedlist>
+      </sect3>
+
       <sect3>
         <title><emphasis>Options</emphasis> Menu</title>
 
@@ -442,11 +509,9 @@
 
             <para>Maximizes the terminatorX main windows to use the complete
             screen. Note that this requires a NETWM compliant window manager
-            to work (GNOME2&#39;s metacity works nicely, while openbox 2.x
-            does not for example). By choosing this option again
-            terminatorX&#39; window can be resized back to the previous state
-            again. The setting will be stored in the <filename>~/.terminatorXrc</filename>
-            file.</para>
+            to work. By toggling this option again terminatorX&#39; window can
+            be resized back to the previous state again. The setting will be
+            stored in the <filename>~/.terminatorXrc</filename> file.</para>
           </listitem>
 
           <listitem>
@@ -756,6 +821,42 @@
           displayed signal shows the turntable&#39;s current signal not
           including the echo-signal which is mixed separately.</para></listitem></itemizedlist></para>
         </sect4>
+
+        <sect4>
+          <title>Parameter Menus</title>
+
+          <para>TerminatorX can record events for nearly all parameters of a
+          turntable. All of these so-called &#34;sequencable&#34; parameters
+          have an extra pop-up menu since Version 3.81. Simply right-click on
+          the knob, button, slider of the parameter you want to setup, and a
+          menu with the following options will appear:<itemizedlist><listitem><para><emphasis>MIDI
+          Learn</emphasis></para><para>This options provides an easy method to
+          select the MIDI control to modify the parameter you select. If you
+          choose this menu entry, a tiny dialog box will pop up that reads
+          <emphasis>&#34;Waiting for MIDI Event...&#34;</emphasis>. The first
+          MIDI event terminatorX receives will now be mapped to control this
+          parameter.</para></listitem><listitem><para><emphasis>Remove MIDI
+          Binding</emphasis></para><para>If a MIDI event has been bound to a
+          parameter it can be removed by selecting this menu entry.</para></listitem><listitem><para><emphasis>Set
+          Upper MIDI Bound</emphasis></para><para>Sometimes it is preferable
+          to modify a certain parameter only within a specific value range -
+          this can be achieved with this option - by setting an upper and a
+          lower bound for the MIDI control of this parameter. When you select
+          this menu entry, the current setting of this parameter will be used
+          as the upper bound for the parameter&#39;s MIDI mapping.</para></listitem><listitem><para><emphasis>Reset
+          Upper MIDI Bound</emphasis></para><para>If an upper MIDI bound was
+          set for this parameter it can be removed by selecting this menu
+          entry.</para></listitem><listitem><para><emphasis>Set Lower MIDI
+          Bound</emphasis></para><para>Works just like setting the uper MIDI
+          bound: when you select this menu entry, the current setting of this
+          parameter will be used as the lower bound for the parameter&#39;s
+          MIDI mapping.</para></listitem><listitem><para><emphasis>Reset Lower
+          MIDI Bound</emphasis></para><para>If a lower MIDI bound was set for
+          this parameter it can be removed by selecting this menu entry.</para></listitem><listitem><para><emphasis>Delete
+          Sequencer Events</emphasis></para><para>Just like the <xref
+          linkend="SEQUENCERMENU" /> this entry allows you to delete events
+          recorded for this specific parameter.</para></listitem></itemizedlist></para>
+        </sect4>
       </sect3>
 
       <sect3>
@@ -782,7 +883,7 @@
         <figure float="0">
           <title>An example for a terminatorX effect queue</title>
 
-          <graphic fileref="figures/signalflow.png" format="PNG" />
+          <graphic format="PNG" fileref="figures/signalflow.png" />
         </figure>
 
         <para>Now since release 3.71 the built-in echo effect is treated
@@ -945,8 +1046,8 @@
 
       <para>After pressing the <emphasis>Mouse Grab button</emphasis>
       terminatorX enters &#34;grab mode&#34;. This mode actually blocks the
-      mouse (as its input is now used to control the real time parameters)
-      and therefore you&#39;ll have to know some mouse/keyboard shortcuts to
+      mouse (as its input is now used to control the real time parameters) and
+      therefore you&#39;ll have to know some mouse/keyboard shortcuts to
       control the software without the GUI.</para>
 
       <para>Press <keycap moreinfo="none">ESCAPE</keycap> to quit grab mode.</para>
@@ -960,8 +1061,8 @@
       <para>Now the turntable that has the focus is the one you will
       manipulate with your mouse and keyboard inputs: Note that you can
       actually map different functions to the mouse x/y axis - so what
-      actually happens when you move your mouse depends on what you select via the
-      <emphasis>Mouse Mapping</emphasis> for each turntable.</para>
+      actually happens when you move your mouse depends on what you select via
+      the <emphasis>Mouse Mapping</emphasis> for each turntable.</para>
 
       <table>
         <title>Keyboard Controls in Grab Mode</title>
@@ -1159,8 +1260,8 @@
       move the sequencer-scale to that position, press <emphasis>Record,</emphasis>
       set the parameter and press <emphasis>Stop</emphasis> again.</para>
 
-      <para>There is no other the way to edit the sequencer events currently,
-      but future releases may feature an event-list editor.</para>
+      <para>To selectively delete events from the sequencer use the <xref
+      linkend="SEQUENCERMENU" />.</para>
     </sect2>
 
     <sect2 id="LADSPAPLUGINS">
@@ -1250,7 +1351,8 @@
       it is possible to control parameters through MIDI events (since 3.80).
       The MIDI interface is based upon the ALSA sequencer API. On startup
       terminatorX creates a MIDI input port called &#34;terminatorX&#34;. You
-      can now use for example the <ulink url="http://pkl.net/%7Enode/alsa-patch-bay.html">alsa-patch-pay</ulink>
+      can now use for example the <ulink
+      url="http://pkl.net/%7Enode/alsa-patch-bay.html">alsa-patch-pay</ulink>
       to connect an output port of your choice (either a hardware MIDI input
       device or a software generating midi events) to the terminatorX input
       port.</para>
@@ -1285,7 +1387,8 @@
       <para>If you want to use your joystick to control terminatorX - I wrote
       a tiny tool to create MIDI events from joystick motion called
       <emphasis>aseqjoy</emphasis>. It&#39;s available from the <ulink
-      url="http://terminatorX.cx/aseqjoy.html">terminatorX website</ulink>, too.</para>
+      url="http://terminatorX.cx/aseqjoy.html">terminatorX website</ulink>,
+      too.</para>
     </sect2>
   </sect1>
 
@@ -1354,7 +1457,7 @@
       device per cycle. I&#39;m not really sure on what kind of settings to
       recommend, however I had best results when setting the
       <emphasis>Period Time</emphasis> to 3rd or half of the
-      <emphasis>Buffer Time</emphasis>. </para>
+      <emphasis>Buffer Time</emphasis>.</para>
 
       <para>It&#39;s advisable to set the <emphasis>Buffer Time</emphasis> to
       at least the double of the <emphasis>Period Time</emphasis>, but for a
