@@ -163,6 +163,7 @@ typedef struct {
 	
 	int quit_confirm;
 	int use_realtime;
+	int auto_assign_midi;
 } tx_global;
 
 extern tx_global globals;

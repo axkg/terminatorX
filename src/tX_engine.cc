@@ -143,7 +143,7 @@ void *engine_thread_entry(void *engine_void) {
 		
 #ifndef ALLOW_SUID_ROOT
 		tX_error("This binary doesn't support running suid-root.");
-		tX_error("Reconfigure with --enable-suidroot if you really want that.");
+		tX_error("Reconfigure with --enable-capabilities or --enable-suidroot if you really want that.");
 		exit(-1);
 #endif		
 		tX_debug("engine_thread_entry() - Running suid root - dropping privileges.");
@@ -190,7 +190,7 @@ void *engine_thread_entry(void *engine_void) {
 #endif	
 
 #ifdef USE_SCHEDULER
-	tX_debug("engine_thread_entry() engine thread is p: %i, t: %i and has policy %i.", getpid(), pthread_self(), sched_getscheduler(getpid()));
+	tX_debug("engine_thread_entry() engine thread is p: %i, t: %i and has policy %i.", getpid(), (int) pthread_self(), sched_getscheduler(getpid()));
 #endif
 	
 	engine->loop();
@@ -209,7 +209,14 @@ tX_engine :: tX_engine() {
 	
 	/* Creating the actual engine thread.. */
 #ifdef USE_SCHEDULER	
-	if (!geteuid() && globals.use_realtime) {
+	if (!geteuid() /* && globals.use_realtime */) {
+
+#ifndef ALLOW_SUID_ROOT
+		tX_error("This binary doesn't support running suid-root.");
+		tX_error("Reconfigure with --enable-capabilities or --enable-suidroot if you really want that.");
+		exit(-1);
+#endif		
+		
 		pthread_attr_t pattr;
 		struct sched_param sparm;
 		
@@ -229,6 +236,8 @@ tX_engine :: tX_engine() {
 		result=pthread_create(&thread, &pattr, engine_thread_entry, (void *) this);
 	} else {
 #endif // USE_SCHEDULER
+		//tX_debug("tX_engine() - can't set SCHED_FIFO euid: %i.", geteuid());
+		
 		result=pthread_create(&thread, NULL, engine_thread_entry, (void *) this);
 #ifdef USE_SCHEDULER		
 	}

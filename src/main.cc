@@ -247,7 +247,7 @@ int main(int argc, char **argv)
 #endif	
 
 #ifdef USE_SCHEDULER
-	tX_debug("main() GUI thread is p:%i, t:%i and has policy %i.", getpid(), pthread_self(), sched_getscheduler(getpid()));
+	tX_debug("main() GUI thread is p:%i, t:%i and has policy %i.", getpid(), (int) pthread_self(), sched_getscheduler(getpid()));
 #endif	
 	
 	create_mastergui(globals.width, globals.height);
@@ -271,6 +271,10 @@ int main(int argc, char **argv)
 		tX_cursor::set_cursor(tX_cursor::WAIT_CURSOR);
 		load_tt_part(globals.startup_set);
 		tX_cursor::reset_cursor();
+	} else {
+#ifdef USE_ALSA_MIDI_IN
+		if (globals.auto_assign_midi) tX_midiin::auto_assign_midi_mappings(NULL, NULL);
+#endif		
 	}
 
 #ifndef CREATE_BENCHMARK
