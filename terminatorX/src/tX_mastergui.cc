@@ -755,6 +755,8 @@ gboolean quit()
 	globals.height=main_window->allocation.height;
 
 	gtk_main_quit();
+	
+	return true;
 }
 
 void mplcfitx()
@@ -968,7 +970,7 @@ void create_master_menu() {
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	gtk_widget_set_sensitive (menu_item, FALSE);
 
-	menu_item = gtk_menu_item_new_with_mnemonic("_Preferences");
+	menu_item = gtk_image_menu_item_new_from_stock ("gtk-preferences", accel_group);
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) display_options, NULL);
@@ -1017,11 +1019,6 @@ void create_mastergui(int x, int y)
 	GtkWidget *master_vol_box;
 	GtkWidget *status_box;
 	
-	static GtkTargetEntry drop_types [] = {
-		{ "text/uri-list", 0, 0}
-	};
-	static gint n_drop_types = sizeof (drop_types) / sizeof(drop_types[0]);
-	
 	gui_tooltips=gtk_tooltips_new();
 
 	main_window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -1056,11 +1053,6 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_start(GTK_BOX(left_hbox), control_box, WID_FIX);
 	gtk_widget_show(control_box);
 	
-/*	dummy=gtk_hseparator_new();
-	gtk_box_pack_start(GTK_BOX(left_hbox), dummy, WID_FIX);
-	gtk_widget_show(dummy);*/
-
-
 	dummy=gtk_hseparator_new();
 	gtk_box_pack_start(GTK_BOX(left_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
@@ -1083,13 +1075,6 @@ void create_mastergui(int x, int y)
 	connect_button(grab_button, grab_on, NULL);
 	gui_set_tooltip(grab_button, "Enter the mouse grab mode operation. Press <ESCAPE> to exit grab mode.");
 	gtk_widget_show(grab_button);
-
-	/*dummy=gtk_check_button_new_with_label("Record");
-	rec_btn=dummy;
-	connect_button(dummy,tape_on, NULL);
-	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
-	gui_set_tooltip(dummy, "Record the audio the terminatorX' audio engine renders. You will be prompted to enter a name for the target wav-file.");
-	gtk_widget_show(dummy);*/
 
 	dummy=gtk_vseparator_new();
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
@@ -1156,7 +1141,6 @@ void create_mastergui(int x, int y)
 
 	control_parent=gtk_hbox_new(FALSE,0);
 	gtk_box_pack_start(GTK_BOX(tt_parent), control_parent, WID_FIX);
-	//gtk_paned_pack1(GTK_PANED(tt_parent), control_parent, FALSE, FALSE);
 	gtk_widget_show(control_parent);
 
 	dummy=gtk_vseparator_new();
@@ -1165,7 +1149,6 @@ void create_mastergui(int x, int y)
 
 	audio_parent=gtk_vbox_new(FALSE,0);
 	gtk_box_pack_start(GTK_BOX(tt_parent), audio_parent, WID_DYN);
-	//gtk_paned_pack2(GTK_PANED(tt_parent), audio_parent, TRUE, FALSE);
 	gtk_widget_show(audio_parent);
 	
 	dummy=gtk_vseparator_new();
@@ -1179,7 +1162,6 @@ void create_mastergui(int x, int y)
 	/* Master */
 	
 	dummy=gtk_label_new(NULL);
-	//gtk_label_set_markup(GTK_LABEL(dummy),"<span foreground='#000080'>Master</span>");
 	gtk_label_set_markup(GTK_LABEL(dummy),"<b>Master</b>");
 	gtk_misc_set_alignment(GTK_MISC(dummy), 0.5, 0.5);
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
@@ -1203,13 +1185,6 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_start(GTK_BOX(right_hbox), pdial->get_widget(), WID_FIX);
 	gui_set_tooltip(pdial->get_entry(), "Use this dial to adjust the master pitch (affecting *all* turntables).");
 	
-/*	dummy=gtk_hscale_new(dumadj);
-	gtk_scale_set_digits(GTK_SCALE(dummy), 2);
-	gtk_scale_set_value_pos(GTK_SCALE(dummy), GTK_POS_LEFT);
-	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_DYN);
-	gui_set_tooltip(dummy, "Use this scale to adjust the master pitch (affecting *all* turntables).");
-	gtk_widget_show(dummy);
-*/
 	dummy=gtk_hseparator_new();
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);

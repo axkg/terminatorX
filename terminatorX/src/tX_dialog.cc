@@ -217,9 +217,7 @@ GList *get_sampling_rates_list() {
 	if (sampling_rates) {
 		return sampling_rates;
 	}
-	
-	char buffer[256];
-	
+
 	sampling_rates=g_list_append(sampling_rates, (void *) "22000");
 	sampling_rates=g_list_append(sampling_rates, (void *) "32000");
 	sampling_rates=g_list_append(sampling_rates, (void *) "44100");

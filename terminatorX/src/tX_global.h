@@ -144,6 +144,7 @@ extern tx_global globals;
 
 extern void load_globals();
 extern void store_globals();
+extern void set_global_defaults();
 extern char *encode_xml(char *dest, const char *src);
 extern char *decode_xml(char *dest, const char *src);
 

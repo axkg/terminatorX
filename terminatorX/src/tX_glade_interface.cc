@@ -27,10 +27,122 @@
   g_object_set_data (G_OBJECT (component), name, widget)
 
 GtkWidget*
+create_tx_adjust (void)
+{
+  GtkWidget *tx_adjust;
+  GtkWidget *dialog_vbox2;
+  GtkWidget *vbox1;
+  GtkWidget *label34;
+  GtkWidget *table7;
+  GtkObject *master_cycles_adj;
+  GtkWidget *master_cycles;
+  GtkWidget *label36;
+  GtkWidget *label35;
+  GtkObject *cycles_adj;
+  GtkWidget *cycles;
+  GtkWidget *create_event;
+  GtkWidget *dialog_action_area2;
+  GtkWidget *cancel;
+  GtkWidget *ok;
+  GtkTooltips *tooltips;
+
+  tooltips = gtk_tooltips_new ();
+
+  tx_adjust = gtk_dialog_new ();
+  gtk_window_set_title (GTK_WINDOW (tx_adjust), "Compute Pitch");
+
+  dialog_vbox2 = GTK_DIALOG (tx_adjust)->vbox;
+  gtk_widget_show (dialog_vbox2);
+
+  vbox1 = gtk_vbox_new (FALSE, 4);
+  gtk_widget_show (vbox1);
+  gtk_box_pack_start (GTK_BOX (dialog_vbox2), vbox1, TRUE, TRUE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (vbox1), 4);
+
+  label34 = gtk_label_new ("In order to compute the optimum pitch value, please specify how many loops of this turntable should play as fast as how many loops of the masterturntable:");
+  gtk_widget_show (label34);
+  gtk_box_pack_start (GTK_BOX (vbox1), label34, FALSE, FALSE, 0);
+  gtk_label_set_justify (GTK_LABEL (label34), GTK_JUSTIFY_LEFT);
+  gtk_label_set_line_wrap (GTK_LABEL (label34), TRUE);
+
+  table7 = gtk_table_new (2, 2, FALSE);
+  gtk_widget_show (table7);
+  gtk_box_pack_start (GTK_BOX (vbox1), table7, TRUE, TRUE, 0);
+  gtk_table_set_col_spacings (GTK_TABLE (table7), 3);
+
+  master_cycles_adj = gtk_adjustment_new (1, 1, 100, 1, 10, 10);
+  master_cycles = gtk_spin_button_new (GTK_ADJUSTMENT (master_cycles_adj), 1, 0);
+  gtk_widget_show (master_cycles);
+  gtk_table_attach (GTK_TABLE (table7), master_cycles, 1, 2, 1, 2,
+                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_tooltips_set_tip (tooltips, master_cycles, "Specify the number of loops for the master turntable.", NULL);
+
+  label36 = gtk_label_new ("Loops of the master turntable:");
+  gtk_widget_show (label36);
+  gtk_table_attach (GTK_TABLE (table7), label36, 0, 1, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label36), GTK_JUSTIFY_LEFT);
+
+  label35 = gtk_label_new ("Loops of this turntable turntable:");
+  gtk_widget_show (label35);
+  gtk_table_attach (GTK_TABLE (table7), label35, 0, 1, 0, 1,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label35), GTK_JUSTIFY_LEFT);
+
+  cycles_adj = gtk_adjustment_new (1, 1, 100, 1, 10, 10);
+  cycles = gtk_spin_button_new (GTK_ADJUSTMENT (cycles_adj), 1, 0);
+  gtk_widget_show (cycles);
+  gtk_table_attach (GTK_TABLE (table7), cycles, 1, 2, 0, 1,
+                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_tooltips_set_tip (tooltips, cycles, "Specify the number of loops of _this_ turntable.", NULL);
+
+  create_event = gtk_check_button_new_with_mnemonic ("Record a sequencer event");
+  gtk_widget_show (create_event);
+  gtk_box_pack_start (GTK_BOX (vbox1), create_event, FALSE, FALSE, 0);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (create_event), TRUE);
+
+  dialog_action_area2 = GTK_DIALOG (tx_adjust)->action_area;
+  gtk_widget_show (dialog_action_area2);
+  gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area2), GTK_BUTTONBOX_END);
+
+  cancel = gtk_button_new_from_stock ("gtk-cancel");
+  gtk_widget_show (cancel);
+  gtk_dialog_add_action_widget (GTK_DIALOG (tx_adjust), cancel, GTK_RESPONSE_CANCEL);
+  GTK_WIDGET_SET_FLAGS (cancel, GTK_CAN_DEFAULT);
+
+  ok = gtk_button_new_from_stock ("gtk-ok");
+  gtk_widget_show (ok);
+  gtk_dialog_add_action_widget (GTK_DIALOG (tx_adjust), ok, GTK_RESPONSE_OK);
+  GTK_WIDGET_SET_FLAGS (ok, GTK_CAN_DEFAULT);
+
+  /* Store pointers to all widgets, for use by lookup_widget(). */
+  GLADE_HOOKUP_OBJECT_NO_REF (tx_adjust, tx_adjust, "tx_adjust");
+  GLADE_HOOKUP_OBJECT_NO_REF (tx_adjust, dialog_vbox2, "dialog_vbox2");
+  GLADE_HOOKUP_OBJECT (tx_adjust, vbox1, "vbox1");
+  GLADE_HOOKUP_OBJECT (tx_adjust, label34, "label34");
+  GLADE_HOOKUP_OBJECT (tx_adjust, table7, "table7");
+  GLADE_HOOKUP_OBJECT (tx_adjust, master_cycles, "master_cycles");
+  GLADE_HOOKUP_OBJECT (tx_adjust, label36, "label36");
+  GLADE_HOOKUP_OBJECT (tx_adjust, label35, "label35");
+  GLADE_HOOKUP_OBJECT (tx_adjust, cycles, "cycles");
+  GLADE_HOOKUP_OBJECT (tx_adjust, create_event, "create_event");
+  GLADE_HOOKUP_OBJECT_NO_REF (tx_adjust, dialog_action_area2, "dialog_action_area2");
+  GLADE_HOOKUP_OBJECT (tx_adjust, cancel, "cancel");
+  GLADE_HOOKUP_OBJECT (tx_adjust, ok, "ok");
+  GLADE_HOOKUP_OBJECT_NO_REF (tx_adjust, tooltips, "tooltips");
+
+  return tx_adjust;
+}
+
+GtkWidget*
 create_tx_options (void)
 {
   GtkWidget *tx_options;
-  GtkWidget *dialog_vbox1;
+  GtkWidget *dialog_vbox3;
   GtkWidget *notebook1;
   GtkWidget *table4;
   GtkWidget *label18;
@@ -104,7 +216,8 @@ create_tx_options (void)
   GtkWidget *label33;
   GtkWidget *compress_set_files;
   GtkWidget *label3;
-  GtkWidget *dialog_action_area1;
+  GtkWidget *dialog_action_area3;
+  GtkWidget *pref_reset;
   GtkWidget *pref_cancel;
   GtkWidget *pref_apply;
   GtkWidget *pref_ok;
@@ -113,14 +226,14 @@ create_tx_options (void)
   tooltips = gtk_tooltips_new ();
 
   tx_options = gtk_dialog_new ();
-  gtk_window_set_title (GTK_WINDOW (tx_options), "terminatorX: Preferences");
+  gtk_window_set_title (GTK_WINDOW (tx_options), "terminatorX Preferences");
 
-  dialog_vbox1 = GTK_DIALOG (tx_options)->vbox;
-  gtk_widget_show (dialog_vbox1);
+  dialog_vbox3 = GTK_DIALOG (tx_options)->vbox;
+  gtk_widget_show (dialog_vbox3);
 
   notebook1 = gtk_notebook_new ();
   gtk_widget_show (notebook1);
-  gtk_box_pack_start (GTK_BOX (dialog_vbox1), notebook1, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (dialog_vbox3), notebook1, TRUE, TRUE, 0);
 
   table4 = gtk_table_new (1, 2, FALSE);
   gtk_widget_show (table4);
@@ -381,7 +494,7 @@ create_tx_options (void)
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-  stop_sense_cycles = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (10, 1, 150, 5, 1, 1)));
+  stop_sense_cycles = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (80, 30, 250, 5, 1, 1)));
   gtk_widget_show (stop_sense_cycles);
   gtk_table_attach (GTK_TABLE (table1), stop_sense_cycles, 1, 2, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
@@ -454,7 +567,7 @@ create_tx_options (void)
                     (GtkAttachOptions) (0), 0, 0);
   gtk_tooltips_set_tip (tooltips, mainwin_tooltips, "Enable tooltips for the terminatorX main window.", NULL);
 
-  update_idle = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (11, 1, 100, 1, 10, 10)));
+  update_idle = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (11, 2, 100, 1, 10, 10)));
   gtk_widget_show (update_idle);
   gtk_table_attach (GTK_TABLE (table2), update_idle, 1, 2, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
@@ -466,6 +579,7 @@ create_tx_options (void)
   gtk_table_attach (GTK_TABLE (table2), update_delay, 1, 2, 4, 5,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_scale_set_digits (GTK_SCALE (update_delay), 0);
 
   vumeter_decay = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (0.8, 0.8, 0.99, 0.01, 0.01, 0.001)));
   gtk_widget_show (vumeter_decay);
@@ -595,9 +709,14 @@ create_tx_options (void)
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 5), label3);
   gtk_label_set_justify (GTK_LABEL (label3), GTK_JUSTIFY_LEFT);
 
-  dialog_action_area1 = GTK_DIALOG (tx_options)->action_area;
-  gtk_widget_show (dialog_action_area1);
-  gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area1), GTK_BUTTONBOX_END);
+  dialog_action_area3 = GTK_DIALOG (tx_options)->action_area;
+  gtk_widget_show (dialog_action_area3);
+  gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area3), GTK_BUTTONBOX_END);
+
+  pref_reset = gtk_button_new_from_stock ("gtk-revert-to-saved");
+  gtk_widget_show (pref_reset);
+  gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), pref_reset, 0);
+  GTK_WIDGET_SET_FLAGS (pref_reset, GTK_CAN_DEFAULT);
 
   pref_cancel = gtk_button_new_from_stock ("gtk-cancel");
   gtk_widget_show (pref_cancel);
@@ -620,6 +739,9 @@ create_tx_options (void)
   g_signal_connect_swapped ((gpointer) alsa_buffer_time, "value_changed",
                             G_CALLBACK (on_alsa_buffer_time_value_changed),
                             GTK_OBJECT (alsa_period_time));
+  g_signal_connect ((gpointer) pref_reset, "clicked",
+                    G_CALLBACK (on_pref_reset_clicked),
+                    NULL);
   g_signal_connect ((gpointer) pref_cancel, "clicked",
                     G_CALLBACK (on_pref_cancel_clicked),
                     NULL);
@@ -632,7 +754,7 @@ create_tx_options (void)
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (tx_options, tx_options, "tx_options");
-  GLADE_HOOKUP_OBJECT_NO_REF (tx_options, dialog_vbox1, "dialog_vbox1");
+  GLADE_HOOKUP_OBJECT_NO_REF (tx_options, dialog_vbox3, "dialog_vbox3");
   GLADE_HOOKUP_OBJECT (tx_options, notebook1, "notebook1");
   GLADE_HOOKUP_OBJECT (tx_options, table4, "table4");
   GLADE_HOOKUP_OBJECT (tx_options, label18, "label18");
@@ -703,124 +825,13 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, label33, "label33");
   GLADE_HOOKUP_OBJECT (tx_options, compress_set_files, "compress_set_files");
   GLADE_HOOKUP_OBJECT (tx_options, label3, "label3");
-  GLADE_HOOKUP_OBJECT_NO_REF (tx_options, dialog_action_area1, "dialog_action_area1");
+  GLADE_HOOKUP_OBJECT_NO_REF (tx_options, dialog_action_area3, "dialog_action_area3");
+  GLADE_HOOKUP_OBJECT (tx_options, pref_reset, "pref_reset");
   GLADE_HOOKUP_OBJECT (tx_options, pref_cancel, "pref_cancel");
   GLADE_HOOKUP_OBJECT (tx_options, pref_apply, "pref_apply");
   GLADE_HOOKUP_OBJECT (tx_options, pref_ok, "pref_ok");
   GLADE_HOOKUP_OBJECT_NO_REF (tx_options, tooltips, "tooltips");
 
   return tx_options;
-}
-
-GtkWidget*
-create_tx_adjust (void)
-{
-  GtkWidget *tx_adjust;
-  GtkWidget *dialog_vbox2;
-  GtkWidget *vbox1;
-  GtkWidget *label34;
-  GtkWidget *table7;
-  GtkObject *master_cycles_adj;
-  GtkWidget *master_cycles;
-  GtkWidget *label36;
-  GtkWidget *label35;
-  GtkObject *cycles_adj;
-  GtkWidget *cycles;
-  GtkWidget *create_event;
-  GtkWidget *dialog_action_area2;
-  GtkWidget *cancel;
-  GtkWidget *ok;
-  GtkTooltips *tooltips;
-
-  tooltips = gtk_tooltips_new ();
-
-  tx_adjust = gtk_dialog_new ();
-  gtk_window_set_title (GTK_WINDOW (tx_adjust), "Compute Pitch");
-
-  dialog_vbox2 = GTK_DIALOG (tx_adjust)->vbox;
-  gtk_widget_show (dialog_vbox2);
-
-  vbox1 = gtk_vbox_new (FALSE, 4);
-  gtk_widget_show (vbox1);
-  gtk_box_pack_start (GTK_BOX (dialog_vbox2), vbox1, TRUE, TRUE, 0);
-  gtk_container_set_border_width (GTK_CONTAINER (vbox1), 4);
-
-  label34 = gtk_label_new ("In order to compute the optimum pitch value, please specify how many loops of this turntable should play as fast as how many loops of the masterturntable:");
-  gtk_widget_show (label34);
-  gtk_box_pack_start (GTK_BOX (vbox1), label34, FALSE, FALSE, 0);
-  gtk_label_set_justify (GTK_LABEL (label34), GTK_JUSTIFY_LEFT);
-  gtk_label_set_line_wrap (GTK_LABEL (label34), TRUE);
-
-  table7 = gtk_table_new (2, 2, FALSE);
-  gtk_widget_show (table7);
-  gtk_box_pack_start (GTK_BOX (vbox1), table7, TRUE, TRUE, 0);
-  gtk_table_set_col_spacings (GTK_TABLE (table7), 3);
-
-  master_cycles_adj = gtk_adjustment_new (1, 1, 100, 1, 10, 10);
-  master_cycles = gtk_spin_button_new (GTK_ADJUSTMENT (master_cycles_adj), 1, 0);
-  gtk_widget_show (master_cycles);
-  gtk_table_attach (GTK_TABLE (table7), master_cycles, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_tooltips_set_tip (tooltips, master_cycles, "Specify the number of loops for the master turntable.", NULL);
-
-  label36 = gtk_label_new ("Loops of the master turntable:");
-  gtk_widget_show (label36);
-  gtk_table_attach (GTK_TABLE (table7), label36, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_label_set_justify (GTK_LABEL (label36), GTK_JUSTIFY_LEFT);
-
-  label35 = gtk_label_new ("Loops of this turntable turntable:");
-  gtk_widget_show (label35);
-  gtk_table_attach (GTK_TABLE (table7), label35, 0, 1, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_label_set_justify (GTK_LABEL (label35), GTK_JUSTIFY_LEFT);
-
-  cycles_adj = gtk_adjustment_new (1, 1, 100, 1, 10, 10);
-  cycles = gtk_spin_button_new (GTK_ADJUSTMENT (cycles_adj), 1, 0);
-  gtk_widget_show (cycles);
-  gtk_table_attach (GTK_TABLE (table7), cycles, 1, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_tooltips_set_tip (tooltips, cycles, "Specify the number of loops of _this_ turntable.", NULL);
-
-  create_event = gtk_check_button_new_with_mnemonic ("Record a sequencer event");
-  gtk_widget_show (create_event);
-  gtk_box_pack_start (GTK_BOX (vbox1), create_event, FALSE, FALSE, 0);
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (create_event), TRUE);
-
-  dialog_action_area2 = GTK_DIALOG (tx_adjust)->action_area;
-  gtk_widget_show (dialog_action_area2);
-  gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area2), GTK_BUTTONBOX_END);
-
-  cancel = gtk_button_new_from_stock ("gtk-cancel");
-  gtk_widget_show (cancel);
-  gtk_dialog_add_action_widget (GTK_DIALOG (tx_adjust), cancel, GTK_RESPONSE_CANCEL);
-  GTK_WIDGET_SET_FLAGS (cancel, GTK_CAN_DEFAULT);
-
-  ok = gtk_button_new_from_stock ("gtk-ok");
-  gtk_widget_show (ok);
-  gtk_dialog_add_action_widget (GTK_DIALOG (tx_adjust), ok, GTK_RESPONSE_OK);
-  GTK_WIDGET_SET_FLAGS (ok, GTK_CAN_DEFAULT);
-
-  /* Store pointers to all widgets, for use by lookup_widget(). */
-  GLADE_HOOKUP_OBJECT_NO_REF (tx_adjust, tx_adjust, "tx_adjust");
-  GLADE_HOOKUP_OBJECT_NO_REF (tx_adjust, dialog_vbox2, "dialog_vbox2");
-  GLADE_HOOKUP_OBJECT (tx_adjust, vbox1, "vbox1");
-  GLADE_HOOKUP_OBJECT (tx_adjust, label34, "label34");
-  GLADE_HOOKUP_OBJECT (tx_adjust, table7, "table7");
-  GLADE_HOOKUP_OBJECT (tx_adjust, master_cycles, "master_cycles");
-  GLADE_HOOKUP_OBJECT (tx_adjust, label36, "label36");
-  GLADE_HOOKUP_OBJECT (tx_adjust, label35, "label35");
-  GLADE_HOOKUP_OBJECT (tx_adjust, cycles, "cycles");
-  GLADE_HOOKUP_OBJECT (tx_adjust, create_event, "create_event");
-  GLADE_HOOKUP_OBJECT_NO_REF (tx_adjust, dialog_action_area2, "dialog_action_area2");
-  GLADE_HOOKUP_OBJECT (tx_adjust, cancel, "cancel");
-  GLADE_HOOKUP_OBJECT (tx_adjust, ok, "ok");
-  GLADE_HOOKUP_OBJECT_NO_REF (tx_adjust, tooltips, "tooltips");
-
-  return tx_adjust;
 }
 
