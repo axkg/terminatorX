@@ -14,6 +14,70 @@
         <link ref="mailto:alex@lisas.de">send</link> me some pictures of it so I can add them here.
       <bold>Thanks</bold> to all contributors!</para>
     <turntabletable>
+      <tt title="Adam's turntable">
+        <author>
+          <person>
+            <name>Adam King</name>
+            <email>aking@lgh.com.au</email>
+          </person>
+        </author>
+        <text>
+          <para>Adam's turntable features very unique colors. Not a single feature of the
+	  mouse is left unused with this device: All buttons are available and the 2nd axis
+	  can be controlled with the red knob.</para>
+	  <para>For more details checkout Adam's <link ref="http://members.optusnet.com.au/adamjking/ttable.htm">website</link></para>
+        </text>
+        <ttimages>
+          <image filename="adam1.jpg">
+            <nopara>Those colors just rock</nopara>
+          </image>
+          <image filename="adam2.jpg">
+            <nopara>Utlizes the mouse buttons</nopara>
+          </image>
+          <image filename="adam3.jpg">
+            <nopara>From above</nopara>
+          </image>
+          <image filename="adam4.jpg">
+            <nopara>Inside the box</nopara>
+          </image>
+          <image filename="adam5.jpg">
+            <nopara>Smooth mouse integration</nopara>
+          </image>
+        </ttimages>
+      </tt>
+      <tt title="Bob's turntable">
+        <author>
+          <person>
+            <name>Bob Arctor</name>
+            <email>curious@pb194.luban.sdi.tpnet.pl</email>
+          </person>
+        </author>
+        <text>
+          <para>Bob's very interesting turntable transfers it&apos;s rotational speed via a belt.</para><para>He describes
+	  his terminatorX device this way: <italic>&quot;The method is especially good for mixing, not only scratching, 
+	  because it is very stable (belt eliminates vinyl imperfections, transferring only rotational speed)&quot;</italic></para>
+        </text>
+        <ttimages>
+          <image filename="bob1.jpg">
+            <nopara>Belt-driven</nopara>
+          </image>
+          <image filename="bob2.jpg">
+            <nopara>Vinyl look and feel</nopara>
+          </image>
+          <image filename="bob3.jpg">
+            <nopara>Mouse connection</nopara>
+          </image>
+          <image filename="bob4.jpg">
+            <nopara>Works with different turntables</nopara>
+          </image>
+          <image filename="bob5.jpg">
+            <nopara>Complete setup</nopara>
+          </image>
+          <image filename="bob6.jpg">
+            <nopara>The belt</nopara>
+          </image>
+        </ttimages>
+      </tt>      
       <tt title="Fernando's turntable">
         <author>
           <person>

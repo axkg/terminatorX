@@ -22,7 +22,77 @@
         </para>
       </text>
     </general>
-    <news>
+    <news>  
+	  <newsitem>
+        <newsheader date="November 2"><link ref="download.html#Current Version">terminatorX V3.82</link>
+          available and fresh <dblink id="turntables">turntables</dblink></newsheader>
+        <newstext>
+          <para><img filename="webknob.jpg" align="right"/>
+			Some fresh code finally! Here's what's new with this release:
+
+            <itemizedlist>
+              <listitem><para>Support for <bold>stereo LADSPA plugins</bold>. Each
+			  		turntable now features a stereo effect queue that follows the 
+					mono queue. Click the "Stereo FX" button to add stereo plugins
+					to a turntable's effect queue.
+                </para></listitem>
+              <listitem><para>Every plugin can now have an extra <bold>Dry/Wet control</bold>
+			  		if required. Click on a plugin's label to add or remove
+					the control.
+				</para></listitem>
+				<listitem>
+					<para>You can now map <bold>MIDI controllers reverse</bold>: this introduces
+						the possibilty to map a MIDI controller as a crossfader for two (or more)
+						turntables.
+					</para>
+				</listitem>
+              <listitem><para>
+			  	<person><name>Adam King</name><email>aking@lgh.com.au</email></person> contributed
+				a patch that adds <bold>simpler minimization</bold> for control panels and a fix for 
+				a sequencer menu crash.
+                </para></listitem>
+              <listitem><para>
+				This release supports the gtk+ <bold>filechooser</bold> where available.
+                </para></listitem>
+              <listitem><para>All VU meters now display the <bold>stereo signal</bold>.
+                </para></listitem>
+              <listitem><para>For security reasons the old suid-root method has <bold>gone</bold> - the
+				POSIX capabilties-based method remains available as it's currently believed to
+				be secure.
+                </para></listitem>
+			</itemizedlist>
+            <itemizedlist>
+              <listitem><para>
+				From the unnecessary-eye-candy dept.: this release
+			  		features <bold>new icons</bold> I've drawn with the cool 
+					<link ref="http://www.inkscape.org">inkscape</link>	and a <bold>new
+					control knob</bold> I've created with the wonderful 
+					<link ref="http://www.povray.org">povray</link>. And of course
+					I've used the <link ref="http://www.gimp.org">Gimp</link> all over
+					the place. All images should now blend smoothly with your
+					theme's background.
+                </para></listitem>
+			</itemizedlist>
+		  </para>
+		  <para>
+			For more details check the <dblink id="changelog"/>. As usual I've verified this release 
+			to build with all gcc releases from 2.95 to 3.4, it fixes a
+			a whole lot of bugs and it's available from the <dblink id="download"/>.
+		  </para>
+		  <para>
+			Additionally I finally managed to add two new turntables to the 
+			<dblink id="turntables"/>. <person>
+            <name>Bob's</name>
+            <email>curious@pb194.luban.sdi.tpnet.pl</email>
+          </person> turntable is based on a new belt-driven approach while
+		  <person>
+            <name>Adam's</name>
+            <email>aking@lgh.com.au</email>
+          </person> turntable is interesting from the inside as well as the
+		  outside.
+		  </para>
+		</newstext>
+	  </newsitem>
       <newsitem>
         <newsheader date="August 22"><link ref="download.html#Current Version">terminatorX V3.81</link>
           available</newsheader>
@@ -45,7 +115,7 @@
                 parameter of your choice and set the MIDI mappings, bounds or delete events.
               </para></listitem>
             </itemizedlist>
-            <screenshot filename="parameter_menu.jpg"/>
+            <screenshot filename="parameter_menu.jpg"><nopara>Parameter Menu</nopara></screenshot>
             <itemizedlist>
               <listitem><para>The new <bold>MIDI Bounds</bold> let you modify the range
                   within which a MIDI controller can effect a certain parameter.
