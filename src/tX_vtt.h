@@ -89,6 +89,7 @@ class vtt_class
 	static int master_triggered_at;
 	static vtt_class * focused_vtt;
 	static int solo_ctr;
+	static int mix_buffer_size;
 	
 	/* the gui */
 	vtt_gui gui;
@@ -226,6 +227,8 @@ class vtt_class
 	/* Methods */		
 	vtt_class(int);
 	~vtt_class();
+	
+	static int get_mix_buffer_size() { return mix_buffer_size; }
 	
 	/* Parameter setup methods */
 	void set_name(char *);

@@ -59,6 +59,8 @@ enum tX_engine_status {
 
 class tX_engine {
 	private:
+	static tX_engine *engine;
+	
 	pthread_t thread;
 	pthread_mutex_t start;
 	bool thread_terminate;
@@ -79,18 +81,21 @@ class tX_engine {
 	tX_midiin *get_midi() { return midi; }
 #endif	
 
+	static tX_engine *get_instance();
 	tX_engine();
 	~tX_engine();
 	
 	tX_engine_error run();
 	void stop();
 	void loop();
+	void loop_og();	
+	
 	void set_recording_request(bool recording);
 	bool get_recording_request() { return recording_request; }
 	bool is_recording() { return recording; }
+	int16_t* render_cycle();
 	
 	void set_grab_request();
+	bool is_stopped() { return stop_flag; }
 };
-
-extern tX_engine *engine;
 #endif

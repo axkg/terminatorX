@@ -54,13 +54,21 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
-tX_engine *engine=NULL;
+tX_engine *tX_engine :: engine=NULL;
+
+tX_engine *tX_engine :: get_instance() {
+	if (!engine) {
+		engine=new tX_engine();
+	}
+	
+	return engine;
+}
 
 void tX_engine :: set_grab_request() {
 	grab_request=true;
 }
 
-void tX_engine :: loop() {
+void tX_engine :: loop_og() {
 	int16_t *temp=NULL;
 	int result;
 	
@@ -129,6 +137,71 @@ void tX_engine :: loop() {
 		loop_is_active=false;
 	}
 }
+
+int16_t* tX_engine :: render_cycle() {
+	/* Checking whether to grab or not  */
+	if (grab_request!=grab_active) {
+		if (grab_request) {
+			/* Activating grab... */
+			int result=mouse->grab(); 
+			if (result!=0) {
+				tX_error("tX_engine::loop(): failed to grab mouse - error %i", result);
+				grab_active=false;
+				/* Reseting grab_request, too - doesn't help keeping it, does it ? ;) */
+				grab_request=false;
+				mouse->ungrab();
+				grab_off();
+			} else {
+				grab_active=true;
+			}
+		} else {
+			/* Deactivating grab... */
+			mouse->ungrab();
+			grab_active=false;
+			grab_off(); // for the mastergui this is...
+		}
+	}
+
+	/* Handling input events... */
+	if (grab_active) {
+		if (mouse->check_event()) {
+			/* If we're here the user pressed ESC */
+			grab_request=false;
+		}
+	}
+
+#ifdef USE_ALSA_MIDI_IN			
+	if (midi->get_is_open()) midi->check_event();
+#endif			
+	/* Forward the sequencer... */
+	sequencer.step();
+
+	/* Render the next block... */
+	int16_t *data=vtt_class::render_all_turntables();
+	
+	/* Record the audio if necessary... */
+	if (is_recording()) tape->eat(data);
+	
+	return  data;
+}
+
+void tX_engine :: loop() {
+	int16_t *temp=NULL;
+	int result;
+	
+	while (!thread_terminate) {
+		/* Waiting for the trigger */
+		pthread_mutex_lock(&start);
+		loop_is_active=true;
+		pthread_mutex_unlock(&start);
+
+		device->start(); // Hand flow control over to the device
+		
+		/* Stopping engine... */
+		loop_is_active=false;
+	}
+}
+
 
 void *engine_thread_entry(void *engine_void) {
 	tX_engine *engine=(tX_engine*) engine_void;
@@ -256,7 +329,6 @@ tX_engine_error tX_engine :: run() {
 	}	
 
 	vtt_class::set_sample_rate(device->get_sample_rate());
-	vtt_class::set_mix_buffer_size(device->get_buffersize()/2); //mixbuffer is mono
 	
 	if (recording_request) {
 		if (tape->start_record(globals.record_filename, device->get_buffersize()*sizeof(int16_t), device->get_sample_rate())) {
