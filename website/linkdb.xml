@@ -1,37 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <linkdb>
-	<dlink id="license" url="COPYING" text="license"/>
-	<dlink id="tutorial" url="http://www.djcj.org/LAU/quicktoots/toots/tx_toot/tx_toot1.html" text="tutorial"/>
-	<dlink id="quicktoots" url="http://www.djcj.org/LAU/quicktoots/" text="QuickToots"/>
-	<dlink id="ladspa" url="http://www.ladspa.org" text="LADSPA"/>
-	<dlink id="download" url="download.html" text="download section"/>
-	<dlink id="main" url="./" text="main section"/>
-	<dlink id="screenshots" url="screenshots.html" text="screenshots section"/>
-	<dlink id="faq" url="faq.html" text="FAQ"/>
-	<dlink id="docs" url="docs.html" text="documentation section"/>
-	<dlink id="scratches" url="scratches.html" text="user's scratches section"/>
-	<dlink id="turntables" url="turntable.html" text="turntable gallery"/>
-	<dlink id="aseqjoy" url="aseqjoy.html" text="aseqjoy"/>
-	<dlink id="alsa" url="http://www.alsa-project.org" text="ALSA"/>
-	<dlink id="changelog" url="ChangeLog" text="ChangeLog"/>
-	<dlink id="install" url="INSTALL" text="INSTALL"/>
-	<dlink id="oldtable" url="oldtable.html" text="old turntable to tX device description"/>
-	<dlink id="aseqjoy_man" url="aseqjoy-man.html" text="aseqjoy man page"/>
-	<dlink id="liblrdf" url="http://plugin.org.uk/releases/lrdf/" text="liblrdf"/>
-	<dlink id="manual" url="manual/index.html" text="manual"/>
-	<dlink id="openjay" url="http://www.openjay.org" text="Openjay"/>
-	<dlink id="debian" url="http://www.debian.org" text="Debian"/>
-	<dlink id="dynebolic" url="http://www.dynebolic.org/" text="dyne:bolic"/>
-	<dlink id="rezound" url="http://rezound.sourceforge.net" text="Rezound"/>
-	<dlink id="linuxsound" url="http://linux-sound.org" text="Linux Sound And Midi Pages"/>
-	<dlink id="freshmeat" url="http://freshmeat.net" text="freshmeat"/>
-	<dlink id="lad" url="http://www.linuxdj.com/audio/lad" text="LAD"/>
-	<dlink id="agnula" url="http://www.agnula.org" text="AGNULA"/>
-	<dlink id="ccrma" url="http://www-ccrma.stanford.edu/planetccrma/software/" text="Planet CCRMA"/>
-	<dlink id="suse" url="http://www.suse.com" text="SuSE"/>
-	<dlink id="freebsd" url="http://freebsd.org" text="FreeBSD"/>
-	<dlink id="neural" url="http://neural.it" text="neural.it"/>
-	<dlink id="ct" url="http://www.heise.de/ct" text="c't"/>
-	<dlink id="sonar" url="http://www.sonar.es" text="Sonar"/>
-	<dlink id="testing" url="http://packages.debian.org/testing/sound/terminatorx.html" text="testing package"/>
-	<dlink id="unstable" url="http://packages.debian.org/unstable/sound/terminatorx.html" text="unstable package"/>
+  <dlink id="license" text="license" url="COPYING"/>
+  <dlink id="tutorial" text="tutorial" url="http://www.djcj.org/LAU/quicktoots/toots/tx_toot/tx_toot1.html"/>
+  <dlink id="quicktoots" text="QuickToots" url="http://www.djcj.org/LAU/quicktoots/"/>
+  <dlink id="ladspa" text="LADSPA" url="http://www.ladspa.org"/>
+  <dlink id="download" text="download section" url="download.html"/>
+  <dlink id="main" text="main section" url="./"/>
+  <dlink id="screenshots" text="screenshots section" url="screenshots.html"/>
+  <dlink id="faq" text="FAQ" url="faq.html"/>
+  <dlink id="docs" text="documentation section" url="docs.html"/>
+  <dlink id="scratches" text="user's scratches section" url="scratches.html"/>
+  <dlink id="turntables" text="turntable gallery" url="turntable.html"/>
+  <dlink id="aseqjoy" text="aseqjoy" url="aseqjoy.html"/>
+  <dlink id="alsa" text="ALSA" url="http://www.alsa-project.org"/>
+  <dlink id="changelog" text="ChangeLog" url="ChangeLog"/>
+  <dlink id="install" text="INSTALL" url="INSTALL"/>
+  <dlink id="oldtable" text="old turntable to tX device description" url="oldtable.html"/>
+  <dlink id="aseqjoy_man" text="aseqjoy man page" url="aseqjoy-man.html"/>
+  <dlink id="liblrdf" text="liblrdf" url="http://plugin.org.uk/releases/lrdf/"/>
+  <dlink id="manual" text="manual" url="manual/index.html"/>
+  <dlink id="openjay" text="Openjay" url="http://www.openjay.org"/>
+  <dlink id="debian" text="Debian" url="http://www.debian.org"/>
+  <dlink id="dynebolic" text="dyne:bolic" url="http://www.dynebolic.org/"/>
+  <dlink id="rezound" text="Rezound" url="http://rezound.sourceforge.net"/>
+  <dlink id="linuxsound" text="Linux Sound And Midi Pages" url="http://linux-sound.org"/>
+  <dlink id="freshmeat" text="freshmeat" url="http://freshmeat.net"/>
+  <dlink id="lad" text="LAD" url="http://www.linuxdj.com/audio/lad"/>
+  <dlink id="agnula" text="AGNULA" url="http://www.agnula.org"/>
+  <dlink id="ccrma" text="Planet CCRMA" url="http://www-ccrma.stanford.edu/planetccrma/software/"/>
+  <dlink id="suse" text="SuSE" url="http://www.suse.com"/>
+  <dlink id="freebsd" text="FreeBSD" url="http://freebsd.org"/>
+  <dlink id="neural" text="neural.it" url="http://neural.it"/>
+  <dlink id="ct" text="c't" url="http://www.heise.de/ct"/>
+  <dlink id="sonar" text="Sonar" url="http://www.sonar.es"/>
+  <dlink id="testing" text="testing package" url="http://packages.debian.org/testing/sound/terminatorx.html"/>
+  <dlink id="unstable" text="unstable package" url="http://packages.debian.org/unstable/sound/terminatorx.html"/>
+  <dlink id="jack" text="JACK" url="http://jackit.sourceforge.net"/>
+  <dlink id="links" text="links section" url="links.html"/>
 </linkdb>

@@ -1,49 +1,40 @@
-<?xml version='1.0' encoding='iso-8859-1'?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE section SYSTEM "./tX.dtd">
-<section name='docs'>
-  &db;
-  <docs>
-    <para>The following documentation is available: 
-    <itemizedlist>
-      <listitem>
-        <para>An HTML version of the 
-        <dblink id='manual'>terminatorX online manual</dblink>. If you
-        have GNOME2's 
-        <italic>yelp</italic> installed you should be able to read this manual
-        by selecting it from the 
-        <italic>Help</italic> menu in the termintorX main window.</para>
-      </listitem>
-      <listitem>
-        <para>
-        <person>
-          <name>Brian</name>
-          <email>bredfern@calarts.edu</email>
-        </person> wrote a nice 
-        <italic>QuickToot</italic> tutorial on terminatorX. Check it out 
-        <dblink id='tutorial'>here</dblink> or have look at all the other 
-        <dblink id='quicktoots'>QuickToots</dblink> available.</para>
-      </listitem>
-      <listitem>
-        <para>If you're stuck on installing terminatorX I recommend having a
-        look at the <dblink id='install'/> file.</para>
-      </listitem>
-      <listitem>
-        <para>I also maintain a 
-        <dblink id='faq'>Frequently Asked Questions</dblink> document.</para>
-      </listitem>
-    </itemizedlist></para>
-    <para>Additionally there's a 
-    <itemizedlist>
-      <listitem>
-        <para>HTML version of the 
-        <dblink id='aseqjoy'/>
-        <dblink id='aseqjoy_man'>man page</dblink>.</para>
-      </listitem>
-      <listitem>
-        <para>And a rather old 
-        <dblink id='oldtable'>description</dblink> on how I turned my
-        broken turntable into terminatorX device.</para>
-      </listitem>
-    </itemizedlist></para>
+<section name="docs"> &db; <docs>
+    <para>The following documentation is available: <itemizedlist>
+        <listitem>
+          <para>An HTML version of the <dblink id="manual">terminatorX online manual</dblink>. If
+            you have GNOME2's <italic>yelp</italic> installed you should be able to read this manual
+            by selecting it from the <italic>Help</italic> menu in the termintorX main window.</para>
+        </listitem>
+        <listitem>
+          <para>
+            <person>
+              <name>Brian</name>
+              <email>bredfern@calarts.edu</email>
+            </person> wrote a nice <italic>QuickToot</italic> tutorial on terminatorX. Check it out
+              <dblink id="tutorial">here</dblink> or have look at all the other <dblink
+            id="quicktoots">QuickToots</dblink> available.</para>
+        </listitem>
+        <listitem>
+          <para>If you're stuck on installing terminatorX I recommend having a look at the <dblink
+            id="install"/> file.</para>
+        </listitem>
+        <listitem>
+          <para>I also maintain a <dblink id="faq">Frequently Asked Questions</dblink> document.</para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <para>Additionally there's a <itemizedlist>
+        <listitem>
+          <para>HTML version of the <dblink id="aseqjoy"/>
+            <dblink id="aseqjoy_man">man page</dblink>.</para>
+        </listitem>
+        <listitem>
+          <para>And a rather old <dblink id="oldtable">description</dblink> on how I turned my
+            broken turntable into terminatorX device.</para>
+        </listitem>
+      </itemizedlist>
+    </para>
   </docs>
 </section>

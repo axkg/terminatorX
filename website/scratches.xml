@@ -1,16 +1,61 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<!DOCTYPE section SYSTEM "./tX.dtd"[ ]>
-<section name='scratches'>
-  &db;
-  <scratches>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE section SYSTEM "./tX.dtd">
+<section name="scratches"> &db; <scratches>
     <para>
-    <bold>Yeah, Boy!</bold> (talking 
-    <link ref='http://www.publicenemy.com/soldiers/flavor.php'>flavor</link>,
-    here)</para>
-    <para>Here are the current "users scratches". So you think these are not
-    enough? Right, Ok, so do something about it! Read the text below if you
-    want to send me what you created with terminatorX.</para>
+      <bold>Yeah, Boy!</bold> (talking <link
+      ref="http://www.publicenemy.com/soldiers/flavor.php">flavor</link>, here)</para>
+    <para>Here are the current &quot;users scratches&quot;. So you think these are not enough?
+      Right, Ok, so do something about it! Read the text below if you want to send me what you
+      created with terminatorX.</para>
     <scratchtable>
+      <scratch>
+        <mp3file>
+          <file>en_ghane_cigo.mp3</file>
+          <filesize>7.4MB</filesize>
+        </mp3file>
+        <author>
+          <person>
+            <name>Arthur Moore</name>
+            <email>art@infinitybox.net</email>
+          </person>
+        </author>
+        <comment>
+          <nopara>&quot;Modern Music&quot; (no beats invovled) - 
+            <link ref="http://www.infinitybox.net">author's website</link>.</nopara>
+        </comment>
+      </scratch>
+      <scratch>
+        <mp3file>
+          <file>dark_river.mp3</file>
+          <filesize>4.6MB</filesize>
+        </mp3file>
+        <author>
+          <person>
+            <name>Arthur Moore</name>
+            <email>art@infinitybox.net</email>
+          </person>
+        </author>
+        <comment>
+          <nopara>&quot;Think Stravinsky, Shoenberg, Cage, Stockhausen&quot; - 
+            <link ref="http://www.infinitybox.net">author's website</link>.</nopara>
+        </comment>
+      </scratch>
+      <scratch>
+        <mp3file>
+          <file>ving.mp3</file>
+          <filesize>8.3MB</filesize>
+        </mp3file>
+        <author>
+          <person>
+            <name>Arthur Moore</name>
+            <email>art@infinitybox.net</email>
+          </person>
+        </author>
+        <comment>
+          <nopara>&quot;Not cheesy LDS artist stuff&quot; -
+            <link ref="http://www.infinitybox.net">author's website</link>.</nopara>
+        </comment>
+      </scratch>
       <scratch>
         <mp3file>
           <file>asapien_scratch.mp3</file>
@@ -23,11 +68,11 @@
           </person>
         </author>
         <comment>
-          <nopara>This scratch is just a sample of a full 45min terminatorX
-          set, which is available it at the 
-          <link ref='http://asapien.org'>author's website</link>.</nopara>
-          <tinycomment><nopara>The whole set is terminatorX plus an external reverb
-          box.</nopara></tinycomment>
+          <nopara>This scratch is just a sample of a full 45min terminatorX set, which is available
+            it at the <link ref="http://asapien.org">author's website</link>.</nopara>
+          <tinycomment>
+            <nopara>The whole set is terminatorX plus an external reverb box.</nopara>
+          </tinycomment>
         </comment>
       </scratch>
       <scratch>
@@ -44,8 +89,7 @@
         <comment>
           <nopara>Aint no DJ but love to scratch!</nopara>
           <tinycomment>
-            <nopara>created with his 
-            <dblink id='turntables'>own turntable</dblink>.</nopara>
+            <nopara>created with his <dblink id="turntables">own turntable</dblink>.</nopara>
           </tinycomment>
         </comment>
       </scratch>
@@ -60,16 +104,13 @@
             <email>aluise@udel.edu</email>
           </person>
           <tinycomment>
-            <nopara>alias 
-            <italic>DJ Giant 'G'</italic>of the 
-            <link ref='http://farnkyboyz.virtualave.net'>
-            FarnkyBoyz</link></nopara>
+            <nopara>alias <italic>DJ Giant 'G'</italic>of the <link
+                ref="http://farnkyboyz.virtualave.net"> FarnkyBoyz</link>
+            </nopara>
           </tinycomment>
         </author>
         <comment>
-          <nopara>From the 
-          <link ref='http://farnkyboyz.virtualave.net'>Farnky
-          Boyz'</link> upcoming Album</nopara>
+          <nopara>From the <link ref="http://farnkyboyz.virtualave.net">Farnky Boyz'</link> upcoming Album</nopara>
         </comment>
       </scratch>
       <scratch>
@@ -103,17 +144,16 @@
             <email>aluise@udel.edu</email>
           </person>
           <tinycomment>
-            <nopara>alias 
-            <italic>DJ Giant 'G'</italic>of the 
-            <link ref='http://farnkyboyz.virtualave.net'>
-            FarnkyBoyz</link></nopara>
+            <nopara>alias <italic>DJ Giant 'G'</italic>of the <link
+                ref="http://farnkyboyz.virtualave.net"> FarnkyBoyz</link>
+            </nopara>
           </tinycomment>
         </author>
         <comment>
           <nopara>Cut it up!</nopara>
           <tinycomment>
             <nopara>
-            <italic>"Mixed in 15 min"</italic>- Wow!</nopara>
+              <italic>&quot;Mixed in 15 min&quot;</italic>- Wow!</nopara>
           </tinycomment>
         </comment>
       </scratch>
@@ -205,25 +245,19 @@
         </comment>
       </scratch>
     </scratchtable>
-    <para>In case 
-    <bold>you</bold> want to get on the list above download terminatorX,
-    practice and record your scratching. If you believe your skills are good
-    enough 
-    <link ref='mailto:alex@lisas.de'>mail</link> me your best scratch. Before
-    you do so, please: 
-    <itemizedlist>
-      <listitem>
-        <nopara>Ensure that it's not 
-        <italic>too</italic> big.</nopara>
-      </listitem>
-      <listitem>
-        <nopara>
-        <italic>mp3</italic> or 
-        <italic>ogg</italic> it. If you don't have an encoder go and get 
-        <link ref='http://www.mp3dev.org/mp3//'>LAME</link>, 
-        <link ref='http://bladeenc.mp3.no/'>BladeEnc</link> or 
-        <link ref='http://www.xiph.org/ogg/vorbis/'>OggVorbis</link>.</nopara>
-      </listitem>
-    </itemizedlist></para>
+    <para>In case <bold>you</bold> want to get on the list above download terminatorX, practice and
+      record your scratching. If you believe your skills are good enough <link
+      ref="mailto:alex@lisas.de">mail</link> me your best scratch. Before you do so, please: <itemizedlist>
+        <listitem>
+          <nopara>Ensure that it's not <italic>too</italic> big.</nopara>
+        </listitem>
+        <listitem>
+          <nopara>
+            <italic>mp3</italic> or <italic>ogg</italic> it. If you don't have an encoder go and get
+              <link ref="http://www.mp3dev.org/mp3//">LAME</link>, <link
+            ref="http://bladeenc.mp3.no/">BladeEnc</link> or <link ref="http://www.xiph.org/ogg/vorbis/">OggVorbis</link>.</nopara>
+        </listitem>
+      </itemizedlist>
+    </para>
   </scratches>
 </section>
