@@ -1,30 +1,24 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<!DOCTYPE section SYSTEM "./tX.dtd"[ ]>
-<section name='screenshots'>
-  &db;
-  <screenshots>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE section SYSTEM "./tX.dtd">
+<section name="screenshots"> &db; <screenshots>
     <subsection>
       <title>What it looks like...</title>
-      <para>Here are some screenshots of terminatorX 3.80 in
-      action.</para>
+      <para>Here are some screenshots of terminatorX 3.80 in action.</para>
       <para>
-        <screenshot filename='shot-3.80-1.png'>
-          <nopara>This shows terminatorX with the sequencer and live scratching
-          in effect.</nopara>
+        <screenshot filename="shot-3.80-1.png">
+          <nopara>This shows terminatorX with the sequencer and live scratching in effect.</nopara>
         </screenshot>
-        <screenshot filename='shot-3.80-2.png'>
-          <nopara>Selecting a 
-          <dblink id='ladspa'/> plugin from a 
-          <dblink id='liblrdf'/> structured menu.</nopara>
+        <screenshot filename="shot-3.80-2.png">
+          <nopara>Selecting a <dblink id="ladspa"/> plugin from a <dblink id="liblrdf"/> structured menu.</nopara>
         </screenshot>
-        <screenshot filename='shot-3.80-3.png'>
-          <nopara>Mapping a parameter to a turntable's axis. This works for 
-          <dblink id='ladspa'/> plugins, too.</nopara>
+        <screenshot filename="shot-3.80-3.png">
+          <nopara>Mapping a parameter to a turntable's axis. This works for <dblink id="ladspa"/>
+            plugins, too.</nopara>
         </screenshot>
-        <screenshot filename='shot-3.80-4.png'>
+        <screenshot filename="shot-3.80-4.png">
           <nopara>Configuring terminatorX.</nopara>
         </screenshot>
-        <screenshot filename='shot-3.80-5.png'>
+        <screenshot filename="shot-3.80-5.png">
           <nopara>Mapping MIDI events to turntable parameters.</nopara>
         </screenshot>
       </para>
