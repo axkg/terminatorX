@@ -351,6 +351,12 @@ void init_tx_options(GtkWidget *dialog) {
 	}
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "use_realtime")), globals.use_realtime);
+
+#ifndef USE_CAPABILITIES
+	/* rt's not configurable without capabilities. */
+	gtk_widget_hide(lookup_widget(dialog, "use_realtime"));
+	gtk_widget_hide(lookup_widget(dialog, "use_realtime_label"));	
+#endif
 	
 #ifndef USE_OSS
 	gtk_widget_set_sensitive(lookup_widget(dialog, "oss_driver"), 0);

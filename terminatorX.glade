@@ -421,7 +421,7 @@
 	      </child>
 
 	      <child>
-		<widget class="GtkLabel" id="label58">
+		<widget class="GtkLabel" id="use_realtime_label">
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes">Use realtime scheduling
 where available:</property>
