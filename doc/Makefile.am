@@ -1,4 +1,4 @@
-SUBDIRS=img terminatorX-manual
+SUBDIRS=terminatorX-manual
 
 EXTRA_DIST=xmldocs.make omf.make
 

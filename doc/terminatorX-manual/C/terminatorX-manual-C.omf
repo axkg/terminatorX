@@ -1,0 +1,27 @@
+<?xml version="1.0" standalone="no"?>
+<omf>
+  <resource>
+    <creator>
+	alex@lisas.de (Alexander Koenig)
+    </creator>
+    <title>
+      terminatorX Manual
+    </title>
+    <date>
+      2002-11-22
+   </date>
+    <version identifier="1.0" date="2002-11-22" description="Initial Release"/>
+    <subject category="Multimedia"/>
+    <description>
+      This is the manual for terminatorX
+    </description>
+    <type>
+       manual
+    </type>
+    <format mime="text/xml" dtd="-//OASIS//DTD DocBook XML V4.1.2//EN"/>
+    <identifier url="file:/usr/share/terminatorX/doc/terminatorX-manual/C/terminatorX-manual.xml"/>
+    <language code="C"/>
+    <relation seriesid="9c4f02ba-fe53-11d6-810b-a240cc571a07"/>
+    <rights type="GNU FDL" license.version="1.1" holder="Alexander Koenig"/>
+  </resource>
+</omf>
