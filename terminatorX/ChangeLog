@@ -41,6 +41,17 @@ changed.
   is the pthread "manager thread" is out of control of terminatorX code - so
   I cannot tell that thread to drop privileges.
 - Fixed Drag'n'Drop for GNOME 2
+- To enhance the loading of audiofiles terminatorX now contains code to use
+  mad (MPEG Audio Decoder), libvorbis and libaudiofile directly instead of 
+  pipeing audio data through mpg123, ogg123 or sox. As a result the new routines
+  bring following advantages:
+  	- tX loads audiofiles significantly faster
+	- tX now honours the samplerate of an audiofile
+	  (by adjusting the pitch of the turntable)
+	- tX provides much better feedback on the loading progress
+  Although the old loading-methods are still available (and piped loading has
+  been improved, too) I highly recommend installing the libraries above as the
+  new routines simply work better.
 - Deleted tons of old outdated code in tX_engine.cc and tX_mastergui.cc
 
 [v3.72]
