@@ -39,6 +39,7 @@ class LADSPA_Class { // Yeah, I know "class" name for C++ class - but it just se
 	static LADSPA_Class *unclassified;
 	static std::list <char *> rdf_files;
 	static vtt_class *current_vtt;
+	static bool liblrdf_error;
 	
 	char *label;
 	bool accept_all;
