@@ -577,7 +577,7 @@ void show_about(int nag)
 	if (nag) {
 		GtkWidget *box=gtk_vbox_new(FALSE, 2);
 		GtkWidget *box2=gtk_hbox_new(FALSE, 2);
-		GtkWidget *seph=gtk_hseparator_new();
+//		GtkWidget *seph=gtk_hseparator_new();
 		GtkWidget *label;
 #ifndef USE_GTK2		
 		char about_prefix_umlaut[]="Copyright (C) 1999-2002 by Alexander König";
@@ -587,7 +587,7 @@ void show_about(int nag)
 		
 		gtk_container_add(GTK_CONTAINER(window), box);
 		gtk_box_pack_start(GTK_BOX(box), pwid, WID_FIX);
-		gtk_box_pack_start(GTK_BOX(box), seph, WID_FIX);
+//		gtk_box_pack_start(GTK_BOX(box), seph, WID_FIX);
 		gtk_box_pack_start(GTK_BOX(box), box2, WID_FIX);
 		
 		label=gtk_label_new(PACKAGE" release "VERSION);
@@ -608,7 +608,7 @@ void show_about(int nag)
 		gtk_misc_set_alignment(GTK_MISC(label), 0.9, 0.5);
 		gtk_widget_show(label);
 		
-		gtk_widget_show(seph);
+//		gtk_widget_show(seph);
 		gtk_widget_show(box2);
 		gtk_widget_show(box);
 		gtk_widget_show(window);
