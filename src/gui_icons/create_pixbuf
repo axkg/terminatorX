@@ -1,2 +1,0 @@
-#!/bin/sh
-gdk-pixbuf-csource --raw --build-list audioengine audioengine.png power power.png grab grab.png sequencer sequencer.png play play.png stop stop.png record record.png wave tx_wave.xpm min_control min_control.png minimize minimize.png fx_up fx_up.png fx_down fx_down.png fx_close fx_close.png minimize_panel minimize_panel.png maximize maximize.png > icons.pixbuf
