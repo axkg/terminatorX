@@ -201,6 +201,7 @@ vtt_class :: vtt_class (int do_create_gui)
 vtt_class :: ~vtt_class()
 {
 	vtt_fx *effect;
+	vtt_fx_stereo_ladspa *stereo_effect;
 	stop();
 
 	main_list.remove(this);
@@ -216,6 +217,12 @@ vtt_class :: ~vtt_class()
 		effect=(*fx_list.begin());
 		fx_list.remove(effect);
 		delete effect;
+	}
+
+	while (stereo_fx_list.size()) { 
+		stereo_effect=(*stereo_fx_list.begin());
+		stereo_fx_list.remove(stereo_effect);
+		delete stereo_effect;
 	}
 	
 	if (sync_master==this) {
