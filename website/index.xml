@@ -47,15 +47,6 @@
 			The ALSA and the OSS backends now both support operating at an 
 			<bold>arbitrary sampling rate</bold>.</para>
 			</listitem>
-			<listitem><para>I finally untied audio rendering and audio backend. terminatorX now operates
-			at a <bold>fixed internal blocksize</bold> of 1 ms. So now it doesn't matter anymore with which blocksize
-			events were recorded - they will be played back correctly with any audio device blocksize.</para>
-			<para>Note that
-			a a minor problem remains: the sampling rate has an effect on the blocksize, too. While there is 
-			no problem switching from 22 or 32 kHz to 48kHz, there will be a slight rounding error switching from or
-			to 44.1 kHz. So if you record and playback events I suggest you keep the sampling rate the same,
-			or use "straight" sampling rates like 22, 32 and 48 kHz only.
-			</para></listitem>
 			<listitem>
 			<para>The audio data display is now <bold>zoomable</bold>. This helps scratching large audio
 			files (like complete songs) significantly. Use the slider on the right of the display area to adjust
@@ -77,6 +68,23 @@
 			<link ref="aseqjoy.html">aseqjoy</link> that emits MIDI controller messages based on
 			Joystick motion.</para>
 			</listitem>
+			<listitem><para>I finally untied audio rendering and audio backend. terminatorX now operates
+			at a <bold>fixed internal blocksize</bold> of 1 ms. So now it doesn't matter anymore with which blocksize
+			events were recorded - they will be played back correctly with any audio device blocksize.</para>
+			<para>Note that
+			a minor problem remains: the sampling rate has an effect on the blocksize, too. While there is 
+			no problem switching from 22 or 32 kHz to 48 kHz, there will be a slight rounding error switching from or
+			to 44.1 kHz. So if you record and playback events I suggest you keep the sampling rate the same,
+			or use "straight" sampling rates like 22, 32 and 48 kHz only.
+			</para></listitem>
+			
+			<listitem>
+			<para>I added a little pitch calculator that allows adjusting the playback speed
+			of a turntable to that of the master turntable. Click the <screen>Pitch Adj.</screen>
+			button for more details.
+			</para>
+			</listitem>
+			
 			<listitem>
 			<para>Advancing the use of XML: many XML-related bugs have been fixed, and I moved the <bold>set file format
 			to XML</bold>, too. The MIDI mappings of parameters will be stored within set files, too. As XML set files
