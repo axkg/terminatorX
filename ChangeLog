@@ -29,6 +29,9 @@ changed.
 - De-uglified the terminatorX note dialog.
 - Fixed gtk+2 signals for load file dialog
 - Pre-listen support for mpg321
+- Added a new auto-hiding "panel-bar" to which turntable control and audio
+  panels can be minimized to.
+- Cleaning up the audio panel
 
 [v3.72]
 - Applied a patch from Matthew Evans <activesx@hotmail.com> that introduces 
