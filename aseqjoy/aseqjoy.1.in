@@ -5,7 +5,7 @@ aseqjoy \- Joystick to ALSA MIDI Sequencer Converter
 .B aseqjoy
 [\fIoptions\fR]
 .SH DESCRIPTION
-Aseqjoy maps each axis of the joystick device to a specific MIDI 
+Aseqjoy maps each axis of a joystick device to a specific MIDI 
 controller. Moving the joystick along an axis will cause aseqjoy to emit
 MIDI controller messages via ALSA's sequencer API. The value of the controller
 message represents the joystick's position along the axis (eg \'left\' \-> 0, 
@@ -13,8 +13,8 @@ message represents the joystick's position along the axis (eg \'left\' \-> 0,
 
 Aseqjoy uses the ALSA sequencer API to emit the MIDI events. Therefor it
 creates and output port named after joystick used. You can then use for example
-the \fBalsa-patch-bay\fR to connect an aseqjoy instance to an input port of your
-choice.
+\fBaconnect\fR or the \fBalsa-patch-bay\fR to connect an aseqjoy instance to an 
+input port of your choice.
 
 \fBNote:\fR Some joysticks may have to be calibrated (with \fBjscal\fR) before 
 they can be used efficently. 
@@ -50,4 +50,4 @@ startup channel '1' is selected. Pressing joystick button 2 will cause channel
 Man page and software by Alexander König <alex@lisas.de>.
 .SH "SEE ALSO"
 .LP 
-jscal(1)
+jscal(1), aconnect(1)
