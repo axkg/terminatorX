@@ -438,9 +438,9 @@
           <li>Version 
           <xsl:value-of select='@version' />: 
           <a>
-          <xsl:attribute name='href'>terminatorX-<xsl:value-of select='@version' />.tar.gz</xsl:attribute>terminatorX-<xsl:value-of select='@version' />.tar.gz</a>
+          <xsl:attribute name='href'>dist/terminatorX-<xsl:value-of select='@version' />.tar.gz</xsl:attribute>terminatorX-<xsl:value-of select='@version' />.tar.gz</a>
           <xsl:if test="@havebz2='yes'"> (<a>
-          <xsl:attribute name='href'>terminatorX-<xsl:value-of select='@version' />.tar.bz2</xsl:attribute>bz2</a>)</xsl:if>
+          <xsl:attribute name='href'>dist/terminatorX-<xsl:value-of select='@version' />.tar.bz2</xsl:attribute>bz2</a>)</xsl:if>
 	 </li>
         </xsl:if>
       </xsl:for-each>
@@ -452,7 +452,7 @@
       <xsl:if test="@type!='src'">
       <xsl:value-of select='@type' />-binary RPM: </xsl:if>
       <a>
-      <xsl:attribute name='href'>terminatorX-<xsl:value-of select='@version' />-<xsl:value-of select='@rpmsubversion' />.<xsl:value-of select='@type' />.<xsl:if test='@ext'><xsl:value-of select='@ext' />.</xsl:if>rpm</xsl:attribute>
+      <xsl:attribute name='href'>rpms/terminatorX-<xsl:value-of select='@version' />-<xsl:value-of select='@rpmsubversion' />.<xsl:value-of select='@type' />.<xsl:if test='@ext'><xsl:value-of select='@ext' />.</xsl:if>rpm</xsl:attribute>
         terminatorX-<xsl:value-of select='@version' />-<xsl:value-of select='@rpmsubversion' />.<xsl:value-of select='@type' />.<xsl:if test='@ext'><xsl:value-of select='@ext' />.</xsl:if>rpm</a>
       <xsl:if test='@distribution'> built for: <i>
         <xsl:value-of select='@distribution' />
@@ -475,8 +475,8 @@
     <ul>
       <li>tar file: 
       <a>
-      <xsl:attribute name='href'>terminatorX-<xsl:value-of select='//current/@version' />.tar.gz</xsl:attribute>terminatorX-<xsl:value-of select='//current/@version' />.tar.gz</a>
-      <xsl:if test="//current/@havebz2='yes'"> (<a><xsl:attribute name='href'>terminatorX-<xsl:value-of select='//current/@version' />.tar.bz2</xsl:attribute>bz2</a>)</xsl:if>
+      <xsl:attribute name='href'>dist/terminatorX-<xsl:value-of select='//current/@version' />.tar.gz</xsl:attribute>terminatorX-<xsl:value-of select='//current/@version' />.tar.gz</a>
+      <xsl:if test="//current/@havebz2='yes'"> (<a><xsl:attribute name='href'>dist/terminatorX-<xsl:value-of select='//current/@version' />.tar.bz2</xsl:attribute>bz2</a>)</xsl:if>
       </li>
       <xsl:for-each select='//rpm[@version=//current/@version]'>
         <xsl:call-template name='rpm' />
@@ -488,19 +488,12 @@
   <xsl:template match='filelist'>
     <ul>
       <xsl:for-each select='file'>
-        <li>
-          <a>
-            <xsl:attribute name='href'>
-              <xsl:apply-templates />
-            </xsl:attribute>
-            <xsl:apply-templates />
-          </a>
-        </li>
+        <li><xsl:call-template name="file" /></li>
       </xsl:for-each>
     </ul>
   </xsl:template>
-  <xsl:template match='file'>
-    <a><xsl:attribute name='href'><xsl:apply-templates /></xsl:attribute><xsl:apply-templates /></a>
+  <xsl:template name="file" match='file'>
+    <a><xsl:attribute name='href'>files/<xsl:apply-templates /></xsl:attribute><xsl:apply-templates /></a>
   </xsl:template>
   <xsl:template match='faq'>
     <a name='index'>
