@@ -102,7 +102,11 @@ void apply_options()
 		
 	globals.sense_cycles=(int) sense_cycles->value;
 	globals.xinput_enable=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(xinput_enable));
+#ifdef 	USE_GTK2
+	text=(char *) gtk_button_get_label(GTK_BUTTON(xinput_device));
+#else	
 	gtk_label_get(GTK_LABEL(GTK_BUTTON(xinput_device)->child), &text);
+#endif	
 	strcpy(globals.xinput_device, text);	
 	
 	globals.mouse_speed=mouse_speed->value;
@@ -206,7 +210,11 @@ void  use_stdout_changed(GtkWidget *widget)
 }
 void select_input(GtkWidget *w, char *dev)
 {
+#ifdef 	USE_GTK2
+	gtk_button_set_label(GTK_BUTTON(xinput_device), dev);
+#else		
 	gtk_label_set(GTK_LABEL(GTK_BUTTON(xinput_device)->child), dev);
+#endif	
 }
 
 void create_options()
@@ -656,25 +664,40 @@ void show_about(int nag)
 		add_about_wid(label);
 
 		hbox=gtk_hbox_new(FALSE, 5);		
+
+#ifdef USE_GTK2
+		GtkTextIter iter;
+		GtkTextBuffer *tbuffer;
+
+		text=gtk_text_view_new();
+		tbuffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
+		gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text), GTK_WRAP_NONE);
+		gtk_text_view_set_editable(GTK_TEXT_VIEW(text), false);
+		gtk_text_buffer_get_iter_at_offset (tbuffer, &iter, 0);
 		
+		scroll=gtk_scrolled_window_new (NULL, NULL);
+        gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+		gtk_container_add (GTK_CONTAINER (scroll), text);
+		gtk_widget_show(text);		
+
+		gtk_text_buffer_insert (tbuffer, &iter, license, -1);
+		
+		gtk_box_pack_start(GTK_BOX(hbox), scroll, WID_DYN);
+		gtk_widget_show(scroll);		
+#else
 		text=gtk_text_new(NULL,NULL);
 		scroll=gtk_vscrollbar_new(GTK_TEXT(text)->vadj);
 		gtk_text_set_editable(GTK_TEXT(text),0);
 		gtk_text_set_word_wrap( GTK_TEXT(text), 0);
-
-/*
-		if (!GPL_font)
-		{
-			GPL_font=gdk_font_load ("-misc-fixed-medium-r-*-*-*-120-*-*-*-*-*-*");
-		}		
-		gtk_text_insert(GTK_TEXT(text), GPL_font, NULL, NULL, license, strlen(license));*/
-				gtk_text_insert(GTK_TEXT(text), NULL, NULL, NULL, license, strlen(license));
+		gtk_text_insert(GTK_TEXT(text), NULL, NULL, NULL, license, strlen(license));
 
 		gtk_box_pack_start(GTK_BOX(hbox), text, WID_DYN);
 		gtk_widget_show(text);
 		
 		gtk_box_pack_start(GTK_BOX(hbox), scroll, WID_FIX);
 		gtk_widget_show(scroll);
+#endif		
+
 		
 		add_about_wid(hbox);
 

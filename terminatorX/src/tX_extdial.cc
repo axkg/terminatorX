@@ -10,7 +10,7 @@ GtkSignalFunc tX_extdial :: f_entry(GtkWidget *w, tX_extdial *ed)
 	strcpy(ed->sval, gtk_entry_get_text(GTK_ENTRY(ed->entry)));
 	ed->s2f();
 	gtk_adjustment_set_value(ed->adj, ed->fval);
-
+	return NULL;
 }
 
 GtkSignalFunc tX_extdial :: f_adjustment(GtkWidget *w, tX_extdial *ed)
@@ -18,6 +18,7 @@ GtkSignalFunc tX_extdial :: f_adjustment(GtkWidget *w, tX_extdial *ed)
 	ed->fval=ed->adj->value;
 	ed->f2s();
 	gtk_entry_set_text(GTK_ENTRY(ed->entry), ed->sval);
+	return NULL;	
 }
 
 tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a)

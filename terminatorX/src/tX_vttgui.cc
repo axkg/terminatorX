@@ -89,7 +89,7 @@ void nicer_filename(char *dest, char *source)
 
 void name_changed(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->set_name(gtk_entry_get_text(GTK_ENTRY(wid)));
+	vtt->set_name((char *) gtk_entry_get_text(GTK_ENTRY(wid)));
 }
 
 void volume_changed(GtkWidget *wid, vtt_class *vtt)
@@ -113,7 +113,7 @@ GtkSignalFunc trigger_prelis(GtkWidget *w)
 	
 	fs=GTK_FILE_SELECTION(gtk_widget_get_toplevel(w));
 	
-	prelis_start(gtk_file_selection_get_filename(GTK_FILE_SELECTION(fs)));
+	prelis_start((char *) gtk_file_selection_get_filename(GTK_FILE_SELECTION(fs)));
 	return(0);
 }
 
@@ -183,7 +183,11 @@ void load_part(char *newfile, vtt_class *vtt)
 	else
 	{
 		nicer_filename(global_filename_buffer, newfile);
+#ifdef  USE_GTK2
+        gtk_button_set_label(GTK_BUTTON(vtt->gui.file), global_filename_buffer);
+#else           
 		gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.file)->child), global_filename_buffer);
+#endif
 	}	
 }
 
@@ -442,11 +446,19 @@ void vg_display_xcontrol(vtt_class *vtt)
 			buffer[36] = '.';
 			buffer[37] = 0;			
 		}
+#ifdef  USE_GTK2
+        gtk_button_set_label(GTK_BUTTON(vtt->gui.x_control), buffer);
+#else           
 		gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.x_control)->child), buffer);		
+#endif  
 	}
 	else
 	{
+#ifdef  USE_GTK2
+        gtk_button_set_label(GTK_BUTTON(vtt->gui.x_control), "Nothing");
+#else           
 		gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.x_control)->child), "Nothing");
+#endif		
 	}
 }
 
@@ -464,11 +476,19 @@ void vg_display_ycontrol(vtt_class *vtt)
 			buffer[26] = '.';
 			buffer[27] = 0;			
 		}
+#ifdef  USE_GTK2
+        gtk_button_set_label(GTK_BUTTON(vtt->gui.y_control), buffer);
+#else           
 		gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.y_control)->child), buffer);		
+#endif  
 	}
 	else
 	{
+#ifdef  USE_GTK2
+        gtk_button_set_label(GTK_BUTTON(vtt->gui.y_control), "Nothing");
+#else           
 		gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.y_control)->child), "Nothing");
+#endif		
 	}
 }
 
@@ -1070,13 +1090,21 @@ void gui_set_name(vtt_class *vtt, char *newname)
 
 void gui_set_filename (vtt_class *vtt, char *newname)
 {
-	gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.file)->child), newname);
+#ifdef  USE_GTK2
+        gtk_button_set_label(GTK_BUTTON(vtt->gui.file), newname);
+#else           
+        gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.file)->child), newname);
+#endif  
 }
 
 void gui_update_display(vtt_class *vtt)
 {
 	nicer_filename(global_filename_buffer, vtt->filename);
-	gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.file)->child), global_filename_buffer);
+#ifdef  USE_GTK2
+        gtk_button_set_label(GTK_BUTTON(vtt->gui.file), global_filename_buffer);
+#else           
+        gtk_label_set(GTK_LABEL(GTK_BUTTON(vtt->gui.file)->child), global_filename_buffer);
+#endif  
 	gtk_tx_set_data(GTK_TX(vtt->gui.display), vtt->buffer, vtt->samples_in_buffer);
 }
 

@@ -33,6 +33,8 @@
 #include <math.h>
 #include "tX_mastergui.h"
 #include "tX_sequencer.h"
+#include <glib.h>
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -1584,9 +1586,9 @@ int  vtt_class :: save(FILE * output)
 	list <vtt_fx *> :: iterator effect;
 
 	int res=0;
-	u_int32_t pid;
+	guint32 pid;
 	int32_t counter;
-	u_int8_t hidden;
+	guint8 hidden;
 	
 	store(name);
 	store(filename);
@@ -1743,7 +1745,7 @@ int vtt_class :: load_10(FILE * input)
 int vtt_class :: load_11(FILE * input)
 {
 	int res=0;
-	u_int32_t pid;
+	guint32 pid;
 	int32_t gui_page;
 	
 	atload(name);
@@ -1816,7 +1818,7 @@ int vtt_class :: load_11(FILE * input)
 int vtt_class :: load_12(FILE * input)
 {
 	int res=0;
-	u_int32_t pid;
+	guint32 pid;
 	int32_t counter;
 	int32_t type;
 	long id;
@@ -1824,7 +1826,7 @@ int vtt_class :: load_12(FILE * input)
 	LADSPA_Plugin *plugin;
 	char buffer[256];
 	vtt_fx_ladspa *ladspa_effect;
-	u_int8_t hidden;
+	guint8 hidden;
 	
 	atload(buffer);
 	this->set_name(buffer);
@@ -1960,7 +1962,7 @@ int vtt_class :: load_12(FILE * input)
 int vtt_class :: load_13(FILE * input)
 {
 	int res=0;
-	u_int32_t pid;
+	guint32 pid;
 	int32_t counter;
 	int32_t type;
 	long id;
@@ -1968,7 +1970,7 @@ int vtt_class :: load_13(FILE * input)
 	LADSPA_Plugin *plugin;
 	char buffer[256];
 	vtt_fx_ladspa *ladspa_effect;
-	u_int8_t hidden;
+	guint8 hidden;
 	
 	atload(buffer);
 	this->set_name(buffer);
@@ -2118,7 +2120,7 @@ int  vtt_class :: save_all(FILE* output)
 {
 	int res=0;
 	list <vtt_class *> :: iterator vtt;
-	u_int32_t pid;
+	guint32 pid;
 	
 	tX_seqpar :: create_persistence_ids();
 	
@@ -2200,7 +2202,7 @@ int  vtt_class :: load_all_11(FILE* input, char *fname)
 	int16_t *newbuffer;
 	vtt_class *newvtt;
 	char ftmp[PATH_MAX];
-	u_int32_t pid;
+	guint32 pid;
 	
 	while (main_list.size())
 	{
@@ -2257,7 +2259,7 @@ int  vtt_class :: load_all_12(FILE* input, char *fname)
 	int16_t *newbuffer;
 	vtt_class *newvtt;
 	char ftmp[PATH_MAX];
-	u_int32_t pid;
+	guint32 pid;
 	
 	while (main_list.size())
 	{
@@ -2313,7 +2315,7 @@ int  vtt_class :: load_all_13(FILE* input, char *fname)
 	int16_t *newbuffer;
 	vtt_class *newvtt;
 	char ftmp[PATH_MAX];
-	u_int32_t pid;
+	guint32 pid;
 	
 	while (main_list.size())
 	{
