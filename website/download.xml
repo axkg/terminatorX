@@ -130,9 +130,8 @@
     <subsection>
       <title>Old RPMs</title>
       <rpmfiles>
-        <!-- <rpm type="i386" version="3.80" rpmsubversion="1" distribution="Mandrake 9.1" note="no lilbrdf" ext="mdk"/> -->
-<rpm rpmsubversion='1' version='3.80' type='i386' distribution='RH 8.0'
-note='without liblrdf, ALSA, MIDI and libmad support' />
+        <rpm rpmsubversion='1' version='3.80' type='i386' distribution='RH 8.0'
+          note='without liblrdf, ALSA, MIDI and libmad support, works with RH9' />
         <rpm rpmsubversion='1' version='3.73' type='i386' />
         <rpm rpmsubversion='1' version='3.72' type='i386' />
         <rpm rpmsubversion='2' version='3.71' type='i586' />
