@@ -12,17 +12,19 @@ Copyright: GPL2
 URL: http://www.terminatorX.cx
 Source: %{name}-%{version}.tar.gz
 Buildroot: %{_tmppath}/%{name}-%{version}-root
-Requires: gtk2, libvorbis, audiofile, libxml2
-BuildPrereq: gtk2-devel, libvorbis-devel, audiofile-devel, libxml2-devel, zlib-devel, scrollkeeper
+Requires: gtk2, libvorbis, audiofile, libxml2, zlib, scrollkeeper, yelp, sox, vorbis-tools
+BuildPrereq: gtk2-devel, libvorbis-devel, audiofile-devel, libxml2-devel, scrollkeeper
 
 %description
-terminatorX is a realtime audio synthesizer that allows you to "scratch" on
+terminatorX is a realtime audio synthesizer that allows you to "scratch" on 
 digitally sampled audio data (*.wav, *.au, *.ogg, *.mp3, etc.) the way 
 hiphop-DJs scratch on vinyl records. It features multiple turntables, realtime
-effects (buit-in as well as LADSPA plugin effects), a sequencer and an
-easy-to-use gtk+ GUI.
+effects (buit-in as well as LADSPA plugin effects), a sequencer and MIDI
+interface - all accessible through an easy-to-use gtk+ GUI.
 
 %changelog
+* Fri Apr 11 2003 Alexander König <alex@lisas.de>
+ - scrollkeeper changes and updates
 * Sat Sep 14 2002 Alexander König <alex@lisas.de>
  - Switch from xpm to pngs for GNOME icons
 * Fri May 31 2002 Alexander König <alex@lisas.de>
@@ -49,7 +51,7 @@ easy-to-use gtk+ GUI.
 %setup -q
 
 %build
-%configure
+%configure --with-docdir=/usr/share
 
 uname -a|grep SMP && make -j 2 || make
 
@@ -80,12 +82,15 @@ Icon=terminatorX-app.png
 EOF
 )
 
+# cleanup that scrollkeeper stuff
+rm -rf $RPM_BUILD_ROOT/var
+
 #do some cleanup for the documentation
-find . -name "Makefile*" -print -exec rm -rf {} \;
+#find . -name "Makefile*" -print -exec rm -rf {} \;
 
 %files
 %defattr(0644,root,root,0755)
-%doc COPYING COPYING-DOCS AUTHORS ChangeLog INSTALL NEWS README THANKS TODO README.GNOME README.PERFORMANCE doc
+%doc COPYING COPYING-DOCS AUTHORS ChangeLog INSTALL NEWS README THANKS TODO README.GNOME README.PERFORMANCE
 %attr(0755,root,root) %{_bindir}/terminatorX
 %{_mandir}/man1/terminatorX.1*
 %{_datadir}/mime-info/terminatorX.keys

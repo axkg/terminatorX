@@ -28,6 +28,8 @@
 #ifndef _tx_midiin_h
 #define _tx_midiin_h 1
 
+#include <stdio.h>
+
 class vtt_class;
 
 class tX_midievent
@@ -57,7 +59,7 @@ class tX_midievent
 		is_noteon = false;
 	}
 	
-	tX_midievent() : channel(0), type(NONE), value(0.0), is_noteon(false) {}
+	tX_midievent() : channel(0), type(NONE), number(0), value(0.0), is_noteon(false) {}
 };
 
 #include <config.h>
@@ -124,4 +126,4 @@ class tX_midiin
 
 #endif // USE_ALSA_MIDI_IN
 
-#endif // ndef _tx_midiin_h 
+#endif // ndef _tx_midiin_h
