@@ -30,6 +30,7 @@ extern GtkWidget *opt_dialog;
 extern void display_options();
 extern void show_about(int nag);
 extern void destroy_about();
+extern void init_tx_options(GtkWidget *dialog);
 extern void tX_set_icon(GtkWidget *widget, char *);
 extern void apply_options(GtkWidget *);
 #endif

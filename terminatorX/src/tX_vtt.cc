@@ -1610,9 +1610,6 @@ int vtt_class :: load_all(xmlDocPtr doc, char *fname) {
 	double dvalue;
 	int res=0;
 	int restmp=0;
-	char *pid_attr;
-	int pid;
-
 	
 	if (!root) {
 		tX_error("no root element? What kind of XML document is this?");

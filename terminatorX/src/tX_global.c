@@ -82,8 +82,8 @@ void set_global_defaults() {
 	globals.oss_samplerate=44100;
 
 	strcpy(globals.alsa_device, "00-00: Default");	
-	globals.alsa_buffer_time=10000;
-	globals.alsa_period_time=5000;
+	globals.alsa_buffer_time=80000;
+	globals.alsa_period_time=20000;
 	globals.alsa_samplerate=44100;
 	
 	globals.sense_cycles=80;
@@ -130,7 +130,7 @@ void set_global_defaults() {
 	globals.volume=1.0;
 	
 	strcpy(globals.lrdf_path, "/usr/share/ladspa/rdf:/usr/local/share/ladspa/rdf");
-	globals.fullscreen_enabled=1;
+	globals.fullscreen_enabled=0;
 	globals.compress_set_files=0;
 }
 

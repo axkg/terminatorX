@@ -53,3 +53,22 @@ on_alsa_buffer_time_value_changed      (GtkRange        *range,
 	period_time->upper=buffer_time->value;
 	gtk_adjustment_changed(period_time);
 }
+
+void
+on_pref_reset_clicked                  (GtkButton       *button,
+                                        gpointer         user_data)
+{
+	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(opt_dialog->window), 
+		GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
+		"Loose all your settings and set default values?");
+	
+	int res=gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_widget_destroy(dialog);
+		
+	if (res!=GTK_RESPONSE_YES) {
+		return;
+	}
+	
+	set_global_defaults();
+	init_tx_options(opt_dialog);
+}
