@@ -134,7 +134,7 @@ void LADSPA_Class::scandir(char *dirname) {
 		if ((strcmp(entry->d_name, ".")==0) ||
 			(strcmp(entry->d_name, "..")==0)) continue;
 		
-		filename = (char *) malloc (dirlen + strlen(entry->d_name) + 1 + needslash);
+		filename = (char *) malloc (dirlen + strlen(entry->d_name) + 10 + needslash);
 		
 		strcpy(filename, "file:");
 		strcat(filename, dirname);

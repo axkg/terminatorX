@@ -30,14 +30,10 @@
 
 using namespace std;
 
-/*
- disabled
-void tX_midievent::print( const char* prefix ) const
-{
-	cerr << prefix << ": channel=" << channel << ", type=" << type << ", number=" << number
-		 << ", value=" << value << ", is_noteon=" << is_noteon << endl;		 
+static gboolean midi_callback(GIOChannel *source, GIOCondition condition, gpointer data) {
+	tX_midiin *midi=(tX_midiin *) data;
+	midi->check_event();
 }
-*/
 
 tX_midiin::tX_midiin()
 {
@@ -49,7 +45,7 @@ tX_midiin::tX_midiin()
 		tX_error("tX_midiin(): failed to open the default sequencer device.");
 		return;
 	}
-	snd_seq_set_client_name(ALSASeqHandle, "TerminatorX");
+	snd_seq_set_client_name(ALSASeqHandle, "terminatorX");
 	portid =
 		snd_seq_create_simple_port(ALSASeqHandle,
 								   "Control Input",
@@ -62,6 +58,18 @@ tX_midiin::tX_midiin()
 	}
 
 	snd_seq_nonblock( ALSASeqHandle, 1 );
+	
+	struct pollfd fds[32];
+	
+	int res=snd_seq_poll_descriptors (ALSASeqHandle, fds, 32, POLLIN);
+
+	if (res!=1) {
+		tX_error("Failed to poll ALSA descriptors: %i.\n", res);
+	}
+	
+	GIOChannel *ioc=g_io_channel_unix_new(fds[0].fd);
+	g_io_add_watch(ioc, (GIOCondition)( G_IO_IN ), midi_callback, (gpointer) this);
+	g_io_channel_unref(ioc);
 	
 	is_open=true;
 
@@ -294,7 +302,7 @@ gint tX_midiin::midi_binding_gui::timer( gpointer _this )
 {
 	tX_midiin::midi_binding_gui* this_ = (tX_midiin::midi_binding_gui*)_this;
 
-	this_->midi->check_event();
+	//this_->midi->check_event();
 	
 	tX_midievent tmpevent = this_->midi->get_last_event();
 
