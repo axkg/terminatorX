@@ -57,7 +57,7 @@ tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, tX_seqpar * sp, bool t
 	ignore_adj=0;
 	
 	eventbox=gtk_event_box_new();		
-	mainbox=gtk_vbox_new(FALSE, text_below ? 5 : 0);
+	mainbox=gtk_vbox_new(FALSE,  text_below ? 5 : 0);
 	gtk_container_add(GTK_CONTAINER(eventbox), mainbox);
 	
 	subbox=gtk_hbox_new(TRUE, 0);

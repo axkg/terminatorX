@@ -38,7 +38,7 @@
 #endif
 
 #define TX_DEFAULT_SIZE_X 100
-#define TX_DEFAULT_SIZE_Y 30
+#define TX_DEFAULT_SIZE_Y 11
 
 /* forward declaration */
 static void gtk_tx_class_init(GtkTxClass *);
