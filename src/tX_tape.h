@@ -35,7 +35,7 @@ class tx_tapedeck
 	int blocksize;
 	
 	public:
-	int start_record(char *, int);
+	int start_record(char *name, int bs, int samplerate);
 	void stop_record();
 	void eat(int16_t *);
 	

@@ -283,7 +283,8 @@ class vtt_class
 	static void enable_saturate(int);
 	static void focus_no(int);
 	static void focus_next();
-	static void unfocus();	
+	static void unfocus();
+	static void set_sample_rate(int samplerate);
 	int trigger();
 	
 	int stop();

@@ -41,11 +41,13 @@ class tX_audiodevice
 {
 	protected:
 	int samples_per_buffer;
+	int sample_rate;
 	void init();
 	
 	public:
 	virtual double get_latency()=0; /* call only valid *after* open() */
 	int get_buffersize() { return samples_per_buffer; } /* call only valid *after* open() */
+	int get_sample_rate() { return sample_rate; }
 	
 	virtual int open()=0;
 	virtual int close()=0;
