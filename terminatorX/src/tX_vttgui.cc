@@ -127,8 +127,6 @@ void cancel_load_file(GtkWidget *wid, vtt_class *vtt)
 
 int quit_load_file(GtkWidget *wid, vtt_class *vtt)
 {
-	//vtt->gui.file_dialog=NULL;
-	//prelis_stop();
 	return 1;
 }
 
@@ -834,9 +832,6 @@ void build_vtt_gui(vtt_class *vtt)
 	gui_set_tooltip(g->del, "Click here to annihilate this turntable. All events recorded for this turntable will be erased, too.");
 	p->add_client_widget(g->del);
 	
-//	g->show_audio=gtk_toggle_button_new_with_label("Show Audio");
-//	p->add_client_widget(g->show_audio);
-		
 	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
 				
 	p=new tX_panel("Trigger", g->control_subbox);

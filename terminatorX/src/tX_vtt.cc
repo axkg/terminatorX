@@ -117,9 +117,6 @@ vtt_class :: vtt_class (int do_create_gui)
 	sync_cycles=0,
 	sync_countdown=0;
 	
-	x_control=CONTROL_SCRATCH;
-	y_control=CONTROL_CUTOFF;
-	
 	lp_enable=0;
 	lp_reso=0.8;
 	lp_freq=0.3;
@@ -357,12 +354,6 @@ void vtt_class :: set_autotrigger(int newstate)
 void vtt_class :: set_loop(int newstate)
 {
 	loop=newstate;
-}
-
-void vtt_class :: set_controls (int x, int y)
-{
-	x_control=x;
-	y_control=y;
 }
 
 void vtt_class :: set_mute(int newstate)
@@ -1530,41 +1521,6 @@ void vtt_class :: set_scratch(int newstate)
 	}
 }
 
-#define MAGIC 0.05
-
-void vtt_class :: handle_input(int control, f_prec value)
-{
-	f_prec temp;
-	
-	switch (control)
-	{
-		case CONTROL_SCRATCH:
-		if (do_scratch) sp_speed.receive_input_value(value*globals.mouse_speed);
-		sense_cycles=globals.sense_cycles;
-		break;
-		
-		case CONTROL_VOLUME:
-		temp=rel_volume+MAGIC*value*globals.mouse_speed;
-		if (temp>2.0) temp=2.0;
-		else if (temp<0) temp=0;
-		sp_volume.receive_input_value(temp);
-		break;
-		
-		case CONTROL_CUTOFF:
-		temp=lp_freq+MAGIC*value*globals.mouse_speed;
-		if (temp>0.99) temp=0.99;
-		else if (temp<0) temp=0;
-		sp_lp_freq.receive_input_value(temp);
-		break;
-		
-		case CONTROL_FEEDBACK:
-		temp=ec_feedback+MAGIC*value*globals.mouse_speed;
-		if (temp>1.0) temp=1.0;
-		else if (temp<0) temp=0;
-		sp_ec_feedback.receive_input_value(temp);
-		break;
-	}
-}
 
 void vtt_class :: unfocus()
 {
@@ -1719,6 +1675,7 @@ int  vtt_class :: save(FILE * output)
 int vtt_class :: load_10(FILE * input)
 {
 	int res=0;
+	int obsolete_int;
 	
 	atload(name);
 	atload(filename);
@@ -1734,8 +1691,8 @@ int vtt_class :: load_10(FILE * input)
 	atload(loop);
 	
 	atload(mute);
-	atload(x_control);
-	atload(y_control);	
+	atload(obsolete_int); //x_control
+	atload(obsolete_int); //y_control
 	
 	atload(lp_enable);
 	atload(lp_gain);
@@ -1758,6 +1715,7 @@ int vtt_class :: load_11(FILE * input)
 	int res=0;
 	guint32 pid;
 	int32_t gui_page;
+	int obsolete_int;
 	
 	atload(name);
 	atload(filename);
@@ -1773,8 +1731,8 @@ int vtt_class :: load_11(FILE * input)
 	atload(loop);
 	
 	atload(mute);
-	atload(x_control);
-	atload(y_control);	
+	atload(obsolete_int); //x_control
+	atload(obsolete_int); //y_control
 	
 	atload(lp_enable);
 	atload(lp_gain);

@@ -31,7 +31,16 @@ changed.
 - Pre-listen support for mpg321
 - Added a new auto-hiding "panel-bar" to which turntable control and audio
   panels can be minimized to.
-- Cleaning up the audio panel
+- Cleaned up the turntables' audio panel for better looks and easier usage
+- Rewrote the engine thread completely - unlike before the engine thread 
+  is created on startup and kept alive until termination.
+- terminatorX can now be run suid root - and it might even be safe. After
+  creating the engine thread both terminatorX threads drop root privileges
+  before evaluating any parameters or reading/writing files, etc. The problem
+  is the pthread "manager thread" is out of control of terminatorX code - so
+  I cannot tell that thread to drop privileges.
+- Fixed Drag'n'Drop for GNOME 2
+- Deleted tons of old outdated code in tX_engine.cc and tX_mastergui.cc
 
 [v3.72]
 - Applied a patch from Matthew Evans <activesx@hotmail.com> that introduces 

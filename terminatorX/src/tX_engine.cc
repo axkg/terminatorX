@@ -29,6 +29,9 @@
                  mouse-speed (should be changed to maybe) but now
 		 depends on sample size -> you can warp through all
 		 samples with the same mouse-distance.
+		 
+    12 Aug 2002: Complete rewrite - tX_engine is now a class and the thread
+	is created on startup and kept alive until termination
 */    
 
 #include "tX_types.h"
@@ -52,10 +55,6 @@
 
 tX_engine *engine=NULL;
 
-tx_mouse *mouse=new tx_mouse();
-tX_audiodevice *device=NULL;
-tx_tapedeck *tape=new tx_tapedeck();
-
 void tX_engine :: set_grab_request() {
 	grab_request=true;
 }
@@ -71,8 +70,10 @@ void tX_engine :: loop() {
 		pthread_mutex_unlock(&start);
 
 		/* Render first block */
-		sequencer.step();
-		temp=vtt_class::render_all_turntables();
+		if (!stop_flag) {
+			sequencer.step();
+			temp=vtt_class::render_all_turntables();
+		}
 		
 		while (!stop_flag) {
 			/* Checking whether to grab or not  */
@@ -85,7 +86,8 @@ void tX_engine :: loop() {
 						grab_active=false;
 						/* Reseting grab_request, too - doesn't help keeping it, does it ? ;) */
 						grab_request=false;
-						// mouse->ungrab() // do we need this?
+						mouse->ungrab();
+						grab_off();
 					} else {
 						grab_active=true;
 					}
@@ -141,6 +143,10 @@ void *engine_thread_entry(void *engine_void) {
 	}
 	
 	engine->loop();
+	
+	tX_debug("engine_thread_entry() - Engine thread terminating.");
+	
+	pthread_exit(NULL);
 }
 
 tX_engine :: tX_engine() {
@@ -239,12 +245,13 @@ tX_engine_error tX_engine :: run() {
 	
 	if (recording_request) {
 		if (tape->start_record(globals.record_filename, device->get_buffersize()*sizeof(int16_t))) {
-			recording=true;
 			device->close();
 			delete device;
 			device=NULL;			
 			return ERROR_TAPE;			
-		}		
+		} else {
+			recording=true;
+		}
 	}
 	
 	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++) {
@@ -289,5 +296,11 @@ void tX_engine :: stop() {
 }
 
 tX_engine :: ~tX_engine() {
+	void *dummy;
 	
+	thread_terminate=true;
+	stop_flag=true;
+	pthread_mutex_unlock(&start);
+	tX_debug("~tX_engine() - Waiting for engine thread to terminate.");
+	pthread_join(thread, &dummy);	
 }
