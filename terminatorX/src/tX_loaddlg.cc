@@ -179,8 +179,8 @@ void ld_set_filename(char *name)
 
 void ld_set_progress(gfloat progress)
 {
-	progress=floor(progress*1000.0)/1000.0;
-	
+	progress=floor(progress*200.0)/200.0;
+	if (progress>1.0) progress=1.0;
 	//printf("%f\n", progress);
 	
 	if (progress!=ld_old_prog)

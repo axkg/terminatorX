@@ -74,7 +74,10 @@ enum tX_audio_error {
 	TX_AUDIO_ERR_MAD_DECODE,
 	TX_AUDIO_ERR_MAD_MMAP,
 	TX_AUDIO_ERR_MAD_MUNMAP,
-	TX_AUDIO_ERR_VORBIS_OPEN
+	TX_AUDIO_ERR_VORBIS_OPEN,
+	TX_AUDIO_ERR_VORBIS_NODATA,
+	TX_AUDIO_ERR_AF_OPEN,
+	TX_AUDIO_ERR_AF_NODATA	
 };
 
 enum tX_audio_storage_type {
@@ -105,7 +108,7 @@ class tx_audiofile
 	int16_t *mem;
 	size_t memsize;
 	long no_samples;	
-	unsigned int sample_rate; //in HZ
+	unsigned int sample_rate; //in HZ	
 
 #ifdef USE_BUILTIN_WAV
 	tX_audio_error load_wav();
@@ -114,6 +117,10 @@ class tx_audiofile
 #ifdef USE_SOX_INPUT	
 	tX_audio_error load_sox();
 #define NEED_PIPED 1	
+#endif
+
+#ifdef USE_AUDIOFILE_INPUT
+	tX_audio_error load_af();
 #endif
 
 #ifdef USE_MAD_INPUT
@@ -142,6 +149,7 @@ class tx_audiofile
 	
 	public:
 	tx_audiofile();
+	unsigned int get_sample_rate() { return sample_rate; }
 	
 	tX_audio_error load(char *p_file_name);
 	int16_t *get_buffer() { return mem; };

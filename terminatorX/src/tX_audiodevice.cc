@@ -132,8 +132,6 @@ int tX_audiodevice_oss :: open()
 
 int tX_audiodevice_oss :: close()
 {
-	void *dummy;
-
 	if (!fd)
 	{	
 		return(1);		

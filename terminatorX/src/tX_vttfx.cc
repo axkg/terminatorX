@@ -163,7 +163,6 @@ vtt_fx_ladspa :: vtt_fx_ladspa(LADSPA_Plugin *p, void *v)
 {
 	int port;
 	float min, max;
-	const char* last_word;
 	char buffer[2048];
 	char buffer2[2048];
 	
@@ -316,7 +315,7 @@ void vtt_fx_ladspa :: save (FILE *output)
 void vtt_fx_ladspa :: load (FILE *input)
 {
 	guint32 count;
-	int i;
+	unsigned int i;
 	list <tX_seqpar_vttfx *> :: iterator sp;
 	guint32 pid;
 	guint8 hidden;
@@ -326,11 +325,10 @@ void vtt_fx_ladspa :: load (FILE *input)
 	
 	if (count!=controls.size())
 	{
-		fprintf(stderr, "tX: Ouch! Plugin %i has less/more controls than saved!\n", plugin->getUniqueID());
+		fprintf(stderr, "tX: Ouch! Plugin %li has less/more controls than saved!\n", plugin->getUniqueID());
 	}
 	
-	for (i=0, sp=controls.begin(); i<count, sp!=controls.end(); i++, sp++)
-	{
+	for (i=0, sp=controls.begin(); (i<count) && (sp!=controls.end()); i++, sp++) {
 		fread((void *) &pid, sizeof(pid), 1, input);
 		(*sp)->set_persistence_id(pid);
 		fread((void *) &value, sizeof(value), 1, input);

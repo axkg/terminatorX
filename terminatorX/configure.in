@@ -8,7 +8,7 @@ AC_ARG_ENABLE(sox, [  --enable-sox            use sox as input converter. (defau
 AC_ARG_ENABLE(mpg123, [  --enable-mpg123         use mpg123 as input converter. (default=auto) ])
 AC_ARG_ENABLE(ogg123, [  --enable-ogg123         use ogg123 as input converter. (default=auto) ])
 dnl AC_ARG_ENABLE(wavonly,  [  --enable-wavonly        enable the builtin wav routines. ])
-AC_ARG_ENABLE(scheduler,[  --enable-scheduler      enable rt-scheduling (req. root-priv). (default=yes) ])
+dnl AC_ARG_ENABLE(scheduler,[  --enable-scheduler      enable rt-scheduling (req. root-priv). (default=yes) ])
 AC_ARG_ENABLE(debug,    [  --enable-debug          enable debug output. (default=no) ])
 dnl AC_ARG_ENABLE(3dnow,    [  --enable-3dnow          enables 3DNow! support. (default=no) ])
 dnl AC_ARG_ENABLE(benchmark,[  --enable-benchmark      creates a non-functional test version (default=no) ])
@@ -22,8 +22,9 @@ dnl AC_ARG_ENABLE(dial,         [  --enable-dial           use dials instead of 
 dnl AC_ARG_ENABLE(bigdial,      [  --enable-bigdial        use BIG dials (default=yes) ])
 dnl AC_ARG_ENABLE(dga2,     [  --enable-dga2           use DGA2 instead of DGA1. (experimental) (default=no) ])
 AC_ARG_ENABLE(libxml2,	    [  --disable-libxml2       use libxml even if verion 2 detected (default=auto) ])
-AC_ARG_ENABLE(libmad,		[  --disable-mad           disable mad for mp3 support (default=auto) ])
-AC_ARG_ENABLE(libvorbis,	[  --disable-vorbis        disable libvorbis support (default=auto) ])
+AC_ARG_ENABLE(mad,		[  --disable-mad           disable mad for mp3 support (default=auto) ])
+AC_ARG_ENABLE(vorbis,	[  --disable-vorbis        disable libvorbis support (default=auto) ])
+AC_ARG_ENABLE(audiofile,	[  --disable-audiofile     disable audiofile support (default=auto) ])
 
 dnl Checks for programs.
 AC_PROG_AWK
@@ -32,6 +33,16 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_RANLIB
+
+OPTION_SOX="no"
+OPTION_MPG123="no"
+OPTION_MAD="no"
+OPTION_OGG123="no"
+OPTION_VORBIS="no"
+OPTION_AUDIOFILE="no"
+OPTION_WAV="no"
+OPTION_GTK_VERSION="none"
+OPTION_GNOME="no"
 
 dnl Checks for libraries.
 AC_CHECK_LIB(m, floor,, AC_MSG_ERROR([** math-lib not installed or broken **]))
@@ -107,6 +118,7 @@ if test "$enable_gtk2" != "no"; then
 	  GTK2_LIBS="$GTK_LIBS"
 	  gtk2="yes"
 	  GTK2_VERSION="`$PKG_CONFIG --modversion gtk+-2.0`"], [ gtk2="no" ]) 
+	  OPTION_GTK_VERSION="Version 2 - ($GTK2_VERSION)"
 fi
 
 if test "$gtk2" = "no"; then
@@ -115,6 +127,7 @@ if test "$gtk2" = "no"; then
 	  GTK12_LIBS="$GTK_LIBS"
 	  gtk12="yes"
 	  GTK12_VERSION="`$GTK_CONFIG $gtk_config_args --version`"], [ gtk12="no" ])
+	  OPTION_GTK_VERSION="Version 1.2 - ($GTK12_VERSION)"	  
 fi
 
 if test "$gtk2" = "yes"; then
@@ -175,6 +188,7 @@ if test "$enable_sox" != "no"; then
  	AC_CHECK_PROG(SOX_PROG, sox, yes)
 	if test "$SOX_PROG" = "yes"; then
 	 	AC_DEFINE(USE_SOX_INPUT)
+		OPTION_SOX="yes"
 	fi
 fi
 
@@ -185,6 +199,7 @@ if test "$enable_mad" != "no"; then
 		if test "$madlib" = "yes"; then
 			LIBS="$LIBS -lmad"
 			AC_DEFINE(USE_MAD_INPUT)
+			OPTION_MAD="yes"
 		fi
 	fi
 fi
@@ -200,8 +215,33 @@ if test "$enable_vorbis" != "no"; then
 			if test "$vorbisfile_libs" = "yes"; then
 				LIBS="$LIBS -lvorbisfile"
 				AC_DEFINE(USE_VORBIS_INPUT)
+				OPTION_VORBIS="yes"
 			else
 				LIBS=PREV_LIBS
+			fi
+		fi
+	fi
+fi
+
+if test "$enable_audiofile" != "no"; then
+	AC_CHECK_PROG(af_config,audiofile-config,yes,no)
+	if test "$af_config" = "yes"; then
+		af_cflags=`audiofile-config --cflags`
+		if test "$af_cflags" != ""; then
+			CFLAGS="$CFLAGS $af_cflags"
+		fi
+		af_libs=`audiofile-config --libs`
+		LIBS="$LIBS $af_libs"
+		AC_DEFINE(USE_AUDIOFILE_INPUT)
+		OPTION_AUDIOFILE="yes"
+	else
+		AC_CHECK_HEADERS(audiofile.h,audiofile_headers=yes,audiofile_headers=no)
+		if test "$audiofile_headers" = "yes"; then
+			AC_CHECK_LIB(audiofile,afOpenFile,audiofile_libs=yes,audiofile_libs=no)
+			if test "$audiofile_libs" = "yes"; then
+				LIBS="$LIBS -laudiofile"
+				AC_DEFINE(USE_AUDIOFILE_INPUT)
+				OPTION_AUDIOFILE="yes"
 			fi
 		fi
 	fi
@@ -212,10 +252,12 @@ if test "$enable_mpg123" != "no"; then
 	if test "$MPG123_PROG" = "yes"; then
 		if test "$SOX_PROG" = "yes"; then	
 		 	AC_DEFINE(USE_MPG123_INPUT)
+			OPTION_MPG123="yes"
 		else
 		 	AC_CHECK_PROG(SOX_PROG, sox, yes)
 			if test "$SOX_PROG" = "yes"; then	
 			 	AC_DEFINE(USE_MPG123_INPUT)
+				OPTION_MPG123="yes"
 			else
 				AC_MSG_RESULT([** mpg123 support disabled: couldn't find sox! **])
 			fi
@@ -227,6 +269,7 @@ if test "$enable_ogg123" != "no"; then
 	AC_CHECK_PROG(OGG123_PROG, ogg123, yes)
 	if test "$OGG123_PROG" = "yes"; then
 		AC_DEFINE(USE_OGG123_INPUT)
+		OPTION_OGG123="yes"
 	fi
 fi
 
@@ -298,6 +341,7 @@ fi
 if test "$enable_wav" != "no";
 then
 	AC_DEFINE(USE_BUILTIN_WAV)
+	OPTION_WAV="yes"
 fi
 
 if test "$enable_flash" = "no"; then
@@ -353,6 +397,7 @@ AC_MSG_CHECKING(for GNOME)
 		AC_SUBST(gnomedatadir)
 		AM_CONDITIONAL(GNOMEpresent, test "$gnomepresent" = yes)
    		AC_MSG_RESULT([Found GNOME - installing terminatorX.desktop.])
+		OPTION_GNOME="yes"
     	else
    		AC_MSG_RESULT([GNOME not found.])
     	fi
@@ -427,3 +472,19 @@ if test "$enable_dga2" = yes; then
 	AC_CHECK_LIB(Xxf86dga, XDGASelectInput,, AC_MSG_ERROR([** DGA2 not installed. Try using dga1 instead. **]), $X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS)
 fi
 AC_OUTPUT(Makefile src/Makefile gnome-support/Makefile gnome-support/terminatorX.keys src/gui_icons/Makefile src/smallknob/Makefile doc/Makefile doc/img/Makefile terminatorX.spec terminatorX.1)
+
+echo
+echo configured terminatorX for:
+echo ---------------------------
+echo
+echo "sox support: 		$OPTION_SOX"
+echo "mpg123 support:		$OPTION_MPG123"
+echo "mad support:		$OPTION_MAD"
+echo "ogg123 support:		$OPTION_OGG123"
+echo "vorbis support:		$OPTION_VORBIS"
+echo "audiofile support:	$OPTION_AUDIOFILE"
+echo "builtin-wav support:	$OPTION_WAV"
+echo "gtk+ Version:		$OPTION_GTK_VERSION"
+echo "GNOME support:		$OPTION_GNOME"
+echo
+echo You can now run \'make\' to compile terminatorX

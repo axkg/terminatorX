@@ -570,7 +570,6 @@ gtk_tx_dial_adjustment_value_changed (GtkAdjustment *adjustment,
 				    gpointer	   data)
 {
   GtkTxDial *tx_dial;
-  gint image;
 
   g_return_if_fail (adjustment != NULL);
   g_return_if_fail (data != NULL);

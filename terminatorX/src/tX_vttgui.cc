@@ -66,7 +66,6 @@ void nicer_filename(char *dest, char *source)
 {
 		char *fn;
 		char temp[PATH_MAX];
-		int i;
 		
 		fn=strrchr(source, '/');
 		if (fn) fn++;
@@ -135,7 +134,6 @@ char global_filename_buffer[PATH_MAX];
 void load_part(char *newfile, vtt_class *vtt)
 {
 	int ret=0;
-	char *fn;
 
 	ld_create_loaddlg(TX_LOADDLG_MODE_SINGLE, 1);
 	ld_set_filename(newfile);
@@ -191,13 +189,7 @@ void load_part(char *newfile, vtt_class *vtt)
 
 void do_load_file(GtkWidget *wid, vtt_class *vtt)
 {
-	int ret;
 	char newfile[PATH_MAX];
-	char buffer[1024]="Couldn't open loop file: ";
-	char fn[FILENAME_BUTTON_MAX];
-	
-	int16_t *newbuffer;
-	unsigned int newsize;
 	
 	prelis_stop();
 
@@ -223,8 +215,6 @@ void drop_file(GtkWidget *widget, GdkDragContext *context,
 {
 	char filename[PATH_MAX];
 	char *fn;
-	int s;
-	void *prr;
 	
 	strncpy(filename, (char *) selection_data->data, (size_t) selection_data->length);
 	gtk_drag_finish(context, TRUE, FALSE, time);
@@ -290,7 +280,8 @@ GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->file_list), "cursor_changed", GTK_SIGNAL_FUNC(trigger_prelis), vtt->gui.fs);		
 #else
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->file_list), "select_row", GTK_SIGNAL_FUNC(trigger_prelis), vtt->gui.fs);
-#endif		
+#endif
+	return NULL;
 }
 
 void delete_vtt(GtkWidget *wid, vtt_class *vtt)
@@ -440,8 +431,6 @@ void mute_volume(GtkWidget *widget, vtt_class *vtt)
 
 void solo_vtt(GtkWidget *widget, vtt_class *vtt)
 {
-	list <vtt_class *> :: iterator it_vtt;
-
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) 
 	{
 		vtt->set_mix_solo(1);
@@ -622,7 +611,7 @@ void fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
 	LADSPA_Plugin *plugin;
 	char buffer[1024];
 	char oldfile[1024]="";
-	GtkWidget *submenu;
+	GtkWidget *submenu=NULL;
 
 	fx_vtt=vtt; /* AAAAARGH - Long live ugly code */
 
@@ -641,7 +630,7 @@ void fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
 			gtk_menu_append(GTK_MENU(g->ladspa_menu), item);
 			gtk_widget_show(item);
 		}
-		sprintf(buffer, "%s - [%i, %s]", plugin->getName(), plugin->getUniqueID(), plugin->getLabel());
+		sprintf(buffer, "%s - [%li, %s]", plugin->getName(), plugin->getUniqueID(), plugin->getLabel());
 		item=gtk_menu_item_new_with_label(buffer);
 		gtk_menu_append(GTK_MENU(submenu), item);
 		gtk_widget_show(item);

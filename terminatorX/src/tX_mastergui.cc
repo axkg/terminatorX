@@ -235,8 +235,6 @@ void mg_update_status()
 
 GtkSignalFunc new_table(GtkWidget *, char *fn)
 {
-	int i;
-	
 	turn_audio_off();
 		
 		if (fn) 
@@ -258,8 +256,6 @@ GtkSignalFunc drop_new_table(GtkWidget *widget, GdkDragContext *context,
 {
 	char filename[PATH_MAX];
 	char *fn;
-	int s;
-	void *prr;
 	
 	strncpy(filename, (char *) selection_data->data, (size_t) selection_data->length);
 	filename[selection_data->length]=0;
@@ -386,6 +382,8 @@ GtkSignalFunc load_tables()
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(load_dialog)->ok_button), "clicked", GTK_SIGNAL_FUNC(do_load_tables), NULL);
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(load_dialog)->cancel_button), "clicked", GTK_SIGNAL_FUNC (cancel_load_tables), NULL);	
 	gtk_signal_connect (GTK_OBJECT(load_dialog), "delete-event", GTK_SIGNAL_FUNC(cancel_load_tables), NULL);	
+	
+	return NULL;
 }
 
 GtkSignalFunc drop_set(GtkWidget *widget, GdkDragContext *context,
@@ -394,8 +392,6 @@ GtkSignalFunc drop_set(GtkWidget *widget, GdkDragContext *context,
 {
 	char filename[PATH_MAX];
 	char *fn;
-	int s;
-	void *prr;
 	
 	strncpy(filename, (char *) selection_data->data, (size_t) selection_data->length);
 	filename[selection_data->length]=0;
@@ -489,6 +485,8 @@ GtkSignalFunc save_tables()
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(save_dialog)->ok_button), "clicked", GTK_SIGNAL_FUNC(do_save_tables), NULL);
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(save_dialog)->cancel_button), "clicked", GTK_SIGNAL_FUNC (cancel_save_tables), NULL);	
 	gtk_signal_connect (GTK_OBJECT(save_dialog), "delete-event", GTK_SIGNAL_FUNC(cancel_save_tables), NULL);	
+
+	return NULL;
 }
 
 GtkSignalFunc master_volume_changed (GtkWidget *wid, void *d)
@@ -574,6 +572,8 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 		seq_stop(NULL, NULL);
 		mg_enable_critical_buttons(1);
 	}
+	
+	return NULL;
 }
 
 GtkSignalFunc cancel_rec(GtkWidget *wid)
@@ -628,6 +628,8 @@ GtkSignalFunc select_rec_file()
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(rec_dialog)->ok_button), "clicked", GTK_SIGNAL_FUNC(do_rec), NULL);
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(rec_dialog)->cancel_button), "clicked", GTK_SIGNAL_FUNC (cancel_rec), NULL);	
 	gtk_signal_connect (GTK_OBJECT(rec_dialog), "delete-event", GTK_SIGNAL_FUNC(cancel_rec), NULL);	
+	
+	return NULL;
 }
 
 GtkSignalFunc tape_on(GtkWidget *w, void *d)
@@ -646,6 +648,8 @@ GtkSignalFunc tape_on(GtkWidget *w, void *d)
 	{
 			engine->set_recording_request(false);
 	}
+	
+	return NULL;
 }
 
 void grab_on(GtkWidget *w, void *d)
@@ -695,6 +699,8 @@ GtkSignalFunc seq_play(GtkWidget *w, void *)
 	
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(engine_btn), 1);
 	}
+	
+	return NULL;
 }
 
 GtkSignalFunc seq_stop(GtkWidget *w, void *)
@@ -748,7 +754,7 @@ void seq_update_entry(const guint32 timestamp)
 		minu=sec=hun=0;
 	}
 	
-	sprintf(buffer, "%02li:%02li.%02li", minu, sec, hun);
+	sprintf(buffer, "%02i:%02i.%02i", minu, sec, hun);
 	gtk_entry_set_text(GTK_ENTRY(seq_entry), buffer);
 }
 
@@ -797,7 +803,6 @@ void create_mastergui(int x, int y)
 	GtkWidget *small_box;
 	GtkWidget *smaller_box;
 	
-	int i;
 	static GtkTargetEntry drop_types [] = {
 		{ "text/uri-list", 0, 0}
 	};

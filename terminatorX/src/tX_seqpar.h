@@ -84,8 +84,8 @@ class tX_seqpar
 	
 	static void create_persistence_ids();
 	guint32 get_persistence_id() { return persistence_id; }
-	unsigned int set_persistence_id(guint32 pid) { persistence_id=pid; }
-	static tX_seqpar *get_sp_by_persistence_id(int pid);
+	void set_persistence_id(guint32 pid) { persistence_id=pid; }
+	static tX_seqpar *get_sp_by_persistence_id(unsigned int pid);
 
 	void record_value (const float value);
 	virtual void do_exec(const float value);

@@ -315,21 +315,12 @@ static gint gtk_tx_flash_expose (GtkWidget *widget, GdkEventExpose *event)
   return FALSE;
 } 
 
-static void
-gtk_tx_flash_update (GtkTxFlash *tx_flash)
-{
-  g_return_if_fail (tx_flash != NULL);
-  g_return_if_fail (GTK_IS_TX_FLASH (tx_flash));
-
-  gtk_widget_draw (GTK_WIDGET(tx_flash), NULL);
-}
-
 void
 gtk_tx_flash_set_level(GtkWidget *widget, f_prec new_value)
 {
   GtkTxFlash *tx_flash;
   gint i, y;
-  int new_level, end_level;
+  int new_level;
   int red=0;
 
   g_return_if_fail (widget != NULL);
