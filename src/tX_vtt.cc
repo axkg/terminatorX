@@ -546,7 +546,9 @@ vtt_fx_ladspa * vtt_class :: add_effect (LADSPA_Plugin *plugin)
 
 void vtt_class :: calc_speed()
 {
-	do_mute=fade_out=fade_in=0;
+	do_mute=0;
+	fade_out=0;
+	fade_in=0;
 
 	if (speed != speed_target)
 	{

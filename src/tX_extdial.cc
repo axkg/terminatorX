@@ -35,14 +35,13 @@ tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a)
 	mainbox=gtk_vbox_new(FALSE, 0);
 	subbox=gtk_hbox_new(TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(subbox), dial, WID_FIX);
-	gtk_box_pack_start(GTK_BOX(subbox), entry, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(subbox), entry, WID_DYN);
 	gtk_box_pack_start(GTK_BOX(mainbox), subbox, WID_FIX);
 	gtk_box_pack_start(GTK_BOX(mainbox), label, WID_FIX);
-//	gtk_misc_set_alignment(GTK_MISC(label), 0.5, 0.9);
 	
 	gtk_widget_show(label);
 	gtk_widget_show(entry);
-	gtk_widget_set_usize(entry, 33, entry->requisition.height);
+	gtk_entry_set_width_chars(GTK_ENTRY(entry), 4);
 	gtk_widget_show(dial);
 	gtk_widget_show(subbox);
 	gtk_widget_show(mainbox);

@@ -27,6 +27,7 @@
 #include "tX_tape.h"
 #include "tX_mouse.h"
 #include "tX_audiodevice.h"
+#include "tX_midiin.h"
 
 #define ENG_ERR 4
 
@@ -72,6 +73,11 @@ class tX_engine {
 	bool grab_active;
 	
 	public:
+
+#ifdef USE_ALSA_MIDI_IN
+	tX_midiin *midi;
+#endif	
+
 	tX_engine();
 	~tX_engine();
 	

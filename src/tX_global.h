@@ -130,6 +130,8 @@ typedef struct {
 	/* ALSA specific options */
 	int audiodevice_alsa_card;
 	int audiodevice_alsa_pcm;		
+	
+	int fullscreen_enabled;
 } tx_global;
 
 extern tx_global globals;
