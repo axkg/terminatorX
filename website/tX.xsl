@@ -4,8 +4,7 @@
     <html>
       <head>
         <meta name='Author' content='Alexander Koenig' />
-        <meta http-equiv='content-type'
-        content='text/html; charset=iso-8859-1' />
+        <meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1' />
         <link rel='icon' href='favicon.ico' type='image/x-icon' />
         <link rel='shortcut icon' href='favicon.ico' type='image/x-icon' />
         <title>terminatorX: 
@@ -282,7 +281,7 @@
             <td>
               <a href='http://validator.w3.org/check/referer'>
                 <img width='88' alt='Valid HTML 4.01!'
-                src='http://validator.w3.org/images/vh401' height='31'
+                src='pix/valid-html401.png' height='31'
                 border='0' />
               </a>
             </td>
