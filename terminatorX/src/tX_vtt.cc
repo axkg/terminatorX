@@ -1610,7 +1610,7 @@ void vtt_class :: delete_all()
 	}
 	
 	/* Take care of the master events.. */
-	sequencer.delete_all_events();
+	sequencer.delete_all_events(tX_sequencer::DELETE_ALL);
 	
 	/* Now reset master settings ot the default: */
 	set_master_pitch(1.0);
