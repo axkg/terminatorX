@@ -157,7 +157,7 @@ void set_global_defaults() {
 	strcpy(globals.vu_meter_bg, "#000000");
 	strcpy(globals.vu_meter_loud, "#FF0000");
 	strcpy(globals.vu_meter_normal, "#00FF00");	
-	globals.vu_meter_border_intensity=0.5;
+	globals.vu_meter_border_intensity=0.7;
 }
 
 int load_globals_xml() {
