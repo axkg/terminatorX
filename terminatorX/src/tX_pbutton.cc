@@ -80,7 +80,7 @@ GtkWidget *tx_xpm_label_box(int	icon_id, gchar *label_text, GtkWidget **labelwid
 
     /* Create box for xpm and label */
     box1 = gtk_hbox_new (FALSE, 0);
-    gtk_container_set_border_width (GTK_CONTAINER (box1), 2);
+    gtk_container_set_border_width (GTK_CONTAINER (box1),0);
 
 
     if (globals.button_type != BUTTON_TYPE_TEXT)
