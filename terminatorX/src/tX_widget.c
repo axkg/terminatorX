@@ -378,7 +378,7 @@ extern "C" {
 
 	x = tx->lastpos;
 
-	if (x >= 0) {
+	if (x >= FR_SIZE) {
 	    gdk_gc_set_foreground(gc, &tx->bg);
 	    gdk_draw_line(window, gc, x, FR_SIZE, x, ymax);
 
@@ -416,7 +416,7 @@ extern "C" {
 
 	x = tx->lastpos;
 
-	if (x >= 0) {
+	if (x >= FR_SIZE) {
 	    gdk_gc_set_foreground(gc, &tx->bg);
 	    gdk_draw_line(window, gc, x, FR_SIZE, x, ymax);
 
