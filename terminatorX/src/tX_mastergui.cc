@@ -1207,7 +1207,6 @@ void create_mastergui(int x, int y)
 	gtk_widget_show(dummy);	
 	gui_set_tooltip(dummy, "Adjust the master volume. This parameter will effect *all* turntables in the set.");
 	
-#ifdef USE_FLASH	
 	main_flash_r=gtk_tx_flash_new();
 	gtk_box_pack_end(GTK_BOX(master_vol_box), main_flash_r, WID_DYN);
 	gtk_widget_show(main_flash_r);
@@ -1215,7 +1214,7 @@ void create_mastergui(int x, int y)
 	main_flash_l=gtk_tx_flash_new();
 	gtk_box_pack_end(GTK_BOX(master_vol_box), main_flash_l, WID_DYN);
 	gtk_widget_show(main_flash_l);
-#endif	
+
 	dummy=gtk_label_new("Volume");
 	gtk_misc_set_alignment(GTK_MISC(dummy), 0.5, 0.5);
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);

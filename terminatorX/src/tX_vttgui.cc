@@ -54,9 +54,7 @@
 #include "tX_dial.h"
 #endif
 
-#ifdef USE_FLASH
 #include "tX_flash.h"
-#endif
 #include <stdio.h>
 
 #define WID_DYN TRUE, TRUE, 0
@@ -1254,11 +1252,9 @@ void update_all_vtts()
 		if ((*vtt)->is_playing)
 		{
 			gtk_tx_update_pos_display(GTK_TX((*vtt)->gui.display), (*vtt)->pos_i, (*vtt)->mute);
-#ifdef USE_FLASH
 			temp=(*vtt)->max_value*(*vtt)->res_volume*vtt_class::vol_channel_adjust;
 			(*vtt)->max_value=0;
 			gtk_tx_flash_set_level((*vtt)->gui.flash, temp);
-#endif		
 		}
 	}
 }
@@ -1266,10 +1262,8 @@ void update_all_vtts()
 void cleanup_vtt(vtt_class *vtt)
 {
 		gtk_tx_cleanup_pos_display(GTK_TX(vtt->gui.display));	
-#ifdef USE_FLASH
 		gtk_tx_flash_set_level(vtt->gui.flash, 0.0);
 		gtk_tx_flash_clear(vtt->gui.flash);
-#endif		
 }
 
 void cleanup_all_vtts()
@@ -1279,10 +1273,8 @@ void cleanup_all_vtts()
 	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++)
 	{
 		if ((*vtt)->buffer) gtk_tx_cleanup_pos_display(GTK_TX((*vtt)->gui.display));
-#ifdef USE_FLASH
 		gtk_tx_flash_set_level((*vtt)->gui.flash, 0.0);
 		gtk_tx_flash_clear((*vtt)->gui.flash);
-#endif		
 	}
 }
 
