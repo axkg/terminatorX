@@ -423,6 +423,8 @@ int main(int argc, char **argv)
 
 	store_globals();
 
+	delete engine;
+	
 	fprintf(stderr, "Have a nice life.\n");
 #else
 	gtk_widget_hide(main_window);
