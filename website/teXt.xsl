@@ -34,6 +34,11 @@
         <xsl:apply-templates/>
       </p>
     </xsl:if>
+    <xsl:if test="@class='screen'">
+      <p class="plain">
+        <xsl:apply-templates/>
+      </p>
+    </xsl:if>
   </xsl:template>
   <xsl:template match="italic">
     <i>

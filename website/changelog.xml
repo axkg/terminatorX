@@ -4,6 +4,18 @@
  <changelog>
   <version name="3.82" unreleased="true">
    <listitem>
+    <para class="screen"> 
+    	fixed compilation issues with g++ >= 3.4.
+	</para>
+   </listitem>
+   <listitem>
+    <para class="screen"> 
+    	added reverse mapping of MIDI parameters which can be turned on/off
+	via the parameter menu. This allows setting up a MIDI controller
+	as a crossfader.
+	</para>
+   </listitem>
+   <listitem>
     <para class="screen">
 	 in order to have a SPAM protected online version of the ChangeLog this 
 	 document is now generated from XML sources.
