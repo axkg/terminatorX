@@ -12,7 +12,8 @@ Copyright: GPL2
 URL: http://www.terminatorX.cx
 Source: %{name}-%{version}.tar.gz
 Buildroot: %{_tmppath}/%{name}-%{version}-root
-Requires: gtk+ >= 1.2.5
+Requires: gtk2, libvorbis, audiofile, libxml2
+BuildPrereq: gtk2-devel, libvorbis-devel, audiofile-devel, libxml2-devel, libmad
 
 %description
 terminatorX is a realtime audio synthesizer that allows you to "scratch" on
@@ -92,3 +93,11 @@ find . -name "Makefile*" -print -exec rm -rf {} \;
 %{_datadir}/pixmaps/terminatorX-app.png
 %{_datadir}/pixmaps/terminatorX-mime.png
 %{_datadir}/gnome/apps/Multimedia/terminatorX.desktop
+
+%post
+echo Note: Installing terminatorX \"suid root\" improves terminatorX\' performance 
+echo for non-root users, but poses a potential security threat. See \'INSTALL\' for
+echo details. To install terminatorX \"suid root\" run the following command:
+echo
+echo chmod u+s /usr/bin/terminatorX
+
