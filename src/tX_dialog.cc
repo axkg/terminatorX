@@ -521,6 +521,9 @@ void destroy_about()
 #define add_about_wid(wid); gtk_box_pack_start(GTK_BOX(box), wid, WID_DYN); \
 	gtk_widget_show(wid);
 
+#define add_about_wid_fix(wid); gtk_box_pack_start(GTK_BOX(box), wid, WID_FIX); \
+	gtk_widget_show(wid);
+
 GdkFont *GPL_font=NULL;
 
 void show_about(int nag)
@@ -585,12 +588,16 @@ void show_about(int nag)
 	else
 	{
 		box=gtk_vbox_new(FALSE, 5);
-		add_about_wid(pwid);
+		add_about_wid_fix(pwid);
 		
 		sep=gtk_hseparator_new();
-		add_about_wid(sep);
+		add_about_wid_fix(sep);
+#ifdef USE_GTK2
+		char about_prefix_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999-2002 by Alexander K\xC3\xB6nig";
+#else
 		char about_prefix_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999-2002 by Alexander König";
 		char about_prefix_broken_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999-2002 by Alexander Ko\"nig";
+#endif		
 		char about_rest[]="\n\nSend comments, patches and scratches to: alex@lisas.de\n"
 		"terminatorX-homepage: http://www.terminatorX.cx\n\nThis binary has been compiled with the following flags: "
 		"Sox support: "
@@ -641,9 +648,11 @@ void show_about(int nag)
 		strcat(buffer, about_rest);
 		
 		label=gtk_label_new(buffer);
+
+#ifndef USE_GTK2
 		gtk_label_get(GTK_LABEL(label), &str);
 		
-		/* Fixng a strange gtk+ bug that appears at least on my system.
+		/* Fixing a strange gtk+ bug that appears at least on my system.
 		*/
 		if (strlen(str)==0) 
 		{
@@ -652,16 +661,17 @@ void show_about(int nag)
 			strcat(buffer, about_rest);
 			gtk_label_set(GTK_LABEL(label), buffer);		
 		}
+#endif
 		
 		gtk_misc_set_alignment (GTK_MISC(label), 0.5 ,0.5);
-		add_about_wid(label);
+		add_about_wid_fix(label);
 		
 		sep=gtk_hseparator_new();
-		add_about_wid(sep);
+		add_about_wid_fix(sep);
 
 		label=gtk_label_new("License (GPL V2):");
 		gtk_misc_set_alignment (GTK_MISC(label), 0.5 ,0.5);
-		add_about_wid(label);
+		add_about_wid_fix(label);
 
 		hbox=gtk_hbox_new(FALSE, 5);		
 
@@ -676,11 +686,15 @@ void show_about(int nag)
 		gtk_text_buffer_get_iter_at_offset (tbuffer, &iter, 0);
 		
 		scroll=gtk_scrolled_window_new (NULL, NULL);
-        gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+        	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 		gtk_container_add (GTK_CONTAINER (scroll), text);
+		gtk_text_buffer_create_tag (tbuffer, "courier", "family", "courier", NULL);
+		
+		gtk_text_buffer_insert_with_tags_by_name(tbuffer, &iter, license, -1, "courier", NULL);
+		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(text), 5);
+		gtk_text_view_set_right_margin(GTK_TEXT_VIEW(text), 5);
+		gtk_widget_set_usize(GTK_WIDGET(text), 640, 180);
 		gtk_widget_show(text);		
-
-		gtk_text_buffer_insert (tbuffer, &iter, license, -1);
 		
 		gtk_box_pack_start(GTK_BOX(hbox), scroll, WID_DYN);
 		gtk_widget_show(scroll);		
@@ -702,10 +716,10 @@ void show_about(int nag)
 		add_about_wid(hbox);
 
 		sep=gtk_hseparator_new();
-		add_about_wid(sep);
+		add_about_wid_fix(sep);
 
 		btn=gtk_button_new_with_label("Close");
-		add_about_wid(btn);
+		add_about_wid_fix(btn);
 
 		gtk_container_add(GTK_CONTAINER(window), box);
 		gtk_widget_show(box);
