@@ -451,9 +451,10 @@ GtkSignalFunc cancel_save_tables(GtkWidget *wid)
 	return(0);
 }
 
-void do_save_tables(GtkWidget *wid)
+gboolean do_save_tables(GtkWidget *wid)
 {
 	FILE *out;
+	gzFile zout;
 	char buffer[PATH_MAX];
 	char wbuf[PATH_MAX];
 	char *ext;
@@ -463,7 +464,7 @@ void do_save_tables(GtkWidget *wid)
 		int len=strlen(buffer);
 		if (!len || (buffer[len-1]=='/')) {			
 			tx_note("Invalid filename for set file.", true);			
-			return;
+			return FALSE;
 		}
 		strcpy(globals.tables_filename, buffer);
 		gtk_widget_destroy(save_dialog);
@@ -487,12 +488,21 @@ void do_save_tables(GtkWidget *wid)
 	tx_mg_have_setname=true;
 	strcpy(tx_mg_current_setname, buffer);
 	
-	out=fopen(buffer, "w");
+	if (globals.compress_set_files) {
+		_store_compress_xml=1;
+		out=NULL;
+		zout=gzopen(buffer, "w");
+	} else {
+		_store_compress_xml=0;
+		out=fopen(buffer, "w");
+		zout=NULL;
+	}
 	
-	if (out)
+	if (out || zout)
 	{
-		if (vtt_class::save_all(out)) tx_note("Error while saving set.", true);
-		fclose(out);
+		if (vtt_class::save_all(out, zout)) tx_note("Error while saving set.", true);
+		if (out) fclose(out); 
+		else if (zout) gzclose(zout);
 		sprintf(wbuf,"terminatorX - %s", strip_path(buffer));
 		gtk_window_set_title(GTK_WINDOW(main_window), wbuf);				
 	}
@@ -500,6 +510,8 @@ void do_save_tables(GtkWidget *wid)
 	{
 		tx_note("Failed to open file for write access.", true);
 	}
+	
+	return FALSE;
 }
 
 GtkSignalFunc save_tables_as()
@@ -714,7 +726,7 @@ void grab_off()
 	grab_status=0;
 }
 
-void quit()
+gboolean quit()
 {
 	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window), 
 	GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
@@ -724,7 +736,7 @@ void quit()
 	gtk_widget_destroy(dialog);
 		
 	if (res!=GTK_RESPONSE_YES) {
-		return;
+		return TRUE;
 	}
 
 	turn_audio_off();

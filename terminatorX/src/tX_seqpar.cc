@@ -256,7 +256,7 @@ void tX_seqpar :: restore_meta(xmlNodePtr node) {
 	/* else: no MIDI init.... */
 }
 
-void tX_seqpar :: store_meta(FILE *output) {
+void tX_seqpar :: store_meta(FILE *rc, gzFile rz) {
 	char buffer[256];
 	
 	if (bound_midi_event.type!=tX_midievent::NONE) {
@@ -272,7 +272,7 @@ void tX_seqpar :: store_meta(FILE *output) {
 	} else {
 		sprintf(buffer, "id=\"%i\"", persistence_id);
 	}
-	fprintf(output, buffer);
+	tX_store(buffer);
 }
 
 
