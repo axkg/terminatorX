@@ -109,10 +109,10 @@ typedef struct {
 	*/
 	
 	int audiodevice_type; // TX_AUDIODEVICE_TYPE_OSS etc.
-	int audiodevice_buffer; // buffer in samples
+	int audiodevice_buffersize; // buffer in samples
 	
 	/* OSS specific options */
-	int audiodevice_oss_devicename[PATH_MAX];
+	char audiodevice_oss_devicename[PATH_MAX];
 	
 	/* ALSA specific options */
 	int audiodevice_alsa_card;

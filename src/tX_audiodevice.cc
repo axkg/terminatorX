@@ -62,11 +62,13 @@ int tX_audiodevice :: get_buffersize()
 int tX_audiodevice :: open()
 {
 	fprintf(stderr, "tX: Error: tX_audiodevice::dev_open()\n");
+	return 1;
 }
 
 int tX_audiodevice :: close()
 {
 	fprintf(stderr, "tX: Error: tX_audiodevice::dev_close()\n");
+	return 1;
 }
 
 void tX_audiodevice :: play(int16_t* dummy)
@@ -76,33 +78,25 @@ void tX_audiodevice :: play(int16_t* dummy)
 
 #ifdef USE_OSS
 
-int tX_audiodevice_oss :: open(int dont_use_rt_buffsize)
+/* this is required as open() overloads 
+   ansi open() - better solutions anybody? ;)
+*/
+inline int open_hack(char *name,  int flags, mode_t mode)
+{
+	return open(name, flags, mode);
+}
+
+int tX_audiodevice_oss :: open()
 {
 	int i=0;
 	int p;
 	int buff_cfg;
 
 	if (fd) return (1);
-
-	if (globals.use_stdout)
-	{
-		fd=STDOUT_FILENO;
-		blocksize=1 << globals.buff_size;
-		return(0);
-	}
-
-        fd = open(globals.audio_device, O_WRONLY, 0);
-//	puts (globals.audio_device);
+        fd = open_hack(globals.audio_device, O_WRONLY, 0);
 	
 	/* setting buffer size */	
-	if (dont_use_rt_buffsize)
-	{
-		buff_cfg=(globals.buff_no<<16) | NON_RT_BUFF;	
-	}	
-	else
-	{
-		buff_cfg=(globals.buff_no<<16) | globals.buff_size;
-	}
+	buff_cfg=(globals.buff_no<<16) | globals.buff_size;
 	
 	p=buff_cfg;
 		
@@ -127,10 +121,10 @@ int tX_audiodevice_oss :: open(int dont_use_rt_buffsize)
         i += ioctl(fd, SOUND_PCM_WRITE_RATE, &p);
 		
         i += ioctl(fd, SNDCTL_DSP_GETBLKSIZE, &blocksize);
-	samples=blocksize/sizeof(int16_t);	
-	globals.true_block_size=samples/2;
 	
-//	printf("bs: %i, samples: %i, tbs: %i\n", blocksize,samples,globals.true_block_size);
+	samples_per_buffer=blocksize/sizeof(int16_t);
+	globals.true_block_size=samples_per_buffer/2;
+	
         ioctl(fd, SNDCTL_DSP_SYNC, 0);
 
         return(i);	
@@ -145,10 +139,6 @@ int tX_audiodevice_oss :: close()
 		return(1);		
 	}
 
-	if (!globals.use_stdout)
-	{
-		close(fd);
-	}
 	fd=0;
 	blocksize=0;
 		
@@ -158,7 +148,7 @@ int tX_audiodevice_oss :: close()
 tX_audiodevice_oss :: tX_audiodevice_oss()
 {
 	fd=0;
-
+	blocksize=0;
 	init();
 }
 
@@ -174,12 +164,14 @@ void tX_audiodevice_oss :: play(int16_t *buffer)
 
 #ifdef USE_ALSA
 
-int tX_audiodevice_alsa :: open(int dont_use_rt_buffsize)
+int tX_audiodevice_alsa :: open()
 {
+	return 1;
 }
 
 int tX_audiodevice_alsa :: close()
 {
+	return 1;
 }
 
 tX_audiodevice_alsa :: tX_audiodevice_alsa()

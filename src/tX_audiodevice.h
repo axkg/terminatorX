@@ -27,6 +27,7 @@
 #include "tX_types.h"
 #include "tX_global.h"
 #include "pthread.h"
+#include <config.h>
 
 #include <sys/time.h>
 
@@ -34,9 +35,8 @@
 
 class tX_audiodevice
 {
+	protected:
 	int samples_per_buffer;
-	
-	private:
 	void init();
 	
 	public:
@@ -57,6 +57,9 @@ class tX_audiodevice
 
 class tX_audiodevice_oss : public tX_audiodevice
 {
+	int fd;
+	int blocksize;	
+
 	public:
 	virtual int open();
 	virtual int close();
