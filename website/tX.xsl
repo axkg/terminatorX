@@ -20,19 +20,30 @@
       </head>
       <body link='#FFFF99' vlink='#FFCC33' alink='#FF0000' bgcolor='#555555'
       text='#FFFFFF'
-      onload="rolloverLoad('main','pix/vinyl-hover.gif','pix/vinyl.png'); rolloverLoad('download','pix/vinyl-hover.gif','pix/vinyl.png'); rolloverLoad('screenshots','pix/vinyl-hover.gif','pix/vinyl.png'); rolloverLoad('faq','pix/vinyl-hover.gif','pix/vinyl.png'); rolloverLoad('docs','pix/vinyl-hover.gif','pix/vinyl.png'); rolloverLoad('turntable','pix/vinyl-hover.gif','pix/vinyl.png'); rolloverLoad('scratches','pix/vinyl-hover.gif','pix/vinyl.png'); rolloverLoad('aseqjoy','pix/vinyl-hover.gif','pix/vinyl.png');">
+      onload="rolloverLoad('main','pix/vinyl-hover.gif','pix/vinyl.png'); 
+              rolloverLoad('download','pix/vinyl-hover.gif','pix/vinyl.png'); 
+	      rolloverLoad('screenshots','pix/vinyl-hover.gif','pix/vinyl.png'); 
+	      rolloverLoad('faq','pix/vinyl-hover.gif','pix/vinyl.png'); 
+	      rolloverLoad('docs','pix/vinyl-hover.gif','pix/vinyl.png'); 
+	      rolloverLoad('turntable','pix/vinyl-hover.gif','pix/vinyl.png'); 
+	      rolloverLoad('scratches','pix/vinyl-hover.gif','pix/vinyl.png'); 
+	      rolloverLoad('links','pix/vinyl-hover.gif','pix/vinyl.png'); 
+	      rolloverLoad('aseqjoy','pix/vinyl-hover.gif','pix/vinyl.png');">
 
-        <table width='100%' cellspacing='5px'>
-          <tr>
-            <td>
-              <center>
-                <img src='pix/tX_logo.jpg' ALT='terminatorX' />
-              </center>
-            </td>
-          </tr>
-        </table>
+
 <!--new-->
         <table width='100%' cellspacing='0' cellpadding='0' border='0'>
+	  <tr>
+            <td colspan="2" bgcolor='#000000'>
+	     <table width='100%' cellspacing='5px'  border='0'>
+	     <tr><td>	     
+              <center>
+                <img src='pix/tX_logo.jpg' ALT='terminatorX'/>
+              </center>
+	      </td></tr>
+	      </table>
+            </td>	  
+	  </tr>
           <tr>
             <td bgcolor='#ffffff' align='left'>
               <font face='Arial,Helvetica' color='#ffffff' size='+2'>
@@ -250,6 +261,31 @@
                       <a onMouseOver="rolloverOn('aseqjoy');"
                       onMouseOut="rolloverOff('aseqjoy');" href='aseqjoy.html'>
                       aseqjoy</a>
+                    </td>
+                    <td />
+                  </xsl:if>
+                </tr>                
+		<tr>
+                  <xsl:if test="@name='links'">
+                    <td bgcolor='#777777'>
+                      <img vspace='0' alt='-' src='pix/vinyl-highlight.png'
+                      border='0' />
+                    </td>
+                    <td bgcolor='#777777'>links</td>
+                    <td bgcolor='#777777'>
+                      <img vspace='0' alt='-' src='pix/vinyl-spacer.png'
+                      border='0' />
+                    </td>
+                  </xsl:if>
+                  <xsl:if test="@name!='links'">
+                    <td>
+                      <img vspace='0' alt='-' src='pix/vinyl.png'
+                      name='links' border='0' />
+                    </td>
+                    <td>
+                      <a onMouseOver="rolloverOn('links');"
+                      onMouseOut="rolloverOff('links');" href='links.html'>
+                      links</a>
                     </td>
                     <td />
                   </xsl:if>
@@ -688,4 +724,33 @@
       </table>
     </td>
   </xsl:template>
+  
+  <xsl:template match='ilink'>
+  <table width='100%' border='0' bgcolor='#999999' cellspacing="5px">
+  <tr>
+	  <xsl:if test='banner'>
+	  <td valign="top" width="90px" halign="center">
+	  <a
+	  	><xsl:attribute name='href'><xsl:if test='link'><xsl:value-of select='link/@ref'/></xsl:if
+		><xsl:if test='dblink'><xsl:variable name="search" select="dblink/@id"/><xsl:value-of select='//dlink[@id=$search]/@url'/></xsl:if></xsl:attribute
+		><img 
+		  border='0'><xsl:attribute name='alt'><xsl:value-of select='logo'/></xsl:attribute
+		  ><xsl:attribute name='src'>pix/banner/<xsl:value-of select='banner/@filename' /></xsl:attribute>
+                </img>
+	  </a>
+	  </td>
+	  </xsl:if>
+	  
+ 	 <td valign="top">
+	        <xsl:for-each select='para'>
+	          <xsl:apply-templates />
+	        </xsl:for-each>
+  	</td>
+  </tr>
+  </table>
+  <xsl:if test="following-sibling::ilink">
+	  <hr/>
+  </xsl:if>
+  </xsl:template>
+  
 </xsl:stylesheet>
