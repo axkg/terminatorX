@@ -552,16 +552,6 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 			return 0;
 		}
 
-/*
-#ifdef USE_SCHEDULER
-		if (!(getuid()))
-		{
-			mg_oldprio=getpriority(PRIO_PROCESS, getpid());
-			setpriority(PRIO_PROCESS, getpid(), 20);
-//			printf("Priority of %i set to %i\n", getpid(), getpriority(PRIO_PROCESS, getpid())); 		
-		}
-#endif	
-*/
 		stop_update=0;
 		audioon=1;
 		update_delay=globals.update_delay;
@@ -583,15 +573,6 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 			rec_dont_care=0;
 		}
 		seq_stop(NULL, NULL);
-/*		
-#ifdef USE_SCHEDULER
-		if (!getuid())
-		{
-			setpriority(PRIO_PROCESS, getpid(), mg_oldprio);
-//			printf("Priority of %i set to %i\n", getpid(), getpriority(PRIO_PROCESS, getpid())); 		
-		}
-#endif			
-*/
 		mg_enable_critical_buttons(1);
 	}
 }
@@ -684,12 +665,10 @@ void hide_clicked(GtkWidget *w, void *d)
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
 	{
 		mg_hide_gui=1;
-		show_all_guis(0);
 	}
 	else
 	{
 		mg_hide_gui=0;
-		show_all_guis(1);
 	}
 }
 
@@ -705,7 +684,7 @@ void quit()
 }
 
 void mplcfitx()
-/* Most Proabably Least Called Function In Terminator X :) */
+/* Most Probably Least Called Function In Terminator X :) */
 {
 	show_about(0);
 }
@@ -887,19 +866,6 @@ void create_mastergui(int x, int y)
 	gui_set_tooltip(dummy, "Record the audio the terminatorX' audio engine renders. You will be prompted to enter a name for the target wav-file.");
 	gtk_widget_show(dummy);
 	
-/*	dummy=gtk_label_new("Volume:");
-	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-	
-	dumadj=(GtkAdjustment*) gtk_adjustment_new(globals.volume, 0, 1.5, 0.001, 0.001, 0.01);
-	volume_adj=dumadj;
-	connect_adj(dumadj, master_volume_changed, NULL);	
-	dummy=gtk_hscale_new(dumadj);
-	gtk_scale_set_digits(GTK_SCALE(dummy), 2);
-	gtk_scale_set_value_pos(GTK_SCALE(dummy), GTK_POS_LEFT);
-	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_DYN);
-	gtk_widget_show(dummy);
-*/
 	dummy=gtk_label_new("Pitch:");
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
@@ -961,7 +927,6 @@ void create_mastergui(int x, int y)
 	gui_set_tooltip(dummy, "Select the start position for the sequencer in song-time.");
 	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_DYN);
 	gtk_widget_show(dummy);
-
 	
 	dummy=gtk_hbox_new(FALSE,2);
 	gtk_box_pack_start(GTK_BOX(left_hbox), dummy, WID_DYN);
@@ -1026,21 +991,6 @@ void create_mastergui(int x, int y)
 	gtk_signal_connect(GTK_OBJECT(dummy), "clicked", GtkSignalFunc(save_tables), NULL);	
 
 	add_sep();
-
-	/*
-	dummy=gtk_check_button_new_with_label("Saturate");
-	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-	connect_button(dummy, saturate_changed, NULL);
-	
-	
-	dummy=gtk_check_button_new_with_label("Hide GUI");
-	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-	connect_button(dummy, hide_clicked, NULL);
-	
-	add_sep();
-	*/
 	
 	dummy=gtk_button_new_with_label("Options");
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
@@ -1069,20 +1019,10 @@ void create_mastergui(int x, int y)
 	smaller_box=gtk_vbox_new(FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(small_box), smaller_box, WID_FIX);
 	gtk_widget_show(smaller_box);
-
-/*	GdkBitmap *mask;
-	GtkStyle *style;
-	GdkPixmap *pmap=NULL;
-	GtkWidget *pwid;
-	
-	style = gtk_widget_get_style( main_window );
-	pmap=gdk_pixmap_create_from_xpm_d(main_window->window, &mask, &style->bg[GTK_STATE_NORMAL], (gchar **) tx_smlog_xpm ;
-  	pwid = gtk_pixmap_new( pmap, mask );*/
 	
 	dummy = tx_pixmap_widget(TX_ICON_LOGO);
 	gtk_box_pack_start(GTK_BOX(smaller_box), dummy, WID_FIX);
 	gtk_widget_show( dummy );
-	
 
 	dummy=gtk_label_new("0");
 	used_mem=dummy;
@@ -1161,7 +1101,7 @@ gfloat old_percent=-1;
 
 void wav_progress_update(gfloat percent)
 {
-	percent=floor(percent*10.0)/10.0; //Updateing statusbars with gtk-themes eats up hell of a lot CPU-time
+	percent=floor(percent*10.0)/10.0; //Updating statusbars with gtk-themes eats up hell of a lot CPU-time
 					  // which is why we update every 10% only.
 	
 	if (wav_progress)
@@ -1211,9 +1151,6 @@ void tx_note(const char *message)
 	gtk_widget_grab_default(btn);
 	gtk_widget_show(btn);
 	gtk_widget_show(mbox);
-
-//	gtk_widget_unrealize(main_window);
-	
 }
 
 
@@ -1244,9 +1181,6 @@ void tx_l_note(const char *message)
 	gtk_window_set_default_size(win, 200, 100);
 	gtk_window_set_position(win, GTK_WIN_POS_CENTER_ALWAYS);	
 	gtk_widget_show(mbox);
-
-//	gtk_widget_unrealize(main_window);
-	
 }
 
 void display_mastergui()

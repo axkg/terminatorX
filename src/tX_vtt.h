@@ -80,7 +80,6 @@ class vtt_class
 	static f_prec mix_max_r;
 	static int samples_in_mix_buffer;
 	static pthread_mutex_t render_lock;
-	static pthread_mutex_t main_lock;
 	
 	static f_prec master_volume;
 	static f_prec res_master_volume;
@@ -93,6 +92,7 @@ class vtt_class
 	static int master_triggered;
 	static int master_triggered_at;
 	static vtt_class * focused_vtt;
+	static int solo_ctr;
 	
 	/* the gui */
 	vtt_gui gui;
@@ -158,7 +158,11 @@ class vtt_class
 	d_prec maxpos;
 	
 	int mute;
-	int mute_old;
+	int res_mute;
+	int res_mute_old;
+	
+	int mix_mute;
+	int mix_solo;
 	int fade;
 	
 	/* input control vars */
@@ -229,9 +233,6 @@ class vtt_class
 	
 	/* Parameter setup methods */
 	void set_name(char *);
-/*	Obsolete	
-	void set_file_data(char *, int16_t *, int);
-*/	
 	int set_output_buffer_size(int);
 
 	void set_volume(f_prec);
@@ -314,6 +315,9 @@ class vtt_class
 	void effect_up(vtt_fx *effect);
 	void effect_down(vtt_fx *effect);
 	void effect_remove(vtt_fx_ladspa *effect);
+	
+	void set_mix_mute(int newstate);
+	void set_mix_solo(int newstate);
 };
 
 #endif
