@@ -257,6 +257,45 @@ CLASS="EMPHASIS"
 > master-triger and so on.</P
 ></LI
 ></UL
+><P
+>Below the effect queue a turntable shows some more controls:
+	    <P
+></P
+><UL
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>Pitch Control</I
+></P
+><P
+>The pitch control allows setting the default playback
+		speed for that turntable (the "motor" speed). Negative values
+		will result in the sample being played backwards.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>PAN Control</I
+></P
+><P
+>This parameter allows setting the position of the
+		turntable's main signal within the stereo panorama.</P
+></LI
+><LI
+><P
+><I
+CLASS="EMPHASIS"
+>VU Meter</I
+></P
+><P
+>The displayed signal shows the turntable's current
+		signal not including the echo-signal which is mixed
+		separately.</P
+></LI
+></UL
+>&#13;</P
 ></DIV
 ></DIV
 ><DIV
@@ -264,7 +303,7 @@ CLASS="SECTION"
 ><H2
 CLASS="SECTION"
 ><A
-NAME="AEN254"
+NAME="AEN268"
 >2.2.3. The Effect Queue</A
 ></H2
 ><P
@@ -286,14 +325,10 @@ CLASS="EMPHASIS"
 CLASS="EMPHASIS"
 >blue cross button</I
 > to achieve this.</P
-><P
->Now since release 3.71 the built-in echo effect is treated differently from other effects. Where all other effects feed their signal back into the effect queue the echo effect doesn't touch the input signal. It's echo-signal is mixed seperately from the turntable's main signal to allow a different panning value for the echo-signal. This mode of operation does have some side-effects: imagine a lowpass filter with a position after the echo effect in the effect queue. This will result in the turntable's main signal being lowpassed but it will leave the echo-signal un-lowpassed.</P
-><P
->Some may call this behaviour a bug - whereas I would consider it a feature ;). Anyway if the above description didn't clear things up maybe the following figure does. It shows a schematic effect queue with the built-in effects and two LADSPA effects enabled. Now with this setup you will not hear anything from the second LADSPA effect in the echo-signal.</P
 ><DIV
 CLASS="FIGURE"
 ><A
-NAME="AEN265"
+NAME="AEN277"
 ></A
 ><P
 ><B
@@ -303,6 +338,10 @@ NAME="AEN265"
 ><IMG
 SRC="img/signalflow.jpg"></P
 ></DIV
+><P
+>Now since release 3.71 the built-in echo effect is treated differently from other effects. Where all other effects feed their signal back into the effect queue the echo effect doesn't touch the input signal. It's echo-signal is mixed seperately from the turntable's main signal to allow a different panning value for the echo-signal. This mode of operation does have some side-effects: imagine a lowpass filter with a position after the echo effect in the effect queue. This will result in the turntable's main signal being lowpassed but it will leave the echo-signal un-lowpassed.</P
+><P
+>Some may call this behaviour a bug - whereas I would consider it a feature ;). Anyway if the above description didn't clear things up maybe the displayed figure does. It shows a schematic effect queue with the built-in effects and two LADSPA effects enabled. Now with this setup you will not hear anything from the second LADSPA effect in the echo-signal.</P
 ><P
 >For more information on a LADSPA plugin, press it's panel's label and a small info box will pop up.</P
 ><P
@@ -329,7 +368,7 @@ CLASS="SECTION"
 ><H2
 CLASS="SECTION"
 ><A
-NAME="AEN276"
+NAME="AEN290"
 >2.2.4. Lowpass Panel</A
 ></H2
 ><P
@@ -380,7 +419,7 @@ CLASS="SECTION"
 ><H2
 CLASS="SECTION"
 ><A
-NAME="AEN296"
+NAME="AEN310"
 >2.2.5. Echo Panel</A
 ></H2
 ><P
