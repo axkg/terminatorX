@@ -133,7 +133,7 @@ char global_filename_buffer[PATH_MAX];
 
 void load_part(char *newfile, vtt_class *vtt)
 {
-	int ret=0;
+	tX_audio_error ret=TX_AUDIO_SUCCESS;
 
 	ld_create_loaddlg(TX_LOADDLG_MODE_SINGLE, 1);
 	ld_set_filename(newfile);
@@ -146,34 +146,61 @@ void load_part(char *newfile, vtt_class *vtt)
 		switch(ret)
 		{
 			case TX_AUDIO_ERR_ALLOC:
-			tx_note("Error loading file: failed to allocate memory");
+			tx_note("Failed to load audiofile - there's not enough memory available.", true);
 			break;
 			case TX_AUDIO_ERR_PIPE_READ:
-			tx_note("Error loading file: broken pipe (File not supported/corrupt?)");
+			tx_note("An error occured on reading from the piped process - probably the file format of the audiofile is not supported by this configuration - please check terminatorX' INSTALL file on howto configure terminatorX for files of this format.", true);
 			break;
 			case TX_AUDIO_ERR_SOX:
-			tx_note("Error loading file: couldn't execute sox");
+			tx_note("Failed to run sox - to load the given audiofile please ensure that sox is installed correctly.", true);
 			break;
 			case TX_AUDIO_ERR_MPG123:
-			tx_note("Error loading file: couldn't execute mpg123");
+			tx_note("Failed to run mpg123 - to load the given mp3 file please ensure that mpg123 (or mpg321) is installed correctly.", true);
 			break;
 			case TX_AUDIO_ERR_WAV_NOTFOUND:
-			tx_note("Error loading file: file not found");
+			tx_note("Couldn't acces the audiofile - file not found.", true);
 			break;
 			case TX_AUDIO_ERR_NOT_16BIT:
-			tx_note("Error loading file: RIFF/WAV is not 16 Bit.");
+			tx_note("The wav file doesn't use 16 bit wide samples - please compile terminatorX with libaudiofile support to enable loading of such files.", true);
 			break;
 			case TX_AUDIO_ERR_NOT_MONO:
-			tx_note("Error loading file: RIFF/WAV is not mono");
+			tx_note("The wav file is not mono - please compile terminatorX with libaudiofile support to enable loading of such files.", true);
 			break;
 			case TX_AUDIO_ERR_WAV_READ:
-			tx_note("Error loading file: RIFF/WAV corrupt?");
+			tx_note("The wav file seems to be corrupt.", true);
 			break;
 			case TX_AUDIO_ERR_NOT_SUPPORTED:
-			tx_note("Error loading file: filetype not supported.");
+			tx_note("The file format of the audiofile is not supported - please check terminatorX' INSTALL file on howto configure terminatorX for files of this format.", true);
+			break;
+			case TX_AUDIO_ERR_MAD_OPEN:
+			tx_note("Failed to open this mp3 file - please ensure that the file exists and is readable.", true);
+			break;	
+			case TX_AUDIO_ERR_MAD_STAT:
+			tx_note("Failed to 'stat' this mp3 file - please ensure that the file exists and is readable.", true);
+			break;
+			case TX_AUDIO_ERR_MAD_DECODE:
+			tx_note("Failed to decode the mp3 stream - file is corrupt.", true);
+			break;
+			case TX_AUDIO_ERR_MAD_MMAP:
+			tx_note("Failed to map the audiofile to memory - please ensure the file is readable.", true);
+			break;
+			case TX_AUDIO_ERR_MAD_MUNMAP:
+			tx_note("Failed to unmap audiofile.", true);
+			break;
+			case TX_AUDIO_ERR_VORBIS_OPEN:
+			tx_note("Failed to open ogg file - please ensure the file is an ogg stream and that it is readable.", true);
+			break;			
+			case TX_AUDIO_ERR_VORBIS_NODATA:
+			tx_note("The vorbis codec failed to decode any data - possibly this ogg stream is corrupt.", true);
+			break;
+			case TX_AUDIO_ERR_AF_OPEN:
+			tx_note("Failed to open this file with libaudiofile - please check terminatorX' INSTALL file on howto configure terminatorX for files of this format.",true);
+			break;
+			case TX_AUDIO_ERR_AF_NODATA:
+			tx_note("libaudiofile failed to decode any data - possilby the audiofile is corrupt.", true);
 			break;
 			default:					
-			tx_note("OOPS: An unknown error occured - This shouldn't happen :(");	
+			tx_note("An unknown error occured - if this bug is reproducible please report it, thanks.", true);	
 		}
 	}
 	else
@@ -297,7 +324,7 @@ void edit_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 
 	if (vtt->samples_in_buffer == 0)
 	{
-		tx_note("Nothing to edit.");
+		tx_note("No audiofile loaded - so there's nothing to edit.", true);
 	}
 	else
 	if (strlen(globals.file_editor)>0)
@@ -307,7 +334,7 @@ void edit_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 	}
 	else
 	{
-		tx_note("No soundfile editor configured.");
+		tx_note("No soundfile editor has been configured - to do so enter the soundfile editor of your choice in the options dialog.", true);
 	}
 }
 
@@ -322,7 +349,7 @@ void reload_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 		strcpy(reload_buffer, vtt->filename);
 		load_part(reload_buffer, vtt);
 	}
-	else tx_note("Nothing to reload.");
+	else tx_note("No audiofile loaded - so there's nothing to reload.", true);
 }
 
 void clone_vtt(GtkWidget *wid, vtt_class *vtt)
