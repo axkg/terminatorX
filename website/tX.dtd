@@ -5,7 +5,7 @@
 <!ELEMENT main (general, news)>
 <!ELEMENT download (index, current, subsection+)>
 <!ELEMENT scratches (para*, scratchtable, para*)>
-<!ELEMENT links EMPTY>
+<!ELEMENT links (subsection)+>
 <!ELEMENT faq (qa+)>
 <!ELEMENT turntable (para*, turntabletable, para*)>
 <!ELEMENT aseqjoy (para*)>
@@ -42,7 +42,13 @@
 <!ELEMENT index (title)>
 <!ELEMENT title (#PCDATA)>
 
-<!ELEMENT subsection (title, (para | tarfiles | rpmfiles | currentversion | file | filelist)*)>
+<!ELEMENT subsection (title, (para | tarfiles | rpmfiles | currentversion | file | filelist | ilink)*)>
+
+<!ELEMENT ilink (banner?, (dblink | link), para*)>
+<!ELEMENT banner EMPTY>
+<!ATTLIST banner
+  filename CDATA #REQUIRED>
+
 <!ELEMENT current EMPTY>
 <!ATTLIST current
   version CDATA #REQUIRED

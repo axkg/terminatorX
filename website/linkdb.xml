@@ -18,4 +18,20 @@
 	<dlink id="aseqjoy_man" url="aseqjoy-man.html" text="aseqjoy man page"/>
 	<dlink id="liblrdf" url="http://plugin.org.uk/releases/lrdf/" text="liblrdf"/>
 	<dlink id="manual" url="manual/index.html" text="manual"/>
+	<dlink id="openjay" url="http://www.openjay.org" text="Openjay"/>
+	<dlink id="debian" url="http://www.debian.org" text="Debian"/>
+	<dlink id="dynebolic" url="http://www.dynebolic.org/" text="dyne:bolic"/>
+	<dlink id="rezound" url="http://rezound.sourceforge.net" text="Rezound"/>
+	<dlink id="linuxsound" url="http://linux-sound.org" text="Linux Sound And Midi Pages"/>
+	<dlink id="freshmeat" url="http://freshmeat.net" text="freshmeat"/>
+	<dlink id="lad" url="http://www.linuxdj.com/audio/lad" text="LAD"/>
+	<dlink id="agnula" url="http://www.agnula.org" text="AGNULA"/>
+	<dlink id="ccrma" url="http://www-ccrma.stanford.edu/planetccrma/software/" text="Planet CCRMA"/>
+	<dlink id="suse" url="http://www.suse.com" text="SuSE"/>
+	<dlink id="freebsd" url="http://freebsd.org" text="FreeBSD"/>
+	<dlink id="neural" url="http://neural.it" text="neural.it"/>
+	<dlink id="ct" url="http://www.heise.de/ct" text="c't"/>
+	<dlink id="sonar" url="http://www.sonar.es" text="Sonar"/>
+	<dlink id="testing" url="http://packages.debian.org/testing/sound/terminatorx.html" text="testing package"/>
+	<dlink id="unstable" url="http://packages.debian.org/unstable/sound/terminatorx.html" text="unstable package"/>
 </linkdb>
