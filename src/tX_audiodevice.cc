@@ -32,6 +32,7 @@
 #include <fcntl.h>
 #include <sys/soundcard.h>
 #include <config.h>
+#include <string.h>
 
 #include "tX_endian.h"
 
@@ -196,16 +197,10 @@ int tX_audiodevice_alsa :: open()
 	snd_pcm_stream_t stream = SND_PCM_STREAM_PLAYBACK;
 	snd_pcm_hw_params_t *hw_params;
 	char pcm_name[64];
-
-	/* Removing the device ID comment... */
-	for (unsigned int i=0; i<strlen(globals.alsa_device_id); i++) {
-		if (globals.alsa_device_id[i]!='#') {
-			pcm_name[i]=globals.alsa_device_id[i];
-		} else {
-			pcm_name[i]=0;
-			break;
-		}
-	}
+	char *pos;
+	
+	strncpy(pcm_name, globals.alsa_device_id, sizeof(pcm_name));
+	if ((pos = strchr(pcm_name, '#')) != NULL) *pos = 0;
 	
 	if (snd_pcm_open(&pcm_handle, pcm_name, stream, 0) < 0) {
 		tX_error("ALSA: Failed to access PCM device \"%s\"", pcm_name);
@@ -233,8 +228,8 @@ int tX_audiodevice_alsa :: open()
 		return -1;
 	}
 	
-	/* Make it 16 Bit LE - we handle converting from BE anyway... */
-	if (snd_pcm_hw_params_set_format(pcm_handle, hw_params, SND_PCM_FORMAT_S16_LE) < 0) {
+	/* Make it 16 Bit native endian */
+	if (snd_pcm_hw_params_set_format(pcm_handle, hw_params, SND_PCM_FORMAT_S16) < 0) {
 		tX_error("ALSA: Error setting 16 Bit sample width for PCM device \"%s\"", pcm_name);
 		snd_pcm_hw_params_free (hw_params);
 		return -1;
@@ -323,9 +318,6 @@ void tX_audiodevice_alsa :: play(int16_t *buffer)
 {
 	int underrun_ctr=0;
 	snd_pcm_sframes_t pcmreturn;
-#ifdef BIG_ENDIAN_MACHINE
-	swapbuffer (buffer, samples_per_buffer);
-#endif
 	
 #ifdef USE_ALSA_MEMCPY
 	pcmreturn = snd_pcm_writei(pcm_handle, buffer, samples_per_buffer >> 1);
