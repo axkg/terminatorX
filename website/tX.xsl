@@ -276,7 +276,7 @@
         <table width="100%">
           <tr>
             <td align="left" valign="top" width="100%">
-              <font size="-1">Copyright (C) 1999-2003 by <A HREF="mailto:alex@lisas.de">Alexander KMAKE_THIS_MYOUMLnig</A>
+              <font size="-1">Copyright (C) 1999-2004 by <A HREF="mailto:alex@lisas.de">Alexander KMAKE_THIS_MYOUMLnig</A>
               </font>
             </td>
             <td>
@@ -663,6 +663,21 @@
       <xsl:apply-templates/>
     </span>
   </xsl:template>
+
+  <xsl:template match="changelog">
+    <p><font size="+2">ChangeLog</font></p>
+      <xsl:apply-templates/>
+  </xsl:template>
+
+  <xsl:template match="version">
+    <p><font size="+1">Version <xsl:value-of select="@name"/> <xsl:if 
+	test="@unreleased='true'"><i> unreleased </i></xsl:if></font>
+	</p>
+	<ul>
+      <xsl:apply-templates/>
+	 </ul>
+  </xsl:template>
+  
   <xsl:template match="screenshot">
     <xsl:if test="name(.)='screenshot'">CLOSE_DA_P</xsl:if>
     <center>
