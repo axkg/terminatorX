@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2002  Alexander König
+    Copyright (C) 1999-2003  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 	14 Jul 2002: switched to libxml instead of binary saving.
 */    
 
+#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "tX_types.h"
@@ -66,7 +67,11 @@ void set_global_defaults() {
 	globals.no_gui = 0;
 	globals.alternate_rc = 0;
 	
+#ifdef USE_ALSA	
+	strcpy(globals.audio_device, "plughw:0,0");	
+#else	
 	strcpy(globals.audio_device, "/dev/dsp");
+#endif	
 	
 	strcpy(globals.xinput_device, "");
 	globals.xinput_enable=0;
@@ -109,10 +114,10 @@ void set_global_defaults() {
 	strcpy(globals.file_editor, "");
 		
 #ifdef USE_OSS
-	globals.audiodevice_type=TX_AUDIODEVICE_TYPE_OSS;		
+	globals.audiodevice_type=OSS;		
 #else
 #ifdef USE_ALSA
-	globals.audiodevice_type=TX_AUDIODEVICE_TYPE_ALSA;
+	globals.audiodevice_type=ALSA;
 #endif	
 #endif		
 	globals.audiodevice_buffersize=4096;

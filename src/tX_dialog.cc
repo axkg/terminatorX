@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2002  Alexander König
+    Copyright (C) 1999-2003  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
     28 Jul 1999: Now display compiletime settings in the about dialog.
 */    
 
+#include "config.h"
 #include "tX_types.h"
 #include "tX_global.h"
 #include "tX_dialog.h"
@@ -92,7 +93,7 @@ int opt_hidden=0;
 void apply_options() {
 	char *text;
 	
-	strcpy(globals.audio_device, gtk_entry_get_text(GTK_ENTRY(audio_device)));
+	strcpy(globals.audio_device, gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(audio_device)->entry)));
 	globals.buff_no=(int)buff_no->value;	
 	globals.buff_size=(int)buff_size->value;
 	
@@ -207,6 +208,49 @@ void select_input(GtkWidget *w, char *dev)
 	gtk_button_set_label(GTK_BUTTON(xinput_device), dev);
 }
 
+#ifdef USE_ALSA
+GList *get_alsa_device_list() {
+	FILE *file;
+	GList *devices=NULL;
+	char buffer[256];
+	
+	if ((file = fopen("/proc/asound/pcm", "r"))) {
+		while(fgets(buffer, 255, file)) {
+			buffer[255]=0;
+			if(strstr(buffer, "playback")) {
+				devices=g_list_append (devices, strdup(buffer));
+			}
+		}
+		fclose(file);
+	}
+	
+	return devices;
+}
+#else
+#include <dirent.h>
+int oss_select_dsp_only(const struct dirent *entry){
+	return (strstr(entry->d_name, "dsp")!=0);
+}
+
+GList *get_oss_device_list() {
+	GList *devices=NULL;
+    struct dirent **namelist;
+    int n,i;
+    n = scandir("/dev", &namelist, oss_select_dsp_only, alphasort);
+    
+    if (n>0) {
+    	for (i=0; i<n; i++) {
+			char buffer[256];
+            sprintf(buffer, "/dev/%s\n", namelist[i]->d_name);
+            free(namelist[i]);
+			devices=g_list_append (devices, strdup(buffer));
+		}
+	}
+	
+	return devices;
+}
+#endif
+
 void create_options()
 {
 	GtkWidget *box;
@@ -248,9 +292,20 @@ void create_options()
 
 	add_expl("Device:");
 	
-	audio_device=gtk_entry_new_with_max_length(PATH_MAX);
-	gtk_entry_set_text(GTK_ENTRY(audio_device), globals.audio_device);
-	gtk_tooltips_set_tip(opt_tips, audio_device, "Enter the path to your audio device here. For most systems this should be /dev/dsp.", NULL);
+	//audio_device=gtk_entry_new_with_max_length(PATH_MAX);
+	//gtk_entry_set_text(GTK_ENTRY(audio_device), globals.audio_device);
+	audio_device=gtk_combo_new();
+	GList *strings;
+#ifdef USE_ALSA
+	strings=get_alsa_device_list();
+#else
+	strings=get_oss_device_list();
+#endif
+	gtk_combo_set_popdown_strings (GTK_COMBO(audio_device), strings);
+	gtk_combo_set_value_in_list(GTK_COMBO(audio_device), FALSE, FALSE);
+	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(audio_device)->entry), globals.audio_device);
+	
+	gtk_tooltips_set_tip(opt_tips, audio_device, "Select the audiodevice you want terminatorX to send its output to.", NULL);
 	add_widget_dyn(audio_device);
 	
 	end_box();
@@ -566,6 +621,8 @@ void show_about(int nag)
 	
 	gtk_widget_show( pwid );
 
+	printf("pixmap: %08x.\n", pwid);
+	
 	if (nag) {
 		GtkWidget *box=gtk_vbox_new(FALSE, 2);
 		GtkWidget *box2=gtk_hbox_new(FALSE, 2);
@@ -580,7 +637,7 @@ void show_about(int nag)
 		gtk_misc_set_alignment(GTK_MISC(label), 0.1, 0.5);
 		gtk_widget_show(label);
 
-		label=gtk_label_new("Copyright (C) 1999-2002 by Alexander K\xC3\xB6nig");
+		label=gtk_label_new("Copyright (C) 1999-2003 by Alexander K\xC3\xB6nig");
 		gtk_box_pack_start(GTK_BOX(box2), label, WID_DYN);
 		gtk_misc_set_alignment(GTK_MISC(label), 0.9, 0.5);
 		gtk_widget_show(label);
@@ -598,7 +655,7 @@ void show_about(int nag)
 		
 		sep=gtk_hseparator_new();
 		add_about_wid_fix(sep);
-		char about_prefix_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999-2002 by Alexander K\xC3\xB6nig";
+		char about_prefix_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999-2003 by Alexander K\xC3\xB6nig";
 		char about_rest[]="\n\nSend comments, patches and scratches to: alex@lisas.de\n"
 		"terminatorX-homepage: http://www.terminatorX.cx\n\nThis binary has been compiled with the following flags: "
 		"Sox support: "

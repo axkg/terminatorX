@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2002  Alexander König
+    Copyright (C) 1999-2003  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -45,9 +45,6 @@ extern "C" {
 #define BUTTON_TYPE_TEXT 2
 #define BUTTON_TYPE_BOTH 3
 
-#define TX_AUDIODEVICE_TYPE_OSS 0
-#define TX_AUDIODEVICE_TYPE_ALSA 1
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -61,6 +58,11 @@ extern "C" {
 #define tX_error(fmt, args...); { fprintf(stderr, "* tX_error: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
 #define tX_warning(fmt, args...); { fprintf(stderr, "+ tX_warning: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
 
+typedef enum {
+	OSS =0,
+	ALSA = 1
+} tX_audiodevice_type;
+	
 typedef struct {
 	char	audio_device[PATH_MAX];
 	
@@ -121,7 +123,7 @@ typedef struct {
 	   the .terminatorX3rc.bin in sync.
 	*/
 	
-	int audiodevice_type; // TX_AUDIODEVICE_TYPE_OSS etc.
+	tX_audiodevice_type audiodevice_type; // TX_AUDIODEVICE_TYPE_OSS etc.
 	int audiodevice_buffersize; // buffer in samples
 	
 	/* OSS specific options */
