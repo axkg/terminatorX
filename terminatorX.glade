@@ -759,7 +759,7 @@
 		  <property name="digits">0</property>
 		  <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		  <property name="inverted">False</property>
-		  <property name="adjustment">1024 512 32000 512 1024 2048</property>
+		  <property name="adjustment">1024 64 512 32 64 64</property>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
