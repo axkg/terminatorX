@@ -4,9 +4,16 @@ This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.72]
-- fixed a bug that produced corupt wavfiles on big endian machines
-- hack: made XInput work on XFree>4, proabably breaks XFree<4
-- applied Adrians solo-patch
+- Applied a patch from Matthew Evans <activesx@hotmail.com> that introduces 
+  support for Ogg Vorbis audiofiles. It requires ogg123 and sox to work.
+  Autodetection is supported via configure (--enable-ogg123).
+- Experimental support for input devices other than the core-pointer
+  under XFree86 > 4. This uses the xsetpointer executable that comes with
+  XFree86. configure should autodetect this correct, in case it doesn't
+  use --enable-xetpointer switch.
+- Adrian sent me a patch introducing two new buttons: mute and solo. It's
+  not yet finished though.
+- fixed a bug that produced corrupt wavfiles on big endian machines
 
 [v3.71]
 - applied a big patch from Adrian Reber (adrian@lisas.de). This patch includes:
