@@ -7,11 +7,11 @@ changed.
 - Reworked the mastergui for better usabilty and less space consumption, yes,
   terminatorX now features a boring menubar - which helps using it on small
   displays quite a bit, and should be easier to handle for first time users.
-- Implemented a suggestions from Darrick Servis <darrick@dcn.davis.ca.us> that
+- Implemented a suggestion from Darrick Servis <darrick@dcn.davis.ca.us> that
   stops clipping in the mixer routine. The outgoing signal is now limited as it
   should be, which improves the output quality for signals too loud
   significantly.
-- MIDI mappings are now store with the (new) tX set files.
+- MIDI mappings are now stored within the (new) tX set files.
 - Applied a patch from Arthur Peters <amp@singingwizard.org> which brings
   preliminary MIDI support to terminatorX. This is realized via the ALSA
   sequencer interface, so in order for it to compile you have to have
