@@ -55,9 +55,7 @@ void prelis_stop()
 	}	
 }
 
-void prelis_start(char *name)
-{
-	char buffer[PATH_MAX*2];
+void prelis_start(char *name) {
 	char *ext;
 	pid_t temp;
 	int usempg123=0;

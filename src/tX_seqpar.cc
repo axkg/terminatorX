@@ -150,7 +150,7 @@ void tX_seqpar :: create_persistence_ids()
 	}
 }
 
-tX_seqpar* tX_seqpar :: get_sp_by_persistence_id(int pid)
+tX_seqpar* tX_seqpar :: get_sp_by_persistence_id(unsigned int pid)
 {
 	list <tX_seqpar *> :: iterator sp;
 	
@@ -384,7 +384,7 @@ void tX_seqpar_vtt_speed :: handle_mouse_input(float adjustment)
 
 void tX_seqpar_vtt_speed :: do_exec(const float value)
 {
-	tt->speed=value;
+	tt->speed=value*tt->audiofile_pitch_correction;
 }
 
 const char * tX_seqpar_vtt_speed :: get_name()

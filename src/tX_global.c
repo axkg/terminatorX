@@ -171,13 +171,6 @@ void load_globals_old()
 	if (!globals.true_block_size) globals.true_block_size=1<globals.buff_size;
 }
 
-void load_globals() {
-	if (load_globals_xml()!=0) {
-		fprintf(stderr, "tX: Failed loading terminatorXrc - trying to load old binary rc.\n");
-		load_globals_old();
-	}
-}
-
 #define restore_int(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) { sscanf(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%i", &i); }}
 #define restore_float(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if  (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {sscanf(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%lf", &dvalue); i=dvalue;}}
 #define restore_string(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {strcpy(i, xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)); }}
@@ -297,5 +290,12 @@ void store_globals() {
 		store_string("file_editor", globals.file_editor);
 		
 		fprintf(rc,"</terminatorXrc>\n");
+	}
+}
+
+void load_globals() {
+	if (load_globals_xml()!=0) {
+		fprintf(stderr, "tX: Failed loading terminatorXrc - trying to load old binary rc.\n");
+		load_globals_old();
 	}
 }

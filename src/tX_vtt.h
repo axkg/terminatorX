@@ -116,7 +116,7 @@ class vtt_class
 #endif
 	
 	int16_t *buffer;	// Actual audio data
-	int samples_in_buffer;  // No. of samples in audio data
+	unsigned int samples_in_buffer;  // No. of samples in audio data
 	int do_scratch;
 	
 	f_prec *output_buffer; 
@@ -216,6 +216,7 @@ class vtt_class
 	tX_seqpar_spin sp_spin;
 
 	tx_audiofile *audiofile;
+	f_prec audiofile_pitch_correction;
 
 	list <vtt_fx *> fx_list;
 		
