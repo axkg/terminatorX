@@ -50,6 +50,8 @@
 #include <config.h>
 #include "tX_sequencer.h"
 #include <errno.h>
+#include <sched.h>
+#include "tX_capabilities.h"
 
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -133,6 +135,11 @@ void *engine_thread_entry(void *engine_void) {
 	/* Dropping root privileges for the engine thread - if running suid. */
 	
 	if ((!geteuid()) && (getuid() != geteuid())) {
+#ifdef USE_CAPABILITIES
+		tX_error("engine_thread_entry(): using capabilities but still suid root?");
+		tX_error("engine_thread_entry(): Please report this.");
+		exit(-1);
+#endif
 		
 #ifndef ALLOW_SUID_ROOT
 		tX_error("This binary doesn't support running suid-root.");
@@ -148,7 +155,32 @@ void *engine_thread_entry(void *engine_void) {
 			exit(2);
 		}
 	}
+
+	pid_t pid=getpid();
+	tX_engine::get_instance()->set_pid(pid);
+
+#ifdef USE_SCHEDULER
+#ifdef USE_CAPABILITIES
+	if (have_nice_capability()) {
+		if (globals.use_realtime) {
+			struct sched_param parm;
 	
+			sched_getparam(pid, &parm);
+			parm.sched_priority=sched_get_priority_max(SCHED_FIFO);
+			if (sched_setscheduler(pid, SCHED_FIFO, &parm)) {
+				tX_error("engine_thread_entry(): failed to set realtime priority.");
+			}
+		}
+	} else {
+		tX_warning("engine_thread_entry(): can't set SCHED_FIFO -> lacking capabilities.");
+	}
+#endif //USE_CAPABILITIES
+	
+	if (sched_getscheduler(pid)!=SCHED_FIFO) {
+		tX_warning("engine_thread_entry() - engine has no realtime priority scheduling.");
+	}
+#endif //USE_SCHEDULER
+		
 #ifdef USE_JACK
 	/* Create the client now, so the user has something to connect to. */
 	tX_jack_client::get_instance();
@@ -167,10 +199,11 @@ tX_engine :: tX_engine() {
 	pthread_mutex_init(&start, NULL);
 	pthread_mutex_lock(&start);
 	thread_terminate=false;
+	pid=0;
 	
 	/* Creating the actual engine thread.. */
 #ifdef USE_SCHEDULER	
-	if (!geteuid()) {
+	if (!geteuid() && globals.use_realtime) {
 		pthread_attr_t pattr;
 		struct sched_param sparm;
 		
@@ -189,8 +222,7 @@ tX_engine :: tX_engine() {
 		
 		result=pthread_create(&thread, &pattr, engine_thread_entry, (void *) this);
 	} else {
-		tX_debug("tX_engine() - Lacking root privileges - no realtime scheduling.");
-#endif		
+#endif // USE_SCHEDULER
 		result=pthread_create(&thread, NULL, engine_thread_entry, (void *) this);
 #ifdef USE_SCHEDULER		
 	}

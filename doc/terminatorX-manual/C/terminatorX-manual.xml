@@ -313,6 +313,11 @@
                 </listitem>
 
                 <listitem>
+                  <para><ulink url="???">libcap</ulink> for capabilties
+                  support.</para>
+                </listitem>
+
+                <listitem>
                   <para><ulink
                   url="http://www-ti.informatik.uni-tuebingen.de/~hippm/mpg123.html">mpg123</ulink>
                   for mp3 pre-listening (and fallback loading if mad is not
@@ -450,9 +455,9 @@
       <sect3 id="SEQUENCERMENU">
         <title><emphasis>Sequencer</emphasis> Menu</title>
 
-        <para>The <emphasis>Sequencer</emphasis> (see the <xref
-        linkend="SEQUENCER" /> section for general information on the
-        sequencer) menu features these functions:</para>
+        <para>The <emphasis>Sequencer</emphasis> (see <xref
+        linkend="SEQUENCER" /> for general information on the sequencer) menu
+        features these functions:</para>
 
         <itemizedlist>
           <listitem>
@@ -550,9 +555,9 @@
           <listitem>
             <para><emphasis>Visit terminatorX.cx</emphasis></para>
 
-            <para>Will try to spawn a browser process to load the URL
-            &#34;http://terminatorX.cx&#34; - for easy update checking or just
-            unecessary bloat.</para>
+            <para>Will try to spawn a browser process to load the URL <ulink
+            url="http://terminatorX.cx">http://terminatorX.cx</ulink> - for
+            easy update checking or just unecessary bloat.</para>
           </listitem>
         </itemizedlist>
       </sect3>
@@ -584,8 +589,8 @@
         <listitem>
           <para><emphasis>Sequencer Play / Record / Stop</emphasis></para>
 
-          <para>Please read the <xref linkend="SEQUENCER" /> section to find
-          out more about the sequencer.</para>
+          <para>Please read <xref linkend="SEQUENCER" /> to find out more
+          about the sequencer.</para>
         </listitem>
 
         <listitem>
@@ -699,7 +704,7 @@
             <para>This button is available only if terminatorX was built with
             ALSA MIDI support and the sequencer input port was created
             successfully on startup. For more information on terminatorX&#39;
-            MIDI interface see <xref linkend="MIDI" /> section.</para>
+            MIDI interface see <xref linkend="MIDI" />.</para>
           </listitem>
         </itemizedlist>
       </sect3>
@@ -854,9 +859,9 @@
         parameter&#39;s MIDI mapping.</para></listitem><listitem><para><emphasis>Reset
         Lower MIDI Bound</emphasis></para><para>If a lower MIDI bound was set
         for this parameter it can be removed by selecting this menu entry.</para></listitem><listitem><para><emphasis>Delete
-        Sequencer Events</emphasis></para><para>Just like the <xref
-        linkend="SEQUENCERMENU" /> this entry allows you to delete events
-        recorded for this specific parameter.</para></listitem></itemizedlist></para>
+        Sequencer Events</emphasis></para><para>Just like the Sequencer menu
+        (see <xref linkend="SEQUENCERMENU" />) this entry allows you to delete
+        events recorded for this specific parameter.</para></listitem></itemizedlist></para>
       </sect3>
 
       <sect3>
@@ -922,7 +927,7 @@
             <para>Note that due to the wide parameter ranges some LADSPA
             plugins have they sometimes might be hard to control with the knob
             widget. In these cases you might want to use the text field to
-            enter values. For more details on Plugins see <xref
+            enter values. For more details on plugins see <xref
             linkend="LADSPAPLUGINS" />.</para>
           </listitem>
         </itemizedlist>
@@ -1260,7 +1265,7 @@
       move the sequencer-scale to that position, press <emphasis>Record,</emphasis>
       set the parameter and press <emphasis>Stop</emphasis> again.</para>
 
-      <para>To selectively delete events from the sequencer use see <xref
+      <para>To selectively delete events from the sequencer see <xref
       linkend="SEQUENCERMENU" /> and <xref linkend="PARAMETERMENU" />.</para>
     </sect2>
 
@@ -1364,7 +1369,7 @@
       <para>There are two ways to map MIDI events to a parameter:<itemizedlist><listitem><para>Via
       the <emphasis>Configure MIDI Bindings</emphasis> dialog as described
       below</para></listitem><listitem><para>Via the the a parameter&#39;s
-      menu (see <xref linkend="PARAMETERMENU" />) </para></listitem></itemizedlist></para>
+      menu (see <xref linkend="PARAMETERMENU" />)</para></listitem></itemizedlist></para>
 
       <para>Once the connection is set up terminatorX receives MIDI events
       through the input port. To configure what MIDI events will have which
@@ -1413,7 +1418,7 @@
       startup. By default the two output ports of terminatorX will be
       connected to physical ports if available. You can then re-wire the ports
       whatever way you want. They will not be deactivated - when
-      terminatorX&#39; audio engine is turned off , the audio backend emits
+      terminatorX&#39; audio engine is turned off, the audio backend emits
       continuous silence.</para>
     </sect2>
   </sect1>
@@ -1527,7 +1532,7 @@
       cause the parameter widgets to update less often.</para>
     </sect2>
 
-    <sect2>
+    <sect2 id="colors">
       <title><emphasis>Audio Colors</emphasis> and <emphasis>VU Colors</emphasis>
       Tab</title>
 
