@@ -42,9 +42,10 @@
 #include "tX_sequencer.h"
 #include "tX_mastergui.h"
 #include "tX_knobloader.h"
+#include <sys/time.h>
+#include <sys/wait.h>
 
 #ifdef USE_SCHEDULER
-#include <sys/time.h>
 #include <sys/resource.h>
 #endif
 
@@ -65,8 +66,6 @@ GtkWidget *wav_progress;
 GtkWidget *grab_button;
 GtkWidget *main_flash_l;
 GtkWidget *main_flash_r;
-GtkWidget *rec_btn;
-GtkWidget *fullscreen_item;
 
 GtkWidget *seq_rec_btn;
 GtkWidget *seq_play_btn;
@@ -88,13 +87,11 @@ GtkAdjustment *pitch_adj;
 tX_seqpar_master_volume sp_master_volume;
 tX_seqpar_master_pitch sp_master_pitch;
 
-GtkWidget *AddTable;
-GtkWidget *LoadSet;
-GtkWidget *SaveSet;
-
 GtkWidget *engine_btn;
 
 GtkWidget *main_menubar;
+GtkWidget *rec_menu_item;
+GtkWidget *fullscreen_item;
 
 int rec_dont_care=0;
 gint update_tag;
@@ -520,7 +517,7 @@ void mg_enable_critical_buttons(int enable)
 	gtk_widget_set_sensitive(seq_play_btn, enable);
 	gtk_widget_set_sensitive(seq_slider, enable);
 
-	gtk_widget_set_sensitive(rec_btn, enable);
+	gtk_widget_set_sensitive(rec_menu_item, enable);
 	vg_enable_critical_buttons(enable);
 }
 
@@ -573,7 +570,7 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 		if (engine->get_recording_request()) {
 			engine->set_recording_request(false);
 			rec_dont_care=1;
-			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rec_btn), 0);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(rec_menu_item), 0);
 			rec_dont_care=0;
 		}
 		seq_stop(NULL, NULL);
@@ -602,7 +599,7 @@ void do_rec(GtkWidget *wid)
 	{
 		strcpy(globals.record_filename, buffer);		
 		engine->set_recording_request(true);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rec_btn), 1);
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(rec_menu_item), 1);
 	}
 	
 	rec_dont_care=0;
@@ -643,11 +640,11 @@ GtkSignalFunc tape_on(GtkWidget *w, void *d)
 {
 	if (rec_dont_care) return 0;
 
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
+	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)))
 	{	
 		{
 			rec_dont_care=1;
-			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w), 0);
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(w), 0);
 			select_rec_file();
 		}
 	}
@@ -860,6 +857,12 @@ void create_master_menu() {
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) new_table, NULL);
 
+	menu_item = gtk_check_menu_item_new_with_mnemonic("_Record Audio To Disk");
+	rec_menu_item = menu_item;
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	g_signal_connect(menu_item, "activate", (GCallback) tape_on, NULL);
+
 	/* Options */
 	menu_item = gtk_menu_item_new_with_mnemonic ("_Options");
 	gtk_widget_show (menu_item);
@@ -876,8 +879,6 @@ void create_master_menu() {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), globals.fullscreen_enabled);
 	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_F11, (GdkModifierType) 0, GTK_ACCEL_VISIBLE);
 	g_signal_connect(menu_item, "activate", (GCallback) fullscreen_toggle, NULL);
-	//GtkWidget *label=gtk_accel_label_new("F11");
-	//gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), menu_item);
 	
 	menu_item = gtk_menu_item_new ();
 	gtk_widget_show (menu_item);
@@ -927,7 +928,7 @@ void create_mastergui(int x, int y)
 	GtkWidget *right_hbox;
 	GtkWidget *left_hbox;
 	GtkWidget *control_box;
-	GtkWidget *sequencer_box;
+	//GtkWidget *sequencer_box;
 	GtkAdjustment *dumadj;
 	GtkWidget *dummy;
 	GtkWidget *master_vol_box;
@@ -976,15 +977,14 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_start(GTK_BOX(left_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);*/
 
-	sequencer_box=gtk_hbox_new(FALSE, 5);
-	gtk_box_pack_start(GTK_BOX(left_hbox), sequencer_box, WID_FIX);
-	gtk_widget_show(sequencer_box);
 
 	dummy=gtk_hseparator_new();
 	gtk_box_pack_start(GTK_BOX(left_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
-	dummy=tx_xpm_label_box(TX_ICON_AUDIOENGINE, "Audio Eng.");
+    /* control_box contents */
+
+	dummy=tx_xpm_label_box(TX_ICON_AUDIOENGINE, "Audio");
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 	
@@ -1001,59 +1001,65 @@ void create_mastergui(int x, int y)
 	gui_set_tooltip(grab_button, "Enter the mouse grab mode operation. Press <ESCAPE> to exit grab mode.");
 	gtk_widget_show(grab_button);
 
-	dummy=gtk_check_button_new_with_label("Record");
+	/*dummy=gtk_check_button_new_with_label("Record");
 	rec_btn=dummy;
 	connect_button(dummy,tape_on, NULL);
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gui_set_tooltip(dummy, "Record the audio the terminatorX' audio engine renders. You will be prompted to enter a name for the target wav-file.");
+	gtk_widget_show(dummy);*/
+
+	dummy=gtk_vseparator_new();
+	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
-	
-	dummy=tx_xpm_label_box(TX_ICON_SEQUENCER, "Sequencer");
-	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_FIX);
+    
+	dummy=tx_xpm_label_box(TX_ICON_SEQUENCER, "Seq.");
+	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
 	dummy=tx_xpm_button_new(TX_ICON_PLAY,"Play ", 1);
 	connect_button(dummy, seq_play, NULL);
 	seq_play_btn=dummy;
-	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gui_set_tooltip(dummy, "Playback previously recorded events from the sequencer. This will turn on the audio engine automagically.");
 	gtk_widget_show(dummy);
 
 	dummy=tx_xpm_button_new(TX_ICON_STOP,"Stop ", 0);
 	seq_stop_btn=dummy;
 	connect_button(dummy, seq_stop, NULL);	
-	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gui_set_tooltip(dummy, "Stop the playback of sequencer events.");
 	gtk_widget_show(dummy);
 
 	dummy=tx_xpm_button_new(TX_ICON_RECORD,"Record ", 1);
 	connect_button(dummy, seq_rec, NULL);
 	seq_rec_btn=dummy;
-	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gui_set_tooltip(dummy, "Enable recording of *events* into the sequencer. All touched controls will be recorded. Existing events for the song-time recording will be overwritten for touched controls.");
 	gtk_widget_show(dummy);
 
 	dummy=gtk_label_new("Pos:");
-	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 	
 	dummy=gtk_entry_new_with_max_length(12);
 	seq_entry=dummy;
-	gtk_widget_set_usize(dummy, 65, 20);
+	//gtk_widget_set_usize(dummy, 65, 20);
 	gtk_entry_set_text(GTK_ENTRY(dummy), "00:00.00");
-	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_FIX);
+	gtk_entry_set_width_chars(GTK_ENTRY(dummy), 9);
+	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
 	dumadj=(GtkAdjustment*) gtk_adjustment_new(0, 0, 100, 0.1, 1, 1);
 	seq_adj=dumadj;
 	connect_adj(dumadj, sequencer_move, NULL);	
 	dummy=gtk_hscale_new(dumadj);
+	gtk_widget_set_usize(dummy, 65, 20);
 	seq_slider=dummy;
 	gtk_signal_connect(GTK_OBJECT(seq_slider), "button-release-event", (GtkSignalFunc) seq_slider_released, NULL);
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), FALSE);
 	
 	gui_set_tooltip(dummy, "Select the start position for the sequencer in song-time.");
-	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_DYN);
+	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_DYN);
 	gtk_widget_show(dummy);
 	
 	dummy=gtk_hbox_new(FALSE,2); //gtk_hpaned_new ();
@@ -1344,17 +1350,59 @@ void display_mastergui()
 	xwindow=GDK_WINDOW_XWINDOW(top->window);
 }
 
-void display_help() {
-	pid_t child;
+pid_t help_child=0;
+GTimer *help_timer=NULL;
+int help_tag=-1;
+
+int help_checker() {
+	gdouble time;
+	gulong ms;
+	int status;
+	int result=waitpid(help_child, &status, WNOHANG);
 	
-	child=fork();
+	if (result==0) {
+		time=g_timer_elapsed(help_timer, &ms);
+		if (time > 5) {
+			/* 5 seconds and it's still running - so we assume everything's OK. */
+			tX_debug("No longer waiting for gnome-help..");
+			gtk_idle_remove(help_tag);
+			help_tag=-1;
+		}
+	} else {
+		/* We are still here and the child exited - that could mean trouble. */
+		tx_note("Couldn't run the gnome-help command (alias \"yelp\") to display the terminatorX manual. Please ensure that \"yelp\" is installed.", true);		
+		
+		gtk_idle_remove(help_tag);
+		help_tag=-1;
+	}
+	return TRUE;	
+}
+
+#ifndef INSTALL_PREFIX
+#define INSTALL_PREFIX "/usr/local/share"
+#endif
+
+void display_help() {	
+	help_child=fork();
+
+	if (help_tag!=-1) {
+		gtk_idle_remove(help_tag);
+		if (help_timer) g_timer_destroy(help_timer);
+		help_child=0;
+		help_tag=-1;
+		help_timer=NULL;
+	}
 	
-	if (child==0) {
+	if (help_child==0) {
 		// child
-		execlp("gnome-help","gnome-help","ghelp://home/alex/devel/terminatorX/terminatorX/doc/terminatorX-manual/C/terminatorX-manual.xml", NULL);
-		//tx_note("Couldn't run the gnome-help command (alias \"yelp\") to display the terminatorX manual. Please ensure that \"yelp\" is installed.", true);
-		exit(-1);
-	} else if (child==-1) {
+		execlp("gnome-help","gnome-help","ghelp:/" INSTALL_PREFIX "/terminatorX/doc/terminatorX-manual/C/terminatorX-manual.xml", NULL);
+		_exit(-1);
+	} else if (help_child==-1) {
 		tx_note("System error: couldn't fork() to run the help process.", true);
+	} else {
+		help_timer=g_timer_new();
+		g_timer_start(help_timer);
+	
+		help_tag=gtk_idle_add((GtkFunction) help_checker, NULL);
 	}
 }

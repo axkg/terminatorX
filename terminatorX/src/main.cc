@@ -244,6 +244,7 @@ int idle()
 	if (time > 1.5)
 	{
 		gtk_idle_remove(idle_tag);
+		g_timer_destroy(my_time);
 		destroy_about();		
 		display_mastergui();		
 	}
@@ -369,20 +370,17 @@ int main(int argc, char **argv)
 	engine=new tX_engine();
 	
 #ifdef USE_3DNOW
-	if (tx_mm_support()!=5)
-	{
+	if (tx_mm_support()!=5) {
 		printf("3DNow! not detected. Giving up.\n");
 		return(1);
-	}
-	else
-        printf("3DNow! accelerations available.\n");	
+	} else printf("3DNow! accelerations available.\n");	
 #endif
+	
     gtk_init (&argc, &argv);
 	gtk_set_locale ();
 	parse_args(&argc, argv); 
 
-	if (globals.show_nag)
-	{	
+	if (globals.show_nag) {	
 		show_about(1);
 
 		my_time=g_timer_new();
