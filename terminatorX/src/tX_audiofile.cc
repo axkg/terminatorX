@@ -57,7 +57,8 @@ void tx_audiofile :: figure_file_type()
 		{
 			ext++;
 			if (!strcasecmp("wav", ext)) file_type=TX_FILE_WAV;
-			else if (!strncasecmp("mp", ext, 2)) file_type=TX_FILE_MPG123;			
+			else if (!strncasecmp("mp", ext, 2)) file_type=TX_FILE_MPG123;
+			else if (!strncasecmp("ogg", ext, 2)) file_type=TX_FILE_OGG123;
 		}
 	}
 }
@@ -86,6 +87,14 @@ int tx_audiofile :: load(char *p_file_name)
 		return(load_err);
 	}
 #endif	
+
+#ifdef USE_OGG123_INPUT
+	if ((load_err) && (file_type==TX_FILE_OGG123))
+	{
+		load_err=load_ogg123();
+		return(load_err);
+	}
+#endif
 
 #ifdef USE_SOX_INPUT
 	if (load_err)
@@ -265,6 +274,20 @@ int tx_audiofile :: load_mpg123()
 	return load_piped();	
 }
 #endif	
+
+#ifdef USE_OGG123_INPUT
+int tx_audiofile :: load_ogg123()
+{
+	char command[PATH_MAX*2];
+
+	sprintf(command, OGG123_STR, filename);
+	file = popen(command, "r");
+
+	if (!file) return TX_AUDIO_ERR_OGG123;
+
+	return load_piped();
+}
+#endif
 
 #ifdef USE_BUILTIN_WAV
 #define min(a,b) ((a) < (b) ? (a) : (b))
