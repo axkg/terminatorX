@@ -1550,7 +1550,8 @@ void vtt_class :: xy_input(f_prec x_value, f_prec y_value)
 
 int  vtt_class :: save(FILE *rc, char *indent) {
 	list <vtt_fx *> :: iterator effect;
-
+	char tmp_xml_buffer[4096];
+	
 	int res=0;
 
 	fprintf(rc, "%s<turntable>\n", indent);

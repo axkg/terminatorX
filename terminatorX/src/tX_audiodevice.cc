@@ -32,9 +32,13 @@
 
 #include "tX_endian.h"
 
-#define __USE_XOPEN // we need this for swab()
-#include <unistd.h>
-#undef __USE_XOPEN
+#ifndef __USE_XOPEN
+#	define __USE_XOPEN // we need this for swab()
+#	include <unistd.h>
+#	undef __USE_XOPEN
+#else
+#	include <unistd.h>
+#endif
 
 void tX_audiodevice :: init()
 {

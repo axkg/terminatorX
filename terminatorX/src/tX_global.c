@@ -194,6 +194,7 @@ int load_globals_xml() {
 		}
 	}
 
+	puts(globals.audio_device);
 	xmlFreeDoc(doc);
 	
 	return 0;
@@ -203,6 +204,7 @@ void store_globals() {
 	char rc_name[PATH_MAX]="";
 	char indent[]="\t";
 	FILE *rc;
+	char tmp_xml_buffer[4096];
 	
 	get_rc_name(rc_name);
 
@@ -257,4 +259,27 @@ void load_globals() {
 		load_globals_old();
 #endif		
 	}
+}
+
+char *encode_xml(char *dest, const char *src) {
+	int i, t, max;
+	
+	dest[0]=0;
+	t=0;
+	max=strlen(src);
+	
+	for (i=0; i<max; i++) {
+		switch (src[i]) {
+			case '<': dest[t]=0; strcat(dest, "&lt;"); t+=4; break;
+			case '>': dest[t]=0; strcat(dest, "&gt;"); t+=4; break;
+			case '&': dest[t]=0; strcat(dest, "&amp;"); t+=5; break;
+			case '"': dest[t]=0; strcat(dest, "&quot;"); t+=6; break;
+			case '\'': strcat(dest, "&apos;"); t+=7; break;
+			default: dest[t]=src[i]; t++;
+		}
+	}
+	dest[t]=0;
+	
+	tX_debug("encode_xml: from \"%s\" to \"%s\".", src, dest); 
+	return dest;
 }

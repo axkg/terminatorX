@@ -100,11 +100,7 @@ void apply_options() {
 		
 	globals.sense_cycles=(int) sense_cycles->value;
 	globals.xinput_enable=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(xinput_enable));
-#ifdef 	USE_GTK2
 	text=(char *) gtk_button_get_label(GTK_BUTTON(xinput_device));
-#else	
-	gtk_label_get(GTK_LABEL(GTK_BUTTON(xinput_device)->child), &text);
-#endif	
 	strcpy(globals.xinput_device, text);	
 	
 	globals.mouse_speed=mouse_speed->value;
@@ -208,11 +204,7 @@ void  use_stdout_changed(GtkWidget *widget)
 }
 void select_input(GtkWidget *w, char *dev)
 {
-#ifdef 	USE_GTK2
 	gtk_button_set_label(GTK_BUTTON(xinput_device), dev);
-#else		
-	gtk_label_set(GTK_LABEL(GTK_BUTTON(xinput_device)->child), dev);
-#endif	
 }
 
 void create_options()
@@ -577,17 +569,10 @@ void show_about(int nag)
 	if (nag) {
 		GtkWidget *box=gtk_vbox_new(FALSE, 2);
 		GtkWidget *box2=gtk_hbox_new(FALSE, 2);
-//		GtkWidget *seph=gtk_hseparator_new();
 		GtkWidget *label;
-#ifndef USE_GTK2		
-		char about_prefix_umlaut[]="Copyright (C) 1999-2002 by Alexander König";
-		char about_prefix_broken_umlaut[]="Copyright (C) 1999-2002 by Alexander Ko\"nig";
-		char *str;
-#endif		
 		
 		gtk_container_add(GTK_CONTAINER(window), box);
 		gtk_box_pack_start(GTK_BOX(box), pwid, WID_FIX);
-//		gtk_box_pack_start(GTK_BOX(box), seph, WID_FIX);
 		gtk_box_pack_start(GTK_BOX(box), box2, WID_FIX);
 		
 		label=gtk_label_new(PACKAGE" release "VERSION);
@@ -595,20 +580,11 @@ void show_about(int nag)
 		gtk_misc_set_alignment(GTK_MISC(label), 0.1, 0.5);
 		gtk_widget_show(label);
 
-#ifdef USE_GTK2
 		label=gtk_label_new("Copyright (C) 1999-2002 by Alexander K\xC3\xB6nig");
-#else
-		label=gtk_label_new(about_prefix_umlaut);
-		gtk_label_get(GTK_LABEL(label), &str);
-		if (strlen(str)==0) {
-			gtk_label_set(GTK_LABEL(label), about_prefix_broken_umlaut);
-		}
-#endif		
 		gtk_box_pack_start(GTK_BOX(box2), label, WID_DYN);
 		gtk_misc_set_alignment(GTK_MISC(label), 0.9, 0.5);
 		gtk_widget_show(label);
 		
-//		gtk_widget_show(seph);
 		gtk_widget_show(box2);
 		gtk_widget_show(box);
 		gtk_widget_show(window);
@@ -622,12 +598,7 @@ void show_about(int nag)
 		
 		sep=gtk_hseparator_new();
 		add_about_wid_fix(sep);
-#ifdef USE_GTK2
 		char about_prefix_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999-2002 by Alexander K\xC3\xB6nig";
-#else
-		char about_prefix_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999-2002 by Alexander König";
-		char about_prefix_broken_umlaut[]="\nThis is "PACKAGE" Release "VERSION" - Copyright (C) 1999-2002 by Alexander Ko\"nig";
-#endif		
 		char about_rest[]="\n\nSend comments, patches and scratches to: alex@lisas.de\n"
 		"terminatorX-homepage: http://www.terminatorX.cx\n\nThis binary has been compiled with the following flags: "
 		"Sox support: "
@@ -678,34 +649,18 @@ void show_about(int nag)
 		
 		label=gtk_label_new(buffer);
 
-#ifndef USE_GTK2
-		char *str;
-		gtk_label_get(GTK_LABEL(label), &str);
-		
-		/* Fixing a strange gtk+ bug that appears at least on my system.
-		*/
-		if (strlen(str)==0) 
-		{
-			tX_warning( "This gtk+ has broken umlauts.");
-			strcpy(buffer, about_prefix_broken_umlaut);
-			strcat(buffer, about_rest);
-			gtk_label_set(GTK_LABEL(label), buffer);		
-		}
-#endif
-		
-		gtk_misc_set_alignment (GTK_MISC(label), 0.5 ,0.5);
+		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
 		add_about_wid_fix(label);
 		
 		sep=gtk_hseparator_new();
 		add_about_wid_fix(sep);
 
 		label=gtk_label_new("License (GPL V2):");
-		gtk_misc_set_alignment (GTK_MISC(label), 0.5 ,0.5);
+		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
 		add_about_wid_fix(label);
 
 		hbox=gtk_hbox_new(FALSE, 5);		
 
-#ifdef USE_GTK2
 		GtkTextIter iter;
 		GtkTextBuffer *tbuffer;
 
@@ -728,19 +683,6 @@ void show_about(int nag)
 		
 		gtk_box_pack_start(GTK_BOX(hbox), scroll, WID_DYN);
 		gtk_widget_show(scroll);		
-#else
-		text=gtk_text_new(NULL,NULL);
-		scroll=gtk_vscrollbar_new(GTK_TEXT(text)->vadj);
-		gtk_text_set_editable(GTK_TEXT(text),0);
-		gtk_text_set_word_wrap( GTK_TEXT(text), 0);
-		gtk_text_insert(GTK_TEXT(text), NULL, NULL, NULL, license, strlen(license));
-
-		gtk_box_pack_start(GTK_BOX(hbox), text, WID_DYN);
-		gtk_widget_show(text);
-		
-		gtk_box_pack_start(GTK_BOX(hbox), scroll, WID_FIX);
-		gtk_widget_show(scroll);
-#endif		
 		
 		add_about_wid(hbox);
 
