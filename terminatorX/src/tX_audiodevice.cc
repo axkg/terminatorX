@@ -137,7 +137,7 @@ int audiodevice :: dev_open(int dont_use_rt_buffsize)
 	samples=blocksize/sizeof(int16_t);	
 	globals.true_block_size=samples/2;
 	
-	printf("bs: %i, samples: %i, tbs: %i\n", blocksize,samples,globals.true_block_size);
+//	printf("bs: %i, samples: %i, tbs: %i\n", blocksize,samples,globals.true_block_size);
         ioctl(fd, SNDCTL_DSP_SYNC, 0);
 
 #ifdef USE_WRITER_THREAD

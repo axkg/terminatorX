@@ -55,21 +55,7 @@ Step 1: Configure terminatorX.
 		
 		I WARNED YOU! Anybody who can run this binary can completely
 		erase your hardisk. BE CAREFUL.
-		
-		--enable-3dnow
-		
-		This enables EXPERIMENTAL 3DNow! support. It seems as if the
-		current libmmx (which is included) doesn't work with the new
-		gcc 2.95. So if you use that compiler do not enable this option.
-		
-		The built binary will run on CPUs with 3DNow! support only.
-		AFAIK these are the K6II, K6III and the Athlon (K7). INTEL CPUs
-		don't have 3DNow! support!
-		
-		For now this the only thing that might run a little faster is
-		the echo effect. I planned to hack more 3DNow! code but at the
-		moment I simply don't have the time.
-				
+						
 		File support options:
 		---------------------
 		

@@ -370,6 +370,11 @@ void ec_pan_changed(GtkWidget *wid, vtt_class *vtt)
 	vtt->sp_ec_pan.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
 }
 
+void ec_volume_changed(GtkWidget *wid, vtt_class *vtt)
+{
+	vtt->sp_ec_volume.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
+}
+
 void master_setup(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->set_sync_master(GTK_TOGGLE_BUTTON(wid)->active);
@@ -617,6 +622,7 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_adj(ec_length, ec_length_changed);
 	connect_adj(ec_feedback, ec_feedback_changed);
 	connect_adj(ec_pan, ec_pan_changed);
+	connect_adj(ec_volume, ec_volume_changed);	
 	connect_button(x_control, vg_xcontrol_popup);
 	connect_button(y_control, vg_ycontrol_popup);
 
@@ -845,6 +851,7 @@ void build_vtt_gui(vtt_class *vtt)
 	g->ec_length=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->ec_length, 0, 1, 0.1, 0.01, 0.001));
 	g->ec_feedback=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->ec_feedback, 0, 1, 0.1, 0.01, 0.001));
 	g->ec_pan=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->ec_pan, -1.0, 1, 0.1, 0.01, 0.001));
+	g->ec_volume=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->ec_volume, 0.0, 3.0, 0.1, 0.01, 0.001));
 
 	g->ec_lengthd=new tX_extdial("Duration", g->ec_length);
 	p->add_client_widget(g->ec_lengthd->get_widget());
@@ -853,6 +860,10 @@ void build_vtt_gui(vtt_class *vtt)
 	g->ec_feedbackd=new tX_extdial("Feedback", g->ec_feedback);
 	p->add_client_widget(g->ec_feedbackd->get_widget());
 	gui_set_tooltip(g->ec_feedbackd->get_entry(), "Adjust the feedback of the echo effect. Note that a value of 1 will result in a constant signal.");
+
+	g->ec_volumed=new tX_extdial("Volume", g->ec_volume);
+	p->add_client_widget(g->ec_volumed->get_widget());
+	gui_set_tooltip(g->ec_volumed->get_entry(), "Adjust the volume of the echo effect.");
 
 	g->ec_pand=new tX_extdial("Pan", g->ec_pan);
 	p->add_client_widget(g->ec_pand->get_widget());
@@ -1074,6 +1085,7 @@ void delete_gui(vtt_class *vtt)
 	
 	delete vtt->gui.ec_lengthd;
 	delete vtt->gui.ec_feedbackd;
+	delete vtt->gui.ec_volumed;
 	delete vtt->gui.ec_pand;
 	delete vtt->gui.ec_panel;
 	

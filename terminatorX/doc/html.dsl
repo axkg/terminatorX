@@ -14,6 +14,7 @@
 (define %root-filename% "index")
 (define %use-id-as-filename% #t)
 (define %html40% #t)
+(define %graphic-default-extension% "jpg")
 (define %html-ext% ".html")
 </style-specification-body>
 </style-specification>

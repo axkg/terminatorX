@@ -1,14 +1,14 @@
 There are several things you can do to improve terminatorX performance:
 
-1. Don't use gtk+-pixmap-themes
+1. Don't use fancy gtk+ themes
 2. Compile an optimized binary
 3. Optimize your terminatorX setup
 4. Optimize your kernel
 
 In Detail:
 
-1. Don't use gtk+-pixmap-themes
--------------------------------
+1. Don't use pixmapped nor other "fat" gtk+-themes.
+---------------------------------------------------
 
 The sequencer brings a lot of additional GUI activity. Now the "selfmade"
 widgets perform pretty good (no matter what theme you use) but for example
@@ -16,13 +16,18 @@ scale widgets are extremly slow with pixmap-themes. The problem is that the
 gtk-pixmap engine has to stretch the images and stretching images is a very
 CPU-intensive task. So it's best to not use those themes at all.
 
+Now just recently I installed terminatorX on PIII 500 and wondered why it
+performed like running on a 486 machine. Now I found that those new fancy
+gtk+-themes that bring their own code to draw the widgets eat performance
+like mad, too. This even hurts the performance of tX' very own widgets and
+therefore hurts playback performance quite a lot. So you shouldn't use these 
+kind of themes, neither.
+
 2. Compile an optimized binary
 ------------------------------
 
-This issue is covered in the INSTALL file mostly. If your machine can handle
-3DNow! instruction be sure to use 3DNow! (--enable-3dnow) - since V3.6 this 
-brings ~20% more performance increase. And setting good optimization flags is
-a good idea, too (see INSTALL).
+This issue is covered in the INSTALL file mostly. Setting good optimization
+flags is a good idea although this step will proabably have the least effect.
 
 3. Optimize your terminatorX setup
 ----------------------------------
@@ -40,3 +45,7 @@ near-realtime apps and therefore most linux-audio-apps. Ingo Molnar is
 maintaining a patch against the 2.2.x kernels that reduces latency. They are
 called "low-latency-patches" and are available from:
 http://people.redhat.com/mingo/lowlatency-patches/
+
+Now although latency has improved with the 2.4 releases there is still some
+tuning possible with those kernels. There exist patches for those kernels as
+well and they may go into the main kernel tree as soon as they're finished.
