@@ -7,7 +7,6 @@
 
 GtkSignalFunc tX_extdial :: f_entry(GtkWidget *w, tX_extdial *ed)
 {
-
 	strcpy(ed->sval, gtk_entry_get_text(GTK_ENTRY(ed->entry)));
 	ed->s2f();
 	gtk_adjustment_set_value(ed->adj, ed->fval);

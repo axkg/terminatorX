@@ -80,25 +80,19 @@ void LADSPA_Plugin :: handlelib(void *lib, LADSPA_Descriptor_Function desc_func,
 	const LADSPA_Descriptor *descriptor;
 	int in_audio, out_audio, in_ctrl;	
 	
-	for (i=0; (descriptor = desc_func(i)) != NULL; i++)
-	{		
+	for (i=0; (descriptor = desc_func(i)) != NULL; i++) {		
 		if (LADSPA_IS_INPLACE_BROKEN(descriptor->Properties)) {
 			tX_warning("Plugin \"%s\" disabled. No in-place processing support.", descriptor->Name);
-		}
-		else
-		{		
+		} else {		
 			in_audio=0; out_audio=0; in_ctrl=0;
 		
-			for (port = 0; port<descriptor->PortCount; port++)
-			{			
-				if (LADSPA_IS_PORT_AUDIO(descriptor->PortDescriptors[port]))
-				{
+			for (port = 0; port<descriptor->PortCount; port++) {			
+				if (LADSPA_IS_PORT_AUDIO(descriptor->PortDescriptors[port])) {
 					if (LADSPA_IS_PORT_INPUT(descriptor->PortDescriptors[port])) in_audio++;
 					else
 					if (LADSPA_IS_PORT_OUTPUT(descriptor->PortDescriptors[port])) out_audio++;
-				}
-				else 
-				if (LADSPA_IS_PORT_CONTROL(descriptor->PortDescriptors[port]) && LADSPA_IS_PORT_INPUT(descriptor->PortDescriptors[port])) in_ctrl++;			
+				} else 
+					if (LADSPA_IS_PORT_CONTROL(descriptor->PortDescriptors[port]) && LADSPA_IS_PORT_INPUT(descriptor->PortDescriptors[port])) in_ctrl++;			
 			}
 			
 			if ((in_audio == 1) && (out_audio == 1)) {
@@ -127,10 +121,8 @@ void LADSPA_Plugin :: scandir(char *dirname)
 	
 	if (!dir) { tX_error("tX: Error: couldn't access directory \"%s\".", dirname); return; };
 	
-	while (1)
-	{
-		entry=readdir(dir);
-		
+	while (1) {
+		entry=readdir(dir);		
 		if (!entry) { closedir(dir); return; }
 		
 		filename = (char *) malloc (dirlen + strlen(entry->d_name) + 1 + needslash);
@@ -141,8 +133,7 @@ void LADSPA_Plugin :: scandir(char *dirname)
 		
 		handle = dlopen(filename, RTLD_LAZY);
 		
-		if (handle)
-		{
+		if (handle) {
 			/* clear dlerror */
 			dlerror();
 			
@@ -171,8 +162,7 @@ void LADSPA_Plugin :: debug_display()
 {
 	std::list <LADSPA_Plugin *> :: iterator plugin;
 	
-	for (plugin=plugin_list.begin(); plugin != plugin_list.end(); plugin++)
-	{
+	for (plugin=plugin_list.begin(); plugin != plugin_list.end(); plugin++) {
 		printf("plugin: %60s | id: %5li | ports: %2li\n", (*plugin)->getName(), (*plugin)->getUniqueID(), (*plugin)->getPortCount());
 	}
 }
@@ -204,8 +194,7 @@ LADSPA_Plugin * LADSPA_Plugin :: getPluginByUniqueID(long ID)
 {
 	std::list <LADSPA_Plugin *> :: iterator plugin;
 	
-	for (plugin=plugin_list.begin(); plugin != plugin_list.end(); plugin++)
-	{
+	for (plugin=plugin_list.begin(); plugin != plugin_list.end(); plugin++) {
 		if ((*plugin)->getUniqueID()==ID) return (*plugin);
 	}
 

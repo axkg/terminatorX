@@ -108,8 +108,7 @@ void tX_sequencer :: trig_stop()
 	
 	record_stop_timestamp=current_timestamp;
 	
-	if (oldmode==TX_SEQMODE_PLAYREC)
-	{
+	if (oldmode==TX_SEQMODE_PLAYREC) {
 		pthread_mutex_lock(&record_lock);
 #ifdef SEQ_DEBUG		
 		printf ("Recorded from %i to %i.\n", record_start_timestamp, record_stop_timestamp);
@@ -135,8 +134,7 @@ void tX_sequencer :: trig_stop()
 			while ((song_event!=song_list.end()) && ((*song_event)->get_timestamp() < record_start_timestamp))
 				song_event++;
 	
-			while ((song_event!=song_list.end()) && ((*song_event)->get_timestamp() <= record_stop_timestamp))
-			{
+			while ((song_event!=song_list.end()) && ((*song_event)->get_timestamp() <= record_stop_timestamp)) {
 				sp = (*song_event)->get_sp();
 #ifdef SEQ_DEBUG_MAX			
 				printf("sp %08x (%i) touched at: %i - timestamp %i.\n", sp, sp->is_touched(), sp->get_touch_timestamp(), (*song_event)->get_timestamp());
@@ -187,8 +185,7 @@ void tX_sequencer :: trig_stop()
 	
 	song_event=song_list.end();
 	
-	if (song_event!=song_list.begin()) 
-	{
+	if (song_event!=song_list.begin()) {
 		song_event--;
 		max_timestamp=(*song_event)->get_timestamp();
 	}
@@ -196,8 +193,7 @@ void tX_sequencer :: trig_stop()
 #ifdef SEQ_DEBUG_MAX
 	/*dump song_list */
 	
-	for (song_event=song_list.begin(); song_event!=song_list.end(); song_event++)
-	{
+	for (song_event=song_list.begin(); song_event!=song_list.end(); song_event++) {
 		printf ("%-15s| %-27s| %8i | %10f\n", (*song_event)->get_vtt_name(), (*song_event)->get_seqpar_name(), (*song_event)->get_timestamp(), (*song_event)->get_value());
 	}
 #endif	
@@ -284,11 +280,9 @@ guint32 tX_sequencer :: set_start_timestamp(float pos)
 	guint32 timestamp;
 	
 	if (pos>99.999) pos=99.999;
-	
 	pos/=100;
 	
 	timestamp = (guint32) (((float) max_timestamp) * pos);
-	
 	start_timestamp=timestamp;
 	
 	return start_timestamp;
@@ -308,16 +302,13 @@ void tX_sequencer :: forward_to_start_timestamp(int dont_fake)
 	
 	next_event=song_list.begin();
 	
-	while (current_timestamp<start_timestamp)
-	{
+	while (current_timestamp<start_timestamp) {
 		step();
-		if (dont_fake)
-		{
+		if (dont_fake) {
 			vtt_class :: forward_all_turntables();
 			
 			gui_update--;		
-			if (gui_update < 0)
-			{
+			if (gui_update < 0) {
 				gui_update=gui_update_max;
 				seq_update();
 				while (gtk_events_pending()) gtk_main_iteration();
@@ -331,7 +322,8 @@ void tX_sequencer :: forward_to_start_timestamp(int dont_fake)
 	while (gtk_events_pending()) gtk_main_iteration();
 }
 
-void tX_sequencer :: load(xmlDocPtr doc, xmlNodePtr node) {
+void tX_sequencer :: load(xmlDocPtr doc, xmlNodePtr node)
+{
 	tX_event *ev=NULL;
 	
 	max_timestamp=0;

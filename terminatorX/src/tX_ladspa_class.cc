@@ -38,7 +38,8 @@ vtt_class *LADSPA_Class::current_vtt;
 bool LADSPA_Class::liblrdf_error=false;
 
 /* Why do have to code this myself? */
-static int compare(const char *a, const char *b) {
+static int compare(const char *a, const char *b) 
+{
 	int lena, lenb, i;
 
 	if (!a && !b) return 0;
@@ -129,8 +130,7 @@ void LADSPA_Class::scandir(char *dirname) {
 	if (!dir) { tX_error("LADSPA_Class::scandir() couldn't access directory \"%s\"", dirname); return; };
 	
 	while (1) {
-		entry=readdir(dir);
-		
+		entry=readdir(dir);		
 		if (!entry) { closedir(dir); return; }
 		
 		if ((strcmp(entry->d_name, ".")==0) ||

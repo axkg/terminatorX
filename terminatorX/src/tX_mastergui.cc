@@ -141,8 +141,7 @@ void gui_set_tooltip(GtkWidget *wid, char *tip)
 
 void turn_audio_off(void)
 {
-	if (audioon) 
-	{
+	if (audioon) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(engine_btn), 0);
 		while (gtk_events_pending()) gtk_main_iteration();		
 	}
@@ -153,8 +152,7 @@ gint pos_update(gpointer data)
 {
 	f_prec temp;
 
-	if (stop_update) 
-	{		
+	if (stop_update) {		
 		cleanup_all_vtts();
 		tX_seqpar :: update_all_graphics();
 		if (old_focus) gui_show_frame(old_focus, 0);
@@ -164,9 +162,7 @@ gint pos_update(gpointer data)
 		gdk_flush();	
 		update_tag=0;
 		return(FALSE);
-	}
-	else
-	{
+	} else {
 		update_all_vtts();
 		
 		/*left vu meter */
@@ -179,25 +175,21 @@ gint pos_update(gpointer data)
 		vtt_class::mix_max_r=0;
 		gtk_tx_flash_set_level(main_flash_r, temp);
 		
-		if (vtt_class::focused_vtt!=old_focus)
-		{
+		if (vtt_class::focused_vtt!=old_focus) {
 			if (old_focus) gui_show_frame(old_focus, 0);
 			old_focus=vtt_class::focused_vtt;
 			if (old_focus) gui_show_frame(old_focus, 1);			
 		}
-		if (grab_status!=last_grab_status)
-		{
+		if (grab_status!=last_grab_status) {
 			last_grab_status=grab_status;
-			if (!grab_status) 
-			{
+			if (!grab_status) {
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(grab_button), 0);
 			}
 		}
 		gdk_flush();	
 		update_delay--;
 		
-		if (update_delay < 0)
-		{
+		if (update_delay < 0) {
 			seq_update();
 			tX_seqpar :: update_all_graphics();
 			update_delay=globals.update_delay;
@@ -218,13 +210,11 @@ void mg_update_status()
 	mypid=getpid();
 	sprintf(filename, "/proc/%i/status", mypid);
 	procfs=fopen(filename, "r");
-	if (procfs)
-	{
-		while((!feof(procfs)) && !found)
-		{
+	if (procfs) {
+		while((!feof(procfs)) && !found) {
 			fgets(buffer, 256, procfs);
-			if (strncmp("VmSize:", buffer, 7)==0)
-			{
+			
+			if (strncmp("VmSize:", buffer, 7)==0) {
 				found=1;
 				sscanf(buffer, "VmSize: %i kB", &mem);
 				sprintf(buffer, "%i", mem);
@@ -242,15 +232,14 @@ GtkSignalFunc new_table(GtkWidget *, char *fn)
 {
 	turn_audio_off();
 		
-		if (fn) 
-		{
-			ld_create_loaddlg(TX_LOADDLG_MODE_SINGLE, 1);
-			ld_set_filename(fn);
-		}
-		
-		add_vtt(control_parent, audio_parent, fn);				
-		
-		if (fn) ld_destroy();		
+	if (fn) {
+		ld_create_loaddlg(TX_LOADDLG_MODE_SINGLE, 1);
+		ld_set_filename(fn);
+	}
+	
+	add_vtt(control_parent, audio_parent, fn);				
+	
+	if (fn) ld_destroy();		
 	mg_update_status();
 	return NULL;
 }
@@ -400,8 +389,7 @@ void do_load_tables(GtkWidget *wid)
 
 GtkSignalFunc load_tables()
 {
-	if (load_dialog_win) 
-	{
+	if (load_dialog_win) {
 		gdk_window_raise(load_dialog_win);
 		return 0;
 	}
@@ -411,8 +399,7 @@ GtkSignalFunc load_tables()
 	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(load_dialog));
 	gtk_file_selection_complete(GTK_FILE_SELECTION(load_dialog), "*.tX");
 	
-	if (strlen(globals.tables_filename))
-	{
+	if (strlen(globals.tables_filename)) {
 		gtk_file_selection_set_filename(GTK_FILE_SELECTION(load_dialog), globals.tables_filename);
 	}
 	
@@ -485,12 +472,9 @@ gboolean do_save_tables(GtkWidget *wid)
 	
 	ext=strrchr(buffer, '.');
 	
-	if (ext)
-	{
+	if (ext) {
 		if (strcmp(ext, ".tX")) strcat(buffer, ".tX");
-	}
-	else
-	{
+	} else {
 		strcat(buffer, ".tX");
 	}
 
@@ -507,16 +491,13 @@ gboolean do_save_tables(GtkWidget *wid)
 		zout=NULL;
 	}
 	
-	if (out || zout)
-	{
+	if (out || zout) {
 		if (vtt_class::save_all(out, zout)) tx_note("Error while saving set.", true);
 		if (out) fclose(out); 
 		else if (zout) gzclose(zout);
 		sprintf(wbuf,"terminatorX - %s", strip_path(buffer));
 		gtk_window_set_title(GTK_WINDOW(main_window), wbuf);				
-	}
-	else
-	{
+	} else {
 		tx_note("Failed to open file for write access.", true);
 	}
 	
@@ -593,21 +574,18 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 {
 	tX_engine_error res;
 	
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
-	{		
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {		
 		sequencer_ready=0;
 		mg_enable_critical_buttons(0);
 		res=tX_engine::get_instance()->run();
 
-		if (res!=NO_ERROR)
-		{
+		if (res!=NO_ERROR) {
 			mg_enable_critical_buttons(1);
 			stop_override=true;
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w), 0);
 			stop_override=false;			
 
-			switch(res)
-			{
+			switch(res) {
 				case ERROR_BUSY:
 				tx_note("Error starting engine: engine is already running.", true);
 				break;
@@ -629,9 +607,7 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 		update_delay=globals.update_delay;
 		update_tag=gtk_timeout_add(globals.update_idle, (GtkFunction) pos_update, NULL);
 		gtk_widget_set_sensitive(grab_button, 1);
-	}
-	else
-	{	
+	} else {	
 		if (stop_override) return NULL;
 		if (!sequencer_ready) return NULL;
 		gtk_widget_set_sensitive(grab_button, 0);
@@ -644,6 +620,7 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(rec_menu_item), 0);
 			rec_dont_care=0;
 		}
+		
 		seq_stop(NULL, NULL);
 		mg_enable_critical_buttons(1);
 	}
@@ -666,8 +643,7 @@ void do_rec(GtkWidget *wid)
 	
 	strcpy(buffer, gtk_file_selection_get_filename(GTK_FILE_SELECTION(rec_dialog)));
 
-	if (strlen(buffer))
-	{
+	if (strlen(buffer)) {
 		strcpy(globals.record_filename, buffer);		
 		tX_engine::get_instance()->set_recording_request(true);
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(rec_menu_item), 1);
@@ -683,16 +659,14 @@ void do_rec(GtkWidget *wid)
 
 GtkSignalFunc select_rec_file()
 {
-	if (rec_dialog_win) 
-	{
+	if (rec_dialog_win) {
 		gdk_window_raise(rec_dialog_win);
 		return 0;
 	}
 	
 	rec_dialog=gtk_file_selection_new("Record To Disk");	
 	
-	if (strlen(globals.record_filename))
-	{
+	if (strlen(globals.record_filename)) {
 		gtk_file_selection_set_filename(GTK_FILE_SELECTION(rec_dialog), globals.record_filename);
 	}
 	
@@ -711,16 +685,11 @@ GtkSignalFunc tape_on(GtkWidget *w, void *d)
 {
 	if (rec_dont_care) return 0;
 
-	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w)))
-	{	
-		{
-			rec_dont_care=1;
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(w), 0);
-			select_rec_file();
-		}
-	}
-	else
-	{
+	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) {	
+		rec_dont_care=1;
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(w), 0);
+		select_rec_file();
+	} else {
 			tX_engine::get_instance()->set_recording_request(false);
 	}
 	
@@ -839,8 +808,7 @@ void seq_update_entry(const guint32 timestamp)
 	samples=timestamp*vtt_class::get_mix_buffer_size();
 	sr=vtt_class::get_last_sample_rate();
 	
-	if (samples>0)
-	{
+	if (samples>0) {
 		minu=samples/(sr*60);
 		samples-=(sr*60)*minu;
 	
@@ -848,9 +816,7 @@ void seq_update_entry(const guint32 timestamp)
 		samples-=sr*sec;
 	
 		hun=samples/(sr/100);
-	}
-	else
-	{
+	} else {
 		minu=sec=hun=0;
 	}
 	
@@ -878,8 +844,7 @@ void sequencer_move(GtkWidget *wid, void *d)
 {
 	guint32 pos;
 	
-	if (seq_adj_care)
-	{
+	if (seq_adj_care) {
 		pos=sequencer.set_start_timestamp((float) GTK_ADJUSTMENT(wid)->value);
 		seq_update_entry(pos);	
 	}
@@ -1495,13 +1460,15 @@ void tx_l_note(const char *message)
 }
 
 
-void add_to_panel_bar(GtkWidget *button) {
+void add_to_panel_bar(GtkWidget *button) 
+{
 	buttons_on_panel_bar++;
 	gtk_box_pack_start(GTK_BOX(panel_bar), button, WID_DYN);
 	gtk_widget_show(panel_bar);
 }
 
-void remove_from_panel_bar(GtkWidget *button) {
+void remove_from_panel_bar(GtkWidget *button) 
+{
 	buttons_on_panel_bar--;
 	gtk_container_remove(GTK_CONTAINER(panel_bar), button);
 	if (buttons_on_panel_bar==0) gtk_widget_hide(panel_bar);
@@ -1572,7 +1539,8 @@ pid_t help_child=0;
 GTimer *help_timer=NULL;
 int help_tag=-1;
 
-int help_checker() {
+int help_checker()
+{
 	gdouble time;
 	gulong ms;
 	int status;
@@ -1600,7 +1568,8 @@ int help_checker() {
 #define INSTALL_PREFIX "/usr/local/share"
 #endif
 
-void display_help() {	
+void display_help()
+{	
 	help_child=fork();
 
 	if (help_tag!=-1) {
@@ -1630,7 +1599,8 @@ pid_t browser_child=0;
 GTimer *browser_timer=NULL;
 int browser_tag=-1;
 
-int browser_checker() {
+int browser_checker()
+{
 	gdouble time;
 	gulong ms;
 	int status;
@@ -1654,7 +1624,8 @@ int browser_checker() {
 	return TRUE;	
 }
 
-void display_browser() {	
+void display_browser()
+{	
 	browser_child=fork();
 
 	if (browser_tag!=-1) {
