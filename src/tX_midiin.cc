@@ -88,8 +88,10 @@ tX_midiin::tX_midiin()
 
 tX_midiin::~tX_midiin()
 {
-	snd_seq_close(ALSASeqHandle);
-	tX_debug("tX_midiin(): sequencer closed."); 
+	if (is_open) {
+		snd_seq_close(ALSASeqHandle);
+		tX_debug("tX_midiin(): sequencer closed.");
+	}
 }
 
 int tX_midiin::check_event()
