@@ -407,11 +407,7 @@
     <ul>
       <xsl:for-each select='//subsection'>
         <li>
-          <a>
-            <xsl:attribute name='href'># 
-            <xsl:value-of select='title' /></xsl:attribute>
-            <xsl:value-of select='title' />
-          </a>
+          <a><xsl:attribute name='href'>#<xsl:value-of select='title' /></xsl:attribute><xsl:value-of select='title' /></a>
         </li>
       </xsl:for-each>
     </ul>
