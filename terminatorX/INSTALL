@@ -1,5 +1,5 @@
 terminatorX INSTALL:
-Copyright (C) 1999, 2000 by Alexander König <alkoit00@fht-esslingen.de>
+Copyright (C) 1999, 2000, 2001 by Alexander König <alex@lisas.de>
 
 Note: As of Version 3.70 you need to have LADSPA installed to compile
 terminatorX.
@@ -24,8 +24,8 @@ Step 1: Configure terminatorX.
 	if use bash: > export CFLAGS="-O2"
 	with tcsh:   > setenv CFLAGS "-O2"
 
-	I use CFLAGS="-O6 -mpentiumpro" btw. You'll need to have a
-	"pentium-aware" compiler to use that though (gcc/pgcc).
+	I use CFLAGS="-O3 -mathlon" btw. You'll need to have a
+	"athlon-aware" compiler to use that though (gcc > 2.95.?).
 
 	All of the following configure options can be either enabled with
 	--enable-option or disabled with --disable-option.
@@ -87,12 +87,23 @@ Step 1: Configure terminatorX.
 		files keep this option enabled. You have to have mpg123
 		installed of course.
 		
+		--enable-ogg123
+		
+		With this option you can turn on/off support for Ogg Vorbis
+		soundfiles. This requires ogg123 (Version >= 1.0RC2) and
+		sox to be installed. 
+		
 		Misc options:
 		-------------
 
-		--enable-closedev
+		--enable-3dnow
 		
-		This has no effect at the moment. Sorry. Don't disable it.
+		This will cause the binary to include 3DNow! accelerated 
+		mixing routines. The rule's simple: if your CPU does support
+		3DNow! then turn it on (it enhances performance quite a bit)
+		- if your machine doesn't, well then keep it disabled. A binary
+		created with 3DNow! acceleration will *not* run on machines
+		without 3DNow!.
 		
 		--enable-debug
 		
@@ -100,7 +111,7 @@ Step 1: Configure terminatorX.
 		your console. 
 		
 		Just as an example my configure line is (works with bash only):
-		> CFLAGS="-O2 -mpentiumpro" ./configure 
+		> CFLAGS="-O3 -mathlon" ./configure 
 
 Step 2: Build the binary.
 -------------------------

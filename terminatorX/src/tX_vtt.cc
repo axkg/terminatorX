@@ -70,7 +70,6 @@ extern void gui_update_display(vtt_class *vtt);
 extern void gui_clear_master_button(vtt_class *vtt);
 extern void cleanup_vtt(vtt_class *vtt);
 extern int vg_get_current_page(vtt_class *vtt);
-extern void vg_set_current_page(vtt_class *vtt, int page);
 
 int vtt_class::vtt_amount=0;
 list <vtt_class *> vtt_class::main_list;
@@ -78,13 +77,12 @@ list <vtt_class *> vtt_class::render_list;
 int16_t* vtt_class::mix_out_buffer=NULL;
 f_prec * vtt_class::mix_buffer=NULL;
 f_prec * vtt_class::mix_buffer_end=NULL;
+int vtt_class::solo_ctr=0;
 
 int vtt_class::samples_in_mix_buffer=0;
 pthread_mutex_t vtt_class::render_lock=PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t vtt_class::main_lock=PTHREAD_MUTEX_INITIALIZER;
 f_prec vtt_class::master_volume=1.0;
 f_prec vtt_class::res_master_volume=1.0;
-//f_prec vtt_class::saturate_fac=((f_prec) SAMPLE_MAX-SAMPLE_BORDER)*1.0/FLT_MAX;
 f_prec vtt_class::saturate_fac=0.1;
 int vtt_class::do_saturate=0;
 vtt_class * vtt_class::sync_master=NULL;
@@ -135,10 +133,7 @@ vtt_class :: vtt_class (int do_create_gui)
 	ec_set_pan(0);
 	ec_set_volume(1);
 	
-//	pthread_mutex_lock(&main_lock);
 	main_list.push_back(this);
-//	pthread_mutex_unlock(&main_lock);
-
 
 	/* "connecting" the seq-parameters */
 	
@@ -185,16 +180,19 @@ vtt_class :: vtt_class (int do_create_gui)
 	set_master_volume(globals.volume);
 	set_output_buffer_size(samples_in_mix_buffer/2);
 	
-	audiofile = NULL;	
+	audiofile = NULL;
+	mix_solo=0;
+	mix_mute=0;
+	res_mute=mute;
+	res_mute_old=0;
 }
 
 vtt_class :: ~vtt_class()
 {
 	vtt_fx *effect;
 	stop();
-//	pthread_mutex_lock(&main_lock);
+
 	main_list.remove(this);
-//	pthread_mutex_unlock(&main_lock);
 	if (audiofile) delete audiofile;
 	//if (buffer) free(buffer);
 	if (output_buffer) tX_freemem(output_buffer, "output_buffer", "vtt Destructor");
@@ -260,8 +258,8 @@ int vtt_class :: set_output_buffer_size(int newsize)
 	tX_malloc(ec_output_buffer, "ec_output_buffer", "vtt set_output_buffer_size()", sizeof(float)*newsize, (float *));
 
 	if (output_buffer) tX_freemem(output_buffer, "output_buffer", "vtt set_output_buffer_size()");
-	//output_buffer = (float *) malloc (sizeof(float)*newsize);
 	tX_malloc(output_buffer, "output_buffer", "vtt set_output_buffer_size()", sizeof(float)*newsize, (float *));
+
 	end_of_outputbuffer = output_buffer + newsize; //size_t(sizeof(float)*(newsize));
 	
 	samples_in_outputbuffer=newsize;
@@ -301,7 +299,6 @@ void vtt_class :: recalc_volume()
 	{
 		res_volume_left=res_volume_right=res_volume;
 	}
-	
 	
 	if (ec_pan>0.0)
 	{
@@ -363,9 +360,35 @@ void vtt_class :: set_controls (int x, int y)
 	y_control=y;
 }
 
+#define calc_mute() res_mute=((mute) || (mix_mute && (!mix_solo)) || ((solo_ctr>0)&&(!mix_solo)))
+
 void vtt_class :: set_mute(int newstate)
 {
 	mute=newstate;
+	calc_mute();
+}
+
+void vtt_class :: set_mix_mute(int newstate)
+{
+	mix_mute=newstate;
+	calc_mute();
+}
+
+void vtt_class :: set_mix_solo(int newstate)
+{
+	if (mix_solo && !newstate)
+	{
+		/* turning it off */
+		mix_solo=0;
+		solo_ctr--;
+	}
+	else if (!mix_solo && newstate)
+	{
+		/* turning it on */
+		mix_solo=1;
+		solo_ctr++;
+	}
+	calc_mute();
 }
 
 void vtt_class :: lp_set_enable (int newstate)
@@ -400,8 +423,6 @@ void vtt_class :: lp_set_freq(f_prec freq)
 	
 	lp_a=0.9999-freq;
 	lp_b=lp_reso*(1.0+(1.0/lp_a));
-	
-	//printf("a %f, b%f\n", lp_a, lp_b);
 }
 
 void vtt_class :: lp_setup(f_prec gain, f_prec reso, f_prec freq)
@@ -556,9 +577,9 @@ void vtt_class :: calc_speed()
 
 	speed_last = speed_real;
 
-	if (mute != mute_old)
+	if (res_mute != res_mute_old)
 	{
-		if (mute)
+		if (res_mute)
 		{
 			fade_out=1; fade_in=0;
 			fade=NEED_FADE_IN;
@@ -568,11 +589,11 @@ void vtt_class :: calc_speed()
 			fade_in=1; fade_out=0;
 			fade=NEED_FADE_OUT;
 		}
-		mute_old=mute;
+		res_mute_old=res_mute;
 	}
 	else
 	{
-		if (mute) do_mute=1;
+		if (res_mute) do_mute=1;
 	}	
 }
 
@@ -823,16 +844,16 @@ int vtt_class :: set_mix_buffer_size(int no_samples)
 	
 	if (mix_buffer) tX_freemem(mix_buffer, "mix_buffer", "vtt set_mix_buffer_size()");
 	samples_in_mix_buffer=no_samples*2;
-	//mix_buffer=(float *) malloc (sizeof(float)*samples_in_mix_buffer);
+
 	tX_malloc(mix_buffer, "mix_buffer", "vtt set_mix_buffer_size()", sizeof(float)*samples_in_mix_buffer, (float *));
 	mix_buffer_end=mix_buffer+samples_in_mix_buffer;
+
 //	printf("mix_buffer: %12x\n", mix_buffer);
-	
 //	printf("mix_samples: %i, out_samples: %i", samples_in_mix_buffer, no_samples);
 	
 	if (mix_out_buffer) tX_freemem(mix_out_buffer, "mix_out_buffer", "vtt set_mix_buffer_size()");
-	//mix_out_buffer=(int16_t *) malloc (sizeof(int16_t)*samples_in_mix_buffer + 4); /* extra 4 for 3DNow! */
 	tX_malloc(mix_out_buffer, "mix_out_buffer", "vtt set_mix_buffer_size()", sizeof(int16_t)*samples_in_mix_buffer + 4, (int16_t *));
+
 //	printf("mix_out_buffer: %12x\n", mix_out_buffer);
 	
 	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++)
@@ -860,9 +881,47 @@ int16_t * vtt_class :: render_all_turntables()
 #ifdef USE_FLASH
 	f_prec max;
 	f_prec min;
-#ifdef USE_3DNOW	
+#ifdef USE_3DNOW
 	mmx_t mm_max;
 	mmx_t mm_min;
+	mmx_t mm_volume;
+	mmx_t mm_src1;
+	mmx_t mm_src2;
+
+#ifndef OVERRIDE_MOVQ_AUTODETECT
+#ifndef GCC_VERSION
+#define GCC_VERSION (__GNUC__ * 1000 + __GNUC_MINOR__)
+#endif /* GCC_VERSION */
+
+#if (GCC_VERSION < 2096)
+#warning "*************************"
+#warning "* gcc < 2.96            *"
+#warning "* assuming working movq *"
+#warning "*************************"
+#undef GCC_MOVQ_BUG_WORKAROUND
+#else
+#warning "*************************"
+#warning "* gcc >= 2.96           *"
+#warning "* using movq-workaround *"
+#warning "*************************"
+#define GCC_MOVQ_BUG_WORKAROUND 1
+#endif /* GCC < 2.96 */
+#endif /* OVERRIDE MOVQ AUTODETECVT */
+	
+#ifdef GCC_MOVQ_BUG_WORKAROUND
+	/* REQUIRED DUE TO GCC BUG (2.96-3.0.2) */
+	mmx_t *mm_src1_ptr=&mm_src1;
+	mmx_t *mm_src2_ptr=&mm_src2;
+	mmx_t *mm_volume_ptr=&mm_volume;
+	mmx_t *mm_max_ptr=&mm_max;
+	mmx_t *mm_min_ptr=&mm_min;
+	
+#define MM_VAR_ACC(var) (* var ## _ptr)
+#define MM_VAR_MOVQ(var) * var ## _ptr
+#else
+#define MM_VAR_ACC(var) var
+#define MM_VAR_MOVQ(var) var
+#endif	
 	int32_t *temp_int=&mm_max.d[1];
 #endif	
 #endif	
@@ -883,6 +942,7 @@ int16_t * vtt_class :: render_all_turntables()
 			max=(*vtt)->max_value;
 			min=max;
 
+#ifndef USE_3DNOW
 			for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
 			{				
 				temp=(*vtt)->output_buffer[sample];
@@ -893,13 +953,66 @@ int16_t * vtt_class :: render_all_turntables()
 				
 				if (temp>max) max=temp;
 				else if (temp<min) min=temp;
-			}		
+			}
+#else
+			MM_VAR_ACC(mm_volume).s[0]=(*vtt)->res_volume_left;
+			MM_VAR_ACC(mm_volume).s[1]=(*vtt)->res_volume_right;
+
+			MM_VAR_ACC(mm_max).s[1]=MM_VAR_ACC(mm_max).s[0]=max;
+			MM_VAR_ACC(mm_min).s[1]=MM_VAR_ACC(mm_min).s[0]=min;
+			
+			movq_m2r(MM_VAR_MOVQ(mm_max), mm1);
+			movq_m2r(MM_VAR_MOVQ(mm_min), mm2);
+							
+			movq_m2r(MM_VAR_MOVQ(mm_volume), mm0);
+			
+			mix=(mmx_t*)mix_buffer;
+			
+			for (f_prec* src=(*vtt)->output_buffer; mix < (mmx_t*) mix_buffer_end;)
+			{
+				/* first sample */
+				MM_VAR_ACC(mm_src1).s[0]=*src;
+				MM_VAR_ACC(mm_src1).s[1]=*src;
+					
+				/* sample * l/r volume */
+				movq_m2r(MM_VAR_MOVQ(mm_src1), mm3);
+				pfmul_r2r(mm0, mm3);
+				movq_r2m(mm3, *mix);
+					
+				/* next sample */
+				src++, mix++;
+				MM_VAR_ACC(mm_src2).s[0]=*src;
+				MM_VAR_ACC(mm_src2).s[1]=*src;
+					
+				/* sample * l/r volume */
+				movq_m2r(MM_VAR_MOVQ(mm_src2), mm3);
+				pfmul_r2r(mm0, mm3);
+				movq_r2m(mm3, *mix);
+					
+				/* calculating min/max */
+				MM_VAR_ACC(mm_src1).s[1]=MM_VAR_ACC(mm_src2).s[0];
+				movq_m2r(mm_src1, mm3);
+				pfmax_r2r(mm3, mm1);
+				pfmin_r2r(mm3, mm2);
+				
+				src++, mix++;
+			}
+
+			movq_r2m(mm1, MM_VAR_MOVQ(mm_max));
+			movq_r2m(mm2, MM_VAR_MOVQ(mm_min));
+			
+			femms();
+			
+			if (MM_VAR_ACC(mm_max).s[0]>MM_VAR_ACC(mm_max).s[1]) max=MM_VAR_ACC(mm_max).s[0]; else max=MM_VAR_ACC(mm_max).s[1];
+			if (MM_VAR_ACC(mm_min).s[0]<MM_VAR_ACC(mm_min).s[0]) min=MM_VAR_ACC(mm_min).s[0]; else min=MM_VAR_ACC(mm_min).s[1];
+#endif			
 			
 			min*=-1.0;
 			if (min>max) (*vtt)->max_value=min; else (*vtt)->max_value=max;
 
 			if ((*vtt)->ec_enable)
 			{
+#ifndef USE_3DNOW			
 				for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
 				{				
 					temp=(*vtt)->ec_output_buffer[sample];
@@ -908,13 +1021,36 @@ int16_t * vtt_class :: render_all_turntables()
 					mix_sample++;
 					mix_buffer[mix_sample]+=temp*(*vtt)->ec_volume_right;
 					mix_sample++;
-				}		
+				}
+#else
+				MM_VAR_ACC(mm_volume).s[0]=(*vtt)->ec_volume_left;
+				MM_VAR_ACC(mm_volume).s[1]=(*vtt)->ec_volume_right;
+						
+				movq_m2r(MM_VAR_MOVQ(mm_volume), mm0);
+				mix =(mmx_t*)mix_buffer;
+
+				for (f_prec* src=(*vtt)->ec_output_buffer; mix < (mmx_t*) mix_buffer_end; src++, mix++)
+				{
+					/* first sample */
+					MM_VAR_ACC(mm_src1).s[0]=*src;
+					MM_VAR_ACC(mm_src1).s[1]=*src;
+				
+					/* sample * l/r volume */
+					movq_m2r(MM_VAR_MOVQ(mm_src1), mm3);
+					pfmul_r2r(mm0, mm3);
+				
+					/* accumulating complete mix */
+					movq_m2r(*mix, mm4);
+					pfadd_r2r(mm4, mm3);
+					movq_r2m(mm3, *mix);
+				}
+				femms();
+#endif				
 			}
 			
 			if (master_triggered)
 			{
 				pthread_mutex_unlock(&render_lock);
-//				pthread_mutex_lock(&main_lock);
 				for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++)
 				{
 					if ((*vtt)->is_sync_client)
@@ -930,7 +1066,6 @@ int16_t * vtt_class :: render_all_turntables()
 						}
 					}
 				}
-//				pthread_mutex_unlock(&main_lock);
 				pthread_mutex_lock(&render_lock);
 			}
 			
@@ -941,6 +1076,7 @@ int16_t * vtt_class :: render_all_turntables()
 				max=(*vtt)->max_value;
 				min=max;
 
+#ifndef USE_3DNOW
 				for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
 				{				
 					temp=(*vtt)->output_buffer[sample];
@@ -952,12 +1088,72 @@ int16_t * vtt_class :: render_all_turntables()
 					if (temp>max) max=temp;
 					else if (temp<min) min=temp;
 				}
+#else
+				MM_VAR_ACC(mm_volume).s[0]=(*vtt)->res_volume_left;
+				MM_VAR_ACC(mm_volume).s[1]=(*vtt)->res_volume_right;
+
+				MM_VAR_ACC(mm_max).s[1]=MM_VAR_ACC(mm_max).s[0]=max;
+				MM_VAR_ACC(mm_min).s[1]=MM_VAR_ACC(mm_min).s[0]=min;
+			
+				movq_m2r(MM_VAR_MOVQ(mm_max), mm1);
+				movq_m2r(MM_VAR_MOVQ(mm_min), mm2);
+							
+				movq_m2r(MM_VAR_MOVQ(mm_volume), mm0);
+				mix=(mmx_t*)mix_buffer;
+
+				for (f_prec* src=(*vtt)->output_buffer; mix < (mmx_t*) mix_buffer_end;)
+				{
+					/* first sample */
+					MM_VAR_ACC(mm_src1).s[0]=*src;
+					MM_VAR_ACC(mm_src1).s[1]=*src;
+					
+					/* sample * l/r volume */
+					movq_m2r(MM_VAR_MOVQ(mm_src1), mm3);
+					pfmul_r2r(mm0, mm3);
+					
+					/* accumulating complete mix */
+					movq_m2r(*mix, mm4);
+					pfadd_r2r(mm4, mm3);
+					movq_r2m(mm3, *mix);
+					
+					/* next sample */
+					src++, mix++;
+					MM_VAR_ACC(mm_src2).s[0]=*src;
+					MM_VAR_ACC(mm_src2).s[1]=*src;
+					
+					/* sample * l/r volume */
+					movq_m2r(MM_VAR_MOVQ(mm_src2), mm3);
+					pfmul_r2r(mm0, mm3);
+
+					/* accumulating complete mix */
+					movq_m2r(*mix, mm4);
+					pfadd_r2r(mm4, mm3);
+					movq_r2m(mm3, *mix);
+					
+					/* calculating min/max */
+					MM_VAR_ACC(mm_src1).s[1]=MM_VAR_ACC(mm_src2).s[0];
+					movq_m2r(MM_VAR_MOVQ(mm_src1), mm3);
+					pfmax_r2r(mm3, mm1);
+					pfmin_r2r(mm3, mm2);
+					
+					src++, mix++;
+				}
+
+				movq_r2m(mm1, MM_VAR_MOVQ(mm_max));
+				movq_r2m(mm2, MM_VAR_MOVQ(mm_min));
+				
+				femms();
+	
+				if (MM_VAR_ACC(mm_max).s[0]>MM_VAR_ACC(mm_max).s[1]) max=MM_VAR_ACC(mm_max).s[0]; else max=MM_VAR_ACC(mm_max).s[1];
+				if (MM_VAR_ACC(mm_min).s[0]<MM_VAR_ACC(mm_min).s[0]) min=MM_VAR_ACC(mm_min).s[0]; else min=MM_VAR_ACC(mm_min).s[1];
+#endif
 				
 				min*=-1.0;
 				if (min>max) (*vtt)->max_value=min; else (*vtt)->max_value=max;
 				
 				if ((*vtt)->ec_enable)
 				{
+#ifndef USE_3DNOW
 					for (sample=0, mix_sample=0; sample<(*vtt)->samples_in_outputbuffer; sample++)
 					{				
 						temp=(*vtt)->ec_output_buffer[sample];
@@ -966,7 +1162,32 @@ int16_t * vtt_class :: render_all_turntables()
 						mix_sample++;
 						mix_buffer[mix_sample]+=temp*(*vtt)->ec_volume_right;
 						mix_sample++;
-					}		
+					}
+#else
+					MM_VAR_ACC(mm_volume).s[0]=(*vtt)->ec_volume_left;
+					MM_VAR_ACC(mm_volume).s[1]=(*vtt)->ec_volume_right;
+						
+					movq_m2r(MM_VAR_MOVQ(mm_volume), mm0);
+					mix =(mmx_t*)mix_buffer;
+
+					for (f_prec* src=(*vtt)->ec_output_buffer; mix < (mmx_t*) mix_buffer_end; src++, mix++)
+					{
+						/* first sample */
+						MM_VAR_ACC(mm_src1).s[0]=*src;
+						MM_VAR_ACC(mm_src1).s[1]=*src;
+				
+						/* sample * l/r volume */
+						movq_m2r(MM_VAR_MOVQ(mm_src1), mm3);
+						pfmul_r2r(mm0, mm3);
+				
+						/* accumulating complete mix */
+						movq_m2r(*mix, mm4);
+						pfadd_r2r(mm4, mm3);
+						movq_r2m(mm3, *mix);
+					}
+
+					femms();
+#endif					
 				}
 			}
 			
@@ -1083,8 +1304,6 @@ int vtt_class :: trigger()
 	speed=res_pitch;
 	speed_real=res_pitch;
 	speed_target=res_pitch;
-/*	mute=0;
-	mute_old=0;*/
 	want_stop=0;
 
 	/* activating plugins */
@@ -1201,10 +1420,8 @@ void vtt_class :: set_master_volume(f_prec new_volume)
 	
 	if (main_list.size()>0)
 	{
-//		res_master_volume=master_volume/((f_prec) main_list.size());
 		vol_channel_adjust=sqrt((f_prec) main_list.size());
-		res_master_volume=master_volume/vol_channel_adjust;
-		
+		res_master_volume=master_volume/vol_channel_adjust;		
 	}
 		
 	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++)
@@ -1352,11 +1569,7 @@ void vtt_class :: xy_input(f_prec x_value, f_prec y_value)
 {
 	if (x_par) x_par->handle_mouse_input(x_value*globals.mouse_speed);
 	if (y_par) y_par->handle_mouse_input(y_value*globals.mouse_speed);
-	
-/*	handle_input(x_control, x_value);
-	handle_input(y_control, y_value);*/
 }
-
 
 #define store(data); if (fwrite((void *) &data, sizeof(data), 1, output)!=1) res+=1;
 
@@ -1590,7 +1803,6 @@ int vtt_class :: load_11(FILE * input)
 	sp_spin.set_persistence_id(pid);
 	
 	atload(gui_page);
-	vg_set_current_page(this, gui_page);
 	
 	return(res);
 }
@@ -2232,6 +2444,4 @@ void vtt_class ::  effect_remove(vtt_fx_ladspa *effect)
 	
 	delete effect;
 }
-
-
 
