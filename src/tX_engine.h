@@ -24,10 +24,9 @@
 #ifndef _TX_ENGINE_H_
 #define _TX_ENGINE_H_
 
-extern int run_engine();
-extern int stop_engine();
-
-extern void grab_mouse(int);
+#include "tX_tape.h"
+#include "tX_mouse.h"
+#include "tX_audiodevice.h"
 
 #define ENG_ERR 4
 
@@ -44,15 +43,47 @@ extern void grab_mouse(int);
 #define ENG_ERR_GRABKEY 10
 #define ENG_ERR_BUSY 11
 
-#define TX_ENG_OK 0
-#define TX_ENG_ERR_TAPE 1
-#define TX_ENG_ERR_DEVICE 2
-#define TX_ENG_ERR_THREAD 3
-#define TX_ENG_ERR_BUSY 4
+#include <pthread.h>
+enum tX_engine_error {
+	NO_ERROR,
+	ERROR_TAPE,
+	ERROR_AUDIO,
+	ERROR_BUSY	
+};
 
-extern int get_engine_status();
-extern void set_engine_status(int );
+enum tX_engine_status {
+	RUNNING,
+	STOPPED
+};
 
-extern int want_recording;
+class tX_engine {
+	private:
+	pthread_t thread;
+	pthread_mutex_t start;
+	bool thread_terminate;
+	tx_mouse *mouse;
+	tX_audiodevice *device;
+	tx_tapedeck *tape;
+	bool recording;
+	bool recording_request;
+	bool stop_flag;
+	bool loop_is_active;
+	bool grab_request;
+	bool grab_active;
+	
+	public:
+	tX_engine();
+	~tX_engine();
+	
+	tX_engine_error run();
+	void stop();
+	void loop();
+	void set_recording_request(bool recording);
+	bool get_recording_request() { return recording_request; }
+	bool is_recording() { return recording; }
+	
+	void set_grab_request();
+};
 
+extern tX_engine *engine;
 #endif

@@ -1484,18 +1484,28 @@ void vtt_class :: focus_next()
 		return;
 	}
 	
-	for (vtt=main_list.begin(); vtt!=main_list.end() ; vtt++)
-	{
-		if ((*vtt)==focused_vtt)
-		{
+	for (vtt=main_list.begin(); vtt!=main_list.end() ; vtt++) {
+		if ((*vtt)==focused_vtt) {
+			/* Ok, we found ourselves.. */
+			
 			vtt++;
-			if (vtt==main_list.end())
-			{			
-				focused_vtt=(*main_list.begin());
-				return;
+			while ((vtt!=main_list.end()) && ((*vtt)->audio_hidden) ) {
+				vtt++;
 			}
-			else
-			{
+			
+			if (vtt==main_list.end()) {
+				/* No other "focusable" after this vtt so we're looking for the next */
+				
+				for (vtt=main_list.begin(); vtt!=main_list.end() ; vtt++) {
+					if (! (*vtt)->audio_hidden) {
+						focused_vtt=(*vtt);
+						return;
+					}
+				}
+				/* When we get here there's no "focusable" vtt at all... damn */
+				focused_vtt=NULL;
+				return;
+			} else {
 				focused_vtt=(*vtt);
 				return;
 			}
