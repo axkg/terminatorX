@@ -118,6 +118,30 @@ void tX_engine::loop() {
 	while (!thread_terminate) {
 		/* Waiting for the trigger */
 		pthread_mutex_lock(&start);
+#ifdef USE_SCHEDULER
+		pid_t pid=getpid();
+		struct sched_param parm;
+			
+		if (globals.use_realtime && (globals.audiodevice_type!=JACK)) {
+			sched_getparam(pid, &parm);
+			parm.sched_priority=sched_get_priority_max(SCHED_FIFO);
+						
+			if (pthread_setschedparam(pthread_self(), SCHED_FIFO, &parm)) {
+				tX_error("loop(): failed to set realtime priority.");
+			} else {
+				tX_debug("loop(): set SCHED_FIFO.");
+			}
+		} else {
+			sched_getparam(pid, &parm);
+			parm.sched_priority=sched_get_priority_max(SCHED_OTHER);
+						
+			if (pthread_setschedparam(pthread_self(), SCHED_OTHER, &parm)) {
+				tX_error("loop(): failed to set non-realtime priority.");
+			} else {
+				tX_debug("loop(): set SCHED_OTHER.");
+			}			
+		}
+#endif		
 		loop_is_active=true;
 		pthread_mutex_unlock(&start);
 
