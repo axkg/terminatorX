@@ -60,6 +60,17 @@ extern GtkWidget *panel_bar;
 void add_to_panel_bar(GtkWidget *);
 void remove_from_panel_bar(GtkWidget *);
 
+typedef enum {
+	ALL_EVENTS_ALL_TURNTABLES,
+	ALL_EVENTS_FOR_TURNTABLE,
+	ALL_EVENTS_FOR_SP
+} tx_menu_del_mode;
+
+extern GtkWidget *del_dialog;
+extern tx_menu_del_mode menu_del_mode;
+extern tX_seqpar *del_sp;
+extern vtt_class *del_vtt;
+
 class tX_cursor {
 	public:
 	enum cursor_shape {

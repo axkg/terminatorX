@@ -39,6 +39,13 @@
 
 class tX_sequencer
 {
+	public:
+	typedef enum {
+		DELETE_ALL,
+		DELETE_UPTO_CURRENT,
+		DELETE_FROM_CURRENT
+	} del_mode;
+	
 	private:
 	list <tX_event *> song_list;
 	list <tX_event *> record_list;
@@ -79,8 +86,9 @@ class tX_sequencer
 		else return NULL;
 	}
 	
-	void delete_all_events_for_sp(tX_seqpar *sp);
-	void delete_all_events();
+	void delete_all_events_for_vtt(vtt_class *vtt, del_mode mode);
+	void delete_all_events_for_sp(tX_seqpar *sp, del_mode mode);
+	void delete_all_events(del_mode);
 	
 	void save(FILE *, gzFile, char *indent);
 #ifdef ENABLE_TX_LEGACY	
