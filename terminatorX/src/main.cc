@@ -254,14 +254,7 @@ int main(int argc, char **argv)
 		tX_cursor::reset_cursor();
 	}
 
-#ifdef USE_JACK	
-	jack_check();
-#endif			
-	
 #ifndef CREATE_BENCHMARK
-
-//	gdk_input_init();
-
 	gtk_main();
 
 	store_globals();

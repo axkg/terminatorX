@@ -161,6 +161,7 @@ typedef struct {
 	char vu_meter_normal[8];
 	double vu_meter_border_intensity;
 	
+	int quit_confirm;
 } tx_global;
 
 extern tx_global globals;

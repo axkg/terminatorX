@@ -4,6 +4,10 @@ This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.81]
+- obligatory documentation updates - clicking on the sub-sections should now 
+  work.
+- removed gtk+ 1.2 cruft - terminatorX now compiles and gtk+ 2.2 and
+  *_DISABLE_DEPRECATED macros enabled.
 - terminatorX now has a JACK backend. Currently it works like this: on startup
   tX will connect to the JACK daemon - if the daemon is not available on 
   startup JACK output is not available. When the audio engine is turned off,

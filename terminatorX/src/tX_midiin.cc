@@ -33,6 +33,7 @@
 #include "tX_vtt.h"
 #include "tX_glade_interface.h"
 #include "tX_glade_support.h"
+#include "tX_dialog.h"
 
 #ifdef USE_ALSA_MIDI_IN
 #include "tX_global.h"
@@ -297,10 +298,10 @@ tX_midiin::midi_binding_gui::midi_binding_gui ( GtkTreeModel* _model, tX_midiin*
 	gtk_widget_show (close_button);
 	gtk_box_pack_start (GTK_BOX (vbox1), close_button, FALSE, FALSE, 0);
 	
-	gtk_signal_connect(GTK_OBJECT(bind_button), "clicked", (GtkSignalFunc) bind_clicked, (void *) this);
-	gtk_signal_connect(GTK_OBJECT(unbind_button), "clicked", (GtkSignalFunc) unbind_clicked, (void *) this);	
-	gtk_signal_connect(GTK_OBJECT(close_button), "clicked", (GtkSignalFunc) close_clicked, (void *) this);
-	gtk_signal_connect(GTK_OBJECT(window), "destroy", (GtkSignalFunc) close_clicked, (void *) this);
+	g_signal_connect(G_OBJECT(bind_button), "clicked", (GtkSignalFunc) bind_clicked, (void *) this);
+	g_signal_connect(G_OBJECT(unbind_button), "clicked", (GtkSignalFunc) unbind_clicked, (void *) this);	
+	g_signal_connect(G_OBJECT(close_button), "clicked", (GtkSignalFunc) close_clicked, (void *) this);
+	g_signal_connect(G_OBJECT(window), "destroy", (GtkSignalFunc) close_clicked, (void *) this);
 	
 	timer_tag = gtk_timeout_add( 100, (GtkFunction) timer, (void *) this);
 	
@@ -408,6 +409,7 @@ void tX_midiin::set_midi_learn_sp(tX_seqpar *sp)
 	if (!sp_to_learn) return;
 	
 	learn_dialog=create_tX_midilearn();
+	tX_set_icon(learn_dialog);
 	GtkWidget *label=lookup_widget(learn_dialog, "midilabel");
 	
 	sprintf(buffer, "Learning MIDI mapping for <b>%s</b>\nfor turntable <b>%s</b>.\n\nWaiting for MIDI event...", sp->get_name(), sp->get_vtt_name());
@@ -437,7 +439,7 @@ gboolean tX_midiin::midi_learn_destroy(GtkWidget *widget, tX_midiin *midi)
 
 void tX_midiin::store_connections(FILE *rc, char *indent) 
 {
-	gzFile *rz;
+	gzFile *rz=NULL;
 	
 	tX_store("%s<midi_connections>\n", indent);
 	strcat(indent, "\t");
