@@ -313,7 +313,7 @@ void vtt_fx_ladspa :: load(xmlDocPtr doc, xmlNodePtr node) {
 			elementFound=0;
 			
 			restore_int("ladspa_id", dummy);
-			restore_bool("hidden", hidden);
+			restore_bool("panel_hidden", hidden);
 			if ((!elementFound) && (xmlStrcmp(cur->name, (xmlChar *) "param")==0)) {
 				val=0;
 				elementFound=1;

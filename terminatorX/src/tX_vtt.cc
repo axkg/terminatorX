@@ -74,7 +74,7 @@ extern int vg_get_current_page(vtt_class *vtt);
 extern f_prec gui_get_audio_x_zoom(vtt_class *vtt);
 extern void gui_set_audio_x_zoom(vtt_class *vtt, f_prec);
 
-
+int vtt_class::last_sample_rate=44100;
 int vtt_class::vtt_amount=0;
 list <vtt_class *> vtt_class::main_list;
 list <vtt_class *> vtt_class::render_list;
@@ -1998,6 +1998,8 @@ void vtt_class :: hide_control(bool hide) {
 void vtt_class :: set_sample_rate(int samplerate) {
 	list <vtt_class *> :: iterator vtt;
 	double sr=(double) samplerate;
+
+	last_sample_rate=samplerate;
 	
 	for (vtt=main_list.begin(); vtt!=main_list.end() ; vtt++) {
 		if ((*vtt)->audiofile) {
