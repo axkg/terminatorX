@@ -1090,7 +1090,7 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gp
 		gtk_widget_set_sensitive(item, FALSE);
 #endif
 
-		item = gtk_check_menu_item_new_with_label("Map MIDI Reversed");
+		item = gtk_check_menu_item_new_with_label("Map MIDI Reverse");
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 		gtk_widget_show(item);		
 
