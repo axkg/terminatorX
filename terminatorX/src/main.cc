@@ -333,7 +333,7 @@ int parse_args(int *argc, char **argv)
 		else if ((strncmp(argv[i], "--device",8) == 0))
 		{
 			if (strlen(argv[i]+9)<=PATH_MAX)
-				strcpy(globals.audio_device,argv[i]+9);
+				strcpy(globals.oss_device,argv[i]+9);
 			else
 			{
 				show_help();
