@@ -37,6 +37,10 @@
 #include <alsa/asoundlib.h>
 #endif
 
+#ifdef USE_JACK
+#include <jack/jack.h>
+#endif
+
 class tX_engine;
 
 class tX_audiodevice
@@ -54,7 +58,6 @@ class tX_audiodevice
 	tX_audiodevice();
 	
 	public:
-	virtual double get_latency()=0; /* call only valid *after* open() */
 	int get_buffersize() { return samples_per_buffer; } /* call only valid *after* open() */
 	int get_sample_rate() { return sample_rate; }
 	
@@ -79,10 +82,7 @@ class tX_audiodevice_oss : public tX_audiodevice
 	public:
 	virtual int open();
 	virtual int close();
-	
-	virtual double get_latency(); /* call only valid *after* open() */
-	
-	virtual void play(int16_t*); /* play blocked */
+	virtual void play(int16_t*);
 	
 	tX_audiodevice_oss();
 };
@@ -100,12 +100,58 @@ class tX_audiodevice_alsa : public tX_audiodevice
 	public:
 	virtual int open();
 	virtual int close();
-		
-	virtual double get_latency(); /* call only valid *after* open() */
-
-	virtual void play(int16_t*); /* play blocked */
+	virtual void play(int16_t*);
 	
 	tX_audiodevice_alsa();
+};
+
+#endif
+
+#ifdef USE_JACK
+
+class tX_jack_client;
+
+class tX_audiodevice_jack : public tX_audiodevice
+{
+	private:
+	tX_jack_client *client;
+	jack_default_audio_sample_t *overrun_buffer;
+	int samples_in_overrun_buffer;
+	
+	public:
+	virtual int open();
+	virtual int close();
+	virtual void play(int16_t*);
+	virtual void start();
+	void fill_frames(jack_default_audio_sample_t *left, jack_default_audio_sample_t *right, jack_nframes_t nframes);
+	
+	tX_audiodevice_jack();	
+};
+
+class tX_jack_client
+{
+	public:
+	static void init();
+	static tX_jack_client *get_instance() { return instance; };
+	~tX_jack_client();
+	
+	private:
+	tX_jack_client();
+	static tX_jack_client *instance;
+	static void error(const char *desc);
+	static int srate(jack_nframes_t nframes, void *arg);
+	static void shutdown(void *arg);
+	static int process(jack_nframes_t nframes, void *arg);
+	
+	jack_client_t *client;
+	tX_audiodevice_jack *device;
+	jack_port_t *left_port;
+	jack_port_t *right_port;
+	int play(jack_nframes_t nframes);
+	
+	public:
+	int get_sample_rate();
+	void set_device(tX_audiodevice_jack *dev) { device=dev; }
 };
 
 #endif

@@ -126,7 +126,6 @@ void tX_engine :: loop() {
 	}
 }
 
-
 void *engine_thread_entry(void *engine_void) {
 	tX_engine *engine=(tX_engine*) engine_void;
 	int result;
@@ -149,6 +148,11 @@ void *engine_thread_entry(void *engine_void) {
 			exit(2);
 		}
 	}
+	
+#ifdef USE_JACK
+	/* Create the client now, so the user has something to connect to. */
+	tX_jack_client *jack_client=tX_jack_client::get_instance();
+#endif	
 	
 	engine->loop();
 	
@@ -185,7 +189,7 @@ tX_engine :: tX_engine() {
 		
 		result=pthread_create(&thread, &pattr, engine_thread_entry, (void *) this);
 	} else {
-		tX_debug("tX_engine() - Lacking root privileges - no realtime scheduling!");
+		tX_debug("tX_engine() - Lacking root privileges - no realtime scheduling.");
 #endif		
 		result=pthread_create(&thread, NULL, engine_thread_entry, (void *) this);
 #ifdef USE_SCHEDULER		
@@ -243,6 +247,12 @@ tX_engine_error tX_engine :: run() {
 #ifdef USE_ALSA			
 		case ALSA:
 			device=new tX_audiodevice_alsa(); 
+		break;
+#endif
+
+#ifdef USE_JACK
+		case JACK:
+			device=new tX_audiodevice_jack();
 		break;
 #endif
 		

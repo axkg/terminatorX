@@ -222,6 +222,8 @@ create_tx_options (void)
   GtkWidget *ladspa_rdf_path;
   GtkWidget *label33;
   GtkWidget *compress_set_files;
+  GtkWidget *label40;
+  GtkWidget *reconnect_enabled;
   GtkWidget *label3;
   GtkWidget *dialog_action_area3;
   GtkWidget *pref_reset;
@@ -690,7 +692,7 @@ create_tx_options (void)
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 4), label2);
   gtk_label_set_justify (GTK_LABEL (label2), GTK_JUSTIFY_LEFT);
 
-  table3 = gtk_table_new (4, 2, FALSE);
+  table3 = gtk_table_new (5, 2, FALSE);
   gtk_widget_show (table3);
   gtk_container_add (GTK_CONTAINER (notebook1), table3);
   gtk_container_set_border_width (GTK_CONTAINER (table3), 4);
@@ -754,6 +756,21 @@ create_tx_options (void)
   gtk_table_attach (GTK_TABLE (table3), compress_set_files, 1, 2, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
+
+  label40 = gtk_label_new ("Restore MIDI connections:");
+  gtk_widget_show (label40);
+  gtk_table_attach (GTK_TABLE (table3), label40, 0, 1, 4, 5,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label40), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (label40), 0, 0.5);
+
+  reconnect_enabled = gtk_check_button_new_with_mnemonic ("Enabled");
+  gtk_widget_show (reconnect_enabled);
+  gtk_table_attach (GTK_TABLE (table3), reconnect_enabled, 1, 2, 4, 5,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_tooltips_set_tip (tooltips, reconnect_enabled, "When enabled soundfiles will be playedback when selected in a file dialog (before loading them).", NULL);
 
   label3 = gtk_label_new ("Misc");
   gtk_widget_show (label3);
@@ -881,6 +898,8 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, ladspa_rdf_path, "ladspa_rdf_path");
   GLADE_HOOKUP_OBJECT (tx_options, label33, "label33");
   GLADE_HOOKUP_OBJECT (tx_options, compress_set_files, "compress_set_files");
+  GLADE_HOOKUP_OBJECT (tx_options, label40, "label40");
+  GLADE_HOOKUP_OBJECT (tx_options, reconnect_enabled, "reconnect_enabled");
   GLADE_HOOKUP_OBJECT (tx_options, label3, "label3");
   GLADE_HOOKUP_OBJECT_NO_REF (tx_options, dialog_action_area3, "dialog_action_area3");
   GLADE_HOOKUP_OBJECT (tx_options, pref_reset, "pref_reset");

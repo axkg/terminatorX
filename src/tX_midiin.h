@@ -29,6 +29,9 @@
 #define _tx_midiin_h 1
 
 #include <stdio.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+#include <libxml/encoding.h>
 
 class vtt_class;
 class tX_seqpar;
@@ -79,6 +82,7 @@ class tX_midiin
 	bool is_open;
 	tX_seqpar *sp_to_learn;
 	GtkWidget *learn_dialog;
+	int portid;
 	
   public:
  	tX_midiin();
@@ -99,6 +103,8 @@ class tX_midiin
 
 	void set_midi_learn_sp(tX_seqpar *);
 	void cancel_midi_learn();
+	void store_connections(FILE *rc, char *indent);
+	void restore_connections(xmlNodePtr node);
 	
 	static gboolean midi_learn_cancel(GtkWidget *, tX_midiin *);
 	static gboolean midi_learn_destroy(GtkWidget *, tX_midiin *);	

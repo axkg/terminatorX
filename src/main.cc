@@ -53,6 +53,7 @@
 #include "tX_endian.h"
 #include "tX_types.h"
 #include "tX_global.h"
+#include "tX_audiodevice.h"
 #include "version.h"
 #include "tX_dialog.h"
 #include <gtk/gtk.h>
@@ -68,6 +69,14 @@
 
 GTimer *my_time;
 gint idle_tag;
+#ifdef USE_JACK	
+void jack_check()
+{
+	if (!tX_jack_client::get_instance()) {
+		tx_note("Couldn't connect to JACK server - JACK output not available.\n\nIf you want to use JACK, ensure the JACK daemon is running before you start terminatorX.", true);
+	}
+}
+#endif			
 
 int idle()
 {
@@ -81,6 +90,9 @@ int idle()
 		g_timer_destroy(my_time);
 		destroy_about();		
 		display_mastergui();		
+#ifdef USE_JACK	
+		jack_check();
+#endif			
 	}
 	
 	return TRUE;
@@ -225,10 +237,18 @@ int main(int argc, char **argv)
 	
 	LADSPA_Class :: init();
 	LADSPA_Plugin :: init();
+#ifdef USE_JACK	
+	tX_jack_client :: init();
+#endif	
 	
 	create_mastergui(globals.width, globals.height);
 		
-	if (!globals.show_nag)	display_mastergui();
+	if (!globals.show_nag) {
+		display_mastergui();
+#ifdef USE_JACK	
+		jack_check();
+#endif			
+	}
 		
 	if (globals.startup_set)
 	{
@@ -245,6 +265,11 @@ int main(int argc, char **argv)
 	store_globals();
 
 	delete engine;
+#ifdef USE_JACK	
+	if (tX_jack_client::get_instance()) {
+		delete tX_jack_client::get_instance();
+	}
+#endif	
 	
 	fprintf(stderr, "Have a nice life.\n");
 #else
