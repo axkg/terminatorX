@@ -34,10 +34,13 @@
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/xf86dga.h>
 #include <X11/keysym.h>
+#include <glib.h>
+#include <gdk/gdk.h>
 
 class tx_mouse
 {
 	XID OrgXPointer;
+	char OrgXPointerName[256];
 	XDevice *input_device;
 	XEvent xev;
 	long mask;
@@ -64,10 +67,14 @@ class tx_mouse
 
 	int set_xinput();
 	void reset_xinput();
+		
 	int grab();
 	int check_event();
 	void ungrab();
 	tx_mouse();
+	
+	private:
+	void set_x_pointer(char*);
 };
 
 
