@@ -1,7 +1,118 @@
 terminatorX - ChangeLog
-All changes were done by me (Alexander Koenig) if not stated otherwise.
+All changes were done by me (Alexander König) if not stated otherwise.
 This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
+
+[v3.65]
+- new GUI
+- Plugins
+- setformat
+- mappable parameters
+
+[v3.61] (unreleased)
+- applied a tiny patch from Atsushi Yamagata <yamagata@plathome.co.jp>
+  to set locale on startup.
+
+[v3.60]
+- terminatorX has a sequencer now. Warning: with the current design the
+  sequencer will correctly play back recorded events only when the buffer size
+  (of the audio device) is set to the same size as it was when recording the
+  events. I know this is annoying and I will try to find a solution to this. 
+  Please take a look at the README to find out how the sequencer works.
+- fixed a bug causing the lowpass filter produce a constant signal
+- fixed the load file / drag'n'drop segfault bug
+- fixed the prelisten zombie processes bug
+- fixed the segfault on termination bug (with the audio engine running)
+- hacked the mixer code to use 3DNow! too. This improves 3DNow! performance gain
+  from previously ~6% to more than 20% (depending on compiler optimizations)
+- extended the set-file-format to allow storing of sequencer events. This
+  release allows loading old tX-sets too.
+- some gui icons. Choose Text/Icon / Icon only / Text only display of these
+  icons in the Options dialog. You'll have to restart tX to see the changes
+  though.
+- "soundfile-editor support": Enter the soundfile-editor of your choice in the
+  tX-Options dialog (Still looking for an editor? Checkout Dave's Linux
+  Sound and MIDI Pages: http://www.bright.net/~dlphilp/linuxsound/).
+  Click the edit button in the Main-Panel to start your editor with the
+  turntable's soundfile - edit ;) - save and click the reload button.
+- big endian bug fixes by Scott C. Knight <scknight@indiana.edu>
+- --enable-benchmark will now produce a benchmark binary. This takes a set file
+  as a parameter (that set file should autotrigger all tables, else the
+  benchmark will measure how fast tX can generate zeros ;) WARNING: the
+  benchmark binary is not a usable terminatorX binary.
+- a new dial-widget. I created this for the upcoming GUI-redesign - and decided
+  I let you debug it right now ;) If you don't want it run configure with the
+  --disable-dial switch.
+- some gui redesign. The volume scales are now located near their corresponding
+  "flash"-widget. This release fits into very small windows - so it should be
+  usable on smaller displays as well.
+- Adrian told me configure doesn´t have to check for glib after checking for
+  gtk+ - I guess he´s right so the glib-test has gone.
+- more minor fixes
+  
+[v3.55]
+- implemented "sequenceable parameters" (see tX_seqpar.*). This means the
+  groundwork for the sequencer is done. Although this release does not yet
+  feature a sequencer - there's still a profit: you can now see the GUI (e.g.
+  the lowpass-freq slider) update while you change that value with your mouse in
+  dga grab mode (e.g. up/down with the default X/Y-Control settings).
+- fixed (libmmx) mmx.h to work with gcc 2.95 and above
+- fixed compilation problems for big endian machines. still runtime probs
+  reported though.
+- fixed configure-script as the new bash complains about == in string compares
+- fixed some gui segfaults
+- added an ugly GNOME-mimetype installer. This installs the ".tX"-mime type, an
+  terminatorX-application icon and a ".tX"-icon. I could use some hints on how
+  I could make automake install that instead of an extra script.
+  (see README.GNOME)
+- added Drag'n Drop support. Works with the great gmc. Drop an audio file over 
+  the filename-button or the wavdisplay of a turntable to load it into that
+  table. Drop an audiofile over the "Add Turntable" Button to create a new 
+  turntable and load that file into that turntable. Drop a tX-set file over the
+  "Load Set" button to load the set. 
+
+[v3.51]
+- fixes the load_piped() compilation error if you use neither sox nor mpg123.
+  Note that you have no "pre-listening" without mpg123 for mp3s and no 
+  "pre-listening" for any other file without sox.
+
+[v3.5]
+- Yet another redesign ;) Oh well this project moved from c++/multithreaded
+  to c++/singlethreaded, to c/multithreaded and now, finally, back to
+  c++/multithreaded. This shows quite some foresight, I'd say ;)
+- Due to the redesign I had to change a lot (everything?) again so this document
+  can impossibly hold all changes. but let's see:
+- tX now uses floats instead of doubles for a lot of parameters. Therefore the
+  old .terminatorXrc.bin is now called .terminatorX3rc.bin to allow parallel
+  use of older releases. But you'll have to configure the new release again
+  the first time you run it.
+- tX now supports an unlimited no of turntables. The only limit is your display
+  really.
+- Each of these turntables has their own pitch / volume settings and a 
+  dedicated lowpass and echo effect section.
+- You can now map mouse motion to a function of your choice (scratching/
+  volume/cutoff/echo-feedback and nothing)
+- Recording will now happen straight to disk. You'll have to specify a filename
+  before you start recording.
+- You can sync the turntables to one master turntable.
+- There are two master settings for pitch and volume available to modify all
+  turntables. The turntable pitch is relative to the master pitch.
+- You can save a complete set (of turntables and settings) to a .tX set file.
+  The audiofile data will *not* be saved within that file, but it'll contain
+  the absolut filename to these files. I know this makes the act of exchanging
+  sets over the net more complex so if somebody wants to code set files with
+  integrated audio data... ;)
+- The way audiofiles are loaded has been redesigned too: the builtin wav
+  routines, the sox support and mpg123 are no longer connected. This means
+  you can use mpg123 support without sox support and still have the builtin
+  wav routines enabled. If you have the builtin wav reader and sox enabled, tX
+  will try try to use the builtin routines first, and if they fail sox will be
+  used as a fallback which is of course slower as you know... There's some 
+  support for Benno Senoner's brilliant 3.2-mmap() patch but the patch still
+  needs to be ported.
+- You can now select which parameter to map to a mouse axis.
+- experimental 3DNow! support (works with gcc < 2.95 only)
+- tX-windows now have an icon, thanks Michael!
 
 [v3.2]
 - implemented 2D-Scratching ;) You can now use the other axis of your mouse
