@@ -27,6 +27,9 @@
 	- Adding destroy handler for the GUI
 	- moving printf to tX_* macros
 	- removing some debug code
+	for 3.81
+	- re-connect to MIDI devices
+	- auto MIDI mappings
 */    
 
 #include "tX_midiin.h"
@@ -34,6 +37,7 @@
 #include "tX_glade_interface.h"
 #include "tX_glade_support.h"
 #include "tX_dialog.h"
+#include "tX_mastergui.h"
 
 #ifdef USE_ALSA_MIDI_IN
 #include "tX_global.h"
@@ -521,7 +525,6 @@ void tX_midiin::restore_connections(xmlNodePtr node)
 	}
 }
 
-
 extern "C" {
 	void tX_midiin_store_connections(FILE *rc, char *indent);
 	void tX_midiin_restore_connections(xmlNodePtr node);
@@ -537,4 +540,101 @@ void tX_midiin_restore_connections(xmlNodePtr node)
 	tX_engine::get_instance()->get_midi()->restore_connections(node);
 }
 
+static inline void cc_map(tX_seqpar *sp, int channel, int number) {
+	if (sp->bound_midi_event.type==tX_midievent::NONE) {
+		sp->bound_midi_event.type=tX_midievent::CC;
+		sp->bound_midi_event.channel=channel;
+		sp->bound_midi_event.number=number;
+		sp->reset_upper_midi_bound();
+		sp->reset_lower_midi_bound();
+	}
+}
+
+static inline void cc_note(tX_seqpar *sp, int channel, int number) {
+	if (sp->bound_midi_event.type==tX_midievent::NONE) {
+		sp->bound_midi_event.type=tX_midievent::NOTE;
+		sp->bound_midi_event.channel=channel;
+		sp->bound_midi_event.number=number;
+		sp->reset_upper_midi_bound();
+		sp->reset_lower_midi_bound();
+	}
+}
+
+void tX_midiin::auto_assign_midi_mappings(GtkWidget *widget, gpointer dummy)
+{
+	std::list<vtt_class *>::iterator vtt;
+	int ctr=0;
+	
+/*	if (dummy) {
+		GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window), 
+		GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO,
+		"Assigning the default mappings will overwrite existing MIDI mappings. OK, to overwrite existing MIDI mappings?");
+		
+		int res=gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+			
+		if (res!=GTK_RESPONSE_YES) {
+			return;
+		}		
+	} */
+	
+	/* Works on my hardware :) */
+	cc_map(&sp_master_volume, 0, 28);
+	cc_map(&sp_master_volume, 0, 29);	
+	
+	for (vtt=vtt_class::main_list.begin(); (vtt!=vtt_class::main_list.end()) && (ctr<16); vtt++, ctr++) {
+		/* These are pretty standard... */
+		cc_map((&(*vtt)->sp_volume), 		ctr, 07);
+		cc_map((&(*vtt)->sp_pan), 			ctr, 10);
+		cc_map((&(*vtt)->sp_lp_freq),		ctr, 13);
+		cc_map((&(*vtt)->sp_lp_reso), 		ctr, 12);
+		
+		/* These are on "general purpose"... */
+		cc_map((&(*vtt)->sp_lp_gain), 		ctr, 16);
+		cc_map((&(*vtt)->sp_speed), 		ctr, 17);
+		cc_map((&(*vtt)->sp_pitch), 		ctr, 18);
+		cc_map((&(*vtt)->sp_sync_cycles), 	ctr, 19);
+		
+		/* Sound Controller 6-10 */
+		cc_map((&(*vtt)->sp_ec_length), 	ctr, 75);
+		cc_map((&(*vtt)->sp_ec_feedback), 	ctr, 76);
+		cc_map((&(*vtt)->sp_ec_volume), 	ctr, 77);
+		cc_map((&(*vtt)->sp_ec_pan), 		ctr, 78);
+		
+		/* The toggles mapped to notes... */
+		cc_note((&(*vtt)->sp_trigger), 		0, 60+ctr);
+		cc_note((&(*vtt)->sp_sync_client), 	1, 60+ctr);
+		cc_note((&(*vtt)->sp_loop), 		2, 60+ctr);
+		cc_note((&(*vtt)->sp_lp_enable), 	3, 60+ctr);
+		cc_note((&(*vtt)->sp_ec_enable), 	4, 60+ctr);
+		cc_note((&(*vtt)->sp_mute), 		5, 60+ctr);
+		cc_note((&(*vtt)->sp_spin), 		6, 60+ctr);
+	}
+}
+
+void tX_midiin::clear_midi_mappings(GtkWidget *widget, gpointer dummy)
+{
+	std::list<tX_seqpar *>::iterator sp;
+	
+	if (dummy) {
+		GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window), 
+		GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO,
+		"Really clear all current MIDI mappings?");
+		
+		int res=gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+			
+		if (res!=GTK_RESPONSE_YES) {
+			return;
+		}		
+	}
+	
+	for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
+		(*sp)->bound_midi_event.type=tX_midievent::NONE;
+		(*sp)->bound_midi_event.channel=0;
+		(*sp)->bound_midi_event.number=0;
+		(*sp)->reset_upper_midi_bound();
+		(*sp)->reset_lower_midi_bound();
+	}
+}
 #endif // USE_ALSA_MIDI_IN
