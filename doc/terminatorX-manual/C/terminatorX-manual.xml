@@ -2,10 +2,6 @@
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
 <!ENTITY legal SYSTEM "legal.xml">
-<!ENTITY GFDL SYSTEM "fdl-appendix.xml">
-<!ENTITY appversion "3.74">
-<!ENTITY manrevision "1.0">
-<!ENTITY date "November 22, 2002">
 ]>
 <article id="index" lang="en">
   <articleinfo>
@@ -1098,7 +1094,4 @@
     <para>Send me comments, bug-reports, patches or scratches (see scratches
     section on the terminatorX homepage) at: <email>alex@lisas.de</email></para>
   </sect1>
-
-   &GFDL;
- 
 </article>
