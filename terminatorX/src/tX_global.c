@@ -50,14 +50,14 @@ extern void tX_midiin_store_connections(FILE *rc, char *indent);
 extern void tX_midiin_restore_connections(xmlNodePtr node);
 #endif
 
-void get_rc_name(char *buffer)
+void get_rc_name(char *buffer, int length)
 {
-	strcpy(buffer,"");
+	strncpy(buffer,"", length);
 	if (globals.alternate_rc) {
-		strcpy(buffer, globals.alternate_rc);
+		strncpy(buffer, globals.alternate_rc, length);
 	} else {
 		if (getenv("HOME")) {
-			strcpy(buffer, getenv("HOME"));
+			strncpy(buffer, getenv("HOME"), length-16);
 			if (buffer[strlen(buffer)-1]!='/')
 			strcat(buffer, "/");
 		}
@@ -168,7 +168,7 @@ int load_globals_xml() {
 	double dvalue;
 	char tmp_xml_buffer[4096];
 	
-	get_rc_name(rc_name);
+	get_rc_name(rc_name, sizeof(rc_name));
 	
 	doc = xmlParseFile(rc_name);
 	
@@ -292,7 +292,7 @@ void store_globals() {
 	char tmp_xml_buffer[4096];
 	_store_compress_xml=0;
 	
-	get_rc_name(rc_name);
+	get_rc_name(rc_name, sizeof(rc_name));
 
 	rc=fopen(rc_name, "w");
 	

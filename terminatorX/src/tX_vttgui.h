@@ -99,8 +99,10 @@ typedef struct vtt_gui
 	GtkAdjustment *ec_pan;
 	GtkAdjustment *ec_volume;
 
+#ifndef USE_FILECHOOSER	
 	GdkWindow *file_dialog;
 	GtkWidget *fs;
+#endif	
 	
 	int32_t current_gui;
 
