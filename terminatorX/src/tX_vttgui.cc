@@ -662,6 +662,7 @@ void build_vtt_gui(vtt_class *vtt)
 {
 	GtkWidget *tempbox;
 	GtkWidget *tempbox2;
+	GtkWidget *tempbox3;
 	GtkWidget *dummy;
 	char nice_name[FILENAME_BUTTON_MAX];
 	
@@ -904,16 +905,20 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->pand->get_widget(), WID_FIX);
 	gui_set_tooltip(g->pand->get_entry(), "Specifies the position of this turntable within the stereo spectrum: -1 -> left, 0-> center, 1->right.");
 
-       g->mute=gtk_check_button_new_with_label("Mute");
-       gtk_box_pack_start(GTK_BOX(tempbox2), g->mute, WID_FIX);
-       gtk_signal_connect(GTK_OBJECT(g->mute),"clicked", (GtkSignalFunc) mute_volume, vtt);
-       gtk_widget_show(g->mute);
+	tempbox3=gtk_hbox_new(FALSE,2);
+	gtk_widget_show(tempbox3);
 
-       g->solo=gtk_check_button_new_with_label("Solo");
-       gtk_box_pack_start(GTK_BOX(tempbox2), g->solo, WID_FIX);
-       gtk_signal_connect(GTK_OBJECT(g->solo),"clicked", (GtkSignalFunc) solo_vtt, vtt);
-       gtk_widget_show(g->solo);
-       
+	g->mute=gtk_check_button_new_with_label("m");
+	gtk_box_pack_start(GTK_BOX(tempbox3), g->mute, WID_FIX);
+	gtk_signal_connect(GTK_OBJECT(g->mute),"clicked", (GtkSignalFunc) mute_volume, vtt);
+	gtk_widget_show(g->mute);
+
+	g->solo=gtk_check_button_new_with_label("s");
+	gtk_box_pack_start(GTK_BOX(tempbox3), g->solo, WID_FIX);
+	gtk_signal_connect(GTK_OBJECT(g->solo),"clicked", (GtkSignalFunc) solo_vtt, vtt);
+	gtk_widget_show(g->solo);
+
+	gtk_box_pack_start(GTK_BOX(tempbox2), tempbox3, WID_FIX);
 
 	tempbox2=gtk_hbox_new(FALSE,0);
 	gtk_widget_show(tempbox2);

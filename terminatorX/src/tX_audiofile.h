@@ -35,16 +35,15 @@
 #endif
 
 #ifdef USE_MPG123_INPUT
-/*#include "endian.h"	// I don't think this is required
-#ifdef BIG_ENDIAN_MACHINE
-#define MPG123_STR "mpg123 -s \"%s\" | sox -t raw -r 44100 -c 2 -s -w -x - -t wav -c 1 -r 44100 -s -w -"
-#else*/
 #define MPG123_STR "mpg123 -qms \"%s\""
-/*#else
-#define MPG123_STR "mpg123 -qs \"%s\" | sox -t raw -r 44100 -c 2 -s -w - -t raw -c 1 -r 44100 -s -w -"
 #endif
-/*#endif*/
-#endif
+
+#ifdef USE_OGG123_INPUT
+#define OGG123_STR "ogg123 -q -d wav -f - \"%s\" | sox -t wav - -t raw -c 1 -r 44100 -s -w -"
+/* -o file:/dev/stdout because ogg123 doesn't interpret - as stdout */
+/* 20010907: i take that back, it seems that newer versions don't
+ * have that problem */
+#endif /* USE_OGG123_INPUT */
 
 
 #define TX_AUDIO_SUCCESS 0
@@ -57,6 +56,7 @@
 #define TX_AUDIO_ERR_NOT_MONO 7
 #define TX_AUDIO_ERR_WAV_READ 8
 #define TX_AUDIO_ERR_NOT_SUPPORTED 9
+#define TX_AUDIO_ERR_OGG123 10
 
 #define TX_AUDIO_UNDEFINED 0
 #define TX_AUDIO_MMAP 1
@@ -65,6 +65,7 @@
 #define TX_FILE_UNDEFINED 0
 #define TX_FILE_WAV 1
 #define TX_FILE_MPG123 2
+#define TX_FILE_OGG123 3
 
 #include <linux/limits.h>
 #include "tX_types.h"
@@ -92,7 +93,11 @@ class tx_audiofile
 #ifdef USE_MPG123_INPUT	
 	int load_mpg123();
 #define NEED_PIPED 1	
-#endif	
+#endif
+#ifdef USE_OGG123_INPUT
+	int load_ogg123();
+#define NEED_PIPED 1
+#endif
 
 #ifdef NEED_PIPED
 	int load_piped();
