@@ -381,11 +381,12 @@
   </xsl:template>
   <xsl:template match='person'>
     <a>
-      <xsl:attribute name='href'>mailto: 
-      <xsl:if test="email='alex@lisas.de'">alex@lisas.de</xsl:if>
-      <xsl:if test="email!='alex@lisas.de'">NOSPAM_ 
-      <xsl:value-of select="substring-before(email, '@')" />_AT_ 
-      <xsl:value-of select="substring-after(email, '@')" />_NOSPAM</xsl:if></xsl:attribute>
+      <xsl:attribute name='href'>mailto:<xsl:if 
+        test="email='alex@lisas.de'">alex@lisas.de</xsl:if><xsl:if 
+        test="email!='alex@lisas.de'">NOSPAM_<xsl:value-of 
+        select="substring-before(email, '@')" />_AT_<xsl:value-of 
+        select="substring-after(email, '@')" />_NOSPAM</xsl:if>
+      </xsl:attribute>
       <xsl:value-of select='name' />
     </a>
   </xsl:template>
