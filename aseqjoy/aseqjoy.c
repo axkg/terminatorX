@@ -54,6 +54,7 @@ snd_seq_t *seq_handle;
 snd_seq_event_t ev;
 int controllers[4];
 int verbose=0;
+int cc14=0;
 
 int open_alsa_seq()
 {
@@ -162,13 +163,31 @@ void loop()
 				val_d=(double) js.value;
 				val_d+=SHRT_MAX;
 				val_d=val_d/((double) USHRT_MAX);
-				val_d*=127.0;
+				
+				if (cc14) {
+					val_d*=16383.0;
+				} else {
+					val_d*=127.0;
+				}
 			
 				val_i=(int) val_d;
 			
 				if (values[js.number].last_value!=val_i) {
 					values[js.number].last_value!=val_i;
-					snd_seq_ev_set_controller(&ev, current_channel, values[js.number].controller, val_i);
+					
+					if (cc14) {
+						ev.type = SND_SEQ_EVENT_CONTROL14;
+					} else {					
+						ev.type = SND_SEQ_EVENT_CONTROLLER;
+					}
+
+					snd_seq_ev_set_fixed(&ev);
+					ev.data.control.channel=current_channel;
+					ev.data.control.param=values[js.number].controller;
+					ev.data.control.value=val_i;
+
+					
+					// snd_seq_ev_set_controller(&ev, current_channel, values[js.number].controller, val_i);
 					snd_seq_event_output_direct(seq_handle, &ev);
 					
 					if (verbose) {
@@ -191,7 +210,7 @@ int main (int argc, char **argv)
 	}
 	
 	while (1) {
-		int i=getopt(argc, argv, "vhd:1:2:3:4:");
+		int i=getopt(argc, argv, "vhrd:0:1:2:3:");
 		if (i==-1) break;
 		
 		switch (i) {
@@ -223,6 +242,10 @@ int main (int argc, char **argv)
 			
 			case 'v':
 				verbose=1;
+			break;
+
+			case 'r':
+				cc14=1;
 			break;
 			
 			case 'd':
