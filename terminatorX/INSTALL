@@ -1,8 +1,9 @@
 terminatorX INSTALL:
 Copyright (C) 1999, 2000, 2001 by Alexander König <alex@lisas.de>
+http://terminatorX.cx
 
 Note: As of Version 3.70 you need to have LADSPA installed to compile
-terminatorX.
+terminatorX. To get LADSPA visit http: http://www.ladspa.org
 
 Quickstart:
 -----------
@@ -37,24 +38,37 @@ Step 1: Configure terminatorX.
 		
 		--enable-scheduler
 		
-		NEW: since 3.5 this option is enabled by default, as you can
-		now operate the GUI while sound is playing, which can cause 
-		audio dropouts when the GUI and the sound thread run at the
-		same priority. You still need root privileges though.
-		
-		If you run terminatorX compiled with this option as root, the
-		engine thread will be run with FIFO-scheduling policy at the 
-		highest priority. This is somewhat dangerous I guess, as is
-		running programs as root anyway ;) If you want everybody to
-		run terminatorX as root (THIS IS DANGEROUS AND YOU SHOULD NOT
-		DO IT) cd (as root) into the directory where you installed
-		terminatorX (usually /usr/local/bin) and execute:
+		This option is now enabled by default. When run with root 
+		privileges terminatorX creates the engine thread with realtime
+		scheduling priorities which should result in much better
+		playback performance. Since Version 3.73 terminatorX supports
+		running suid root. If you install the terminatorX binary suid
+		root with the following commands: (with the default install
+		you should find the terminatorX binary in /usr/local/bin)
 		
 		> chown root terminatorX
 		> chmod u+s terminatorX
 		
-		I WARNED YOU! Anybody who can run this binary can completely
-		erase your hardisk. BE CAREFUL.
+		terminatorX will be started with root privileges even when an
+		"unprivileged" user runs the binary. terminatorX will then 
+		create the engine thread with realtime priority before any files
+		are written, any parameters are evaluated or connections to the 
+		X11 display are established. Right after that terminatorX will
+		drop root privileges, so the actual terminatorX code runs 
+		unprivileged.
+		
+		The problem is, with Linux' pthreads implementation the pthread
+		manager thread (that can not be influenced by terminatorX) will 
+		still run with root privileges.
+		
+		So there is a small chance that a malicious attacker could 
+		utilize terminatorX to acquire root privileges if installed suid
+		root, although it should require quite some effort to create an
+		exploit	for that. On the other hand realtime scheduling 
+		massively improves the playback performance. So depending on who
+		can access your computer you will have to decide for yourself on
+		performance vs security. Alternatively you can of course run
+		terminatorX as root to achieve realtime scheduling.
 						
 		File support options:
 		---------------------
@@ -93,18 +107,20 @@ Step 1: Configure terminatorX.
 		soundfiles. This requires ogg123 (Version >= 1.0RC2) and
 		sox to be installed. 
 		
-		Misc options:
+		Other options:
 		-------------
+		
+		--disable-gtk2
+		
+		If you've got gtk+ V2 installed but you want terminatorX to use
+		the old gtk+ V1.2 for some reason, use this switch to disable
+		gtk+ V2 code.
+		
+		--disable-libxml2
+		
+		If you've got libxml V2 installed but you want terminatorX to 
+		use V1 instead, use this to disable libxml V1.
 
-		--enable-3dnow
-		
-		This will cause the binary to include 3DNow! accelerated 
-		mixing routines. The rule's simple: if your CPU does support
-		3DNow! then turn it on (it enhances performance quite a bit)
-		- if your machine doesn't, well then keep it disabled. A binary
-		created with 3DNow! acceleration will *not* run on machines
-		without 3DNow!.
-		
 		--enable-debug
 		
 		This will cause terminatorX to display some debug messages on

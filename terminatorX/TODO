@@ -1,55 +1,41 @@
 terminatorX TODO:
 
-These are the things I´d like to implement IF I have the time.
+DISCLAIMER: I might implement some of these features in random order. You can 
+accelerate development of a certain feature by sending me a patch ;)
 
-- MIDI interface (Josh Steiner is working on that)
+High priority milestones:
+-------------------------
 
-- port Bennos mmap technology into the new code
+I'd like to have this in 4.0:
 
-- more precise syncing
+- Rewrite the audio device layer, so that terminatorX operates at a fix block
+  size - this will allow correct playback of sequencer events even if played
+  back on a different soundcard then recorded.
 
-- a click filter for client triggers
+- Support ALSA drivers and allow usage of multiple audio devices at the same 
+  time.
+  
+- Switch the terminatorX set file format to XML so that sets recorded on one
+  platform can be loaded on other platforms, too.
 
-- code cleanup: I guess this will be on this list until development has stalled.
+- Support stereo LADSPA plugins somehow.
 
-DONE:
+- Move the "main buttons" on the top right to a menu bar in order to get the
+  GUI even more flexible.
 
-The following stuff has been on the list above and is now ipmlemented:
+Low priority milestones:
+------------------------
 
-[V3.71]
+This might come after 4.0:
 
-- stereo operation (this is up next)
+- Implement a sequencer editor GUI to delete, copy & paste, edit event etc.
 
-[V3.7]
+- Find a replacement for DGA mouse grabbing as that has some problems and 
+  might be gone sometime from now.
+  
+- Provide a MIDI interface to terminatorX.
 
-- support for LADSPA plugins
-
-[V3.6]
-
-- sequencer is here :)
-
-[V3.0]
-
-- Enhance audio quality with -DHANDLE_STOP -> no clicks.
-
-- Accept wavfiles that contain additional information (e.g. loops)
-
-- Support Y-mouse-movement for scratching
-
-[V2.4] Thanks to Adam Sjøgren <asjo@diku.dk> licmak.c is obsolete:
-
-- implement licmak with either perl, awk or sed.
-
-
-[V2.3] (use -DKEEP_DEV_OPEN in Makefile)
-
-- add a "keep device open" option and implement it
-  (this would help if you have problems opening device very often
-  due to memory fragmentation). And it would help me ;) as my card (or better
-  driver) clicks awfully when device is opened!
-
-OBSOLETE:
-
-[V3.0] no cmdline args anymore so...
-
-- correct getopt error handling.
+- Use libaudiofile, libvorbis, etc. for file loading to get rid of "piped
+  loading" and accelerate loading of ogg and mp3 files this way.
+  
+- Support other languages.
