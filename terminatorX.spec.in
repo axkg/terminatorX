@@ -16,12 +16,14 @@ Requires: gtk+ >= 1.2.5
 
 %description
 terminatorX is a realtime audio synthesizer that allows you to "scratch" on
-digitally sampled audio data (*.wav, *.au, *.mp3, etc.) the way hiphop-DJs
-scratch on vinyl records. It features multiple turntables, realtime effects
-(buit-in as well as LADSPA plugin effects), a sequencer and an easy-to-use
-gtk+ GUI.
+digitally sampled audio data (*.wav, *.au, *.ogg, *.mp3, etc.) the way 
+hiphop-DJs scratch on vinyl records. It features multiple turntables, realtime
+effects (buit-in as well as LADSPA plugin effects), a sequencer and an
+easy-to-use gtk+ GUI.
 
 %changelog
+* Sat Sep 14 2002 Alexander König <alex@lisas.de>
+ - Switch from xpm to pngs for GNOME icons
 * Fri May 31 2002 Alexander König <alex@lisas.de>
  - Added Adrian's man page
 * Tue Mar 20 2001 Adrian Reber <adrian@lisas.de>
@@ -56,7 +58,7 @@ uname -a|grep SMP && make -j 2 || make
 
 MIMEDIR=$RPM_BUILD_ROOT%{_datadir}/mime-info
 ICONDIR=$RPM_BUILD_ROOT%{_datadir}/pixmaps
-ICONS="gnome-support/terminatorX-app.xpm gnome-support/terminatorX-mime.xpm"
+ICONS="gnome-support/terminatorX-app.png gnome-support/terminatorX-mime.png"
 MIMEFILES="gnome-support/terminatorX.keys gnome-support/terminatorX.mime"
 
 mkdir -p $MIMEDIR
@@ -73,7 +75,7 @@ Name=terminatorX
 Type=Application
 Comment=sophisticated scratching and audio tool
 Exec=terminatorX
-Icon=terminatorX-app.xpm
+Icon=terminatorX-app.png
 EOF
 )
 
@@ -87,6 +89,6 @@ find . -name "Makefile*" -print -exec rm -rf {} \;
 %{_mandir}/man1/terminatorX.1*
 %{_datadir}/mime-info/terminatorX.keys
 %{_datadir}/mime-info/terminatorX.mime
-%{_datadir}/pixmaps/terminatorX-app.xpm
-%{_datadir}/pixmaps/terminatorX-mime.xpm
+%{_datadir}/pixmaps/terminatorX-app.png
+%{_datadir}/pixmaps/terminatorX-mime.png
 %{_datadir}/gnome/apps/Multimedia/terminatorX.desktop
