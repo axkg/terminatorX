@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -331,9 +331,12 @@ void tX_sequencer :: load(xmlDocPtr doc, xmlNodePtr node)
 	for (xmlNodePtr cur=node->xmlChildrenNode; cur!=NULL; cur=cur->next) {
 		if (cur->type == XML_ELEMENT_NODE) {
 			if (xmlStrcmp(cur->name, (xmlChar *) "event")==0) {
-				ev=new tX_event(doc, cur);
-				max_timestamp=ev->get_timestamp();
-				song_list.push_back(ev);
+				ev=tX_event::load_event(doc, cur);
+				
+				if (ev) {
+					max_timestamp=ev->get_timestamp();
+					song_list.push_back(ev);
+				}
 			} else {
 				tX_warning("unhandled sequencer element %s.", cur->name);
 			}

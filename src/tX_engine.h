@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -74,16 +74,16 @@ class tX_engine {
 	bool loop_is_active;
 	bool grab_request;
 	bool grab_active;
+	bool runtime_error;
 	
+#ifdef USE_ALSA_MIDI_IN
+	private: tX_midiin *midi;
+	public:	tX_midiin *get_midi() { return midi; }
+#endif	
 	public:
 
-#ifdef USE_ALSA_MIDI_IN
-	tX_midiin *midi;
-	tX_midiin *get_midi() { return midi; }
-#endif	
-
 	pthread_t get_thread_id() { return thread; }
-	
+	bool get_runtime_error() { return runtime_error; }
 	static tX_engine *get_instance();
 	tX_engine();
 	~tX_engine();
