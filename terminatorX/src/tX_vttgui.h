@@ -36,7 +36,8 @@ typedef struct vtt_gui
 {
 	GtkWidget *control_box;
 	GtkWidget *audio_box;
-
+	GtkWidget *adjust_dialog;
+	
 	/* Control Box Widgets */
 	GtkWidget *control_label;
 	GtkWidget *control_minimize;
@@ -50,6 +51,7 @@ typedef struct vtt_gui
 	GtkWidget *name;
 	GtkWidget *show_audio;
 	GtkWidget *del;
+	GtkWidget *adjust_button;
 	GtkWidget *fx_button;
 	
 	/* Trigger */
