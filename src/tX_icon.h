@@ -18,7 +18,7 @@
  
     File: tX_icon.h
  
-    Description: Header to tX_icon.c / defines the heavily used
+    Description: Header to tX_icon.c
 
 */    
-extern char * tX_icon_xpm[];
+extern const guint8 tX_icon[];
