@@ -1,0 +1,42 @@
+There are several things you can do to improve terminatorX performance:
+
+1. Don't use gtk+-pixmap-themes
+2. Compile an optimized binary
+3. Optimize your terminatorX setup
+4. Optimize your kernel
+
+In Detail:
+
+1. Don't use gtk+-pixmap-themes
+-------------------------------
+
+The sequencer brings a lot of additional GUI activity. Now the "selfmade"
+widgets perform pretty good (no matter what theme you use) but for example
+scale widgets are extremly slow with pixmap-themes. The problem is that the
+gtk-pixmap engine has to stretch the images and stretching images is a very
+CPU-intensive task. So it's best to not use those themes at all.
+
+2. Compile an optimized binary
+------------------------------
+
+This issue is covered in the INSTALL file mostly. If your machine can handle
+3DNow! instruction be sure to use 3DNow! (--enable-3dnow) - since V3.6 this 
+brings ~20% more performance increase. And setting good optimization flags is
+a good idea, too (see INSTALL).
+
+3. Optimize your terminatorX setup
+----------------------------------
+
+The default settings for the GUI updates provide good realtime feedback. This
+may cause problems on slower machines or evil gtk+-themes. If the GUI-thread
+causes dropouts in the audio-engine you should increase the Update-Delay value 
+in the options dialog.
+
+4. Optimize your kernel
+-----------------------
+
+The current 2.2.X-kernels show a pretty high latency. This is problematic for
+near-realtime apps and therefore most linux-audio-apps. Ingo Molnar is
+maintaining a patch against the 2.2.x kernels that reduces latency. They are
+called "low-latency-patches" and are available from:
+http://people.redhat.com/mingo/lowlatency-patches/
