@@ -20,30 +20,18 @@ void tX_panel :: minimize(GtkWidget *w, tX_panel *p)
 	guint padding;
 	GtkPackType pack_type;
 		
-	if (p->container)
-	{
-		gtk_box_query_child_packing(GTK_BOX(p->container),
-		                            p->mainbox,
-					    &expand,
-					    &fill,
-					    &padding,
-					    &pack_type);
-		gtk_box_set_child_packing(GTK_BOX(p->container),
-		                            p->mainbox,
-					    expand,
-					    fill,
-					    padding,
-					    pack_type);
+	if (p->container) {
+		gtk_box_query_child_packing(GTK_BOX(p->container), p->mainbox,
+									&expand, &fill, &padding, &pack_type);
+		gtk_box_set_child_packing(GTK_BOX(p->container), p->mainbox,
+									expand, fill, padding, pack_type);
 		gtk_container_check_resize(GTK_CONTAINER(p->container));			    
-		//gtk_widget_set_usize(p->container, p->container->allocation.width, p->container->allocation.height);
 	}
 }
 
 void tX_panel_make_label_bold(GtkWidget *widget) {
-	char label[128];
-	strcpy(label, "<b>");
-	strcat(label, gtk_label_get_text(GTK_LABEL(widget)));
-	strcat(label, "</b>");
+	char label[128];	
+	sprintf(label, "<b>%s</b>", gtk_label_get_text(GTK_LABEL(widget)));
 	gtk_label_set_markup(GTK_LABEL (widget), label);
 }
 
@@ -92,7 +80,6 @@ void tX_panel :: add_client_widget(GtkWidget *w)
 
 tX_panel :: ~tX_panel()
 {
-	//gtk_widget_destroy(pixmap);
 	gtk_widget_destroy(minbutton);
 	gtk_widget_destroy(labelbutton);
 	gtk_widget_destroy(clientbox);

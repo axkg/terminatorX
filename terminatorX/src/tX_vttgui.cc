@@ -141,10 +141,8 @@ void load_part(char *newfile, vtt_class *vtt)
 	ret = vtt->load_file(newfile);
 	
 	ld_destroy();
-	if (ret)
-	{
-		switch(ret)
-		{
+	if (ret) {
+		switch(ret) {
 			case TX_AUDIO_ERR_ALLOC:
 			tx_note("Failed to load audiofile - there's not enough memory available.", true);
 			break;
@@ -202,9 +200,7 @@ void load_part(char *newfile, vtt_class *vtt)
 			default:					
 			tx_note("An unknown error occured - if this bug is reproducible please report it, thanks.", true);	
 		}
-	}
-	else
-	{
+	} else {
 		nicer_filename(global_filename_buffer, newfile);
         gtk_button_set_label(GTK_BUTTON(vtt->gui.file), global_filename_buffer);
 	}	
@@ -250,7 +246,7 @@ void drop_file(GtkWidget *widget, GdkDragContext *context,
 	realfn=g_filename_from_uri(filename, &host, NULL);
 	if (realfn) {
 		fn=realfn;
-	} else  {
+	} else {
 		fn = strchr (filename, ':');
 		if (fn) fn++; else fn=(char *) selection_data->data;
 	}
@@ -266,8 +262,7 @@ GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 {	
 	char buffer[512];
 	
-	if (vtt->gui.file_dialog)
-	{
+	if (vtt->gui.file_dialog) {
 		gdk_window_raise(vtt->gui.file_dialog);
 		return(0);
 	}
@@ -281,8 +276,7 @@ GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 		gtk_file_selection_set_filename(GTK_FILE_SELECTION(vtt->gui.fs),globals.current_path);
 	}
 	
-	gtk_widget_show(GTK_WIDGET(vtt->gui.fs));
-	
+	gtk_widget_show(GTK_WIDGET(vtt->gui.fs));	
 	vtt->gui.file_dialog=vtt->gui.fs->window;
 	
 	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->ok_button), "clicked", G_CALLBACK(do_load_file), vtt);
@@ -304,18 +298,12 @@ void edit_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 {
 	char command[2*PATH_MAX];
 
-	if (vtt->samples_in_buffer == 0)
-	{
+	if (vtt->samples_in_buffer == 0) {
 		tx_note("No audiofile loaded - so there's nothing to edit.", true);
-	}
-	else
-	if (strlen(globals.file_editor)>0)
-	{
+	} else if (strlen(globals.file_editor)>0) {
 		sprintf(command, "%s \"%s\" &", globals.file_editor, vtt->filename);
 		system(command); /*) tx_note("Failed to run the soundfile editor."); */
-	}
-	else
-	{
+	} else {
 		tx_note("No soundfile editor has been configured - to do so enter the soundfile editor of your choice in the options dialog.", true);
 	}
 }
@@ -326,8 +314,7 @@ void reload_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 	
 	while (gtk_events_pending()) gtk_main_iteration();
 	
-	if (vtt->samples_in_buffer > 0)
-	{
+	if (vtt->samples_in_buffer > 0) {
 		strcpy(reload_buffer, vtt->filename);
 		load_part(reload_buffer, vtt);
 	}
@@ -435,24 +422,18 @@ void client_setup_number(GtkWidget *wid, vtt_class *vtt)
 
 void mute_volume(GtkWidget *widget, vtt_class *vtt)
 {
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)))
-	{
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
 		vtt->set_mix_mute(1);
-	}
-	else
-	{
+	} else {
 		vtt->set_mix_mute(0);
 	}
 }
 
 void solo_vtt(GtkWidget *widget, vtt_class *vtt)
 {
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) 
-	{
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
 		vtt->set_mix_solo(1);
-	}
-	else
-	{
+	} else {
 		vtt->set_mix_solo(0);
 	}
 }      

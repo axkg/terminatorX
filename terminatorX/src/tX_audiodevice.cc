@@ -161,8 +161,7 @@ int tX_audiodevice_oss :: open()
 
 int tX_audiodevice_oss :: close()
 {
-	if (!fd)
-	{	
+	if (!fd) {	
 		return(1);		
 	}
 	is_open=false;

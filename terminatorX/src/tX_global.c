@@ -53,14 +53,10 @@ extern void tX_midiin_restore_connections(xmlNodePtr node);
 void get_rc_name(char *buffer)
 {
 	strcpy(buffer,"");
-	if (globals.alternate_rc)
-	{
+	if (globals.alternate_rc) {
 		strcpy(buffer, globals.alternate_rc);
-	}
-	else 
-	{
-		if (getenv("HOME"))
-		{
+	} else {
+		if (getenv("HOME")) {
 			strcpy(buffer, getenv("HOME"));
 			if (buffer[strlen(buffer)-1]!='/')
 			strcat(buffer, "/");
@@ -303,7 +299,6 @@ void store_globals() {
 		case OSS:
 		default:
 			strcpy(device_type, "oss");
-		
 	}
 	
 	if (rc) {		

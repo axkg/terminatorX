@@ -36,7 +36,8 @@
 #define TX_MOUSE_SPEED_NORMAL 0.05
 #define TX_MOUSE_SPEED_WARP 250000
 
-tx_mouse :: tx_mouse() {
+tx_mouse :: tx_mouse()
+{
 	mask=PointerMotionMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask;
 	xmot=(XMotionEvent *) &xev;
 	xkey=(XKeyEvent *) &xev;
@@ -53,7 +54,8 @@ tx_mouse :: tx_mouse() {
 }
 
 
-int tx_mouse :: grab() {	
+int tx_mouse :: grab()
+{	
 #ifdef USE_DGA2
 	XDGAMode *mode;
 #endif	
@@ -63,20 +65,17 @@ int tx_mouse :: grab() {
 	warp_override=false;
 	
 	dpy=XOpenDisplay(NULL);
-	if (!dpy)
-	{
+	if (!dpy) {
 		fputs("GrabMode Error: couldn't connect to XDisplay.", stderr);
 		return(ENG_ERR_XOPEN);
 	}
-
 
 #ifdef USE_DGA2
 	mode=XDGAQueryModes(dpy,DefaultScreen(dpy), &num);
 	
 	printf("Found %i DGA2-Modes:\n", num);
 	
-	for(i=0; i<num; i++)
-	{
+	for(i=0; i<num; i++) {
 		printf("%2i: %s\n", i, mode[i].name);
 	}
 	XFree(mode);
@@ -86,26 +85,22 @@ int tx_mouse :: grab() {
 
 	XSetInputFocus(dpy, xwindow, None, CurrentTime);
 
-	if (globals.xinput_enable)
-	{
-		if (set_xinput())
-		{
+	if (globals.xinput_enable) {
+		if (set_xinput()) {
 			XCloseDisplay(dpy);
 			fputs("GrabMode Error: failed to setup XInput.", stderr);
 			return(ENG_ERR_XINPUT);
 		}
 	}
 
-        if (GrabSuccess != XGrabPointer(dpy, xwindow, False, ButtonPressMask|ButtonReleaseMask|PointerMotionMask, GrabModeAsync,GrabModeAsync,None,None,CurrentTime))
-	{
+	if (GrabSuccess != XGrabPointer(dpy, xwindow, False, ButtonPressMask|ButtonReleaseMask|PointerMotionMask, GrabModeAsync,GrabModeAsync,None,None,CurrentTime)) {
 		reset_xinput();
 		XCloseDisplay(dpy);
 		fputs("GrabMode Error: XGrabPointer failed.", stderr);
 		return(ENG_ERR_GRABMOUSE);
 	}	
 	
-        if (GrabSuccess != XGrabKeyboard(dpy, xwindow, False, GrabModeAsync,GrabModeAsync,CurrentTime))
-	{
+	if (GrabSuccess != XGrabKeyboard(dpy, xwindow, False, GrabModeAsync,GrabModeAsync,CurrentTime)) {
 		XUngrabPointer (dpy, CurrentTime);
 		reset_xinput();		
 		XCloseDisplay(dpy);
@@ -115,11 +110,10 @@ int tx_mouse :: grab() {
 	
 
 #ifdef USE_DGA2
-	if (!XDGASetMode(dpy, DefaultScreen(dpy), 1))
+	if (!XDGASetMode(dpy, DefaultScreen(dpy), 1)) {
 #else	
-	if (!XF86DGADirectVideo(dpy,DefaultScreen(dpy),XF86DGADirectMouse))
+	if (!XF86DGADirectVideo(dpy,DefaultScreen(dpy),XF86DGADirectMouse)) {
 #endif
-	{
 		XUngrabKeyboard(dpy, CurrentTime);				
 		XUngrabPointer (dpy, CurrentTime);
 		reset_xinput();		
@@ -148,11 +142,8 @@ int tx_mouse :: grab() {
 		c++;
 		//vtt_class::focus_no(0);
 	}
-	
-	
+
 	warp=TX_MOUSE_SPEED_NORMAL;
-	
-	tX_debug("tX_mouse::grab(): this: %08x, dpy: %08x", (int) this, (int) dpy);
 	
 	return(0);
 }
@@ -175,8 +166,7 @@ void tx_mouse :: ungrab()
 	
 	XCloseDisplay(dpy);
 
-	if (globals.xinput_enable)
-	{
+	if (globals.xinput_enable) {
 		reset_xinput();	
 	}
 
@@ -196,15 +186,13 @@ void tx_mouse :: set_x_pointer(char *devname)
 		
 	pid = fork();
 	
-	if (pid==-1) 
-	{ 
+	if (pid==-1) { 
 		/* OOPS. fork failed */
-		perror("tX: Error: Couldn't fork process!");
+		perror("tX: Error: Failed to fork a new process!");
 		return; 
 	}
 	
-	if (pid==0) 
-	{
+	if (pid==0) {
 		/* The child execlps xsetpointer */
 		execlp("xsetpointer", "xsetpointer", devname, NULL);
 		perror("tX: Error: Failed to execute xpointer!");
@@ -225,21 +213,16 @@ void tx_mouse :: set_x_pointer(char *devname)
 	
 	devlist=XListInputDevices(dpy, &listmax);
 	
-	for (i=0; i<listmax; i++)
-	{
-		if(strcmp(devlist[i].name, devname)==0)
-		{
+	for (i=0; i<listmax; i++) {
+		if(strcmp(devlist[i].name, devname)==0) {
 			device=XOpenDevice(dpy, devlist[i].id);
-			if (device)
-			{
-				if (XChangePointerDevice(dpy, device, 0, 1))
-				{
+			if (device) {
+				if (XChangePointerDevice(dpy, device, 0, 1)) {
 					printf("tX: Error: failed to set pointer device.");			
 				}
+				
 				XCloseDevice(dpy, device);
-			}
-			else
-			{
+			} else {
 				printf("tX: Error: failed to open XInput device.");
 			}		
 		}
@@ -257,21 +240,17 @@ int tx_mouse :: set_xinput()
 	
 	OrgXPointer=0;
 	
-	if (globals.xinput_enable)
-	{	
+	if (globals.xinput_enable) {	
 		devlist=XListInputDevices(dpy, &listmax);
 	
-		for (i=0; i<listmax; i++)
-		{
-			if(devlist[i].use == IsXPointer)
-			{
+		for (i=0; i<listmax; i++) {
+			if(devlist[i].use == IsXPointer) {
 				OrgXPointer=devlist[i].id;
 				strcpy(OrgXPointerName, devlist[i].name);
 			}
 		}
 		
-		XFreeDeviceList(devlist);		
-		
+		XFreeDeviceList(devlist);				
 		set_x_pointer(globals.xinput_device);
 	}
 	
@@ -282,8 +261,7 @@ int tx_mouse :: set_xinput()
 
 void tx_mouse :: reset_xinput()
 {
-	if (globals.xinput_enable)
-	{
+	if (globals.xinput_enable) {
 		if (OrgXPointer) set_x_pointer(OrgXPointerName);
 	}
 }
@@ -293,14 +271,11 @@ void tx_mouse :: reset_xinput()
 
 int tx_mouse :: check_event()
 {
-	if (XCheckWindowEvent(dpy, xwindow, mask, &xev))
-	{
+	if (XCheckWindowEvent(dpy, xwindow, mask, &xev) && vtt) {
 #ifdef USE_DGA2
 		puts("Got an event");
 #endif		
-		if (vtt)
-		switch(xev.type)
-		{
+		switch(xev.type) {
 			case MotionNotify:
 				
 				if (warp_override) {
@@ -312,8 +287,7 @@ int tx_mouse :: check_event()
 				break;
 			
 			case ButtonPress:
-				switch(xbut->button)
-				{
+				switch(xbut->button) {
 					case 1: if (vtt->is_playing)
 							vtt->set_scratch(1); 
 						else
@@ -325,23 +299,21 @@ int tx_mouse :: check_event()
 				break;
 			
 			case ButtonRelease:
-				switch (xbut->button)
-				{	
+				switch (xbut->button) {	
 					case 1: vtt->set_scratch(0); break;
 					case 2: vtt->sp_mute.receive_input_value(0); break;
 				}
 				break;
+
 			case KeyPress:
 #ifdef USE_DGA2
 				puts("Yeah its a key");
 				XDGAKeyEventToXKeyEvent(xdgakey, (XKeyEvent *) &xev_copy);
 				memcpy(&xev, &xev_copy, sizeof(XEvent));
 #endif			
-			{
 				key=XKeycodeToKeysym(dpy, xkey->keycode, 0);
 				
-				switch(key)
-				{
+				switch(key) {
 					case XK_space: vtt->set_scratch(1); break;
 					case XK_Escape: return(1);
 					
@@ -384,14 +356,12 @@ int tx_mouse :: check_event()
 					case XK_F11: vtt_class::focus_no(10); break;
 					case XK_F12: vtt_class::focus_no(11); break;
 				}
-			} break;
+				break;
 			
 			case KeyRelease:
-			{
 				key=XKeycodeToKeysym (dpy, xkey->keycode, 0);
 				
-				switch(key)
-				{
+				switch(key) {
 					case XK_space: vtt->set_scratch(0); break;
 					
 					case XK_m:
@@ -412,9 +382,7 @@ int tx_mouse :: check_event()
 					vtt->set_scratch(0);
 					break;					
 				}
-			}
 		}
-		else {	puts("no vtt"); return(1); }
 	}
-	return(0);
+	return 0;
 }
