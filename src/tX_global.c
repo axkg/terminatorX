@@ -69,7 +69,7 @@ void load_globals()
 	}
 	else
 	{
-		fprintf(stderr, "tX: Alternate rc file doesn't exist, reverting to defaults");
+		fprintf(stderr, "tX: .rc-file '%s' doesn't exist, reverting to defaults\n", rc_name);
 
 		globals.startup_set = 0;
 		globals.store_globals = 1;
@@ -85,7 +85,7 @@ void load_globals()
 		globals.update_delay=1;
 	
 		globals.buff_no=2;
-		globals.buff_size=8;
+		globals.buff_size=9;
 		
 		globals.sense_cycles=12;
 	

@@ -69,7 +69,7 @@ vtt_fx :: ~vtt_fx() {}
 /******************* builtin fx ***/
 
 /* lowpass */ 
-void vtt_fx_lp :: activate() { /* NOP */ }
+void vtt_fx_lp :: activate() { myvtt->lp_reset(); }
 void vtt_fx_lp :: deactivate() { /* NOP */ }
 void vtt_fx_lp :: run() { myvtt->render_lp(); }
 int vtt_fx_lp :: isEnabled() { return myvtt->lp_enable; }
@@ -254,7 +254,7 @@ void vtt_fx_ladspa :: deactivate()
 
 void vtt_fx_ladspa :: run()
 {
-	plugin->getDescriptor()->run(instance, (vtt_class :: samples_in_mix_buffer)/2);
+	plugin->getDescriptor()->run(instance, (vtt_class :: samples_in_mix_buffer)>>1);
 }
 
 int vtt_fx_ladspa :: isEnabled()
