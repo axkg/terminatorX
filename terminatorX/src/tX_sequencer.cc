@@ -329,6 +329,7 @@ void tX_sequencer :: load(xmlDocPtr doc, xmlNodePtr node) {
 		if (cur->type == XML_ELEMENT_NODE) {
 			if (xmlStrcmp(cur->name, (xmlChar *) "event")==0) {
 				ev=new tX_event(doc, cur);
+				max_timestamp=ev->get_timestamp();
 				song_list.push_back(ev);
 			} else {
 				tX_warning("unhandled sequencer element %s.", cur->name);

@@ -2,8 +2,8 @@ LIBS=@X_LIBS@ @GTK_LIBS@ @LIBS@
 
 SUBDIRS = gui_icons smallknob
 
-CFLAGS=@CFLAGS@ @GTK_CFLAGS@ -D_REENTRANT
-CXXFLAGS=@CFLAGS@ @GTK_CFLAGS@ -D_REENTRANT
+AM_CFLAGS=@CFLAGS@ @GTK_CFLAGS@ -D_REENTRANT
+AM_CXXFLAGS=@CFLAGS@ @GTK_CFLAGS@ -D_REENTRANT
 
 license.c: $(top_srcdir)/COPYING
 	@AWK@ -f $(srcdir)/licmak.awk < $(top_srcdir)/COPYING > $(srcdir)/license.c
