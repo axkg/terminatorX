@@ -1,0 +1,16 @@
+terminatorX AUTHORS:
+
+Author:			Alexander König <alkoit00@fht-esslingen.de>
+
+Contributors:
+licmak.awk: 		Christian <eleet@altern.org>
+tX_wavfunc.c-patch:	"Andrew C. Bul+hac?k" <acb@zikzak.net>
+MK II icon:		Michael Kahl <m.kahl@student.hu-berlin.de>
+
+Authors of files not written for tX but included in this distribution:
+mmx.h README.MMX:	Hank Dietz <hankd@ecn.purdue.ed> and
+			Randy Fisher <rfisher@ecn.purdue.edu>
+3dnow.h:		Robert Dale <rob@nb.net>
+
+The lowpass filter is based on:
+reso_lop.txt:		Paul Kellett <paul.kellett@maxim.abel.co.uk>

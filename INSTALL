@@ -1,0 +1,142 @@
+terminatorX INSTALL:
+Copyright (C) 1999, 2000 by Alexander König <alkoit00@fht-esslingen.de>
+
+Quickstart:
+-----------
+
+	If you want enhanced audio-file support or optimization don't
+	"quickstart" but read the rest of this file.
+
+	If you just cant wait any longer try:
+	> ./configure
+	> make install
+
+Step 1: Configure terminatorX.
+------------------------------
+
+	If you want your compiler to optimize the binary, you need to set your
+	environment variable CFLAGS to your needs BEFORE you run ./configure.
+
+	for example:
+	if use bash: > export CFLAGS="-O2"
+	with tcsh:   > setenv CFLAGS "-O2"
+
+	I use CFLAGS="-O6 -mpentiumpro" btw. You'll need to have a
+	"pentium-aware" compiler to use that though (gcc/pgcc).
+
+	All of the following configure options can be either enabled with
+	--enable-option or disabled with --disable-option.
+
+	The configure Options:
+	
+		Performance Options:
+		--------------------
+		
+		--enable-scheduler
+		
+		NEW: since 3.5 this option is enabled by default, as you can
+		now operate the GUI while sound is playing, which can cause 
+		audio dropouts when the GUI and the sound thread run at the
+		same priority. You still need root privileges though.
+		
+		If you run terminatorX compiled with this option as root, the
+		engine thread will be run with FIFO-scheduling policy at the 
+		highest priority. This is somewhat dangerous I guess, as is
+		running programs as root anyway ;) If you want everybody to
+		run terminatorX as root (THIS IS DANGEROUS AND YOU SHOULD NOT
+		DO IT) cd (as root) into the directory where you installed
+		terminatorX (usually /usr/local/bin) and execute:
+		
+		> chown root terminatorX
+		> chmod u+s terminatorX
+		
+		I WARNED YOU! Anybody who can run this binary can completely
+		erase your hardisk. BE CAREFUL.
+		
+		--disable-flash
+		
+		This turns off the "flash"-widgets that display the current
+		signal of the turntables and the master out. This might help
+		fighting performance probs. Oh, If you have a better name
+		for the widget please tell me ;)		
+		
+		--enable-3dnow
+		
+		This enables EXPERIMENTAL 3DNow! support. It seems as if the
+		current libmmx (which is included) doesn't work with the new
+		gcc 2.95. So if you use that compiler do not enable this option.
+		
+		The built binary will run on CPUs with 3DNow! support only.
+		AFAIK these are the K6II, K6III and the Athlon (K7). INTEL CPUs
+		don't have 3DNow! support!
+		
+		For now this the only thing that might run a little faster is
+		the echo effect. I planned to hack more 3DNow! code but at the
+		moment I simply don't have the time.
+				
+		File support options:
+		---------------------
+		
+		All of these are enabled by default. Nevertheless the configure
+		script checks for the availability of the helper application
+		and if it's not found disables support for it. Check the
+		terminatorX homepage for links to those apps if you don't have
+		them - or check your distribution first, AFAIK all bring these
+		tools nowaday.
+		
+		--enable-wav
+		
+		This enables the builtin wav routines. They load 16Bit/44Khz
+		MONO RIFF/WAV files only but they do that significantly faster
+		than using sox. If these routines fail and sox support is
+		enabled, terminatorX will try to load the file with sox as 
+		a fallback. Disable them only if they don't load your files
+		correctly.
+		
+		--enable-sox
+		
+		This enables sox support. As sox can load nearly any audio file
+		it makes sense to use it. You have to have sox installed of 
+		course.
+		
+		--enable-mpg123
+		
+		This enables mpg123 support. If you want to be able to load mp3
+		files keep this option enabled. You have to have mpg123
+		installed of course.
+		
+		Misc options:
+		-------------
+		
+		--disable-dial
+		
+		The resulting binary will not use the new dial-widget, but
+		scales instead.
+
+		--enable-closedev
+		
+		This has no effect at the moment. Sorry. Don't disable it.
+		
+		--enable-debug
+		
+		This will cause terminatorX to display some debug messages on
+		your console. 
+		
+		Just as an example my configure line is (works with bash only):
+		> CFLAGS="-O2 -mpentiumpro" ./configure 
+
+Step 2: Build the binary.
+-------------------------
+
+	This one's easy:
+	> make
+	
+Step 3: Install the binary:
+---------------------------
+
+	Just as easy:
+	> make install
+	
+	You need root privileges though. If you don't have them simply copy
+	the terminatorX-binary (in src/terminatorX) to a directory of your
+	choice and run terminatorX form there.	
