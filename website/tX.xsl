@@ -15,7 +15,7 @@
           {text-align: left} p.fancy {text-align: justify} p.screen {text-align: left; font-family: monospace} </style>
       </head>
       <body alink="#FF0000" bgcolor="#555555" link="#FFFF99"
-        onload="load('main','pix/vinyl-hover.gif','pix/vinyl.png');load('download','pix/vinyl-hover.gif','pix/vinyl.png');load('screenshots','pix/vinyl-hover.gif','pix/vinyl.png');load('faq','pix/vinyl-hover.gif','pix/vinyl.png');load('docs','pix/vinyl-hover.gif','pix/vinyl.png');load('turntable','pix/vinyl-hover.gif','pix/vinyl.png');load('scratches','pix/vinyl-hover.gif','pix/vinyl.png');load('links','pix/vinyl-hover.gif','pix/vinyl.png');load('bugs','pix/vinyl-hover.gif','pix/vinyl.png');load('aseqjoy','pix/vinyl-hover.gif','pix/vinyl.png');"
+        onload="load('main','pix/vinyl-hover.gif','pix/vinyl.png');load('download','pix/vinyl-hover.gif','pix/vinyl.png');load('changelog','pix/vinyl-hover.gif','pix/vinyl.png');load('screenshots','pix/vinyl-hover.gif','pix/vinyl.png');load('faq','pix/vinyl-hover.gif','pix/vinyl.png');load('docs','pix/vinyl-hover.gif','pix/vinyl.png');load('turntable','pix/vinyl-hover.gif','pix/vinyl.png');load('scratches','pix/vinyl-hover.gif','pix/vinyl.png');load('links','pix/vinyl-hover.gif','pix/vinyl.png');load('bugs','pix/vinyl-hover.gif','pix/vinyl.png');load('aseqjoy','pix/vinyl-hover.gif','pix/vinyl.png');"
         text="#FFFFFF" vlink="#FFCC33">
         <!--new-->
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -110,6 +110,26 @@
                     </td>
                     <td>
                       <a href="screenshots.html" onMouseOut="off('screenshots');" onMouseOver="on('screenshots');">screenshots</a>
+                    </td>
+                    <td/>
+                  </xsl:if>
+                </tr>
+                <tr>
+                  <xsl:if test="@name='changelog'">
+                    <td bgcolor="#777777">
+                      <img alt="-" border="0" src="pix/vinyl-highlight.png" vspace="0"/>
+                    </td>
+                    <td bgcolor="#777777">changelog</td>
+                    <td bgcolor="#777777">
+                      <img alt="-" border="0" src="pix/vinyl-spacer.png" vspace="0"/>
+                    </td>
+                  </xsl:if>
+                  <xsl:if test="@name!='changelog'">
+                    <td>
+                      <img alt="-" border="0" name="changelog" src="pix/vinyl.png" vspace="0"/>
+                    </td>
+                    <td>
+                      <a href="changelog.html" onMouseOut="off('changelog');" onMouseOver="on('changelog');">changelog</a>
                     </td>
                     <td/>
                   </xsl:if>
@@ -449,7 +469,7 @@
     <ul>
       <xsl:for-each select="tar">
         <xsl:if test="@version!=//current/@version">
-          <li>Version <xsl:value-of select="@version"/>: <a>
+          <li>Old version <xsl:value-of select="@version"/>: <a>
               <xsl:attribute name="href">dist/terminatorX-<xsl:value-of
                 select="@version"/>.tar.gz</xsl:attribute>terminatorX-<xsl:value-of select="@version"/>.tar.gz</a>
             <xsl:if test="@havebz2='yes'"> (<a>
@@ -461,9 +481,9 @@
   </xsl:template>
   <xsl:template match="rpm" name="rpm">
     <li>
-      <xsl:if test="@type='src'">Source RPM: </xsl:if>
+      <xsl:if test="@type='src'">Old source RPM: </xsl:if>
       <xsl:if test="@type!='src'">
-        <xsl:value-of select="@type"/>-binary RPM: </xsl:if>
+        Old <xsl:value-of select="@type"/>-binary RPM: </xsl:if>
       <a>
         <xsl:attribute name="href">rpms/terminatorX-<xsl:value-of select="@version"/>-<xsl:value-of
             select="@rpmsubversion"/>.<xsl:value-of select="@type"/>.<xsl:if test="@ext">
@@ -502,8 +522,8 @@
         <xsl:call-template name="rpm"/>
       </xsl:for-each>
     </ul>
-    <xsl:if test="sum(//rpm[@version=//current/@version])=0">Sorry, no RPMs available for the
-      current release, yet. Stay tuned.</xsl:if>
+    <!-- <xsl:if test="sum(//rpm[@version=//current/@version])=0">Sorry, no RPMs available for the
+      current release, yet. Stay tuned.</xsl:if> -->
   </xsl:template>
   <xsl:template match="filelist">
     <ul>
@@ -715,6 +735,14 @@
     </center>
     <xsl:if test="name(.)='screenshot'">OPEN_DA_P</xsl:if>
   </xsl:template>
+  
+  <xsl:template match="img">
+	<img border="0" alt="deco image" hspace="10">
+		<xsl:attribute name="src">pix/<xsl:value-of select="@filename"/></xsl:attribute>
+		<xsl:attribute name="align"><xsl:value-of select="@align"></xsl:value-of></xsl:attribute>
+	</img>
+  </xsl:template>
+  
   <xsl:template match="image">
     <xsl:if test="position()&gt;3">
       <xsl:if test="(position() div 2) mod 3=1">NEW_TT_ROW</xsl:if>

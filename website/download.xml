@@ -4,7 +4,23 @@
     <index>
       <title>Available Downloads</title>
     </index>
-    <current havebz2="yes" version="3.81"/>
+    <current havebz2="yes" version="3.82"/>
+    <subsection>
+      <title>Current Version</title>
+      <currentversion/>
+      <para>
+        <link ref="http://www.debian.org">Debian</link> users may prefer to install the <link
+          ref="http://packages.debian.org/unstable/sound/terminatorx.html"> terminatorX Debian
+        package</link> via <italic>apt-get</italic>.</para>
+		<para><link ref="http://www.redhat.com">RedHat</link> or <link ref="http://fedora.redhat.com/">Fedora</link>
+			users can get RPMs from 
+				<link ref="http://ccrma.stanford.edu/planetccrma/software/soundapps.html#SECTION000326900000000000000">Planet CCRMA</link>.
+			</para>
+      <para>Mandrake users may want to check out <person>
+          <name>Thac</name>
+          <email>tobbe@nyvalls.com</email>
+        </person>'s RPMs <link ref="http://rpm.nyvalls.se/sound9.1.html">here</link>.</para>
+    </subsection>
     <subsection>
       <title>Requirements</title>
       <para>terminatorX requires: <itemizedlist>
@@ -73,22 +89,11 @@
       </para>
     </subsection>
     <subsection>
-      <title>Current Version</title>
-      <currentversion/>
-      <para>
-        <link ref="http://www.debian.org">Debian</link> users may prefer to install the <link
-          ref="http://packages.debian.org/unstable/sound/terminatorx.html"> terminatorX Debian
-        package</link> via <italic>apt-get</italic>.</para>
-      <para>Mandrake users may want to check out <person>
-          <name>Thac</name>
-          <email>tobbe@nyvalls.com</email>
-        </person>'s RPMs <link ref="http://rpm.nyvalls.se/sound9.1.html">here</link>.</para>
-    </subsection>
-    <subsection>
       <title>Old Sources</title>
       <para>These are <bold>old</bold> releases - for the current version see the 
       section <link ref="#Current Version">above</link>.</para>
       <tarfiles>
+        <tar havebz2="yes" version="3.82"/>
         <tar havebz2="yes" version="3.81"/>
         <tar havebz2="yes" version="3.80"/>
         <tar havebz2="yes" version="3.73"/>
@@ -105,12 +110,9 @@
         <tar version="3.0"/>
       </tarfiles>
     </subsection>
-    <subsection>
+    <!--<subsection>
       <title>Old RPMs</title>
       <rpmfiles>
-        <!--<rpm distribution="RH 9"
-          note="without liblrdf, ALSA, MIDI libmad and JACK support" rpmsubversion="1"
-          type="i386" version="3.81"/>-->
         <rpm distribution="RH 8.0"
           note="without liblrdf, ALSA, MIDI and libmad support, works with RH9" rpmsubversion="1"
           type="i386" version="3.80"/>
@@ -126,7 +128,7 @@
         <rpm rpmsubversion="1" type="src" version="3.70"/>
         <rpm rpmsubversion="2" type="src" version="3.60"/>
       </rpmfiles>
-    </subsection>
+    </subsection>-->
     <subsection>
       <title>Historic Sources</title>
       <filelist>

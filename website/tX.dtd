@@ -29,6 +29,11 @@
 <!ELEMENT author (person, tinycomment?)>
 <!ELEMENT comment (nopara, tinycomment?)>
 
+<!ELEMENT img EMPTY>
+<!ATTLIST img
+	filename CDATA #REQUIRED
+	align (left|right) 'right'>
+
 <!ELEMENT turntabletable (tt)*>
 <!ELEMENT tt (author, text, ttimages)>
 <!ATTLIST tt 
@@ -93,12 +98,12 @@
 <!ELEMENT para (#PCDATA|screen|bold|red|italic|link|dblink|screenshot|person|itemizedlist|newline|file)*>
 
 <!ATTLIST para
-  class (fancy|plain) 'fancy'>
+  class (fancy|plain|screen) 'fancy'>
   
 <!ELEMENT bold (#PCDATA)>
 <!ELEMENT screen (#PCDATA)>
 <!ELEMENT italic (#PCDATA)>
-<!ELEMENT red (#PCDATA)>
+<!ELEMENT red (#PCDATA|screen)*>
 <!ELEMENT link (#PCDATA)>
 <!ATTLIST link
   ref CDATA #REQUIRED>
@@ -106,7 +111,6 @@
 <!ELEMENT dblink (#PCDATA)>
 <!ATTLIST dblink
   id CDATA #REQUIRED>
-
 
 <!ELEMENT itemizedlist (listitem+)>
 <!ELEMENT listitem (nopara|para)+>
@@ -116,10 +120,9 @@
 <!ATTLIST screenshot
   filename CDATA #REQUIRED>
 
-<!ELEMENT image (nopara)>
+<!ELEMENT image (nopara?)>
 <!ATTLIST image
   filename CDATA #REQUIRED>
-
 
 <!ELEMENT person (name, email)>
 <!ELEMENT name (#PCDATA)>
@@ -129,4 +132,3 @@
 <!ATTLIST version
   name CDATA #REQUIRED
   unreleased CDATA 'false'>
-

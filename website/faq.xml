@@ -130,15 +130,15 @@
           should reduce the number of suid-root programs.
         </para>
         
-        <para>terminatorX provides two methods of running suid-root, via the following
-          configure switches:
+        <para>The old suid-root method has gone - you have to configure terminatorX with
+			POSIX capabilities to allow running suid-root:
           <itemizedlist>
             <listitem><para><screen>--enable-capabilities</screen>: this method (enabled
               by default) drops root privileges very early (which is good) and only keeps
               the capability of renice-ing processes. It is Linux-specific though and requires
               a not-too-old 2.4.* kernel and the <dblink id="libcap"/> library.
             </para></listitem>
-            <listitem><para><screen>--enable-suidroot</screen>: this method is now disabled
+<!--            <listitem><para><screen>-enable-suidroot</screen>: this method is now disabled
               by default as it is potientially more dangerous. The problems discussed in this
               <link ref="http://www.securityfocus.com/archive/1/328469">bugtraq post</link>
               have been fixed - but there might be other problems. Note that exploiting this
@@ -148,12 +148,12 @@
                 anymore which is probably related to their NPTL implementation. So, if you
                 want suid-root with RH 9 use the capabilities method.
               </para>
-            </listitem>
+            </listitem> -->
           </itemizedlist>          
         </para>
         
         <para>
-          <red><bold>Again:</bold></red> both methods might have yet unknown flaws so if you 
+          <red><bold>Again:</bold></red> this methods might have yet unknown flaws so if you 
           want to be 100% sure that your terminatorX installation is no security
           threat <bold>do not install terminatorX suid-root</bold>.
         </para>
