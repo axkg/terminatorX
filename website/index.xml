@@ -1,0 +1,739 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section SYSTEM "./tX.dtd">
+<section name="main">
+  <main>
+    <general>
+      <heading>Welcome to the terminatorX website!</heading>
+      <subtitle>
+	<nopara>Bookmark this site as <link ref="http://www.terminatorX.cx">
+	    www.terminatorX.cx</link>. It's located on
+	  <link ref="http://42.fht-esslingen.de">42.fht-esslingen.de</link>
+	</nopara>
+      </subtitle>
+      <text>
+	<para>
+	  For those of you who drop by for the first time: terminatorX is a
+	  realtime audio synthesizer that allows you to "scratch" on digitally
+	  sampled audio data (*.wav, *.au, *.ogg, *.mp3, etc.) the way hiphop-DJs
+	  scratch on vinyl records. It features multiple turntables, realtime
+	  effects (buit-in as well as
+	  <link ref="http://www.ladspa.org">LADSPA</link> plugin
+	  effects), a sequencer and 
+	  an easy-to-use gtk+ GUI. <bold>This sofware is designed to run
+	    under Linux, FreeBSD and the like</bold>. <!-- It will possibly run und
+	  other UNIXish systems running
+	  <link ref="http://www.xfree86.org">XFree86</link> and a
+	  compatilbe audio device, like OpenBSD. -->
+	  If you have more questions read the <link
+          ref="faq.html">FAQ</link>/<link ref="doc/index.html">Manual</link>/<link
+          ref="http://www.boosthardware.com/LAU/quicktoots/toots/tx_toot/tx_toot1.html">Tutorial</link>/<link 
+	  ref="COPYING">LICENSE</link> and if you have further questions, suggestions,
+	  patches, <link ref="scratches.html">scratches</link> send me a
+	  <link ref="mailto:alex@lisas.de">mail</link>
+	</para>
+      </text>
+    </general>
+
+    <news>
+      <newsitem>
+	<newsheader date="18 Sep"><link ref="download.html#Current Version">terminatorX
+	    V3.73</link> available, 
+	  <link ref="http://www.debian.org">Debian</link> inclusion +
+	  a <link ref="http://www.boosthardware.com/LAU/quicktoots/toots/tx_toot/tx_toot1.html">tutorial</link>
+	</newsheader>
+	<newstext>
+	  <para>Aside of fixing numerous bugs, the new release does have
+	    some new features:
+	    <itemizedlist>
+	      <listitem>
+		<para>I ported terminatorX to <link ref="http://www.gtk.org">gtk+</link>
+		  <bold>Version 2</bold> so tX should integrate nicely
+		  with your GNOME 2 desktop. This release still builds with
+		  the old gtk+ 1.2, too, but I don't plan to support it
+		  much longer.
+		</para>
+	      </listitem>
+	    </itemizedlist>
+	 
+	    <screenshot filename="shot-3.73-1.png">
+	      <nopara>Minimizing controls to save space</nopara>
+	    </screenshot>
+	 
+	  <itemizedlist>	      
+	      <listitem>
+		<para>I reworked the GUI a bit in order to make
+		  terminatorX fit better on those small DJ-laptop
+		  displays. Audio and control panels can now be minimized to 
+		  a <bold>panel bar</bold> to save space - works just like
+		  GNOME's window list. The panel bar status is
+		  stored within setfiles and restored upon
+		  loading. Additionally the buttons of the audio panel have
+		  been restructured. To lighten up the GUI five
+		  buttons have been merged into <bold>two</bold> - on
+		  clicking one of these you'll get a popup menu with all
+		previous functionality.
+		</para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		After spending an evening with Adrian in front of his
+		big endian system fixing the audiofile loading
+		routines, I decided that loading audiofiles through a
+		pipe is an ugly hack. Therefor I wrote <bold>three new audiodfile
+		loading methods</bold> that utilize libraries instead of pipes. These
+		are <link ref="http://www.mars.org/home/rob/proj/mpeg/">
+		  mad</link> (for mp3 files), 
+		<link ref="http://www.xiph.org/ogg/vorbis/">libvorbis</link>
+		(for OGG/Vorbis files) and 
+		<link ref="http://www.68k.org/~michael/audiofile/">
+		  libaudiofile</link> (for wav/aiff/au etc.). Using these
+		routines instead of the old ones brings the following
+		advantages:
+		<itemizedlist>
+		  <listitem>
+		    <para>loading audiofiles is significantly <bold>faster</bold></para>
+		  </listitem>
+		  <listitem>
+		    <para>terminatorX now evaluates the <bold>sample rate</bold> of an
+		      audiofile and adjusts the turntable's pitch
+		      accordingly (this does not affect the regular
+		      &quot;pitch&quot; setting btw)
+		    </para>
+		  </listitem>
+		  <listitem>
+		    <para>the new routines provide much better <bold>visual
+		      feedback</bold> on the loading progress
+		    </para>
+		  </listitem>
+		</itemizedlist>
+		Additionally more file formats are supported, so I
+		strongly recommend installing the libraries mentioned
+		above to improve terminatorX' usabilty.
+	      </para>	      
+	    </listitem>
+	      <listitem>
+	      <para>Slowly approaching terminator<bold>XML</bold>: the
+		  configuration file (now <italic>~/.terminatorXrc</italic>)
+		  is no longer binary but an XML document. This is necessary
+		  to become more flexible in the future - and it allows
+		  editing your terminatorX configuration with a text editor - if
+		  you want to. Of course, terminatorX now requires
+		  <link ref="http://www.libxml.org">libxml</link> to be installed. For
+		  convenience this release still reads the old binary config
+		  and stores it as an XML document on exit. I plan to move
+		  the set file format to XML soon, too.
+		</para>
+	      </listitem>	      
+	      <listitem>
+		<para>I completely rewrote the <italic>tX_engine</italic> in
+		  order to allow installing terminatorX <bold>suid
+		    root</bold>. This way terminatorX can run with
+		  realtime scheduling policy even for unprivileged
+		  users. Right after creation of the engine thread
+		  terminatorX drops root privileges - so it might even
+		  be safe to install terminatorX suid root - but I'll
+		  leave that up to security experts to decide. For a
+		  more detailed discussion read 
+		<link ref="faq.html#11">this FAQ entry</link>.
+		</para>
+	      </listitem>
+	    <listitem>
+	      <para>
+		Playing around with the wonderful 
+		<link ref="http://www.povray.org">povray</link> a bit I
+		came up with a new logo for terminatorX. The icons have
+		been replaced, too - the new ones should be easier for
+		your desktop perception.
+	      </para>
+	    </listitem>
+	      <listitem>
+		<para>
+		  Thanks to
+		  <person><name>Adrian</name><email>adrian@lisas.de</email>
+		  </person> terminatorX now has a <bold>manpage</bold>.
+		</para>
+	      </listitem>
+	    </itemizedlist>
+	  </para>
+	  <para>
+	    A lot of bug fixing went into this release, too, most notably:
+	  <itemizedlist>
+	    <listitem>
+	      <para>An old clipping bug in the <italic>tX_dial</italic> widget code has
+		been fixed.
+	      </para>
+	      </listitem>
+	      <listitem>
+		<para>This release builds, runs and loads audiofiles on big endian architectures.
+		</para>
+	      </listitem>
+	    <listitem>
+	      <para>terminatorX should now build from scratch not only
+		on Linux but on FreeBSD, too. Thanks to <person>
+		  <name> Tilman Linneweh</name><email>tilman@arved.de</email></person>
+		  for testing.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>Many other fixes.
+	      </para>
+	    </listitem> 
+	  </itemizedlist>
+	    Have a look at the <link ref="ChangeLog">ChangeLog</link>
+	    for more details and grab the tarball or the RPMS from the 
+	    <link ref="download.html#Current Version">download
+	      section</link>.
+	  </para>
+	  <para>Aside of the release I'd like to bring to your attention
+	    that 
+	    <person><name>Mike
+		Furr</name><email>mfurr@debian.org</email></person> 
+	    is now maintainer of the
+	    <link ref="http://packages.debian.org/unstable/sound/terminatorx.html">
+	      terminatorX Debian package</link>. So if you're a Debian
+	    user you may want to <italic>apt-get</italic> this release -
+	    if you install <italic>unstable</italic> packages at all and
+	    when your local mirror has been updated.
+	  </para>
+	  <para>
+	    For new terminatorX users 
+	    <person><name>Brian</name><email>bredfern@calarts.edu</email></person>
+	    has created a wonderful step-by-step 
+	    <link ref="http://www.boosthardware.com/LAU/quicktoots/toots/tx_toot/tx_toot1.html">
+	      &quot;terminatorX TOOT&quot; tutorial</link> - reading that will accelerate
+	    the creation of your first scratch considerably.
+	  </para>
+	</newstext>
+      </newsitem>
+      
+      <newsitem>
+      	<newsheader date="31 Jul"><link ref="turntable.html">Turntable gallery</link> online and a fresh
+	<link ref="scratches.html">scratch</link>
+	</newsheader>
+	<newstext>
+		<para>
+		I finally managed to hack the website's DTD and XSLT stylesheet to support
+		the <link ref="turntable.html">users' turntable section</link>. Now that it's easy
+		to update, please keep these turntable images coming in! I'd really like
+		to see more of your turntables.
+		</para>
+		<para><person><name>Brian</name><email>bredfern@calarts.edu</email></person> - 
+		a California based terminatorX DJ - has contributed a very cool scratch
+		for the <link ref="scratches.html">scratches section</link>. It's just an
+		excerpt of a complete drum and bass set that is available at Brian's 
+		 <link ref="http://asapien.org">website</link> - which seems to be down currently.
+		 In case it doesn't come up again I'll mirror the complete set here, too.
+		</para>
+		<para>
+		<italic>The names have been changed to protect the innocent...</italic> from
+		<bold>spamming</bold>. The XSLT stylesheet now mangles all email addresses
+		on this site except for mine - if you've seen a correct email address before
+		you should be able to recover the real address easily. BTW if you're a spam
+		victim, too, add the incredible <link ref="http://spamassassin.org">spamassassin</link>
+		to your <italic>.procmailrc</italic> and spam won't annoy you anymore.
+		</para>
+		<para>On terminatorX news Version 3.73 should be ready for release RSN! It will
+		probably still lack native ALSA support, though.
+		</para>
+	</newstext>
+      </newsitem>
+      <newsitem>
+	<newsheader date="05 jan">happy new year: 
+	  <link ref="download.html#Current Version">terminatorX V3.72</link> is here.
+	</newsheader>
+	<newstext>
+	  <para>
+	    Hope everybody had a nice start into 2002, these are the changes
+	    that come with terminatorX release 3.72 
+	    (for details check the <link ref="ChangeLog">ChangeLog</link>):
+	    <itemizedlist>
+	      <listitem>
+		<para>Thanks to a patch from <person>
+		    <name>Matthew Evans</name>
+		    <email>activesx@hotmail.com</email>
+		  </person>
+		    terminatorX finally supports loading
+		    <link ref="http://www.vorbis.com">Ogg Vorbis</link>
+		    audiofiles. Note that this feature requires ogg123
+		    (>= RC2)
+		    and <link
+		    ref="http://sox.sourceforge.net">sox</link>
+		    installed. The very fresh RC3 release of Ogg Vorbis
+		    works just fine, too.
+		</para>
+	      </listitem>
+	      <listitem>
+		<para><person><name>Adrian</name>
+		    <email>adrian@lisas.de</email></person> once again
+		    submitted code to the project: terminatorX now
+		    features <bold>mute</bold> and <bold>solo</bold>
+		    buttons for each turntable's mixing unit. The
+		    initial patch had some problems with the already
+		    existing mute-function in terminatorX, therefor I
+		    extended the turntable in such a way that the new
+		    buttons <bold>only affect current mixing</bold> -
+		    the sequencer will not record any events for them.
+		</para>
+	      </listitem>
+	      <listitem>
+		<para>I updated the XInput code to work with XFree86 >
+		  4. terminatorX now uses the
+		  <italic>xsetpointer</italic> binary that comes with 
+		  XFree86 to switch the core pointer - as the old code
+		  doesn't work with newer XFree86 releases anymore. 
+		  <italic>configure</italic> should auto-detect 
+		  <italic>xsetpointer</italic> if it's available.
+		  <bold>Note:</bold> You only need to specify an
+		  additional XInput Device in the options dialog if you
+		  want to use a scratching device other than your
+		  mouse. (Yeah, I know, I state that in the docs,
+		  tooltips, everywhere - but I still get bug reports
+		  related to that issue...)
+		</para>
+	      </listitem>
+	      <listitem>
+		<para>Updated mpg123 loading routines that should work
+		  with <link ref="http://mpg321.sourceforge.net">mpg321</link>
+		  (which many distros install instead of
+		  mpg123 these days), too. Note that you'll have to have 
+		  <link ref="http://sox.sourceforge.net">sox</link>
+		  installed in order to get mp3-loading to work (As
+		  mpg321 doesn't support mpg123's <italic>-m</italic>
+		  switch).
+		</para>
+	      </listitem>
+	      <listitem>
+		<para>fixes for misc bugs (writing broken .wav's on big
+		endian machines, gcc >= 3.x compile fixes, some gtk+
+		cleanups, etc.)
+		</para>
+	      </listitem>
+	    </itemizedlist>
+	  </para>
+	  <para>Grab the sources or the fresh RPMs (Thanks,  
+	    <person><name>Adrian</name><email>adrian@lisas.de</email>
+	    </person>!) from the <link ref="download.html#Current Version">download
+	    section</link>.
+	  </para>
+	  <para>Initially I planned to integrate native <link
+	  ref="http://www.alsa-project.org">ALSA</link>-support into
+	  this release but I simply failed to finish. As many people 
+	  wanted to have some of the above features early I decided to
+	  release it without ALSA now, as I'll be busy for the upcomming 
+	  weeks. I haven't given up on ALSA though, hopefully the next
+	  terminatorX release will feature a new audiodevice backend
+	  that supports ALSA (V0.9) <bold>and</bold> OSS and brings many 
+	  other adtvantages.
+	  </para>
+	  <para>The website has undergone minor updates, too:
+	    <itemizedlist>
+	      <listitem>
+		<para>The section header's now should look fine with
+		  <link
+		  ref="http://www.mozilla.org">Mozilla</link>-based
+		  browsers. They might look funny with older netscapes, though.
+		</para>
+	      </listitem>
+	      <listitem>
+		<para>Updated the 
+		  <link ref="screenshots.html">screenshots</link> as
+		  people started asking howto achieve that old tX V3.5
+		  layout :)
+		</para>
+	      </listitem>
+	      <listitem>
+		<para>Minor fixes to make W3C's validator accept the
+		pages again, and a favicon that needs some improvement.</para>
+	      </listitem>
+	    </itemizedlist>
+	  </para>
+	</newstext>
+      </newsitem>
+       
+      <newsitem>
+	<newsheader date="20 jun">New scratches, turntables &amp; FAQ updates
+	</newsheader>
+	<newstext>
+	  <para>Hey, it seems that the <link ref="turntable.html">turntable
+	      section</link> inspires quite some of you to build your own
+	    tX-turntables - which is <bold>really cool</bold>! So I plan to
+	    provide an additional <italic>users' turntables</italic>-section
+	    ASAP. Now <person><name>Fernando</name>
+	      <email>ffabreti@yahoo.com.br</email>
+	    </person> not only sent me a cool
+	    fresh <link ref="aint.mp3">scratch</link> you can grab from the
+	    <link ref="scratches.html">users' scratches-section</link> but also
+	    pictures from his turntable. Take a look at his turntable
+	    in the <link ref="fernando.html">turntable section
+	    </link>. In case <bold>you</bold> built
+	    your own turntable already, please
+	    <link ref="mailto:alex@lisas.de">send</link>
+	      me some images of it - I'm
+	    really keen on seeing what your turntables look like.
+	  </para>
+	  <para>
+	    <person>
+	      <name>Dr. Uggs</name>
+	      <email>jesset@katapultz.org</email>
+	    </person> visited the <link ref="scratches.html">users'
+	      scratches-section</link> a while ago, too, and decided to
+	    contribute his own scratch - not created with terminatorX but a
+	    <bold>real</bold> turntable. I thought this fine scratch should
+	    be up here, too - not in the users' scratches section though as
+	    it's not a user-scratch. So you can listen to it right
+	    <link ref="earth.mp3">here</link> - it's a good chance to compare
+	    a real turntable's sound against terminatorX.
+	  </para>
+	  <para>If you have problems getting your mouse to actually scratch
+	    with terminatorX, I have some hints on this issue in the
+	    <link ref="faq.html">FAQ-Section</link> now.
+	  </para>
+	</newstext>
+      </newsitem>
+      
+      <newsitem>
+        <newsheader date="22 mar">Fresh <link ref="download.html#Current Version">
+            RPMs</link> (for i586 and Sparc machines)
+        </newsheader>
+        <newstext>   
+          <para>
+		The RPMs for the current release have undergone some refinement by
+            <person><name>Mr. RPM</name><email>adrian@lisas.de</email></person>
+		himself. In addition to updating the spec-files he built
+		the current release on his very own Sparc, so there is a
+		Sparc RPM available now, too.
+	</para>
+	<para>
+		As always the RPMs are available from the 
+		<link ref="download.html#Current Version">
+            	download section.</link>
+	</para>
+        </newstext>
+      </newsitem>  
+ 
+
+      <newsitem>
+	<newsheader date="20 mar"><link ref="download.html#Current Version">
+	    RPMs</link> for Version 3.71 available 
+	</newsheader>
+	<newstext>
+	  <para>Faster than ever before
+	    <person><name>Adrian</name><email>adrian@lisas.de</email></person>
+	    has produced the rpms for the new release. The i586 and src RPMs
+	    are available from the <link ref="download.html#Current Version">
+	    download section</link>. These are V4-RPMs again - if you've got
+	    a problem with them read the news below (from dec 18) for
+	    more details on how to install V4-RPMs on a RPM-V3 systems.
+	  </para>
+	  <para>Sparc-Owners may be pleased to hear that there should be RPMs
+	    for their platform sometime tomorrow.
+	  </para>
+	</newstext>
+      </newsitem>
+      
+      <newsitem>
+	<newsheader date="20 mar">left, right, left, right...
+	  <link ref="download.html#Current Version">
+	    terminatorX V3.71</link> is up.
+	</newsheader>
+	<newstext>
+	  <para>
+	    Yep, a new release is here that brings the <bold>very latest</bold>
+	    in HIFI technology: <italic>STEREO</italic>-operation ;) 
+	  </para>
+	  <para>
+	    List of changes (for more details see the
+	    <link ref="ChangeLog">ChangeLog</link>)
+	    <itemizedlist>
+	      <listitem>
+		<para>So tX is <bold>stereo</bold> now, producing stereo
+		  output for your soundcard and recording stereo
+		  wavfiles of course. The "pan" knobs for each turntable now
+		  actually <italic>do something</italic>. If you had
+		  terminatorX installed before you might have to
+		  increase the buffer size setting to fit stereo playback.
+		</para>
+	      </listitem>
+	      <listitem>
+		<para>The new release has a patch from <person><name>Adrian
+		      Reber</name><email>adrian@lisas.de</email></person>
+		  applied, that fixes some issues with newer gcc releases, some
+		  minor bugs and cleans up the startup switches (there are
+		  some new ones, too - run <italic>terminatorX --help</italic>
+		  for more details). 
+		</para>
+	      </listitem>
+	      <listitem>
+		<para>The echo effect received <bold>two new controls</bold>:
+		  a pan-control - to allow positioning the echo-signal at
+		  position in the stereo panorama that differs from the
+		  turntable's main pan-position - and an additional volume
+		  parameter for the echo-signal.
+		</para>
+	      </listitem>
+	      <listitem>
+		<para>The built-in effects now <bold>clear their buffers</bold>
+		  on enabling
+		  to ensure that NANs (that some LADSPA plugins may create
+		  under certain conditions) do not get stuck in there.
+		</para>
+	      </listitem>
+	      <listitem>
+		<para>Documentation updates and more bugfixes.
+		</para>
+	      </listitem>
+	    </itemizedlist>
+	  </para>
+	  <para>As the handling of the echo effect is somewhat special now, I
+	    used <link ref="http://www.lysator.liu.se/~alla/dia/">dia</link>
+	    and
+	    <link ref="http://www.gimp.org">the gimp</link> to create a little graphic
+	    to clear things up a bit (the manual contains a textual
+	    description, too):
+	    <screenshot filename="signalflow.jpg">
+	      <nopara>tX signal routing</nopara>
+	    </screenshot>
+	  </para>
+	  <para>RPMs will be available soon.</para>
+	</newstext>
+      </newsitem>
+
+<!--      <newsitem>
+	<newsheader date="18 dec"><link ref="download.html#Current Version">
+	    RPMs</link> done and some remixes.
+	</newsheader>
+	<newstext>
+	  <para>
+	    <person><name>Adrian</name><email>adrian@lisas.de</email></person>
+	    set me up with the rpms for Version 3.70. Note that these are
+	    RPMV4-rpms designed for RedHat 7.0. If you want to use these with
+	    RedHat 6.1/6.2 you'll have to upgrade to rpm-3.0.5. You can
+	    download the official RedHat-rpm-updates from right here, as this
+	    server mirrors the RedHat updates (<link ref="ftp://rhlx01.fht-esslingen.de/Mirrors/updates.redhat.com/6.1/i386/">6.1</link>,
+	    <link ref="ftp://rhlx01.fht-esslingen.de/Mirrors/updates.redhat.com/6.2/i386/">6.2</link>). Then grab the terminatorX-3.70-rpms from the
+	    <link ref="download.html#Current Version">download section</link>.
+	  </para> 
+	  <para>
+	    <person><name>Sean</name><email>sean@frazmtn.com</email></person>
+	    sent me a mail sometime ago about his
+	    <link ref="http://ns.ownerguard.com/~sean/">site</link>
+	    where he offers some cool remixes he made (with terminatorX). Go
+	    and <link ref="http://ns.ownerguard.com/~sean/">check them
+	      out</link>.
+	  </para>
+	</newstext>
+      </newsitem>
+
+      <newsitem>
+	<newsheader date="20 nov">It's done. 
+	  <link ref="download.html#Current Version">terminatorX</link> V3.70
+	  is here.
+	</newsheader>
+	<newstext>
+	  <para>Yeah, I know, it's been a while, and sorry to everybody I told
+	    something about "two weeks", "next week" or even "tomorrow". I mean
+	    at least it's here before the 2.4.0-final kernel ;)
+	  </para>
+	  <para>
+	    <screenshot filename="screenshot_v3.7.jpg">
+	      <nopara>the new GUI with the plugin list popped up</nopara>
+	    </screenshot>
+	  </para> 
+	  <para>Now, <italic>finally</italic> terminatorX <bold>Version
+	      3.70</bold> is available for download. This release brings the
+	    following new features:
+	    <itemizedlist>
+	      <listitem>
+		<nopara>The most exciting new feature is <bold>LADSPA plugin
+		    support</bold>. Note that this means terminatorX requires
+		  the LADSPA-SDK (ladspa.h to be exact) to build. Get the
+		  LADSPA-SDK from the <link ref="http://www.ladspa.org">LADSPA
+		    homepage</link> (untar; cd src; make
+		  install). Oh and while you're there why not grab
+		  <link ref="http://www.ladspa.org/cmt/">CMT</link> and all
+		  those other plugins available, too? Note that you can record
+		  sequencer events for controls of LADSPA plugins just like for
+		  the built-in effects.
+		</nopara>
+	      </listitem>
+	      
+	      <listitem>
+		<nopara><bold>Editable effect stack</bold>. To allow nice
+		  integration of LADSPA-plugins with the built-in effects, all
+		  effects now reside in the turntable's <bold>effect
+		    queue</bold>. The effect-processing sequence can be edited
+		  easily (with the two blue arrows). LADSPA plugins can be
+		  inserted at any position in that sequence. Press the <italic>
+		    FX</italic>-button to load a plugin.
+		</nopara>
+	      </listitem>
+	      
+	      <listitem>
+		<nopara>A <bold>GUI redesign</bold> again. This was necessary
+		  to support dynamic addition/removal of the plugin GUIs.
+		  Additionally you can now <bold>enter precise values</bold>
+		  for each parameter adjustable via a dial into a
+		  text entry widget alternatively. Another plus of the new GUI
+		  is, that you can configure it to display only those controls
+		  you want to see.
+		</nopara>
+	      </listitem>
+
+	      <listitem>
+		<nopara>The mouse-axis-to-parameter mapping is no longer
+		  hardcoded. You can now map <bold>any parameter</bold>
+		  considered mappable to the mouse-axis of your choice. This
+		  includes plugins' controls.
+		</nopara>
+	      </listitem>
+
+	      <listitem>
+		<nopara>The old README has gone. I moved the info there into a
+		  <bold>SGML/DocBook manual</bold>. The distribution comes with
+		  the HTML and the postscript version of that manual. The HTML
+		  version is available <link ref="doc/index.html">here</link>,
+		  too.
+		</nopara>
+	      </listitem>
+
+	      <listitem>
+		<nopara><bold>Tooltips</bold> for the new GUI.</nopara>
+	      </listitem>
+
+	      <listitem>
+		<nopara>
+		  <person><name>Josh Steiner</name>
+		    <email>joschi@eds.org</email></person>
+		  has added some <bold>startup switches</bold> for terminatorX.
+		  Try -<italic>-help</italic> for more details.</nopara>
+	      </listitem>
+	    </itemizedlist>
+	  </para>
+
+	  <para>If you want to create your very own plugins without writing a
+	    single line of code checkout the <italic>excellent</italic>
+	    <link ref="http://www.gdam.org">GDAM</link>.
+	  </para>
+
+	  <para>Ok, now grab the new release from the
+	    <link ref="download.html">download</link> section and have fun - I
+	    invested quite some time in polishing so I hope there are no bigger
+	    flaws in it - but you never know ;).
+	  </para>
+	  <para>
+	    I'll put some news up here as soon as the rpms for the new release
+	    are finished.
+	  </para>
+	</newstext>
+      </newsitem>
+
+      <newsitem>
+	<newsheader date="24 sep">website re-done &amp; some news</newsheader>
+	<newstext><para>Although hardly visible this website was completely
+	    re-done. I ported this site to set of XML-files and an
+	    XSLT-stylesheet, as this way it should be easier to maintain. Oh
+	    yeah and finally frames and gifs are gone forever.
+	  </para>
+	  <para>
+	    There might be some new bugs on this website, due to the re-design,
+	    so please let me know about lousy layout in some browsers, dead
+	    links or whatever, thanks!
+	  </para>
+	  <para>The page-contents was updated, too. People with list-linkage
+	    or compile errors please take a look at the updated
+	    <link ref="faq.html">FAQ</link>.
+	  </para>
+	  <para><bold>On terminatorX:</bold> Ok, the next release with
+	    <link ref="http://www.ladspa.org">LADSPA</link>-plugin-support,
+	    should be finished by next week. The GUI redesign is done, plugins
+	    work nicely, just some polishing and doc-clearup is left to do.
+	    Stay tuned.
+	  </para>
+	</newstext>
+      </newsitem>
+
+      <newsitem>
+	<newsheader date="12 apr">
+	  terminatorX V3.60  is here and 6.000 samples
+	</newsheader>
+	<newstext>
+	  <para>Sorry, this tarball is finished for quite some time now - but
+	    I was too busy for updating.<newline/>
+	    <italic>Now 3.60 is here and has some brandnew features:</italic>
+	    <itemizedlist>
+	      <listitem><nopara>Finally the <bold>Sequencer</bold>
+		  is available. You can now record/dub events for <italic>
+		    scratching, volume, effects (cutoff etc.), sync settings,
+		  </italic> etc. </nopara>
+	      </listitem>
+	      <listitem><nopara>New <bold>dial widget</bold> - I designed it
+		  for the upcoming GUI redesign - but
+		  I liked it so much I decided to let you betatest it right
+		  now ;) -
+		  configuring with -<italic>-disable-dial</italic> will give
+		  you the plain gtk+ scales
+		  again. </nopara>
+	      </listitem>
+	      <listitem><nopara>Some <bold>pixmaps</bold> for the main
+		  operation buttons. These can be disabled
+		  in in the Options-dialog. </nopara>
+	      </listitem>
+	      <listitem><nopara>Some <bold>soundfile-editor integration</bold>:
+		  You can now start your favourite
+		  soundfile-editor with the soundfile loaded in a turntable
+		  with just one
+		  click. If your looking for an soundfile editor check out
+		  Dave&apos;s
+		  <link ref="http://www.bright.net/~dlphilp/linuxsound/">Linux
+		    Sound and Midi Pages</link></nopara>
+	      </listitem>
+	      <listitem><nopara><bold>Enhanced 3DNow! support</bold>: the mixer
+		  routine is now 3<italic>DNow!</italic>-optimized too,
+		  increasing 3DNow! performance gain from a
+		  fromer 5% to more than 20%.</nopara>
+	      </listitem>
+	      <listitem><nopara>Big Endian support is back finally.
+		  <person>
+		    <name>Scott</name>
+		    <email>scknight@indiana.edu</email>
+		  </person> got it running on PPCs again.</nopara>
+	      </listitem>
+	      <listitem><nopara>Some<bold> GUI cleanups</bold>. Should now fit
+		  on smaller displays, too.</nopara>
+	      </listitem>
+	    </itemizedlist>
+	    The following <italic>long-outstanding bugs</italic> have been
+	    fixed: 
+	    <itemizedlist>
+	      <listitem>
+		<nopara>segfault on load / drag&apos;n&apos;drop is
+		  <bold>fixed</bold></nopara>
+	      </listitem>
+	      <listitem><nopara>zombie mpg123 and sox processes are <bold>
+		    killed</bold></nopara>
+	      </listitem>
+	      <listitem><nopara>constant lowpass-signal <bold>fixed</bold>
+		</nopara>
+	      </listitem>
+	      <listitem><nopara>and more...</nopara>
+	      </listitem>
+	    </itemizedlist>
+	  </para>
+	  <para>
+	    <person><name>Erik</name>
+	      <email>e@osterman.com</email>
+	    </person> sent me a note to inform me about his <bold>huge</bold>
+	    <italic>sample-archive</italic>
+	    (<link ref="http://ftp.osterman.com/pub/music/samples">http</link>/<link ref="ftp://ftp.osterman.com/pub/music/samples">ftp</link>).
+	    They have more than 6.000 samples at the moment and if you want to
+	    put up a mirror send him a note. 
+	  </para>
+	  <para>Speedy <person><name>Adrian</name>
+	      <email>adrian@lisas.de</email></person> has
+	    compiled the already available RPMs for V3.60. </para>
+	</newstext>
+      </newsitem> -->
+    </news>
+  </main>
+</section>
+

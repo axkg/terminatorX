@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section SYSTEM "./tX.dtd"[
+]>
+<section name="scratches">
+  <scratches>
+    <para><bold>Yeah, Boy!</bold> (talking <link ref="http://www.publicenemy.com/soldiers/flavor.php">flavor</link>, here)</para>
+    <para>Here are the current &quot;users scratches&quot;. So you think
+      these are not enough? Right, Ok, so do something about it! Read the text
+      below if you want to send me what you created with terminatorX.
+    </para>
+
+    <scratchtable>
+	<scratch>
+	<mp3file>
+		<file>asapien_scratch.mp3</file>
+		<filesize>544kB</filesize>
+	</mp3file>
+		<author>
+			<person>
+			<name>Brian Redfern</name>
+			<email>bredfern@calarts.edu</email>
+			</person>
+		</author>
+		<comment>
+		<nopara>This scratch is just a sample of a full 45min
+		terminatorX set, which is available it at the 
+		<link ref="http://asapien.org">author's website</link>.
+		</nopara>
+		<tinycomment>The whole set is terminatorX plus an external
+		reverb box.
+		</tinycomment>
+		</comment>
+	</scratch>	
+	
+      <scratch>
+	<mp3file>
+	  <file>aint.mp3</file>
+	  <filesize>848kB</filesize>
+	</mp3file>
+	<author>
+	  <person>
+	    <name>Fernando S. Fabreti</name>
+	    <email>ffabreti@yahoo.com.br</email>
+	  </person>
+	</author>
+	<comment>
+	  <nopara>Aint no DJ but love to scratch!</nopara>
+	  <tinycomment>
+	    <nopara>created with his <link ref="turntable.html">
+	      own turntable</link>.
+	    </nopara>
+	  </tinycomment>
+	</comment>
+      </scratch>
+      
+      <scratch>
+	<mp3file>
+	  <file>jazzyscratch.mp3</file>
+	  <filesize>550kB</filesize>
+	</mp3file>
+	<author>
+	  <person>
+	    <name>Gregory A. Aluise</name>
+	    <email>aluise@udel.edu</email>
+	  </person>
+	  <tinycomment>
+	    <nopara>alias <italic>DJ Giant 'G'</italic> of the 
+	      <link ref="http://farnkyboyz.virtualave.net">FarnkyBoyz</link>
+	    </nopara>
+	  </tinycomment>
+	</author>
+	<comment>
+	  <nopara>From the <link ref="http://farnkyboyz.virtualave.net">
+	      Farnky Boyz'</link> upcoming Album
+	  </nopara>
+	</comment>
+      </scratch>
+
+      <scratch>
+
+	<mp3file>
+	  <file>this.mp3</file>
+	  <filesize>1.4MB</filesize>
+	</mp3file>
+	<author>
+	  <person>
+	    <name>me</name>
+	    <email>alex@lisas.de</email>
+	  </person>
+	  <tinycomment>
+	    <nopara><italic>again ;)</italic>
+	    </nopara>
+	  </tinycomment>
+	</author>
+	<comment>
+	  <nopara>my 3.5 demo</nopara>
+	</comment>
+      </scratch>
+      
+      <scratch>
+	<mp3file><file>cutitup.mp3</file>
+	  <filesize>780kB</filesize>
+	</mp3file>
+	<author>
+	  <person>
+	    <name>Gregory A. Aluise</name>
+	    <email>aluise@udel.edu</email>
+	  </person>
+	  <tinycomment>
+	    <nopara>alias <italic>DJ Giant 'G'</italic> of the
+	      <link ref="http://farnkyboyz.virtualave.net">FarnkyBoyz</link>
+	    </nopara>
+	  </tinycomment>
+	</author>
+	<comment>
+	  <nopara>Cut it up!</nopara>
+	  <tinycomment>
+	    <nopara><italic>&quot;Mixed in 15 min"</italic> - Wow!
+	    </nopara>
+	  </tinycomment>
+	</comment>
+      </scratch>
+      
+      <scratch>
+	<mp3file>
+	  <file>stores.mp3</file>
+	  <filesize>1.3MB</filesize>
+	</mp3file>
+	<author>
+	  <person>
+	    <name>Tony Lambiris</name>
+	    <email>tonyl@telebot.com</email>
+	  </person>
+	</author>
+	<comment>
+	  <nopara>Stores Scratch</nopara>
+	</comment>
+      </scratch>
+      
+      <scratch>
+	<mp3file>
+	  <file>hamsterscratch.mp3</file>
+	  <filesize>80kB</filesize>
+	</mp3file>
+	<author>
+	  <person>
+	    <name>Will Weiser</name>
+	    <email>kased811@ix.netcom.com</email>
+	  </person>
+	</author>
+	<comment>
+	  <nopara>Quick Hamster Scratch</nopara>
+	  <tinycomment>
+	    <nopara>www.hamsterdance.com</nopara>
+	  </tinycomment>
+	</comment>
+      </scratch>
+
+      <scratch>
+	<mp3file>
+	  <file>terminatorX.mp3</file>
+	  <filesize>470kB</filesize>
+	</mp3file>
+	<author>
+	  <person>
+	    <name>me</name>
+	    <email>alex@lisas.de</email>
+	  </person>
+	  <tinycomment>
+	    <nopara>again</nopara>
+	  </tinycomment></author>
+	<comment>
+	  <nopara>Messing Public Enemy </nopara>
+	  <tinycomment>
+	    <nopara>or: the tX title-scratch ;)</nopara>
+	  </tinycomment>
+	</comment>
+      </scratch>
+
+      <scratch>
+	<mp3file>
+	  <file>interrupt.mp3</file>
+	  <filesize>120kB</filesize>
+	</mp3file>
+	<author>
+	  <person>
+	    <name>John B. Fink</name>
+	    <email>jbfink@ogre.lib.muohio.edu</email>
+	  </person>
+	</author>
+	<comment>
+	  <nopara>Meat Beat Manifesto Meets Orson Wells</nopara>
+	</comment>
+      </scratch>
+
+      <scratch>
+	<mp3file>
+	  <file>linus.mp3</file>
+	  <filesize>200kB</filesize>
+	</mp3file>
+	<author>
+	  <person>
+	    <name>myself</name>
+	    <email>alex@lisas.de</email>
+	  </person>
+	</author>
+	<comment>
+	  <nopara>Linus pronounces Linux</nopara>
+	  <tinycomment>
+	    <nopara>from the silly sounds (see kernel archives)</nopara>
+	  </tinycomment>
+	</comment>
+      </scratch>
+
+    </scratchtable>
+
+    <para>In case <bold>you</bold> want to get on the list above download terminatorX,
+      practice and record your scratching. If you believe your skills are good
+      enough <link ref="mailto:alex@lisas.de">mail</link> me your
+      best scratch. Before you do so, please: 
+      <itemizedlist>
+	<listitem>
+	  <nopara>Ensure that it's not <italic>too</italic> big.</nopara>
+	</listitem>
+	<listitem>
+	  <nopara><italic>mp3</italic> or <italic>ogg</italic> it. If you don't have an encoder
+	    go and get, <link ref="http://www.mp3dev.org/mp3//">LAME</link>,
+	    <link ref="http://bladeenc.mp3.no/">BladeEnc</link> or <link ref="http://www.xiph.org/ogg/vorbis/">OggVorbis</link> .
+	  </nopara>
+	</listitem>
+      </itemizedlist>
+    </para>
+  </scratches>
+</section>
+
