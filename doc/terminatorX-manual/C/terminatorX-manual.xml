@@ -4,7 +4,7 @@
 <!ENTITY legal SYSTEM "legal.xml">
 
 ]>
-<article lang="en" id="index">
+<article id="index" lang="en">
   <articleinfo>
     <title>terminatorX - Manual</title>
 
@@ -97,7 +97,7 @@
 
       <para>Try the following steps:</para>
 
-      <orderedlist continuation="restarts" inheritnum="ignore">
+      <orderedlist inheritnum="ignore" continuation="restarts">
         <listitem>
           <para>If you don&#39;t have <application moreinfo="none">LADSPA</application>
           (Linux Audio Developer&#39;s Simple Plugin API) installed, go and
@@ -436,6 +436,30 @@
             <para><emphasis>Add Turntable</emphasis></para>
 
             <para>Adds a new turntable to the current set of turntables.</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis>Assign Default MIDI Mappnigs</emphasis></para>
+
+            <para>Will assign the Default MIDI Mappings (see <xref
+            linkend="MIDI" />) to all standard parameters. Existing
+	    mappings will not be overridden.
+	    </para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis>Auto Assign Default MIDI Mappings</emphasis></para>
+
+            <para>When this option is enabled will always re-apply the Default
+            MIDI Mappings (see <xref linkend="MIDI" />) whenever you load a
+            set, add a new turntable or create a new set. Existing 
+	    mappings will not be overridden.</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis>Clear MIDI Mappings</emphasis></para>
+
+            <para>Removes all currently assigned MIDI mappings.</para>
           </listitem>
 
           <listitem>
@@ -1396,6 +1420,189 @@
       terminatorX. If you are unhappy with a chosen binding you can select the
       parameter and click the <emphasis>Remove Binding</emphasis> button to
       get rid of the parameter&#39;s MIDI mapping.</para>
+
+      <para>TeriminatorX now features a default MIDI mapping that can be
+      enabled via the <emphasis>Turntables Menu</emphasis> (see <xref
+      linkend="TURNTABLESMENU" />). The controllers are mapped in a one
+      channel per turntable fashion:</para>
+
+      <table>
+        <title>Default MIDI Controller Mapping</title>
+
+        <tgroup cols="2">
+          <thead>
+            <row>
+              <entry>Turntable Parameter</entry>
+
+              <entry>MIDI Controller</entry>
+
+              <entry>MIDI CC Name</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>Volume</entry>
+
+              <entry>7</entry>
+
+              <entry><quote>Main Volume</quote></entry>
+            </row>
+
+            <row>
+              <entry>Pan</entry>
+
+              <entry>10</entry>
+
+              <entry><quote>Pan</quote></entry>
+            </row>
+
+            <row>
+              <entry>Lowpass Cutoff Frequency</entry>
+
+              <entry>12</entry>
+
+              <entry><quote>Effect Control 1</quote></entry>
+            </row>
+
+            <row>
+              <entry>Lowpass Resonance</entry>
+
+              <entry>13</entry>
+
+              <entry><quote>Effect Control 2</quote></entry>
+            </row>
+
+            <row>
+              <entry>Lowpass Gain</entry>
+
+              <entry>16</entry>
+
+              <entry><quote>General Purpose Controller 1</quote></entry>
+            </row>
+
+            <row>
+              <entry>Speed</entry>
+
+              <entry>17</entry>
+
+              <entry><quote>General Purpose Controller 2</quote></entry>
+            </row>
+
+            <row>
+              <entry>Pitch</entry>
+
+              <entry>18</entry>
+
+              <entry><quote>General Purpose Controller 3</quote></entry>
+            </row>
+
+            <row>
+              <entry>Sync Cycles</entry>
+
+              <entry>19</entry>
+
+              <entry><quote>General Purpose Controller 4</quote></entry>
+            </row>
+
+            <row>
+              <entry>Echo Length</entry>
+
+              <entry>75</entry>
+
+              <entry><quote>Sound Controller 6</quote></entry>
+            </row>
+
+            <row>
+              <entry>Echo Feedback</entry>
+
+              <entry>76</entry>
+
+              <entry><quote>Sound Controller 7</quote></entry>
+            </row>
+
+            <row>
+              <entry>Echo Volume</entry>
+
+              <entry>77</entry>
+
+              <entry><quote>Sound Controller 8</quote></entry>
+            </row>
+
+            <row>
+              <entry>Echo Pan</entry>
+
+              <entry>78</entry>
+
+              <entry><quote>Sound Controller 9</quote></entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>The toggle parameters of a turntable (where things can only be
+      turned on or off) are mapped to MIDI NOTE events, where the first
+      turntable is mapped to &#39;C&#39;, the next to &#39;C#&#39;, the next
+      to &#39;D&#39; and so on. The &#34;function&#34; of the toggle is
+      defined via the selected MIDI channel:</para>
+
+      <table>
+        <title>Default MIDI Note On/Off Mapping</title>
+
+        <tgroup cols="2">
+          <thead>
+            <row>
+              <entry>Turntable Parameter</entry>
+
+              <entry>MIDI Channel</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>Trigger</entry>
+
+              <entry>0</entry>
+            </row>
+
+            <row>
+              <entry>Sync Client</entry>
+
+              <entry>1</entry>
+            </row>
+
+            <row>
+              <entry>Loop</entry>
+
+              <entry>2</entry>
+            </row>
+
+            <row>
+              <entry>Lowpass Enable</entry>
+
+              <entry>3</entry>
+            </row>
+
+            <row>
+              <entry>Echo Enable</entry>
+
+              <entry>4</entry>
+            </row>
+
+            <row>
+              <entry>Mute</entry>
+
+              <entry>5</entry>
+            </row>
+
+            <row>
+              <entry>Motor Spin On/Off</entry>
+
+              <entry>6</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
 
       <para>If you want to use your joystick to control terminatorX - I wrote
       a tiny tool to create MIDI events from joystick motion called

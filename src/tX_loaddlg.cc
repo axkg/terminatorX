@@ -34,7 +34,7 @@ GtkWidget *ld_single_l=(GtkWidget *)NULL;
 GtkWidget *ld_single_p=(GtkWidget *)NULL;
 GtkWidget *ld_multi_l=(GtkWidget *)NULL;
 GtkWidget *ld_multi_p=(GtkWidget *)NULL;
-GtkWindow *ld_window=(GtkWindow *)NULL;
+//GtkWindow *ld_window=(GtkWindow *)NULL;
 
 int ld_mode;
 int ld_count;
@@ -55,7 +55,7 @@ gfloat ld_old_prog;
 
 int ld_create_loaddlg(int mode, int count)
 {
-	GtkWidget *vbox;
+	GtkWidget *vbox=gtk_vbox_new(0, 5);
 	GtkWidget *actionarea;
 	GtkWidget *dummy;
 	
@@ -64,18 +64,18 @@ int ld_create_loaddlg(int mode, int count)
 	ld_mode=mode;
 	ld_count=count;
 
-	ld_loaddlg=gtk_dialog_new_with_buttons("terminatorX - loading",
-		GTK_WINDOW(main_window), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_STOCK_CANCEL, GTK_RESPONSE_NONE, NULL);
-	ld_window=&(GTK_DIALOG(ld_loaddlg)->window);
+	ld_loaddlg=gtk_window_new(GTK_WINDOW_POPUP);
+	gtk_window_set_position(GTK_WINDOW(ld_loaddlg), GTK_WIN_POS_CENTER_ON_PARENT);
+	gtk_window_set_title(GTK_WINDOW(ld_loaddlg), "terminatorX - loading");
+	gtk_window_set_transient_for(GTK_WINDOW(ld_loaddlg), GTK_WINDOW(main_window));
 	
-	gtk_container_set_border_width(GTK_CONTAINER(ld_window), 5);
+	gtk_container_set_border_width(GTK_CONTAINER(ld_loaddlg), 5);
+	gtk_container_add(GTK_CONTAINER(ld_loaddlg), vbox);
+	gtk_widget_set_size_request(vbox, 400, -1);
+	gtk_widget_show(vbox);
 	
-	vbox=GTK_WIDGET(GTK_DIALOG(ld_loaddlg)->vbox);
-	gtk_box_set_spacing(GTK_BOX(vbox), 5);
-
-	actionarea=GTK_WIDGET(GTK_DIALOG(ld_loaddlg)->action_area);
-	gtk_box_set_spacing(GTK_BOX(actionarea), 5);
-	
+	//gtk_widget_show(ld_loaddlg);
+		
 	if (mode==TX_LOADDLG_MODE_MULTI) {
 		ld_multi_l=gtk_label_new("Loading Set");
 		gtk_misc_set_alignment(GTK_MISC(ld_multi_l), 0.5, 0.5);
@@ -96,10 +96,10 @@ int ld_create_loaddlg(int mode, int count)
 	ld_single_p=gtk_progress_bar_new();
 	add_widget_fix(ld_single_p);
 
-	gtk_window_set_modal(ld_window, TRUE);
-	gtk_window_set_default_size(ld_window, 400, 100);
+	gtk_window_set_modal(GTK_WINDOW(ld_loaddlg), TRUE);
+	//gtk_window_set_default_size(GTK_WINDOW(ld_loaddlg), 400, 100);
 	gtk_widget_realize(ld_loaddlg);
-	gdk_window_set_decorations(gtk_widget_get_parent_window(vbox),(GdkWMDecoration) 0);
+	gdk_window_set_decorations(ld_loaddlg->window, (GdkWMDecoration) 0);
 	gtk_widget_show(ld_loaddlg);
 	gdk_window_set_cursor(ld_loaddlg->window, tX_cursor::get_cursor());
 
