@@ -13,7 +13,7 @@ URL: http://www.terminatorX.cx
 Source: %{name}-%{version}.tar.gz
 Buildroot: %{_tmppath}/%{name}-%{version}-root
 Requires: gtk2, libvorbis, audiofile, libxml2
-BuildPrereq: gtk2-devel, libvorbis-devel, audiofile-devel, libxml2-devel, libmad
+BuildPrereq: gtk2-devel, libvorbis-devel, audiofile-devel, libxml2-devel, zlib-devel, scrollkeeper
 
 %description
 terminatorX is a realtime audio synthesizer that allows you to "scratch" on
@@ -93,8 +93,8 @@ find . -name "Makefile*" -print -exec rm -rf {} \;
 %{_datadir}/pixmaps/terminatorX-app.png
 %{_datadir}/pixmaps/terminatorX-mime.png
 %{_datadir}/gnome/apps/Multimedia/terminatorX.desktop
-%{_datadir}/omf/scrollkeeper-example2
-%{_datadir}/scrollkeeper-example2
+%{_datadir}/omf/terminatorX
+%{_datadir}/terminatorX
 
 %post
 if which scrollkeeper-update>/dev/null 2>&1; then scrollkeeper-update -q -o %{_datadir}/omf/terminatorX; fi
