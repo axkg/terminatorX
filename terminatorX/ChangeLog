@@ -3,7 +3,14 @@
 
    Copyright (C) 1999-2004 Alexander König
 
-   Version 3.82 (unreleased) 
+   Version 3.82
+     * fixed a liblrdf related issue resulting in use of previously
+       free'd memory.
+     * rendered a new knob with the wonderful povray - all images are now
+       distrbuted in gdk-pixbuf-csource'd form in the src/icons
+       directory.
+     * added an extra "File/Load Audio File" menu item as new users would
+       always try to load an audio file via "File/Open".
      * fixed compilation issues with g++ >= 3.4.
      * added reverse mapping of MIDI parameters which can be turned
        on/off via the parameter menu. This allows setting up a MIDI
@@ -36,13 +43,13 @@
             on Linux _only_
           + c) use the JACK backend with "POSIX draft capabilities" (see
             jackd manpage)
-     * Loading sets with missing LADPSA plugins no longer crash tX.
-     * Fixed a bug that made reading error messages impossible with the
+     * loading sets with missing LADPSA plugins no longer crash tX.
+     * fixed a bug that made reading error messages impossible with the
        load dialog open.
-     * The engine now handles audiodevices that break down when already
+     * the engine now handles audiodevices that break down when already
        in playback mode more gracefully. This really necessary when jack
        decides to kick us out.
-     * All vu meters are stereo now. Having a mono widget for a stereo
+     * all vu meters are stereo now. Having a mono widget for a stereo
        thing just didn't make any sense anymore.
      * modified the render loop to comply with LADSPA V1.1: 0 db is now
        at 1.0f. This makes a lot of plugins work with terminatorX that
@@ -52,17 +59,17 @@
      * I've drawn some new icons with the cool inkscape. They're now
        being built into terminatorX as gdk-pixbuf c-source code, so they
        actually do alpha blending.
-     * Wrote support for gtk+'s new FileChooser widget - will be enabled
+     * wrote support for gtk+'s new FileChooser widget - will be enabled
        automatically when configure finds a gtk+ >= 2.4.0
-     * Fixed the buffer overflows detected by c0wboy <c0wboy@tiscali.it>
+     * fixed the buffer overflows detected by c0wboy <c0wboy@tiscali.it>
        in his outsiders-terminatorX-001.txt advisory.
-     * Support for gtk+ startup notification.
+     * support for gtk+ startup notification.
      * "README.GNOME" was outdated so it had to go.
      * merged parts of a patch graciously contributed by Adam King
        <aking@lgh.com.au>
-          + Simpler min/maximization for the control panels
-          + Bugfix for sequencer menu crash
-          + The panel formally known as "Trigger" is now known as
+          + simpler min/maximization for the control panels
+          + bugfix for sequencer menu crash
+          + the panel formally known as "Trigger" is now known as
             "Playback">
      * added cpu-overload detection - currently disabled
 
