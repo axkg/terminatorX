@@ -35,6 +35,8 @@
 #include <string.h>
 #include <gdk/gdk.h>
 #include "tX_icon.h"
+#include "tX_glade_interface.h"
+#include "tX_glade_support.h"
 
 #ifndef WIN32
 #include <X11/extensions/XInput.h>
@@ -44,81 +46,66 @@
 #include "license.c"
 #include "tX_mastergui.h"
 #include "version.h"
+#include <dirent.h>
 
 extern char *logo_xpm[];
-
-GdkWindow *opt_window=NULL;
 GtkWidget *opt_dialog;
-GtkWidget *menu=NULL;
-
-GtkWidget *audio_device;
-GtkWidget *use_stdout;
-GtkWidget *prelis;
-
-GtkAdjustment *buff_no=NULL;
-GtkWidget *buff_no_slider;
-GtkAdjustment *buff_size=NULL;
-GtkWidget *buff_size_slider;
-
-GtkAdjustment *sense_cycles=NULL;
-GtkWidget *sense_cycles_slider;
-
-GtkWidget *xinput_enable;
-GtkWidget *xinput_device;
-GtkAdjustment *mouse_speed=NULL;
-GtkWidget *mouse_speed_slider;
-
-GtkWidget *tooltips;
-GtkWidget *show_nag;
-GtkAdjustment *update_idle=NULL;
-GtkAdjustment *update_delay_adj=NULL;
-GtkAdjustment *flash_response;
-GtkWidget *update_idle_slider;
-GtkWidget *update_delay_slider;
-
-GtkWidget *opt_ok;
-GtkWidget *opt_apply;
-GtkWidget *opt_cancel;
-
-GtkWidget *but_text;
-GtkWidget *but_icon;
-GtkWidget *but_both;
-
-GtkWidget *sound_editor;
-
-GtkTooltips *opt_tips;
-
 int opt_hidden=0;
 
-void apply_options() {
-	char *text;
+void apply_options(GtkWidget *dialog) {
+	/* Audio */
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "alsa_driver")))) {
+		globals.audiodevice_type=ALSA;
+	} else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "oss_driver")))) {
+		globals.audiodevice_type=OSS;
+	} else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "jack_driver")))) {
+		globals.audiodevice_type=JACK;
+	}
 	
-	strcpy(globals.audio_device, gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(audio_device)->entry)));
-	globals.buff_no=(int)buff_no->value;	
-	globals.buff_size=(int)buff_size->value;
+	/* Audio: OSS */
+	strcpy(globals.oss_device, gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "oss_audio_device"))->entry)));
+	globals.oss_buff_no=(int) gtk_spin_button_get_value(GTK_SPIN_BUTTON(lookup_widget(dialog, "oss_buffers")));
+	globals.oss_buff_size=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "oss_buffersize")));
+	globals.oss_samplerate=atoi(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "oss_samplerate"))->entry)));
 	
-	globals.prelis=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(prelis));
-		
-	globals.sense_cycles=(int) sense_cycles->value;
-	globals.xinput_enable=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(xinput_enable));
-	text=(char *) gtk_button_get_label(GTK_BUTTON(xinput_device));
-	strcpy(globals.xinput_device, text);	
+	/* Audio: ALSA */
+	strcpy(globals.alsa_device, gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "alsa_audio_device"))->entry)));
+	globals.alsa_buff_no=(int) gtk_spin_button_get_value(GTK_SPIN_BUTTON(lookup_widget(dialog, "alsa_buffers")));
+	globals.alsa_buff_size=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "alsa_buffersize")));
+	globals.alsa_samplerate=atoi(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "alsa_samplerate"))->entry)));	
 	
-	globals.mouse_speed=mouse_speed->value;
-	globals.tooltips=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tooltips));
+	/* TODO: JACK
+	*/
+	
+	/* Input */
+	globals.xinput_enable=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "xinput_enable")))==TRUE);
+	strcpy(globals.xinput_device, gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "xinput_device"))->entry)));
+	globals.mouse_speed=gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "mouse_speed")));
+	globals.sense_cycles=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "stop_sense_cycles")));
+	
+	/* User Interface */ 
+	globals.show_nag=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "startup_nagbox")))==TRUE);
+	globals.tooltips=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "mainwin_tooltips")))==TRUE);
 	if (globals.tooltips) gtk_tooltips_enable(gui_tooltips);
 	else gtk_tooltips_disable(gui_tooltips);
+
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "buttons_text_only")))) {
+		globals.button_type=BUTTON_TYPE_TEXT;
+	} else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "buttons_icon_only")))) {
+		globals.button_type=BUTTON_TYPE_ICON;
+	} else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "buttons_text_and_icon")))) {
+		globals.button_type=BUTTON_TYPE_BOTH;
+	}
 	
-	globals.show_nag=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(show_nag));
-	globals.update_idle=(int) update_idle->value;
-	globals.update_delay=(int) update_delay_adj->value;	
-	globals.flash_response=flash_response->value;
-	
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(but_text))) globals.button_type=BUTTON_TYPE_TEXT;
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(but_icon))) globals.button_type=BUTTON_TYPE_ICON;
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(but_both))) globals.button_type=BUTTON_TYPE_BOTH;
-	strcpy(globals.file_editor, gtk_entry_get_text(GTK_ENTRY(sound_editor)));
+	globals.update_delay=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "update_delay")));
+	globals.update_idle=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "update_idle")));
+	globals.flash_response=gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "vumeter_decay")));
+
+	/* Misc */
+	strcpy(globals.file_editor, gtk_entry_get_text(GTK_ENTRY(lookup_widget(dialog, "soundfile_editor"))));
+	globals.prelis=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "prelisten_enabled")))==TRUE);
 }
+
 
 #define WID_DYN TRUE, TRUE, 0
 #define WID_FIX FALSE, FALSE, 0
@@ -158,82 +145,51 @@ void apply_options() {
 #define add_expl_dyn(s); label=gtk_label_new(s); \
 	gtk_misc_set_alignment(GTK_MISC(label), 0.5, 0.5);\
 	add_widget_dyn(label);
-	
-static gint showdevmenu(GtkWidget *widget, GdkEvent *event)
-{
-	if (event->type == GDK_BUTTON_PRESS) {
-		GdkEventButton *bevent = (GdkEventButton *) event; 
-		gtk_menu_popup (GTK_MENU (widget), NULL, NULL, NULL, NULL,
-		bevent->button, bevent->time);
-	return TRUE;
-	}
-	
-	return FALSE;	
-}
-
-#ifndef WIN32
-XDeviceInfo *xdev=NULL;
-#endif
-
-void options_destroy(GtkWidget *widget)
-{
-	/* Destroying everything that is NOT a direct part of
-	  the dialog: adjustments, menu and XDeviceList.
-	*/
-
-	gdk_window_hide(opt_window);	
-	opt_hidden=1;
-	
-	gtk_object_destroy(GTK_OBJECT(opt_dialog));
-
-#ifndef WIN32
-	XFreeDeviceList(xdev);	
-#endif	
-	opt_window=NULL;
-}
-
-void ok_options(GtkWidget *widget)
-{
-	apply_options();
-	options_destroy(widget);
-}
-
-void  use_stdout_changed(GtkWidget *widget)
-{
-	globals.use_stdout=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
-	globals.use_stdout_cmdline = 0;
-}
-void select_input(GtkWidget *w, char *dev)
-{
-	gtk_button_set_label(GTK_BUTTON(xinput_device), dev);
-}
 
 #ifdef USE_ALSA
+static GList *alsa_devices;
+
 GList *get_alsa_device_list() {
+	if (alsa_devices) {
+		return alsa_devices;
+	}
+	
 	FILE *file;
-	GList *devices=NULL;
-	char buffer[256];
+	char buffer[PATH_MAX+1];
 	
 	if ((file = fopen("/proc/asound/pcm", "r"))) {
-		while(fgets(buffer, 255, file)) {
-			buffer[255]=0;
+		while(fgets(buffer, PATH_MAX, file)) {
+			buffer[PATH_MAX]=0;
+			if (strlen(buffer)) buffer[strlen(buffer)-1]=0;
 			if(strstr(buffer, "playback")) {
-				devices=g_list_append (devices, strdup(buffer));
+				alsa_devices=g_list_append (alsa_devices, strdup(buffer));
 			}
 		}
 		fclose(file);
 	}
 	
-	return devices;
+	return alsa_devices;
 }
 #else
-#include <dirent.h>
+GList *get_alsa_device_list() {
+	return NULL;
+}
+#endif
+
+
+#ifdef USE_OSS
+static GList *oss_devices=NULL;
+
 int oss_select_dsp_only(const struct dirent *entry){
 	return (strstr(entry->d_name, "dsp")!=0);
 }
 
 GList *get_oss_device_list() {
-	GList *devices=NULL;
+	if (oss_devices) {
+		return oss_devices;
+	}
+	
+	
     struct dirent **namelist;
     int n,i;
     n = scandir("/dev", &namelist, oss_select_dsp_only, alphasort);
@@ -241,304 +197,172 @@ GList *get_oss_device_list() {
     if (n>0) {
     	for (i=0; i<n; i++) {
 			char buffer[256];
-            sprintf(buffer, "/dev/%s\n", namelist[i]->d_name);
+            sprintf(buffer, "/dev/%s", namelist[i]->d_name);
             free(namelist[i]);
-			devices=g_list_append (devices, strdup(buffer));
+			oss_devices=g_list_append (oss_devices, strdup(buffer));
 		}
 	}
 	
-	return devices;
+	return oss_devices;
 }
 #endif
+
+static GList *sampling_rates=NULL;
+
+GList *get_sampling_rates_list() {
+	if (sampling_rates) {
+		return sampling_rates;
+	}
+	
+	char buffer[256];
+	
+	sampling_rates=g_list_append(sampling_rates, (void *) "22000");
+	sampling_rates=g_list_append(sampling_rates, (void *) "32000");
+	sampling_rates=g_list_append(sampling_rates, (void *) "44100");
+	sampling_rates=g_list_append(sampling_rates, (void *) "48000");
+
+	return sampling_rates;	
+}
+
+static GList *xinput_devices=NULL;
+
+GList *get_xinput_devices_list() {
+	if (xinput_devices) {
+		return xinput_devices;
+	}
+	
+	int devmax;
+	Display *dpy=XOpenDisplay(NULL);
+	XDeviceInfo *xdev=XListInputDevices(dpy, &devmax);
+	XCloseDisplay(dpy);
+
+	for (int i=0; i<devmax; i++) {
+		xinput_devices=g_list_append(xinput_devices, strdup(xdev[i].name));
+	}
+	
+	XFreeDeviceList(xdev);
+	
+	return xinput_devices;
+}
+
+void init_tx_options(GtkWidget *dialog) {
+	/* Audio */
+	switch (globals.audiodevice_type) {		
+		case ALSA: gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "alsa_driver")), 1);
+			break;
+		
+		case JACK: gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "jack_driver")), 1);
+			break;
+
+		case OSS: 
+		default:
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "oss_driver")), 1);
+			break;
+	}
+	
+#ifndef USE_OSS
+	gtk_widget_set_sensitive(lookup_widget(dialog, "oss_driver"), 0);
+	gtk_widget_set_sensitive(lookup_widget(dialog, "oss_audio_device"), 0);
+	gtk_widget_set_sensitive(lookup_widget(dialog, "oss_buffers"), 0);
+	gtk_widget_set_sensitive(lookup_widget(dialog, "oss_buffersize"), 0);
+#endif
+	
+#ifndef USE_ALSA
+	gtk_widget_set_sensitive(lookup_widget(dialog, "alsa_driver"), 0);	
+	// TODO: Rest!	
+#endif
+	
+#ifndef USE_JACK
+	gtk_widget_set_sensitive(lookup_widget(dialog, "jack_driver"), 0);
+#endif	
+	
+	/* Audio: OSS */
+	gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "oss_audio_device")), get_oss_device_list());
+	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "oss_audio_device"))->entry), globals.oss_device);
+
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget(dialog, "oss_buffers")), globals.oss_buff_no);
+	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "oss_buffersize")), globals.oss_buff_size);
+
+	gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "oss_samplerate")), get_sampling_rates_list());
+	char tmp[32];
+	sprintf(tmp, "%i", globals.oss_samplerate);
+	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "oss_samplerate"))->entry), tmp);
+	
+	
+	/* Audio: ALSA */
+	gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "alsa_audio_device")), get_alsa_device_list());
+	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "alsa_audio_device"))->entry), globals.alsa_device);
+
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget(dialog, "alsa_buffers")), globals.alsa_buff_no);
+	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "alsa_buffersize")), globals.alsa_buff_size);
+
+	gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "alsa_samplerate")), get_sampling_rates_list());
+	sprintf(tmp, "%i", globals.alsa_samplerate);
+	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "alsa_samplerate"))->entry), tmp);
+	
+	
+	/* TODO: Samplerate!
+		ALSA
+		JACK
+	*/
+	
+	/* Input */
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "xinput_enable")), globals.xinput_enable);
+	
+	gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "xinput_device")), get_xinput_devices_list());
+	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "xinput_device"))->entry), globals.xinput_device);
+
+	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "mouse_speed")), globals.mouse_speed);
+	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "stop_sense_cycles")), globals.sense_cycles);
+	
+	/* User Interface */ 
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "startup_nagbox")), globals.show_nag);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "mainwin_tooltips")), globals.tooltips);
+	
+	switch (globals.button_type) {
+		case BUTTON_TYPE_TEXT:
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "buttons_text_only")), 1);
+			break;
+		
+		case BUTTON_TYPE_ICON:
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "buttons_icon_only")), 1);
+			break;
+		
+		case BUTTON_TYPE_BOTH:
+		default:
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "buttons_text_and_icon")), 1);
+	}
+	
+	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "update_delay")), globals.update_delay);
+	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "update_idle")), globals.update_idle);
+	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "vumeter_decay")), globals.flash_response);
+
+	/* Misc */
+	gtk_entry_set_text(GTK_ENTRY(lookup_widget(dialog, "soundfile_editor")), globals.file_editor);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "prelisten_enabled")), globals.prelis);
+}
 
 void create_options()
 {
-	GtkWidget *box;
-	GtkWidget *vbox;
-	GtkWidget *aa;
-	GtkWidget *label;
-	GtkWidget *separator;
-	GtkWindow *w;
-	GtkWidget *item;
-	GSList *button_type_group;
-	
-	Display *dpy;
-	
-	int i, devmax;
-		
-	opt_dialog=gtk_dialog_new();
-	w=&(GTK_DIALOG(opt_dialog)->window);
-	gtk_window_set_wmclass(GTK_WINDOW(w), "terminatorX", "tX_options");
-	gtk_window_set_title(w, "terminatorX - Options");
-
-	opt_tips=gtk_tooltips_new();
-	
-	vbox=GTK_WIDGET(GTK_DIALOG(opt_dialog)->vbox);
-	gtk_box_set_spacing(GTK_BOX(vbox), 5);
-	gtk_container_set_border_width(GTK_CONTAINER(w), 5);
-//	gtk_box_set_homogeneous(GTK_BOX(vbox), FALSE);
-	aa=GTK_WIDGET(GTK_DIALOG(opt_dialog)->action_area);
-	gtk_box_set_spacing(GTK_BOX(aa), 5);
-//	gtk_box_set_homogeneous(GTK_BOX(aa), FALSE);
-	
-	label=gtk_label_new("Options:");
-	gtk_misc_set_alignment (GTK_MISC(label), 0.5 ,0.5);	
-	gtk_box_pack_start(GTK_BOX(vbox), label, WID_DYN);
-	gtk_widget_show(label);
-	
-	my_new_subsec("[ Audio: ]");
-	
-	begin_box();
-
-	add_expl("Device:");
-	
-	//audio_device=gtk_entry_new_with_max_length(PATH_MAX);
-	//gtk_entry_set_text(GTK_ENTRY(audio_device), globals.audio_device);
-	audio_device=gtk_combo_new();
-	GList *strings;
-#ifdef USE_ALSA
-	strings=get_alsa_device_list();
-#else
-	strings=get_oss_device_list();
-#endif
-	gtk_combo_set_popdown_strings (GTK_COMBO(audio_device), strings);
-	gtk_combo_set_value_in_list(GTK_COMBO(audio_device), FALSE, FALSE);
-	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(audio_device)->entry), globals.audio_device);
-	
-	gtk_tooltips_set_tip(opt_tips, audio_device, "Select the audiodevice you want terminatorX to send its output to.", NULL);
-	add_widget_dyn(audio_device);
-	
-	end_box();
-
-	begin_box();
-	use_stdout=gtk_check_button_new_with_label("Use standard output instead of the above device");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(use_stdout), globals.use_stdout);	
-	gtk_signal_connect(GTK_OBJECT(use_stdout), "clicked", (GtkSignalFunc) use_stdout_changed, NULL);
-	add_widget_fix(use_stdout);	
-	end_box();	
-		
-	begin_box();
-	
-	add_expl("No. of Buffers:");
-	
-	buff_no=(GtkAdjustment*) gtk_adjustment_new(globals.buff_no, 1, 16, 1, 1, 1);
-	buff_no_slider=gtk_hscale_new(buff_no);
-	gtk_scale_set_digits(GTK_SCALE(buff_no_slider), 0);
-	gtk_scale_set_value_pos(GTK_SCALE(buff_no_slider), GTK_POS_LEFT);
-	gtk_tooltips_set_tip(opt_tips, buff_no_slider, "Sets the number of kernel level audio buffers. Actually most systems should run just fine with two.", NULL);
-	add_widget_dyn(buff_no_slider);
-
-	end_box();
-
-	begin_box();
-
-	add_expl("Size of Buffers:");
-	
-	buff_size=(GtkAdjustment*) gtk_adjustment_new(globals.buff_size, 1, 16, 1, 1, 1);
-	buff_size_slider=gtk_hscale_new(buff_size);
-	gtk_scale_set_digits(GTK_SCALE(buff_size_slider), 0);
-	gtk_scale_set_value_pos(GTK_SCALE(buff_size_slider), GTK_POS_LEFT);
-	gtk_tooltips_set_tip(opt_tips, buff_size_slider, "Sets the size of the kernel level audio buffers. On slower systems you might have to increase this value (if you hear \"clicks\"). Lower values mean lower latency though.", NULL);
-	add_widget_dyn(buff_size_slider);
-		
-	end_box();
-
-	begin_box();
-
-	begin_box();
-
-	prelis=gtk_check_button_new_with_label("Pre-Listen to audio files");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(prelis), globals.prelis);
-	add_widget_fix(prelis);		
-	
-	end_box();
-	
-	my_new_subsec("[ Mouse / Input: ]");
-
-#ifndef WIN32	
-	dpy=XOpenDisplay(NULL);
-	xdev=XListInputDevices(dpy, &devmax);
-	XCloseDisplay(dpy);
-
-	if (menu) gtk_object_destroy(GTK_OBJECT(menu));
-		
-	menu = gtk_menu_new();	
-	
-	for (i=0; i<devmax; i++)
-	{
-		item = gtk_menu_item_new_with_label(xdev[i].name);
-		gtk_menu_append(GTK_MENU(menu), item);
-		gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(select_input), xdev[i].name);
-		gtk_widget_show(item);
-	}
-
-	begin_box();
-
-	xinput_enable=gtk_check_button_new_with_label("XInput Device:");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(xinput_enable), globals.xinput_enable);		
-	gtk_tooltips_set_tip(opt_tips,	xinput_enable, "CAREFUL! Enable this *only* if you want to use an input device than your default X-Pointer (yes, your mouse ;). You have to select your desired device as well. Selecting the default mouse pointer will crash terminatorX so if you want to use that keep this option disabled.", NULL);
-	add_widget_fix(xinput_enable);
-	
-	if (strlen(globals.xinput_device)>0)	
-	{
-		xinput_device=gtk_button_new_with_label(globals.xinput_device);
-	}
-	else
-	{
-		xinput_device=gtk_button_new_with_label("");
-	}
-		
-	gtk_signal_connect_object (GTK_OBJECT (xinput_device), "event", GTK_SIGNAL_FUNC (showdevmenu), GTK_OBJECT (menu));
-	add_widget_dyn(xinput_device);
-		
-	end_box();
-	
-#endif	
-	
-	begin_box();
-	
-	add_expl("Mouse Speed:");
-		
-	mouse_speed=(GtkAdjustment*) gtk_adjustment_new(globals.mouse_speed, -10, 10, 0.5, 0.1, 0.1);
-	mouse_speed_slider=gtk_hscale_new(mouse_speed);
-	gtk_scale_set_digits(GTK_SCALE(mouse_speed_slider), 1);
-	gtk_scale_set_value_pos(GTK_SCALE(mouse_speed_slider), GTK_POS_LEFT);
-	gtk_tooltips_set_tip(opt_tips, mouse_speed_slider, "The speed of your mouse in scratch mode. Use negative values to invert motion.", NULL);
-	add_widget_dyn(mouse_speed_slider);
-	
-	end_box();
-	
-	begin_box();
-	
-	add_expl("Stop Sense Cycles:");
-	
-	sense_cycles=(GtkAdjustment*) gtk_adjustment_new(globals.sense_cycles, 1, 150, 5, 1, 1);
-	sense_cycles_slider=gtk_hscale_new(sense_cycles);
-	gtk_scale_set_digits(GTK_SCALE(sense_cycles_slider), 0);
-	gtk_scale_set_value_pos(GTK_SCALE(sense_cycles_slider), GTK_POS_LEFT);
-	gtk_tooltips_set_tip(opt_tips, sense_cycles_slider, "If there is no \"motion-event\" for x cycles, where x is the number of cycles you select here, terminatorX assumes mouse motion has stopped. For smaller buffer sizes (=> shorter cycle times) you might have to increase this value", NULL);
-	add_widget_dyn(sense_cycles_slider);
-	
-	end_box();
-	
-	my_new_subsec("[ Graphics / GUI: ]");
-	
-	begin_box();
-	
-	tooltips=gtk_check_button_new_with_label("Main Window Tooltips");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tooltips), globals.tooltips);	
-	add_widget_dyn(tooltips);	
-	
-	end_box();
-	
-	begin_box();
-	
-	add_expl("Update Idle:");
-		
-	update_idle=(GtkAdjustment*) gtk_adjustment_new(globals.update_idle, 1, 100, 1, 10, 10);
-	update_idle_slider=gtk_hscale_new(update_idle);
-	gtk_scale_set_digits(GTK_SCALE(update_idle_slider), 0);
-	gtk_scale_set_value_pos(GTK_SCALE(update_idle_slider), GTK_POS_LEFT);
-	gtk_tooltips_set_tip(opt_tips,	update_idle_slider, "The update thread will idle for the selcted amount of milliseconds. If you want to have a more responsive display update increase this value - if you have performance problems reduce this value.", NULL);
-	add_widget_dyn(update_idle_slider);
-		
-	end_box();
-
-	begin_box();
-	
-	add_expl("Update Delay:");
-		
-	update_delay_adj=(GtkAdjustment*) gtk_adjustment_new(globals.update_delay, 0, 15, 1, 10, 10);
-	update_delay_slider=gtk_hscale_new(update_delay_adj);
-	gtk_scale_set_digits(GTK_SCALE(update_delay_slider), 0);
-	gtk_scale_set_value_pos(GTK_SCALE(update_delay_slider), GTK_POS_LEFT);
-	gtk_tooltips_set_tip(opt_tips,	update_delay_slider, "How often to update the slow widgets.", NULL);
-	add_widget_dyn(update_delay_slider);
-		
-	end_box();
-
-	begin_box();
-	
-	add_expl("Flash Decay:  ");
-	
-	flash_response=GTK_ADJUSTMENT(gtk_adjustment_new(globals.flash_response, 0.8, 0.99, 0.01, 0.01, 0.001));
-	item=gtk_hscale_new(flash_response);
-	gtk_scale_set_digits(GTK_SCALE(item), 2);
-	gtk_scale_set_value_pos(GTK_SCALE(item), GTK_POS_LEFT);
-//	gtk_tooltips_set_tip(opt_tips,	update_idle_slider, "The update thread will idle for the selcted amount of milliseconds. If you want to have a more responsive display update increase this value - if you have performance problems reduce this value.", NULL);
-	add_widget_dyn(item);
-	
-	end_box();
-
-	begin_box();
-	
-	add_expl("Buttons as ");
-	but_both=item=gtk_radio_button_new_with_label(NULL, "Text+Icon");
-	add_widget_fix(item);
-	button_type_group=gtk_radio_button_group(GTK_RADIO_BUTTON(item));	
-	but_text=item=gtk_radio_button_new_with_label(button_type_group, "Text");
-	button_type_group=gtk_radio_button_group(GTK_RADIO_BUTTON(item));	
-	add_widget_fix(item);
-	but_icon=item=gtk_radio_button_new_with_label(button_type_group, "Icon");
-	add_widget_fix(item);
-	
-	switch (globals.button_type)
-	{
-		case BUTTON_TYPE_TEXT:
-			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(but_text), 1);
-		break;
-		case BUTTON_TYPE_ICON:
-			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(but_icon), 1);
-		break;
-		case BUTTON_TYPE_BOTH:
-			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(but_both), 1);
-		break;
-		default: fprintf (stderr, "oops: Unknown button type.\n");
-	}
-	
-	end_box();
-
-	begin_box();	
-
-	show_nag=gtk_check_button_new_with_label("Display nagbox on startup while loading data");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(show_nag), globals.show_nag);	
-	add_widget_dyn(show_nag);		
-	
-	end_box();
-
-	begin_box();
-	
-	add_expl("Soundfile editor:");
-		
-	sound_editor=gtk_entry_new_with_max_length(PATH_MAX);
-	gtk_entry_set_text(GTK_ENTRY(sound_editor), globals.file_editor);
-	gtk_tooltips_set_tip(opt_tips, sound_editor, "Enter your favourite soundfile editor.", NULL);
-	add_widget_dyn(sound_editor);	
-	
-	end_box();	
-	my_new_button(opt_ok, "Ok");
-	gtk_signal_connect(GTK_OBJECT(opt_ok), "clicked", (GtkSignalFunc) ok_options, NULL);
-	my_new_button(opt_apply, "Apply");
-	gtk_signal_connect(GTK_OBJECT(opt_apply), "clicked", (GtkSignalFunc) apply_options, NULL);
-	my_new_button(opt_cancel, "Cancel");
-	gtk_signal_connect(GTK_OBJECT(opt_cancel), "clicked", (GtkSignalFunc) options_destroy, NULL);
-
-	
+	opt_dialog=create_tx_options();
+	init_tx_options(opt_dialog);
 	gtk_widget_show(opt_dialog);
-	opt_window=opt_dialog->window;
-	tX_set_icon(opt_dialog, "tX Options");
-	gtk_signal_connect(GTK_OBJECT(opt_dialog), "delete-event", (GtkSignalFunc) options_destroy, NULL);	
-
 }
+
+/* void create_options()
+{
+	// gtk_tooltips_set_tip(opt_tips, buff_size_slider, "Sets the size of the kernel level audio buffers. On slower systems you might have to increase this value (if you hear \"clicks\"). Lower values mean lower latency though.", NULL);
+	// gtk_tooltips_set_tip(opt_tips, mouse_speed_slider, "The speed of your mouse in scratch mode. Use negative values to invert motion.", NULL);
+	// gtk_tooltips_set_tip(opt_tips, sense_cycles_slider, "If there is no \"motion-event\" for x cycles, where x is the number of cycles you select here, terminatorX assumes mouse motion has stopped. For smaller buffer sizes (=> shorter cycle times) you might have to increase this value", NULL);
+	// gtk_tooltips_set_tip(opt_tips,	update_idle_slider, "The update thread will idle for the selcted amount of milliseconds. If you want to have a more responsive display update increase this value - if you have performance problems reduce this value.", NULL);
+	// gtk_tooltips_set_tip(opt_tips,	update_delay_slider, "How often to update the slow widgets.", NULL);
+} */
 
 void display_options()
 {
-        if (opt_window)
-	{
-		gdk_window_raise(opt_window);	
-        }
-        else
-	{
+	if (opt_dialog) {
+		gdk_window_raise(opt_dialog->window);	
+	} else {
 		create_options();
 	}
 }

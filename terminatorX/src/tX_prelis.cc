@@ -102,7 +102,7 @@ void prelis_start(char *name) {
 	}
 	else if (temp==0) /* CHILD */
 	{	
-		strcpy(dev, globals.audio_device);
+		strcpy(dev, globals.oss_device);
 		strcat(ogg123_dev, dev);
 		strcpy(nm, name);
 #ifdef USE_OGG123_INPUT

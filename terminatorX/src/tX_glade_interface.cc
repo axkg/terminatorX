@@ -57,8 +57,20 @@ create_tx_options (void)
   GtkWidget *oss_samplerate;
   GtkWidget *combo_entry3;
   GtkWidget *label15;
-  GtkWidget *empty_notebook_page;
+  GtkWidget *table6;
+  GtkWidget *label27;
+  GtkWidget *label28;
+  GtkWidget *label29;
+  GtkWidget *label30;
+  GtkWidget *alsa_audio_device;
+  GtkWidget *combo_entry4;
+  GtkObject *alsa_buffers_adj;
+  GtkWidget *alsa_buffers;
+  GtkWidget *alsa_samplerate;
+  GtkWidget *combo_entry5;
+  GtkWidget *alsa_buffersize;
   GtkWidget *label16;
+  GtkWidget *empty_notebook_page;
   GtkWidget *label17;
   GtkWidget *table1;
   GtkWidget *label5;
@@ -68,6 +80,8 @@ create_tx_options (void)
   GtkWidget *combo_entry1;
   GtkWidget *mouse_speed;
   GtkWidget *stop_sense_cycles;
+  GtkWidget *label25;
+  GtkWidget *xinput_enable;
   GtkWidget *label4;
   GtkWidget *table2;
   GtkWidget *label8;
@@ -90,11 +104,13 @@ create_tx_options (void)
   GtkWidget *table3;
   GtkWidget *label13;
   GtkWidget *soundfile_editor;
+  GtkWidget *label26;
+  GtkWidget *prelisten_enabled;
   GtkWidget *label3;
   GtkWidget *dialog_action_area1;
-  GtkWidget *cancel;
-  GtkWidget *apply;
-  GtkWidget *okbutton1;
+  GtkWidget *pref_cancel;
+  GtkWidget *pref_apply;
+  GtkWidget *pref_ok;
   GtkTooltips *tooltips;
 
   tooltips = gtk_tooltips_new ();
@@ -133,18 +149,21 @@ create_tx_options (void)
   oss_driver = gtk_radio_button_new_with_mnemonic (NULL, "OSS");
   gtk_widget_show (oss_driver);
   gtk_box_pack_start (GTK_BOX (hbox2), oss_driver, FALSE, FALSE, 0);
+  gtk_tooltips_set_tip (tooltips, oss_driver, "Use the OSS (Open Sound System) driver for audio output.", NULL);
   gtk_radio_button_set_group (GTK_RADIO_BUTTON (oss_driver), oss_driver_group);
   oss_driver_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (oss_driver));
 
   alsa_driver = gtk_radio_button_new_with_mnemonic (NULL, "ALSA");
   gtk_widget_show (alsa_driver);
   gtk_box_pack_start (GTK_BOX (hbox2), alsa_driver, FALSE, FALSE, 0);
+  gtk_tooltips_set_tip (tooltips, alsa_driver, "Use the ALSA (Advanced Linux Sound System) driver for audio output.", NULL);
   gtk_radio_button_set_group (GTK_RADIO_BUTTON (alsa_driver), oss_driver_group);
   oss_driver_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (alsa_driver));
 
   jack_driver = gtk_radio_button_new_with_mnemonic (NULL, "JACK");
   gtk_widget_show (jack_driver);
   gtk_box_pack_start (GTK_BOX (hbox2), jack_driver, FALSE, FALSE, 0);
+  gtk_tooltips_set_tip (tooltips, jack_driver, "Use the JACK (JACK Audio Connection Kit) driver for audio output.", NULL);
   gtk_radio_button_set_group (GTK_RADIO_BUTTON (jack_driver), oss_driver_group);
   oss_driver_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (jack_driver));
 
@@ -225,6 +244,7 @@ create_tx_options (void)
 
   combo_entry2 = GTK_COMBO (oss_audio_device)->entry;
   gtk_widget_show (combo_entry2);
+  gtk_tooltips_set_tip (tooltips, combo_entry2, "Select the audiodevice you want terminatorX to send its output to.", NULL);
 
   oss_buffers_adj = gtk_adjustment_new (2, 2, 5, 1, 10, 10);
   oss_buffers = gtk_spin_button_new (GTK_ADJUSTMENT (oss_buffers_adj), 1, 0);
@@ -232,6 +252,7 @@ create_tx_options (void)
   gtk_table_attach (GTK_TABLE (table5), oss_buffers, 1, 2, 1, 2,
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
+  gtk_tooltips_set_tip (tooltips, oss_buffers, "Sets the number of kernel level audio buffers. Actually most systems should run just fine with two.", NULL);
 
   oss_buffersize = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (5, 1, 16, 1, 1, 1)));
   gtk_widget_show (oss_buffersize);
@@ -250,15 +271,87 @@ create_tx_options (void)
 
   combo_entry3 = GTK_COMBO (oss_samplerate)->entry;
   gtk_widget_show (combo_entry3);
+  gtk_tooltips_set_tip (tooltips, combo_entry3, "Select the sampling to use for this audio device - the higher the better quality. Note that not all sampling rates are supported by all audio devices.", NULL);
 
   label15 = gtk_label_new ("Audio: OSS");
   gtk_widget_show (label15);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 1), label15);
   gtk_label_set_justify (GTK_LABEL (label15), GTK_JUSTIFY_LEFT);
 
-  empty_notebook_page = gtk_vbox_new (FALSE, 0);
-  gtk_widget_show (empty_notebook_page);
-  gtk_container_add (GTK_CONTAINER (notebook1), empty_notebook_page);
+  table6 = gtk_table_new (4, 2, FALSE);
+  gtk_widget_show (table6);
+  gtk_container_add (GTK_CONTAINER (notebook1), table6);
+  gtk_container_set_border_width (GTK_CONTAINER (table6), 4);
+  gtk_table_set_row_spacings (GTK_TABLE (table6), 2);
+  gtk_table_set_col_spacings (GTK_TABLE (table6), 2);
+
+  label27 = gtk_label_new ("Audio Device:");
+  gtk_widget_show (label27);
+  gtk_table_attach (GTK_TABLE (table6), label27, 0, 1, 0, 1,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label27), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (label27), 0, 0.5);
+
+  label28 = gtk_label_new ("No. of buffers:");
+  gtk_widget_show (label28);
+  gtk_table_attach (GTK_TABLE (table6), label28, 0, 1, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label28), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (label28), 0, 0.5);
+
+  label29 = gtk_label_new ("Buffersize (samples):");
+  gtk_widget_show (label29);
+  gtk_table_attach (GTK_TABLE (table6), label29, 0, 1, 2, 3,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label29), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (label29), 0, 0.5);
+
+  label30 = gtk_label_new ("Samplerate (Hz):");
+  gtk_widget_show (label30);
+  gtk_table_attach (GTK_TABLE (table6), label30, 0, 1, 3, 4,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label30), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (label30), 0, 0.5);
+
+  alsa_audio_device = gtk_combo_new ();
+  g_object_set_data (G_OBJECT (GTK_COMBO (alsa_audio_device)->popwin),
+                     "GladeParentKey", alsa_audio_device);
+  gtk_widget_show (alsa_audio_device);
+  gtk_table_attach (GTK_TABLE (table6), alsa_audio_device, 1, 2, 0, 1,
+                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+
+  combo_entry4 = GTK_COMBO (alsa_audio_device)->entry;
+  gtk_widget_show (combo_entry4);
+
+  alsa_buffers_adj = gtk_adjustment_new (2, 2, 5, 1, 2, 2);
+  alsa_buffers = gtk_spin_button_new (GTK_ADJUSTMENT (alsa_buffers_adj), 1, 0);
+  gtk_widget_show (alsa_buffers);
+  gtk_table_attach (GTK_TABLE (table6), alsa_buffers, 1, 2, 1, 2,
+                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+
+  alsa_samplerate = gtk_combo_new ();
+  g_object_set_data (G_OBJECT (GTK_COMBO (alsa_samplerate)->popwin),
+                     "GladeParentKey", alsa_samplerate);
+  gtk_widget_show (alsa_samplerate);
+  gtk_table_attach (GTK_TABLE (table6), alsa_samplerate, 1, 2, 3, 4,
+                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+
+  combo_entry5 = GTK_COMBO (alsa_samplerate)->entry;
+  gtk_widget_show (combo_entry5);
+
+  alsa_buffersize = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (1024, 512, 32000, 512, 1024, 2048)));
+  gtk_widget_show (alsa_buffersize);
+  gtk_table_attach (GTK_TABLE (table6), alsa_buffersize, 1, 2, 2, 3,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_scale_set_digits (GTK_SCALE (alsa_buffersize), 0);
 
   label16 = gtk_label_new ("Audio: ALSA");
   gtk_widget_show (label16);
@@ -274,7 +367,7 @@ create_tx_options (void)
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 3), label17);
   gtk_label_set_justify (GTK_LABEL (label17), GTK_JUSTIFY_LEFT);
 
-  table1 = gtk_table_new (3, 2, FALSE);
+  table1 = gtk_table_new (4, 2, FALSE);
   gtk_widget_show (table1);
   gtk_container_add (GTK_CONTAINER (notebook1), table1);
   gtk_container_set_border_width (GTK_CONTAINER (table1), 4);
@@ -283,7 +376,7 @@ create_tx_options (void)
 
   label5 = gtk_label_new ("XInput Device:");
   gtk_widget_show (label5);
-  gtk_table_attach (GTK_TABLE (table1), label5, 0, 1, 0, 1,
+  gtk_table_attach (GTK_TABLE (table1), label5, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_label_set_justify (GTK_LABEL (label5), GTK_JUSTIFY_LEFT);
@@ -291,7 +384,7 @@ create_tx_options (void)
 
   label6 = gtk_label_new ("Mouse Speed:");
   gtk_widget_show (label6);
-  gtk_table_attach (GTK_TABLE (table1), label6, 0, 1, 1, 2,
+  gtk_table_attach (GTK_TABLE (table1), label6, 0, 1, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_label_set_justify (GTK_LABEL (label6), GTK_JUSTIFY_LEFT);
@@ -299,7 +392,7 @@ create_tx_options (void)
 
   label7 = gtk_label_new ("Stop-Sense-Cycles:");
   gtk_widget_show (label7);
-  gtk_table_attach (GTK_TABLE (table1), label7, 0, 1, 2, 3,
+  gtk_table_attach (GTK_TABLE (table1), label7, 0, 1, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_label_set_justify (GTK_LABEL (label7), GTK_JUSTIFY_LEFT);
@@ -309,26 +402,41 @@ create_tx_options (void)
   g_object_set_data (G_OBJECT (GTK_COMBO (xinput_device)->popwin),
                      "GladeParentKey", xinput_device);
   gtk_widget_show (xinput_device);
-  gtk_table_attach (GTK_TABLE (table1), xinput_device, 1, 2, 0, 1,
+  gtk_table_attach (GTK_TABLE (table1), xinput_device, 1, 2, 1, 2,
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
 
   combo_entry1 = GTK_COMBO (xinput_device)->entry;
   gtk_widget_show (combo_entry1);
-  gtk_tooltips_set_tip (tooltips, combo_entry1, "CAREFUL! Enable this *only* if you want to use an input device than your default X-Pointer (yes, your mouse ;). You have to select your desired device as well. Selecting the default mouse pointer will crash terminatorX so if you want to use that keep this option disabled.", NULL);
+  gtk_tooltips_set_tip (tooltips, combo_entry1, "Select the input device to use when XInput is enabled. Note: do not use this option if you plan on using your default device (standard mouse).", NULL);
 
   mouse_speed = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (0, -10, 10, 0.5, 0.1, 0.1)));
   gtk_widget_show (mouse_speed);
-  gtk_table_attach (GTK_TABLE (table1), mouse_speed, 1, 2, 1, 2,
+  gtk_table_attach (GTK_TABLE (table1), mouse_speed, 1, 2, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
   stop_sense_cycles = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (10, 1, 150, 5, 1, 1)));
   gtk_widget_show (stop_sense_cycles);
-  gtk_table_attach (GTK_TABLE (table1), stop_sense_cycles, 1, 2, 2, 3,
+  gtk_table_attach (GTK_TABLE (table1), stop_sense_cycles, 1, 2, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
   gtk_scale_set_digits (GTK_SCALE (stop_sense_cycles), 0);
+
+  label25 = gtk_label_new ("XInput:");
+  gtk_widget_show (label25);
+  gtk_table_attach (GTK_TABLE (table1), label25, 0, 1, 0, 1,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label25), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (label25), 0, 0.5);
+
+  xinput_enable = gtk_check_button_new_with_mnemonic ("Enabled");
+  gtk_widget_show (xinput_enable);
+  gtk_table_attach (GTK_TABLE (table1), xinput_enable, 1, 2, 0, 1,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_tooltips_set_tip (tooltips, xinput_enable, "CAREFUL! Enable this *only* if you want to use an input device than your default X-Pointer (yes, your mouse ;). You have to select your desired device as well. Selecting the default mouse pointer will crash terminatorX so if you want to use that keep this option disabled.", NULL);
 
   label4 = gtk_label_new ("Input");
   gtk_widget_show (label4);
@@ -379,6 +487,7 @@ create_tx_options (void)
   gtk_table_attach (GTK_TABLE (table2), mainwin_tooltips, 1, 2, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
+  gtk_tooltips_set_tip (tooltips, mainwin_tooltips, "Enable tooltips for the terminatorX main window.", NULL);
 
   update_idle = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (11, 1, 100, 1, 10, 10)));
   gtk_widget_show (update_idle);
@@ -412,6 +521,7 @@ create_tx_options (void)
   gtk_table_attach (GTK_TABLE (table2), startup_nagbox, 1, 2, 0, 1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
+  gtk_tooltips_set_tip (tooltips, startup_nagbox, "Display nagbox on startup while loading data.", NULL);
 
   label12 = gtk_label_new ("Buttons:");
   gtk_widget_show (label12);
@@ -450,7 +560,7 @@ create_tx_options (void)
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 5), label2);
   gtk_label_set_justify (GTK_LABEL (label2), GTK_JUSTIFY_LEFT);
 
-  table3 = gtk_table_new (1, 2, FALSE);
+  table3 = gtk_table_new (2, 2, FALSE);
   gtk_widget_show (table3);
   gtk_container_add (GTK_CONTAINER (notebook1), table3);
   gtk_container_set_border_width (GTK_CONTAINER (table3), 4);
@@ -470,6 +580,22 @@ create_tx_options (void)
   gtk_table_attach (GTK_TABLE (table3), soundfile_editor, 1, 2, 0, 1,
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
+  gtk_tooltips_set_tip (tooltips, soundfile_editor, "Enter the command to run your favourite soundfile editor. It will be started when you choose \"Edit File\" from the turntable's file menu.", NULL);
+
+  label26 = gtk_label_new ("\"Pre-Listen\" to soundfiles:");
+  gtk_widget_show (label26);
+  gtk_table_attach (GTK_TABLE (table3), label26, 0, 1, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label26), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (label26), 0, 0.5);
+
+  prelisten_enabled = gtk_check_button_new_with_mnemonic ("Enabled");
+  gtk_widget_show (prelisten_enabled);
+  gtk_table_attach (GTK_TABLE (table3), prelisten_enabled, 1, 2, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_tooltips_set_tip (tooltips, prelisten_enabled, "When enabled soundfiles will be playedback when selected in a file dialog (before loading them).", NULL);
 
   label3 = gtk_label_new ("Misc");
   gtk_widget_show (label3);
@@ -480,20 +606,33 @@ create_tx_options (void)
   gtk_widget_show (dialog_action_area1);
   gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area1), GTK_BUTTONBOX_END);
 
-  cancel = gtk_button_new_from_stock ("gtk-cancel");
-  gtk_widget_show (cancel);
-  gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), cancel, GTK_RESPONSE_CANCEL);
-  GTK_WIDGET_SET_FLAGS (cancel, GTK_CAN_DEFAULT);
+  pref_cancel = gtk_button_new_from_stock ("gtk-cancel");
+  gtk_widget_show (pref_cancel);
+  gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), pref_cancel, GTK_RESPONSE_CANCEL);
+  GTK_WIDGET_SET_FLAGS (pref_cancel, GTK_CAN_DEFAULT);
 
-  apply = gtk_button_new_from_stock ("gtk-apply");
-  gtk_widget_show (apply);
-  gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), apply, GTK_RESPONSE_APPLY);
-  GTK_WIDGET_SET_FLAGS (apply, GTK_CAN_DEFAULT);
+  pref_apply = gtk_button_new_from_stock ("gtk-apply");
+  gtk_widget_show (pref_apply);
+  gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), pref_apply, GTK_RESPONSE_APPLY);
+  GTK_WIDGET_SET_FLAGS (pref_apply, GTK_CAN_DEFAULT);
 
-  okbutton1 = gtk_button_new_from_stock ("gtk-ok");
-  gtk_widget_show (okbutton1);
-  gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), okbutton1, GTK_RESPONSE_OK);
-  GTK_WIDGET_SET_FLAGS (okbutton1, GTK_CAN_DEFAULT);
+  pref_ok = gtk_button_new_from_stock ("gtk-ok");
+  gtk_widget_show (pref_ok);
+  gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), pref_ok, GTK_RESPONSE_OK);
+  GTK_WIDGET_SET_FLAGS (pref_ok, GTK_CAN_DEFAULT);
+
+  g_signal_connect ((gpointer) tx_options, "destroy",
+                    G_CALLBACK (on_tx_options_destroy),
+                    NULL);
+  g_signal_connect ((gpointer) pref_cancel, "clicked",
+                    G_CALLBACK (on_pref_cancel_clicked),
+                    NULL);
+  g_signal_connect ((gpointer) pref_apply, "clicked",
+                    G_CALLBACK (on_pref_apply_clicked),
+                    NULL);
+  g_signal_connect ((gpointer) pref_ok, "clicked",
+                    G_CALLBACK (on_pref_ok_clicked),
+                    NULL);
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
   GLADE_HOOKUP_OBJECT_NO_REF (tx_options, tx_options, "tx_options");
@@ -522,6 +661,17 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, oss_samplerate, "oss_samplerate");
   GLADE_HOOKUP_OBJECT (tx_options, combo_entry3, "combo_entry3");
   GLADE_HOOKUP_OBJECT (tx_options, label15, "label15");
+  GLADE_HOOKUP_OBJECT (tx_options, table6, "table6");
+  GLADE_HOOKUP_OBJECT (tx_options, label27, "label27");
+  GLADE_HOOKUP_OBJECT (tx_options, label28, "label28");
+  GLADE_HOOKUP_OBJECT (tx_options, label29, "label29");
+  GLADE_HOOKUP_OBJECT (tx_options, label30, "label30");
+  GLADE_HOOKUP_OBJECT (tx_options, alsa_audio_device, "alsa_audio_device");
+  GLADE_HOOKUP_OBJECT (tx_options, combo_entry4, "combo_entry4");
+  GLADE_HOOKUP_OBJECT (tx_options, alsa_buffers, "alsa_buffers");
+  GLADE_HOOKUP_OBJECT (tx_options, alsa_samplerate, "alsa_samplerate");
+  GLADE_HOOKUP_OBJECT (tx_options, combo_entry5, "combo_entry5");
+  GLADE_HOOKUP_OBJECT (tx_options, alsa_buffersize, "alsa_buffersize");
   GLADE_HOOKUP_OBJECT (tx_options, label16, "label16");
   GLADE_HOOKUP_OBJECT (tx_options, label17, "label17");
   GLADE_HOOKUP_OBJECT (tx_options, table1, "table1");
@@ -532,6 +682,8 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, combo_entry1, "combo_entry1");
   GLADE_HOOKUP_OBJECT (tx_options, mouse_speed, "mouse_speed");
   GLADE_HOOKUP_OBJECT (tx_options, stop_sense_cycles, "stop_sense_cycles");
+  GLADE_HOOKUP_OBJECT (tx_options, label25, "label25");
+  GLADE_HOOKUP_OBJECT (tx_options, xinput_enable, "xinput_enable");
   GLADE_HOOKUP_OBJECT (tx_options, label4, "label4");
   GLADE_HOOKUP_OBJECT (tx_options, table2, "table2");
   GLADE_HOOKUP_OBJECT (tx_options, label8, "label8");
@@ -553,11 +705,13 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, table3, "table3");
   GLADE_HOOKUP_OBJECT (tx_options, label13, "label13");
   GLADE_HOOKUP_OBJECT (tx_options, soundfile_editor, "soundfile_editor");
+  GLADE_HOOKUP_OBJECT (tx_options, label26, "label26");
+  GLADE_HOOKUP_OBJECT (tx_options, prelisten_enabled, "prelisten_enabled");
   GLADE_HOOKUP_OBJECT (tx_options, label3, "label3");
   GLADE_HOOKUP_OBJECT_NO_REF (tx_options, dialog_action_area1, "dialog_action_area1");
-  GLADE_HOOKUP_OBJECT (tx_options, cancel, "cancel");
-  GLADE_HOOKUP_OBJECT (tx_options, apply, "apply");
-  GLADE_HOOKUP_OBJECT (tx_options, okbutton1, "okbutton1");
+  GLADE_HOOKUP_OBJECT (tx_options, pref_cancel, "pref_cancel");
+  GLADE_HOOKUP_OBJECT (tx_options, pref_apply, "pref_apply");
+  GLADE_HOOKUP_OBJECT (tx_options, pref_ok, "pref_ok");
   GLADE_HOOKUP_OBJECT_NO_REF (tx_options, tooltips, "tooltips");
 
   return tx_options;
