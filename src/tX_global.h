@@ -41,8 +41,9 @@ extern "C" {
 #define PATH_MAX 1024
 #endif
 
-#define FL_SHRT_MAX 32767.0
-#define FL_SHRT_MIN -32768.0
+// JACK clips with true 16 Bit MAX...
+#define FL_SHRT_MAX 32765.0 // 32767.0
+#define FL_SHRT_MIN -32765.0 // -32768.0
 
 #define BUTTON_TYPE_ICON 1
 #define BUTTON_TYPE_TEXT 2

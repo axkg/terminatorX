@@ -29,6 +29,17 @@ changed.
 - modified the render loop to comply with LADSPA V1.1: 0 db is now at 1.0f. This
   makes a lot of plugins work with terminatorX that haven't worked with previous
   releases.
+- data send to the JACK backend no goes through the "Anti-Clip-Device", too. 
+  Unless you #define TX_DO_CLIP of course.
+- I've drawn some new icons with the wonderful inkscape. They're now being 
+  built into terminatorX as gdk-pixbuf c-source code, so they actually do alpha
+  blending.
+- merged parts of a patch from Adam King <aking@lgh.com.au>
+  - Simple min/maximization for the control panels
+  - Bugfix for sequencer menu crash
+  - TODO: complete this entry?
+- created some new icons for the GUI with the cool inkscape. 
+- added cpu-overload detection - currently disabled
 
 [v3.81]
 - JACK doesn't seem to like SCHED_FIFO clients so I added a little test that

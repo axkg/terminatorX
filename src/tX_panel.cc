@@ -28,12 +28,17 @@
 
 void tX_panel :: minimize(GtkWidget *w, tX_panel *p)
 {
-	p->client_hidden=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(p->minbutton));
-	
-	if (p->client_hidden)
+	if (!p->client_hidden) {
+		gtk_widget_hide(p->pixmap_min);
+		gtk_widget_show(p->pixmap_max);
 		gtk_widget_hide(p->clientframe);
-	else
+		p->client_hidden=1;
+	} else {
+		gtk_widget_hide(p->pixmap_max);
+		gtk_widget_show(p->pixmap_min);
 		gtk_widget_show(p->clientframe);
+		p->client_hidden=0;
+	}
 		
 	gboolean expand;
 	gboolean fill;
@@ -42,15 +47,15 @@ void tX_panel :: minimize(GtkWidget *w, tX_panel *p)
 		
 	if (p->container) {
 		gtk_box_query_child_packing(GTK_BOX(p->container), p->mainbox,
-									&expand, &fill, &padding, &pack_type);
+		&expand, &fill, &padding, &pack_type);
 		gtk_box_set_child_packing(GTK_BOX(p->container), p->mainbox,
-									expand, fill, padding, pack_type);
+		expand, fill, padding, pack_type);
 		gtk_container_check_resize(GTK_CONTAINER(p->container));			    
 	}
 }
 
 void tX_panel_make_label_bold(GtkWidget *widget) {
-	char label[128];	
+	char label[128];
 	sprintf(label, "<b>%s</b>", gtk_label_get_text(GTK_LABEL(widget)));
 	gtk_label_set_markup(GTK_LABEL (widget), label);
 }
@@ -60,12 +65,23 @@ tX_panel :: tX_panel (const char *name, GtkWidget *par)
 	GtkWidget *pixmap;
 	client_hidden=0;
 	
-	container=par;
-	minbutton=gtk_toggle_button_new();
-	pixmap=tx_pixmap_widget(TX_ICON_MINIMIZE);
-	gtk_container_add (GTK_CONTAINER (minbutton), pixmap);
-	labelbutton=gtk_button_new_with_label(name);
-	gtk_container_foreach(GTK_CONTAINER(labelbutton), (GtkCallback) tX_panel_make_label_bold, NULL);
+  	container=par;
+	minbutton=gtk_button_new();
+	pixmap_min=tx_pixmap_widget(MINIMIZE);
+	pixmap_max=tx_pixmap_widget(MAXIMIZE);
+	labelbutton=gtk_label_new(name);
+	gtk_misc_set_alignment(GTK_MISC(labelbutton), 0, 0.5);
+	tX_panel_make_label_bold(labelbutton);
+ 
+	button_box=gtk_hbox_new(FALSE, 5);
+	       
+	gtk_box_pack_start(GTK_BOX(button_box), pixmap_min, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(button_box), pixmap_max, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(button_box), labelbutton, WID_DYN);
+
+	gtk_container_set_border_width(GTK_CONTAINER(button_box), 2);
+	
+	gtk_container_add (GTK_CONTAINER (minbutton), button_box);
 	mainbox=gtk_vbox_new(FALSE, 0);
 	
 	topbox=gtk_hbox_new(FALSE, 0);
@@ -77,10 +93,10 @@ tX_panel :: tX_panel (const char *name, GtkWidget *par)
 	gtk_box_pack_start(GTK_BOX(mainbox), topbox, WID_FIX);
 	gtk_box_pack_start(GTK_BOX(mainbox), clientframe, WID_FIX);
 	
-	gtk_box_pack_start(GTK_BOX(topbox), labelbutton, WID_DYN);
-	gtk_box_pack_start(GTK_BOX(topbox), minbutton, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(topbox), minbutton, WID_DYN);
 	
-	gtk_widget_show(pixmap);
+	gtk_widget_show(pixmap_min);
+	gtk_widget_show(button_box);
 	gtk_widget_show(labelbutton);
 	gtk_widget_show(minbutton);
 	gtk_widget_show(topbox);
@@ -101,7 +117,6 @@ void tX_panel :: add_client_widget(GtkWidget *w)
 tX_panel :: ~tX_panel()
 {
 	gtk_widget_destroy(minbutton);
-	gtk_widget_destroy(labelbutton);
 	gtk_widget_destroy(clientbox);
 	gtk_widget_destroy(clientframe);
 	gtk_widget_destroy(topbox);
