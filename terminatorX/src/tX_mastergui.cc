@@ -65,6 +65,7 @@ GtkWidget *grab_button;
 GtkWidget *main_flash_l;
 GtkWidget *main_flash_r;
 GtkWidget *rec_btn;
+GtkWidget *fullscreen_button;
 
 GtkWidget *seq_rec_btn;
 GtkWidget *seq_play_btn;
@@ -91,6 +92,8 @@ GtkWidget *LoadSet;
 GtkWidget *SaveSet;
 
 GtkWidget *engine_btn;
+
+bool tX_fullscreen_status=false;
 
 int rec_dont_care=0;
 gint update_tag;
@@ -1022,6 +1025,9 @@ void create_mastergui(int x, int y)
 	gtk_widget_show(dummy);
 	gui_set_tooltip(dummy, "Click here to exit terminatorX.");
 	gtk_signal_connect (GTK_OBJECT(dummy), "clicked", (GtkSignalFunc) quit, NULL);
+
+	fullscreen_button=gtk_button_new_with_label("Fullscreen");
+	gtk_box_pack_start(GTK_BOX(right_hbox), fullscreen_button, WID_FIX);
 	
 	add_sep();		
 
@@ -1143,60 +1149,17 @@ void tx_note(const char *message, bool isError)
 		strcat(buffer, "error:\n\n");
 	}
 	
-#ifdef USE_GTK2
 	strcat(buffer, message);
 	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window),
 		GTK_DIALOG_DESTROY_WITH_PARENT,
 		isError ? GTK_MESSAGE_ERROR : GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, message);
 	gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);	
-#else	
-	
-	GtkWidget *mbox;
-	GtkWidget *label;
-	GtkWidget *btn;
-	GtkWidget *sp;
-	GtkWindow *win;
-	
-	mbox=gtk_dialog_new();
-	win=&(GTK_DIALOG(mbox)->window);
-
-	gtk_box_set_spacing(GTK_BOX(GTK_DIALOG(mbox)->vbox), 4);
-	gtk_container_set_border_width(GTK_CONTAINER(mbox), 10);
-	
-	label=gtk_label_new("terminatorX note");
-	gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->vbox), label, TRUE, TRUE, 0);
-	gtk_widget_show(label);
-
-	sp=gtk_hseparator_new();
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->vbox), sp, TRUE, TRUE, 0);
-	gtk_widget_show(sp);
-
-	label=gtk_label_new(message);
-	gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->vbox), label, TRUE, TRUE, 0);
-	gtk_widget_show(label);	
-
-	btn = gtk_button_new_with_label("Ok");
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->action_area), btn, TRUE, TRUE, 0);
-
-	gtk_signal_connect(GTK_OBJECT(btn), "clicked", GtkSignalFunc(note_destroy), mbox);
-
-	gtk_window_set_default_size(win, 200, 100);
-	gtk_window_set_position(win, GTK_WIN_POS_CENTER_ALWAYS);	
-
-	GTK_WIDGET_SET_FLAGS (btn, GTK_CAN_DEFAULT);
-	gtk_widget_grab_default(btn);
-	gtk_widget_show(btn);
-	gtk_widget_show(mbox);
-#endif	
 }
 
 
 void tx_l_note(const char *message)
 {
-#ifdef USE_GTK2
 	char buffer[4096]="Plugin info:\n\n";
 	strcat(buffer, message);
 	
@@ -1204,46 +1167,8 @@ void tx_l_note(const char *message)
 		GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, message);
 	gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);	
-#else		
-	char buffer[4096]="\n   Plugin Info:  \n   ------------  \n\n";
-	
-	GtkWidget *mbox;
-	GtkWidget *label;
-	GtkWidget *btn;
-	GtkWindow *win;
-	
-	mbox=gtk_dialog_new();
-	win=&(GTK_DIALOG(mbox)->window);
-	strcat(buffer, message);
-	strcat(buffer, "\n");
-	label=gtk_label_new(buffer);
-	gtk_label_set_justify (GTK_LABEL(label),  GTK_JUSTIFY_LEFT);
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->vbox), label, TRUE, TRUE, 0);
-	gtk_widget_show(label);
-
-	btn = gtk_button_new_with_label("Ok");
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->action_area), btn, TRUE, TRUE, 0);
-	gtk_widget_show(btn);
-	
-	gtk_signal_connect(GTK_OBJECT(btn), "clicked", GtkSignalFunc(note_destroy), mbox);
-
-	gtk_window_set_default_size(win, 200, 100);
-	gtk_window_set_position(win, GTK_WIN_POS_CENTER_ALWAYS);	
-	gtk_widget_show(mbox);
-#endif	
 }
 
-void display_mastergui()
-{
-	GtkWidget *top;
-	gtk_widget_realize(main_window);
-	tX_set_icon(main_window, "terminatorX");
-	load_knob_pixs(main_window);
-
-	gtk_widget_show(main_window);
-	top=gtk_widget_get_toplevel(main_window);
-	xwindow=GDK_WINDOW_XWINDOW(top->window);
-}
 
 void add_to_panel_bar(GtkWidget *button) {
 	buttons_on_panel_bar++;
@@ -1255,4 +1180,68 @@ void remove_from_panel_bar(GtkWidget *button) {
 	buttons_on_panel_bar--;
 	gtk_container_remove(GTK_CONTAINER(panel_bar), button);
 	if (buttons_on_panel_bar==0) gtk_widget_hide(panel_bar);
+}
+
+/* Fullscreen code... */
+#define _WIN_LAYER_TOP 		-1
+#define _WIN_LAYER_NORMAL	4
+#define _NET_WM_STATE_REMOVE	0
+#define _NET_WM_STATE_ADD	1
+#define _NET_WM_STATE_TOGGLE	2
+
+void fullscreen_toggle() {
+	XEvent xev;
+	Window win=GDK_WINDOW_XID(main_window->window);
+	Display *disp=GDK_WINDOW_XDISPLAY(main_window->window);
+	
+	tX_fullscreen_status=!tX_fullscreen_status;
+	
+	/* Top layer.. */
+	xev.xclient.type = ClientMessage;
+	xev.xclient.serial = 0;
+	xev.xclient.send_event = True;
+	xev.xclient.display = disp;
+	xev.xclient.window = win;
+	xev.xclient.message_type = gdk_x11_get_xatom_by_name ("_WIN_LAYER");
+	xev.xclient.format = 32;
+	xev.xclient.data.l[0] = tX_fullscreen_status ? _WIN_LAYER_TOP : _WIN_LAYER_NORMAL ;
+	XSendEvent(disp, GDK_WINDOW_XID (gdk_get_default_root_window ()),
+		False, SubstructureRedirectMask | SubstructureNotifyMask,
+		&xev);
+	
+	/* Fullscreen */
+	xev.xclient.type = ClientMessage;
+	xev.xclient.serial = 0;
+	xev.xclient.send_event = True;
+	xev.xclient.display = disp;
+	xev.xclient.window = win;
+	xev.xclient.message_type = gdk_x11_get_xatom_by_name ("_NET_WM_STATE");
+	xev.xclient.format = 32;
+	xev.xclient.data.l[0] = tX_fullscreen_status ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
+	xev.xclient.data.l[1] = gdk_x11_atom_to_xatom (gdk_atom_intern ("_NET_WM_STATE_FULLSCREEN", TRUE));
+	xev.xclient.data.l[2] = gdk_x11_atom_to_xatom (GDK_NONE);
+	XSendEvent(gdk_display, GDK_WINDOW_XID (gdk_get_default_root_window ()),
+		False, SubstructureRedirectMask | SubstructureNotifyMask,
+		&xev);	
+}
+
+#include <gdk/gdkkeysyms.h>
+
+void fullscreen_setup() {
+	GtkAccelGroup* accel_group=gtk_accel_group_new();
+	gtk_widget_add_accelerator (fullscreen_button, "activate", accel_group, GDK_F11, (GdkModifierType) 0, (GtkAccelFlags) 0);
+	g_signal_connect(fullscreen_button, "activate", (GCallback) fullscreen_toggle, NULL);
+	gtk_window_add_accel_group(GTK_WINDOW(main_window), accel_group);
+}
+
+void display_mastergui()
+{
+	GtkWidget *top;
+	gtk_widget_realize(main_window);
+	tX_set_icon(main_window, "terminatorX");
+	load_knob_pixs(main_window);
+	fullscreen_setup();
+	gtk_widget_show(main_window);
+	top=gtk_widget_get_toplevel(main_window);
+	xwindow=GDK_WINDOW_XWINDOW(top->window);
 }
