@@ -1351,6 +1351,15 @@ void vg_init_all_non_seqpars()
 f_prec gui_get_audio_x_zoom(vtt_class *vtt) {
 	return gtk_tx_get_zoom(GTK_TX(vtt->gui.display));
 }
+
+int vttgui_zoom_depth=0;
+
 extern void gui_set_audio_x_zoom(vtt_class *vtt, f_prec value) {
-	gtk_tx_set_zoom(GTK_TX(vtt->gui.display), value);
+	if (vttgui_zoom_depth==0) {
+		vttgui_zoom_depth=1;
+		gtk_range_set_value(GTK_RANGE(vtt->gui.zoom), value);
+		vttgui_zoom_depth=0;
+	} else {
+		gtk_tx_set_zoom(GTK_TX(vtt->gui.display), value);
+	}
 }

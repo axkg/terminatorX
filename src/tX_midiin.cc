@@ -30,12 +30,14 @@
 
 using namespace std;
 
+/*
+ disabled
 void tX_midievent::print( const char* prefix ) const
 {
 	cerr << prefix << ": channel=" << channel << ", type=" << type << ", number=" << number
 		 << ", value=" << value << ", is_noteon=" << is_noteon << endl;		 
 }
-
+*/
 
 tX_midiin::tX_midiin()
 {
@@ -43,7 +45,7 @@ tX_midiin::tX_midiin()
 	int portid;
 
 	if (snd_seq_open(&ALSASeqHandle, "default", SND_SEQ_OPEN_INPUT, 0) < 0) {
-		tX_error("tx_midiin(): failed to open the default sequencer device.");
+		tX_error("tX_midiin(): failed to open the default sequencer device.");
 		return;
 	}
 	snd_seq_set_client_name(ALSASeqHandle, "TerminatorX");
@@ -54,7 +56,7 @@ tX_midiin::tX_midiin()
 								   | SND_SEQ_PORT_CAP_SUBS_WRITE,
 								   SND_SEQ_PORT_TYPE_APPLICATION);
 	if (portid < 0) {
-		cerr << "Error creating sequencer port." << endl;
+		tX_error("tX_midiin(): error creating sequencer port.");
 		return;
 	}
 

@@ -40,6 +40,10 @@
 #	include <unistd.h>
 #endif
 
+#include <string.h>
+#include <errno.h>
+#include <stdlib.h>
+
 void tX_audiodevice :: init()
 {
 	samples_per_buffer=0;
@@ -159,7 +163,11 @@ void tX_audiodevice_oss :: play(int16_t *buffer)
 #ifdef BIG_ENDIAN_MACHINE
 	swapbuffer (buffer, samples_per_buffer);
 #endif
-	write(fd, buffer, blocksize);	
+	int res=write(fd, buffer, blocksize);	
+	if (res==-1) {
+		tX_error("failed to write to audiodevice: %s", strerror(errno));
+		exit(-1);
+	}
 }
 
 #endif //USE_OSS
