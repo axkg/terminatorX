@@ -4,7 +4,7 @@
 >Turntable Controls</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.61
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
 "><LINK
 REL="HOME"
 TITLE="terminatorX - Manual"
@@ -28,6 +28,7 @@ ALINK="#0000FF"
 ><DIV
 CLASS="NAVHEADER"
 ><TABLE
+SUMMARY="Header navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -45,6 +46,7 @@ ALIGN="left"
 VALIGN="bottom"
 ><A
 HREF="operation.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -58,6 +60,7 @@ ALIGN="right"
 VALIGN="bottom"
 ><A
 HREF="synchronization.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR
@@ -70,23 +73,52 @@ CLASS="SECTION"
 ><H1
 CLASS="SECTION"
 ><A
-NAME="TURNTABLECONTROLS"
->2.2. Turntable Controls</A
-></H1
+NAME="TURNTABLECONTROLS">2.2. Turntable Controls</H1
 ><P
->The turntable GUI contains multiple controls and the realtime displays for each turntable. To save some space on your desktop and to give terminatorX the traditional audio-application look, terminatorX features &quot;knob&quot;-widgets. These widgets work pretty straight-forward: click somewhere within the widget and keep the left mouse-button pressed. Now move the mouse up and down or left and right to increase/decrease the control's value. All those widget are coupled with a text entry field since 3.70, which allows you to enter values directly.</P
+>The turntable GUI contains multiple controls and the
+	realtime displays for each turntable. To save some space on your
+	desktop and to give terminatorX the traditional
+	audio-application look, terminatorX features
+	&quot;knob&quot;-widgets. These widgets work pretty
+	straight-forward: click somewhere within the widget and keep the
+	left mouse-button pressed. Now move the mouse up and down or
+	left and right to increase/decrease the control's value. All
+	those widget are coupled with a text entry field since 3.70,
+	which allows you to enter values directly.</P
 ><P
->A turntable is visualized by two panels: the controls and the audio-display. These are no longer combined for better layout management.</P
+>A turntable is visualized by two panels: the control and the
+	audio panel. These are no longer combined for better layout
+	management.</P
+><P
+>	Sometimes you might find a certain audio or control panel
+	unnecessary - simply eating up space. Since release 3.73 it is
+	possible to minimize audio and control panels to the 
+	<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>panel bar</I
+></SPAN
+> with the tiny button with a blue
+	bar icon in the upper right edge of each panel. This bar works
+	just like GNOME's
+	window list or KDE's kicker: When a panel is minimized a button in
+	the bar will appear, representing the minimized window. On
+	clicking this button the button will be removed and the
+	minimized panel is displayed again. When no panels are minimized
+	the panel bar automatically disappears to save display space.</P
 ><DIV
 CLASS="SECTION"
 ><H2
 CLASS="SECTION"
 ><A
-NAME="AEN185"
->2.2.1. Turntable Audio-Display</A
-></H2
+NAME="AEN192">2.2.1. Turntable Audio Panel</H2
 ><P
->The complete audio-file loaded into a turntable is displayed in the green-on-black audio-widget. When playing terminatorX will indicate the current position within the sample with a red cursor (a blue/green cursor indicates the turntable is muted).</P
+>The complete audio-file loaded into a turntable is
+	  displayed in the green-on-black audio-widget. When playing
+	  terminatorX will indicate the current position within the
+	  sample with a red cursor (a blue/green cursor indicates the
+	  turntable is muted).</P
 ><P
 >Additionaly there are some controls above the audio-display:</P
 ><P
@@ -94,48 +126,107 @@ NAME="AEN185"
 ><UL
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Turntable Label</I
+></SPAN
 ></P
 ><P
->This label indicates the turntables name. The name can be set via the control panel</P
+>This label indicates the turntables name. The name can
+	      be set via the control panel</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >File Button</I
+></SPAN
 ></P
 ><P
->This button holds the name of the audio-file currently loaded. When there's no sample loaded the button will read &quot;NONE&quot; to indicate the current status. Click on this button to select a file to load from a file-selection-dialog. Alternatively you can drag'n'drop files over the audio-display to load them.</P
+>This button holds the name of the audio-file currently
+	      loaded. When there's no sample loaded the button will read
+	      &quot;NONE&quot; to indicate the current status. 
+	      Click on this button to get a menu from which you can
+	      load/reload a sound file or run an external soundfile
+	      editor. Alternatively you can drag'n'drop
+	      files over the audio-display to load
+	      them.</P
+><P
+></P
+><P
+><B
+>The File Button Menu</B
+></P
+><UL
+><LI
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Load File</I
+></SPAN
+></P
+><P
+>Choose this menu entry to select a soundfile from
+		  the file-selection dialog that will pop-up.
+		</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->Edit Button</I
+>Reload File</I
+></SPAN
 ></P
 ><P
->This button will run the external audiofile-editor (that can be specified via the options-dialog) with the current audio-file as a parameter. Click the reload button after editing and saving the file.</P
+>Choose this menu entry to re-read the
+		  audio-file.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->Reload Button</I
+>Edit File</I
+></SPAN
 ></P
 ><P
->Click this button to re-read the audio-file.</P
+>This menu entry will run the external audiofile-editor
+		  (that can be specified via the options-dialog) with
+		  the current audio-file as a parameter. Choose
+		  reload after editing and saving the
+		  file.</P
+></LI
+></UL
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->X/Y Mapping Selection</I
+>Mouse Mapping</I
+></SPAN
 ></P
 ><P
->terminatorX allows mapping misc parameters to the mouse axis of your choice. These mappings will be activated in grab mode. Since Version 3.70 this mappings are no longer hardcoded to built-in controls but available for all parameters that qualify as &quot;mappable&quot;. Note that this includes plugins' controls as well.</P
+>terminatorX allows mapping misc parameters to the
+	      mouse axis of your choice. These mappings will be
+	      activated in grab mode, so if you move your mouse in X or
+	      Y direction in grab mode the parameters you selected from
+	      this menu will be affected (for this turntable). Since
+	      Version 3.70 this mappings are no longer hardcoded to
+	      built-in controls but available for all parameters that
+	      qualify as &quot;mappable&quot;. Note that this includes
+	      plugins' controls as
+	      well.</P
 ></LI
 ></UL
 ></DIV
@@ -144,39 +235,53 @@ CLASS="SECTION"
 ><H2
 CLASS="SECTION"
 ><A
-NAME="AEN210"
->2.2.2. Turntable Controls</A
-></H2
+NAME="AEN223">2.2.2. Turntable Controls</H2
 ><P
->These controls are now grouped within functional panels. The number of panels depends on the number of plugins loaded. terminatorX allows hiding the controls not required via the yellow triangle button. To un-hide just click the button again. The first panels are the standard controls for a turntable, then follows the dynamic FX-section and below that follow the pitch and volume controls.</P
+>These controls are now grouped within functional
+	  panels. The number of panels depends on the number of plugins
+	  loaded. terminatorX allows hiding the controls not required
+	  via the yellow triangle button. To un-hide just click the
+	  button again. The first panels are the standard controls for a
+	  turntable, then follows the dynamic FX-section and below that
+	  follow the pitch and volume controls.</P
 ><DIV
 CLASS="SECTION"
 ><H3
 CLASS="SECTION"
 ><A
-NAME="AEN213"
->2.2.2.1. Main Panel</A
-></H3
+NAME="AEN226">2.2.2.1. Main Panel</H3
 ><P
 ></P
 ><UL
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Name Field</I
+></SPAN
 ></P
 ><P
->The main panel features a text entry field that allows setting a name for the related turntable. The Labels for the controls and the audio-display will update accordingly.</P
+>The main panel features a text entry field that
+		allows setting a name for the related turntable. The
+		Labels for the controls and the audio-display will
+		update accordingly.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Delete Button</I
+></SPAN
 ></P
 ><P
->Pressing this button remove the tunrtable from the current setup. Note that all sequencer events recorded for this turntable will be erased, too.</P
+>Pressing this button remove the tunrtable from the
+		current setup. Note that all sequencer events recorded
+		for this turntable will be erased,
+		too.</P
 ></LI
 ></UL
 ></DIV
@@ -185,76 +290,122 @@ CLASS="SECTION"
 ><H3
 CLASS="SECTION"
 ><A
-NAME="AEN224"
->2.2.2.2. Trigger Panel</A
-></H3
+NAME="AEN237">2.2.2.2. Trigger Panel</H3
 ><P
->The trigger panel holds all controls related to triggering the turntable. For more details on synchronization see <A
+>The trigger panel holds all controls related to
+	    triggering the turntable. For more details on
+	    synchronization see <A
 HREF="synchronization.html"
 >Section 2.3</A
-> (synchronization).</P
+>
+	    (synchronization).</P
 ><P
 ></P
 ><UL
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Trigger! Button</I
+></SPAN
 ></P
 ><P
->Pressing this button triggers the turntable now. With the audio engine enabled this will cause the turntable to start playing back audio from the beginning of the sample.</P
+>Pressing this button triggers the turntable
+		now. With the audio engine enabled this will cause the
+		turntable to start playing back audio from the beginning
+		of the sample.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Stop Button</I
+></SPAN
 ></P
 ><P
->Guess what, this stops this turntable's audio-playback.</P
+>Guess what, this stops this turntable's
+		audio-playback.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Master Button</I
+></SPAN
 ></P
 ><P
->Enabling this button makes this turntable the <I
+>Enabling this button makes this turntable the
+		<SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >sync-master</I
->. Note that only <I
+></SPAN
+>. Note that only
+		<SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >one</I
-> turntable at a time can be the sync-master.</P
+></SPAN
+> turntable at a time can be the
+		sync-master.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Client Button</I
+></SPAN
 ></P
 ><P
->This button marks the turntable as <I
+>This button marks the turntable as
+		<SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >sync-client</I
->, so it will be triggerd with the master automatically.</P
+></SPAN
+>, so it will be triggerd
+		with the master automatically.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Sync-Cycles Selection</I
+></SPAN
 ></P
 ><P
->The sync cycles determine how often a sync-client should be triggered. With a setting of zero the sync-client will be (re-)triggered with <I
+>The sync cycles determine how often a sync-client
+		should be triggered. With a setting of zero the
+		sync-client will be (re-)triggered with
+		<SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >every</I
-> trigger of the sync-master. A setting of 1 will (re-)trigger the client every <I
+></SPAN
+> trigger of the sync-master. A
+		setting of 1 will (re-)trigger the client every
+		<SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >second</I
-> master-triger and so on.</P
+></SPAN
+> master-triger and so
+		on.</P
 ></LI
 ></UL
 ><P
@@ -264,38 +415,49 @@ CLASS="EMPHASIS"
 ><UL
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Pitch Control</I
+></SPAN
 ></P
 ><P
 >The pitch control allows setting the default playback
-		speed for that turntable (the "motor" speed). Negative values
-		will result in the sample being played backwards.</P
+		  speed for that turntable (the "motor" speed). Negative values
+		  will result in the sample being played backwards.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >PAN Control</I
+></SPAN
 ></P
 ><P
 >This parameter allows setting the position of the
-		turntable's main signal within the stereo panorama.</P
+		  turntable's main signal within the stereo panorama.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >VU Meter</I
+></SPAN
 ></P
 ><P
 >The displayed signal shows the turntable's current
-		signal not including the echo-signal which is mixed
-		separately.</P
+		  signal not including the echo-signal which is mixed
+		  separately.</P
 ></LI
 ></UL
->&#13;</P
+>
+
+	  </P
 ></DIV
 ></DIV
 ><DIV
@@ -303,34 +465,61 @@ CLASS="SECTION"
 ><H2
 CLASS="SECTION"
 ><A
-NAME="AEN268"
->2.2.3. The Effect Queue</A
-></H2
+NAME="AEN281">2.2.3. The Effect Queue</H2
 ><P
->With release 3.70 the effects are no longer hardcoded into the turntable. The effects are now arranged within an per-turntable effect-queue. The effect sequence is configurable by the user. To move an effect to higher position within the queue, press the <I
+>With release 3.70 the effects are no longer hardcoded into
+	  the turntable. The effects are now arranged within an
+	  per-turntable effect-queue. The effect sequence is
+	  configurable by the user. To move an effect to higher position
+	  within the queue, press the <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
->blue upward arrow button</I
->. This will cause the effect to be renderd <I
+>blue upward arrow
+	    button</I
+></SPAN
+>. This will cause the effect to be renderd
+	  <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >before</I
-> the following effects. The <I
+></SPAN
+> the following effects. The
+	  <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >blue downward arrow button</I
-> will move the effect down by one position. It will then be rendered <I
+></SPAN
+> will move the
+	  effect down by one position. It will then be rendered
+	  <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >after</I
+></SPAN
 > the preceding effects.</P
 ><P
->There are two types of effects: the traditional built-in effects (Lowpass and Echo) and LADSPA plugins. The built-in effects are always available and cannot be removed (but disabled). There can be only one instance of a built-in effect. The LADSPA plugins on the other hand may be instanciated multiple times and can be removed from the effect queue. Press the <I
+>There are two types of effects: the traditional built-in
+	  effects (Lowpass and Echo) and LADSPA plugins. The built-in
+	  effects are always available and cannot be removed (but
+	  disabled). There can be only one instance of a built-in
+	  effect. The LADSPA plugins on the other hand may be
+	  instanciated multiple times and can be removed from the effect
+	  queue. Press the <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >blue cross button</I
-> to achieve this.</P
+></SPAN
+> to
+	  achieve this.</P
 ><DIV
 CLASS="FIGURE"
 ><A
-NAME="AEN277"
-></A
-><P
+NAME="AEN290"><P
 ><B
 >Figure 2-1. An example for a terminatorX effect queue</B
 ></P
@@ -339,9 +528,25 @@ NAME="AEN277"
 SRC="img/signalflow.jpg"></P
 ></DIV
 ><P
->Now since release 3.71 the built-in echo effect is treated differently from other effects. Where all other effects feed their signal back into the effect queue the echo effect doesn't touch the input signal. It's echo-signal is mixed seperately from the turntable's main signal to allow a different panning value for the echo-signal. This mode of operation does have some side-effects: imagine a lowpass filter with a position after the echo effect in the effect queue. This will result in the turntable's main signal being lowpassed but it will leave the echo-signal un-lowpassed.</P
+>Now since release 3.71 the built-in echo effect is treated
+	  differently from other effects. Where all other effects feed
+	  their signal back into the effect queue the echo effect
+	  doesn't touch the input signal. It's echo-signal is mixed
+	  seperately from the turntable's main signal to allow a
+	  different panning value for the echo-signal. This mode of
+	  operation does have some side-effects: imagine a lowpass
+	  filter with a position after the echo effect in the effect
+	  queue. This will result in the turntable's main signal being
+	  lowpassed but it will leave the echo-signal
+	  un-lowpassed.</P
 ><P
->Some may call this behaviour a bug - whereas I would consider it a feature ;). Anyway if the above description didn't clear things up maybe the displayed figure does. It shows a schematic effect queue with the built-in effects and two LADSPA effects enabled. Now with this setup you will not hear anything from the second LADSPA effect in the echo-signal.</P
+>Some may call this behaviour a bug - whereas I would
+	  consider it a feature ;). Anyway if the above description
+	  didn't clear things up maybe the displayed figure does. It
+	  shows a schematic effect queue with the built-in effects and
+	  two LADSPA effects enabled. Now with this setup you will not
+	  hear anything from the second LADSPA effect in the
+	  echo-signal.</P
 ><P
 >For more information on a LADSPA plugin, press it's panel's label and a small info box will pop up.</P
 ><P
@@ -349,17 +554,32 @@ SRC="img/signalflow.jpg"></P
 ><UL
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >FX Button</I
+></SPAN
 ></P
 ><P
->Press this button to load a LADSPA plugin into the effect queue of the turntable. A menu holding the available (terminatorX-&quot;compatible&quot;) LADSPA-plugins will pop up. The plugins are grouped within submenus according to the modules the plugins are contained in. Simply select the plugin you want to load from this menu and a panel for it will pop up at the end of the effect queue.</P
+>Press this button to load a LADSPA plugin into the
+	      effect queue of the turntable. A menu holding the
+	      available (terminatorX-&quot;compatible&quot;)
+	      LADSPA-plugins will pop up. The plugins are grouped within
+	      submenus according to the modules the plugins are
+	      contained in. Simply select the plugin you want to load
+	      from this menu and a panel for it will pop up at the end
+	      of the effect queue.</P
 ><P
->Note that due to the wide parameter ranges some LADSPA plugins have they sometimes might be hard to control with the knob widget. In these cases you might want to use the text field to enter values. For more details on Plugins see <A
+>Note that due to the wide parameter ranges some LADSPA
+	      plugins have they sometimes might be hard to control with
+	      the knob widget. In these cases you might want to use the
+	      text field to enter values. For more details on Plugins
+	      see <A
 HREF="ladspaplugins.html"
 >Section 2.7</A
-> (LASDPA).</P
+>
+	      (LASDPA).</P
 ></LI
 ></UL
 ></DIV
@@ -368,49 +588,67 @@ CLASS="SECTION"
 ><H2
 CLASS="SECTION"
 ><A
-NAME="AEN290"
->2.2.4. Lowpass Panel</A
-></H2
+NAME="AEN303">2.2.4. Lowpass Panel</H2
 ><P
->terminatorX features a builtin resonating lowpass filter that can be configured with this panel.</P
+>terminatorX features a builtin resonating lowpass filter
+	  that can be configured with this panel.</P
 ><P
 ></P
 ><UL
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Enable Button</I
+></SPAN
 ></P
 ><P
->Activating this button will enable the lowpass filter for this turntable.</P
+>Activating this button will enable the lowpass filter
+	      for this turntable.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Input Gain Control</I
+></SPAN
 ></P
 ><P
->With this parameter you can amplify the signal that goes into the lowpass filter if required.</P
+>With this parameter you can amplify the signal that
+	      goes into the lowpass filter if
+	      required.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Frequency Control</I
+></SPAN
 ></P
 ><P
->Use this parameter to set the cutoff frequency for the lowpass filter. Minimum: 0=0Hz, Maximum: 1=22KHz.</P
+>Use this parameter to set the cutoff frequency for the
+	      lowpass filter. Minimum: 0=0Hz, Maximum:
+	      1=22KHz.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Resonance</I
+></SPAN
 ></P
 ><P
->Use this parameter to set the resonance-value. Minimum: 0=no resonance, Maximum: 1=max resonance.</P
+>Use this parameter to set the
+	      resonance-value. Minimum: 0=no resonance, Maximum: 1=max
+	      resonance.</P
 ></LI
 ></UL
 ></DIV
@@ -419,58 +657,92 @@ CLASS="SECTION"
 ><H2
 CLASS="SECTION"
 ><A
-NAME="AEN310"
->2.2.5. Echo Panel</A
-></H2
+NAME="AEN323">2.2.5. Echo Panel</H2
 ><P
->Additionaly terminatorX features a built-in echo effect. It can be configured with this panel.</P
+>Additionaly terminatorX features a built-in echo
+	  effect. It can be configured with this panel.</P
 ><P
 ></P
 ><UL
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->Enable Button</I
+>Enable
+		Button</I
+></SPAN
 ></P
 ><P
->Activating this button will enable the echo effect for this turntable.</P
+>Activating this button will enable the echo effect for
+	      this turntable.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Duration Control</I
+></SPAN
 ></P
 ><P
->Use this parameter to set the length of the echo. The duration parameter scales to the actual sample length: so if you set it to 0.5 you will hear the echo when the red playback cursor is half way  through the sample. This is true for samples that are shorter than terminatorX' maximum echo buffer size only.</P
+>Use this parameter to set the length of the echo. The
+	      duration parameter scales to the actual sample length: so
+	      if you set it to 0.5 you will hear the echo when the red
+	      playback cursor is half way  through the sample. This is
+	      true for samples that are shorter than terminatorX'
+	      maximum echo buffer size only.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Feedback Control</I
+></SPAN
 ></P
 ><P
->Set the echo's feedback amount with this parameter.</P
+>Set the echo's feedback amount with this
+	      parameter.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Volume Control</I
+></SPAN
 ></P
 ><P
->This parameter can additionally amplify the echo signal. Unlike the feedback parameter above this parameter has no influence on the signal fed back into the echo-buffer, it effects merely the playback volume of the echo signal.</P
+>This parameter can additionally amplify the echo
+	      signal. Unlike the feedback parameter above this parameter
+	      has no influence on the signal fed back into the
+	      echo-buffer, it effects merely the playback volume of the
+	      echo signal.</P
 ></LI
 ><LI
 ><P
+><SPAN
+CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >Pan Control</I
+></SPAN
 ></P
 ><P
->The echo effect differs from other effects as it's output signal will be mixed seperately. The main goal here is to allow positioning the echo signal at a position in the stereo panorama that differs from the main panning positon of the turntable to achieve a somewhat spacial effect. The easy example is: turntable's panning left, echo's panning right. As both pan parameters are sequencable you can create nice motion effects from this starting point.</P
+>The echo effect differs from other effects as it's
+	      output signal will be mixed seperately. The main goal here
+	      is to allow positioning the echo signal at a position in
+	      the stereo panorama that differs from the main panning
+	      positon of the turntable to achieve a somewhat spacial
+	      effect. The easy example is: turntable's panning left,
+	      echo's panning right. As both pan parameters are
+	      sequencable you can create nice motion effects from this
+	      starting point.</P
 ></LI
 ></UL
 ></DIV
@@ -480,6 +752,7 @@ CLASS="NAVFOOTER"
 ><HR
 ALIGN="LEFT"
 WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -491,6 +764,7 @@ ALIGN="left"
 VALIGN="top"
 ><A
 HREF="operation.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -499,6 +773,7 @@ ALIGN="center"
 VALIGN="top"
 ><A
 HREF="index.html"
+ACCESSKEY="H"
 >Home</A
 ></TD
 ><TD
@@ -507,6 +782,7 @@ ALIGN="right"
 VALIGN="top"
 ><A
 HREF="synchronization.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR
@@ -522,6 +798,7 @@ ALIGN="center"
 VALIGN="top"
 ><A
 HREF="operation.html"
+ACCESSKEY="U"
 >Up</A
 ></TD
 ><TD
