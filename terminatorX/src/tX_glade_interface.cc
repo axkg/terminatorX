@@ -39,10 +39,6 @@ create_tx_options (void)
   GSList *oss_driver_group = NULL;
   GtkWidget *alsa_driver;
   GtkWidget *jack_driver;
-  GtkWidget *label19;
-  GtkWidget *hbox3;
-  GtkWidget *measure_latency;
-  GtkWidget *label20;
   GtkWidget *label1;
   GtkWidget *table5;
   GtkWidget *label21;
@@ -59,19 +55,16 @@ create_tx_options (void)
   GtkWidget *label15;
   GtkWidget *table6;
   GtkWidget *label27;
-  GtkWidget *label28;
   GtkWidget *label29;
   GtkWidget *label30;
   GtkWidget *alsa_audio_device;
   GtkWidget *combo_entry4;
-  GtkObject *alsa_buffers_adj;
-  GtkWidget *alsa_buffers;
   GtkWidget *alsa_samplerate;
   GtkWidget *combo_entry5;
-  GtkWidget *alsa_buffersize;
+  GtkWidget *alsa_period_time;
+  GtkWidget *label32;
+  GtkWidget *alsa_buffer_time;
   GtkWidget *label16;
-  GtkWidget *empty_notebook_page;
-  GtkWidget *label17;
   GtkWidget *table1;
   GtkWidget *label5;
   GtkWidget *label6;
@@ -127,7 +120,7 @@ create_tx_options (void)
   gtk_widget_show (notebook1);
   gtk_box_pack_start (GTK_BOX (dialog_vbox1), notebook1, TRUE, TRUE, 0);
 
-  table4 = gtk_table_new (2, 2, FALSE);
+  table4 = gtk_table_new (1, 2, FALSE);
   gtk_widget_show (table4);
   gtk_container_add (GTK_CONTAINER (notebook1), table4);
   gtk_container_set_border_width (GTK_CONTAINER (table4), 4);
@@ -168,29 +161,6 @@ create_tx_options (void)
   gtk_tooltips_set_tip (tooltips, jack_driver, "Use the JACK (JACK Audio Connection Kit) driver for audio output.", NULL);
   gtk_radio_button_set_group (GTK_RADIO_BUTTON (jack_driver), oss_driver_group);
   oss_driver_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (jack_driver));
-
-  label19 = gtk_label_new ("Latency:");
-  gtk_widget_show (label19);
-  gtk_table_attach (GTK_TABLE (table4), label19, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_label_set_justify (GTK_LABEL (label19), GTK_JUSTIFY_LEFT);
-  gtk_misc_set_alignment (GTK_MISC (label19), 0, 0.5);
-
-  hbox3 = gtk_hbox_new (FALSE, 0);
-  gtk_widget_show (hbox3);
-  gtk_table_attach (GTK_TABLE (table4), hbox3, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-  measure_latency = gtk_button_new_with_mnemonic ("Measure");
-  gtk_widget_show (measure_latency);
-  gtk_box_pack_start (GTK_BOX (hbox3), measure_latency, FALSE, FALSE, 0);
-
-  label20 = gtk_label_new ("-- ms");
-  gtk_widget_show (label20);
-  gtk_box_pack_start (GTK_BOX (hbox3), label20, TRUE, TRUE, 0);
-  gtk_label_set_justify (GTK_LABEL (label20), GTK_JUSTIFY_LEFT);
 
   label1 = gtk_label_new ("Audio");
   gtk_widget_show (label1);
@@ -256,7 +226,7 @@ create_tx_options (void)
                     (GtkAttachOptions) (0), 0, 0);
   gtk_tooltips_set_tip (tooltips, oss_buffers, "Sets the number of kernel level audio buffers. Actually most systems should run just fine with two.", NULL);
 
-  oss_buffersize = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (5, 1, 16, 1, 1, 1)));
+  oss_buffersize = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (9, 8, 16, 1, 1, 1)));
   gtk_widget_show (oss_buffersize);
   gtk_table_attach (GTK_TABLE (table5), oss_buffersize, 1, 2, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
@@ -295,15 +265,7 @@ create_tx_options (void)
   gtk_label_set_justify (GTK_LABEL (label27), GTK_JUSTIFY_LEFT);
   gtk_misc_set_alignment (GTK_MISC (label27), 0, 0.5);
 
-  label28 = gtk_label_new ("No. of buffers:");
-  gtk_widget_show (label28);
-  gtk_table_attach (GTK_TABLE (table6), label28, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_label_set_justify (GTK_LABEL (label28), GTK_JUSTIFY_LEFT);
-  gtk_misc_set_alignment (GTK_MISC (label28), 0, 0.5);
-
-  label29 = gtk_label_new ("Buffersize (samples):");
+  label29 = gtk_label_new ("Period Time (ms):");
   gtk_widget_show (label29);
   gtk_table_attach (GTK_TABLE (table6), label29, 0, 1, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
@@ -330,13 +292,6 @@ create_tx_options (void)
   combo_entry4 = GTK_COMBO (alsa_audio_device)->entry;
   gtk_widget_show (combo_entry4);
 
-  alsa_buffers_adj = gtk_adjustment_new (2, 2, 5, 1, 2, 2);
-  alsa_buffers = gtk_spin_button_new (GTK_ADJUSTMENT (alsa_buffers_adj), 1, 0);
-  gtk_widget_show (alsa_buffers);
-  gtk_table_attach (GTK_TABLE (table6), alsa_buffers, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-
   alsa_samplerate = gtk_combo_new ();
   g_object_set_data (G_OBJECT (GTK_COMBO (alsa_samplerate)->popwin),
                      "GladeParentKey", alsa_samplerate);
@@ -348,26 +303,32 @@ create_tx_options (void)
   combo_entry5 = GTK_COMBO (alsa_samplerate)->entry;
   gtk_widget_show (combo_entry5);
 
-  alsa_buffersize = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (1024, 64, 512, 32, 64, 64)));
-  gtk_widget_show (alsa_buffersize);
-  gtk_table_attach (GTK_TABLE (table6), alsa_buffersize, 1, 2, 2, 3,
+  alsa_period_time = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (29, 10, 500, 1, 10, 10)));
+  gtk_widget_show (alsa_period_time);
+  gtk_table_attach (GTK_TABLE (table6), alsa_period_time, 1, 2, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
-  gtk_scale_set_digits (GTK_SCALE (alsa_buffersize), 0);
+  gtk_scale_set_digits (GTK_SCALE (alsa_period_time), 0);
+
+  label32 = gtk_label_new ("Buffer Time (ms):");
+  gtk_widget_show (label32);
+  gtk_table_attach (GTK_TABLE (table6), label32, 0, 1, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label32), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (label32), 0, 0.5);
+
+  alsa_buffer_time = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (50, 10, 500, 1, 10, 10)));
+  gtk_widget_show (alsa_buffer_time);
+  gtk_table_attach (GTK_TABLE (table6), alsa_buffer_time, 1, 2, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_scale_set_digits (GTK_SCALE (alsa_buffer_time), 0);
 
   label16 = gtk_label_new ("Audio: ALSA");
   gtk_widget_show (label16);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 2), label16);
   gtk_label_set_justify (GTK_LABEL (label16), GTK_JUSTIFY_LEFT);
-
-  empty_notebook_page = gtk_vbox_new (FALSE, 0);
-  gtk_widget_show (empty_notebook_page);
-  gtk_container_add (GTK_CONTAINER (notebook1), empty_notebook_page);
-
-  label17 = gtk_label_new ("Audio: JACK");
-  gtk_widget_show (label17);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 3), label17);
-  gtk_label_set_justify (GTK_LABEL (label17), GTK_JUSTIFY_LEFT);
 
   table1 = gtk_table_new (4, 2, FALSE);
   gtk_widget_show (table1);
@@ -442,7 +403,7 @@ create_tx_options (void)
 
   label4 = gtk_label_new ("Input");
   gtk_widget_show (label4);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 4), label4);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 3), label4);
   gtk_label_set_justify (GTK_LABEL (label4), GTK_JUSTIFY_LEFT);
 
   table2 = gtk_table_new (6, 2, FALSE);
@@ -559,7 +520,7 @@ create_tx_options (void)
 
   label2 = gtk_label_new ("User Interface");
   gtk_widget_show (label2);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 5), label2);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 4), label2);
   gtk_label_set_justify (GTK_LABEL (label2), GTK_JUSTIFY_LEFT);
 
   table3 = gtk_table_new (3, 2, FALSE);
@@ -615,7 +576,7 @@ create_tx_options (void)
 
   label3 = gtk_label_new ("Misc");
   gtk_widget_show (label3);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 6), label3);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 5), label3);
   gtk_label_set_justify (GTK_LABEL (label3), GTK_JUSTIFY_LEFT);
 
   dialog_action_area1 = GTK_DIALOG (tx_options)->action_area;
@@ -660,10 +621,6 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, oss_driver, "oss_driver");
   GLADE_HOOKUP_OBJECT (tx_options, alsa_driver, "alsa_driver");
   GLADE_HOOKUP_OBJECT (tx_options, jack_driver, "jack_driver");
-  GLADE_HOOKUP_OBJECT (tx_options, label19, "label19");
-  GLADE_HOOKUP_OBJECT (tx_options, hbox3, "hbox3");
-  GLADE_HOOKUP_OBJECT (tx_options, measure_latency, "measure_latency");
-  GLADE_HOOKUP_OBJECT (tx_options, label20, "label20");
   GLADE_HOOKUP_OBJECT (tx_options, label1, "label1");
   GLADE_HOOKUP_OBJECT (tx_options, table5, "table5");
   GLADE_HOOKUP_OBJECT (tx_options, label21, "label21");
@@ -679,17 +636,16 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, label15, "label15");
   GLADE_HOOKUP_OBJECT (tx_options, table6, "table6");
   GLADE_HOOKUP_OBJECT (tx_options, label27, "label27");
-  GLADE_HOOKUP_OBJECT (tx_options, label28, "label28");
   GLADE_HOOKUP_OBJECT (tx_options, label29, "label29");
   GLADE_HOOKUP_OBJECT (tx_options, label30, "label30");
   GLADE_HOOKUP_OBJECT (tx_options, alsa_audio_device, "alsa_audio_device");
   GLADE_HOOKUP_OBJECT (tx_options, combo_entry4, "combo_entry4");
-  GLADE_HOOKUP_OBJECT (tx_options, alsa_buffers, "alsa_buffers");
   GLADE_HOOKUP_OBJECT (tx_options, alsa_samplerate, "alsa_samplerate");
   GLADE_HOOKUP_OBJECT (tx_options, combo_entry5, "combo_entry5");
-  GLADE_HOOKUP_OBJECT (tx_options, alsa_buffersize, "alsa_buffersize");
+  GLADE_HOOKUP_OBJECT (tx_options, alsa_period_time, "alsa_period_time");
+  GLADE_HOOKUP_OBJECT (tx_options, label32, "label32");
+  GLADE_HOOKUP_OBJECT (tx_options, alsa_buffer_time, "alsa_buffer_time");
   GLADE_HOOKUP_OBJECT (tx_options, label16, "label16");
-  GLADE_HOOKUP_OBJECT (tx_options, label17, "label17");
   GLADE_HOOKUP_OBJECT (tx_options, table1, "table1");
   GLADE_HOOKUP_OBJECT (tx_options, label5, "label5");
   GLADE_HOOKUP_OBJECT (tx_options, label6, "label6");

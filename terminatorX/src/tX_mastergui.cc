@@ -271,6 +271,28 @@ GtkSignalFunc drop_new_table(GtkWidget *widget, GdkDragContext *context,
 	return NULL;
 }
 
+bool tx_mg_have_setname=false;
+char tx_mg_current_setname[PATH_MAX]="";
+
+GtkSignalFunc new_tables() {
+	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window), 
+		GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
+		"Are you sure you want to loose all turntables and events?");
+	
+	int res=gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_widget_destroy(dialog);
+		
+	if (res!=GTK_RESPONSE_YES) {
+		return NULL;
+	}
+
+	vtt_class::delete_all();
+	new_table(NULL, NULL);
+	sequencer.delete_all_events();
+	gtk_window_set_title(GTK_WINDOW(main_window), "terminatorX");
+
+	return NULL;
+}
 
 /* Loading saved setups */
 
@@ -340,6 +362,9 @@ void load_tt_part(char * buffer)
 		return;
 	}
 #endif	
+	
+	tx_mg_have_setname=true;
+	strcpy(tx_mg_current_setname, buffer);
 	
 	tX_seqpar :: init_all_graphics();
 	vg_init_all_non_seqpars();
@@ -433,13 +458,20 @@ void do_save_tables(GtkWidget *wid)
 	char wbuf[PATH_MAX];
 	char *ext;
 	
-	strcpy(buffer, gtk_file_selection_get_filename(GTK_FILE_SELECTION(save_dialog)));
-	strcpy(globals.tables_filename, buffer);
-	
-	gtk_widget_destroy(save_dialog);
-	
-	save_dialog=NULL;
-	save_dialog_win=NULL;
+	if (wid) {
+		strcpy(buffer, gtk_file_selection_get_filename(GTK_FILE_SELECTION(save_dialog)));
+		int len=strlen(buffer);
+		if (!len || (buffer[len-1]=='/')) {			
+			tx_note("Invalid filename for set file.", true);			
+			return;
+		}
+		strcpy(globals.tables_filename, buffer);
+		gtk_widget_destroy(save_dialog);
+		save_dialog=NULL;
+		save_dialog_win=NULL;
+	} else {
+		strcpy(buffer, tx_mg_current_setname);
+	}
 	
 	ext=strrchr(buffer, '.');
 	
@@ -451,6 +483,9 @@ void do_save_tables(GtkWidget *wid)
 	{
 		strcat(buffer, ".tX");
 	}
+
+	tx_mg_have_setname=true;
+	strcpy(tx_mg_current_setname, buffer);
 	
 	out=fopen(buffer, "w");
 	
@@ -467,19 +502,18 @@ void do_save_tables(GtkWidget *wid)
 	}
 }
 
-GtkSignalFunc save_tables()
+GtkSignalFunc save_tables_as()
 {
-	if (save_dialog_win) 
-	{
-		gdk_window_raise(save_dialog_win);
-		return 0;
+	if (save_dialog_win) {
+		gtk_widget_destroy(save_dialog);
+		save_dialog=NULL;
+		save_dialog_win=NULL;
 	}
 	
 	save_dialog=gtk_file_selection_new("Save Set");	
-	
-	if (strlen(globals.tables_filename))
-	{
-		gtk_file_selection_set_filename(GTK_FILE_SELECTION(save_dialog), globals.tables_filename);
+
+	if (tx_mg_have_setname) {
+		gtk_file_selection_set_filename(GTK_FILE_SELECTION(save_dialog), tx_mg_current_setname);
 	}
 	
 	gtk_widget_show(save_dialog);
@@ -490,6 +524,17 @@ GtkSignalFunc save_tables()
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(save_dialog)->cancel_button), "clicked", GTK_SIGNAL_FUNC (cancel_save_tables), NULL);	
 	gtk_signal_connect (GTK_OBJECT(save_dialog), "delete-event", GTK_SIGNAL_FUNC(cancel_save_tables), NULL);	
 
+	return NULL;
+}
+
+GtkSignalFunc save_tables()
+{
+	if (!tx_mg_have_setname) {
+		save_tables_as();
+	} else {
+		do_save_tables(NULL);
+	}
+	
 	return NULL;
 }
 
@@ -671,6 +716,17 @@ void grab_off()
 
 void quit()
 {
+	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window), 
+	GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
+	"Exit terminatorX and loose all unsaved data?");
+	
+	int res=gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_widget_destroy(dialog);
+		
+	if (res!=GTK_RESPONSE_YES) {
+		return;
+	}
+
 	turn_audio_off();
 	if (update_tag)
 	gtk_timeout_remove(update_tag);
@@ -822,6 +878,7 @@ void create_master_menu() {
 	menu_item = gtk_image_menu_item_new_from_stock ("gtk-new", accel_group);
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	g_signal_connect(menu_item, "activate", (GCallback) new_tables, NULL);
 
 	menu_item = gtk_image_menu_item_new_from_stock ("gtk-open", accel_group);
 	gtk_widget_show (menu_item);
@@ -833,9 +890,10 @@ void create_master_menu() {
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) save_tables, NULL);
 
-	/*menu_item = gtk_image_menu_item_new_from_stock ("gtk-save-as", accel_group);
+	menu_item = gtk_image_menu_item_new_from_stock ("gtk-save-as", accel_group);
 	gtk_widget_show (menu_item);
-	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);*/
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	g_signal_connect(menu_item, "activate", (GCallback) save_tables_as, NULL);
 
 	menu_item = gtk_menu_item_new ();
 	gtk_widget_show (menu_item);
