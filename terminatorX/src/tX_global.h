@@ -145,6 +145,7 @@ typedef struct {
 	int alsa_free_hwstats;
 	int filename_length;
 	
+	int restore_midi_connections;
 } tx_global;
 
 extern tx_global globals;

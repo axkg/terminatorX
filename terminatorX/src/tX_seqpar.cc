@@ -51,6 +51,9 @@ tX_seqpar :: tX_seqpar () : bound_midi_event()
 	is_mappable=1;
 	all.push_back(this);
 	last_event_recorded=NULL;
+	
+	midi_lower_bound_set=false;
+	midi_upper_bound_set=false;
 }
 
 void tX_seqpar :: set_mapping_parameters(float max, float min, float scale, int mappable)
@@ -77,19 +80,26 @@ void tX_seqpar :: handle_mouse_input(float adjustment)
 #ifdef USE_ALSA_MIDI_IN
 void tX_seqpar :: handle_midi_input( const tX_midievent& event )
 {
-	float tmpvalue = -1000;
-
-	//event.print( (string(__FUNCTION__) + " - " + get_name()).c_str() );
+	double tmpvalue = -1000;
+	double max=max_value;
+	double min=min_value;
 	
-	if( !is_boolean )
-	{
+	if (midi_upper_bound_set) {
+		max=midi_upper_bound;
+	}
+	
+	if (midi_lower_bound_set) {
+		min=midi_lower_bound;
+	}
+	
+	if( !is_boolean ) {
 		switch (event.type) {
 			case tX_midievent::CC:
 			case tX_midievent::CC14:
 			case tX_midievent::PITCHBEND:
 			case tX_midievent::RPN:
 			case tX_midievent::NRPN:
-					tmpvalue = event.value * (max_value-min_value) + min_value;				
+					tmpvalue = event.value * (max-min) + min;
 				break;
 			case tX_midievent::NOTE:
 					tmpvalue = event.is_noteon;
@@ -98,11 +108,9 @@ void tX_seqpar :: handle_midi_input( const tX_midievent& event )
 				return;
 		}
 
-		if (tmpvalue>max_value) tmpvalue=max_value;
-		else if (tmpvalue<min_value) tmpvalue=min_value;
-	}
-	else
-	{
+		if (tmpvalue>max) tmpvalue=max;
+		else if (tmpvalue<min) tmpvalue=min;
+	} else {
 		tmpvalue=event.value;
 	}
 	
@@ -231,10 +239,23 @@ char * tX_seqpar :: get_vtt_name()
 
 void tX_seqpar :: restore_meta(xmlNodePtr node) {
 	char *buffer;
+	double temp;
 	
 	buffer=(char *) xmlGetProp(node, (xmlChar *) "id");
 	if (buffer) { sscanf(buffer, "%i", &persistence_id); }
 	else { tX_error("no ID for seqpar %s", this->get_name()); }
+	
+	buffer=(char *) xmlGetProp(node, (xmlChar *) "midiUpperBound");
+	if (buffer) {
+		sscanf(buffer, "%lf", &temp);
+		set_upper_midi_bound(temp);
+	}
+
+	buffer=(char *) xmlGetProp(node, (xmlChar *) "midiLowerBound");
+	if (buffer) {
+		sscanf(buffer, "%lf", &temp);
+		set_lower_midi_bound(temp);
+	}
 	
 	buffer=(char *) xmlGetProp(node, (xmlChar *) "midiType");
 	if (buffer) {
@@ -266,7 +287,8 @@ void tX_seqpar :: restore_meta(xmlNodePtr node) {
 }
 
 void tX_seqpar :: store_meta(FILE *rc, gzFile rz) {
-	char buffer[256];
+	char buffer[512];
+	char buffer2[256];
 	
 	if (bound_midi_event.type!=tX_midievent::NONE) {
 		char *type;
@@ -284,6 +306,17 @@ void tX_seqpar :: store_meta(FILE *rc, gzFile rz) {
 	} else {
 		sprintf(buffer, "id=\"%i\"", persistence_id);
 	}
+	
+	if (midi_upper_bound_set) {
+		sprintf(buffer2, " midiUpperBound=\"%lf\"", midi_upper_bound);
+		strcat(buffer, buffer2);
+	}
+
+	if (midi_lower_bound_set) {
+		sprintf(buffer2, " midiLowerBound=\"%lf\"", midi_lower_bound);
+		strcat(buffer, buffer2);
+	}
+	
 	tX_store(buffer);
 }
 
@@ -1036,6 +1069,41 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gp
 			gtk_widget_set_sensitive(item, FALSE);
 		}
 		g_signal_connect(item, "activate", (GCallback) tX_seqpar::remove_midi_binding, sp);		
+
+		if (!sp->is_boolean) {
+			item = gtk_menu_item_new();
+			gtk_menu_append(menu, item);
+			gtk_widget_set_sensitive(item, FALSE);
+			gtk_widget_show(item);
+			
+			item = gtk_menu_item_new_with_label("Set Upper MIDI Bound");
+			gtk_menu_append(menu, item);
+			gtk_widget_show(item);
+			g_signal_connect(item, "activate", (GCallback) tX_seqpar::set_midi_upper_bound, sp);		
+			
+			item = gtk_menu_item_new_with_label("Reset Upper MIDI Bound");
+			gtk_menu_append(menu, item);
+			gtk_widget_show(item);			
+			g_signal_connect(item, "activate", (GCallback) tX_seqpar::reset_midi_upper_bound, sp);		
+			
+			if (!sp->midi_upper_bound_set) {
+				gtk_widget_set_sensitive(item, FALSE);				
+			}
+			
+			item = gtk_menu_item_new_with_label("Set Lower MIDI Bound");
+			gtk_menu_append(menu, item);
+			gtk_widget_show(item);
+			g_signal_connect(item, "activate", (GCallback) tX_seqpar::set_midi_lower_bound, sp);					
+			
+			item = gtk_menu_item_new_with_label("Reset Lower MIDI Bound");
+			gtk_menu_append(menu, item);
+			gtk_widget_show(item);		
+			g_signal_connect(item, "activate", (GCallback) tX_seqpar::reset_midi_lower_bound, sp);		
+
+			if (!sp->midi_lower_bound_set) {
+				gtk_widget_set_sensitive(item, FALSE);				
+			}			
+		}
 		
 		item = gtk_menu_item_new();
 		gtk_menu_append(menu, item);
@@ -1050,7 +1118,7 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gp
 		gtk_widget_show(menu);
 		
 		gtk_menu_popup (GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, event->time);
-		gtk_grab_remove(gtk_grab_get_current());
+		//gtk_grab_remove(gtk_grab_get_current());
 
 		return TRUE;
 	} 
@@ -1072,6 +1140,34 @@ gboolean tX_seqpar::learn_midi_binding(GtkWidget *widget, gpointer data) {
 	tX_seqpar *sp=(tX_seqpar *) data;
 
 	tX_engine::get_instance()->get_midi()->set_midi_learn_sp(sp);
+	
+	return TRUE;
+}
+
+gboolean tX_seqpar::set_midi_upper_bound(GtkWidget *widget, gpointer data) {
+	tX_seqpar *sp=(tX_seqpar *) data;
+	sp->set_upper_midi_bound(sp->get_value());
+	
+	return TRUE;
+}
+
+gboolean tX_seqpar::reset_midi_upper_bound(GtkWidget *widget, gpointer data) {
+	tX_seqpar *sp=(tX_seqpar *) data;
+	sp->reset_upper_midi_bound();
+	
+	return TRUE;
+}
+
+gboolean tX_seqpar::set_midi_lower_bound(GtkWidget *widget, gpointer data) {
+	tX_seqpar *sp=(tX_seqpar *) data;
+	sp->set_lower_midi_bound(sp->get_value());
+	
+	return TRUE;
+}
+
+gboolean tX_seqpar::reset_midi_lower_bound(GtkWidget *widget, gpointer data) {
+	tX_seqpar *sp=(tX_seqpar *) data;
+	sp->reset_lower_midi_bound();
 	
 	return TRUE;
 }

@@ -279,7 +279,7 @@ void vtt_fx_ladspa :: save (FILE *rc, gzFile rz, char *indent) {
 	store_int("ladspa_id", ID);
 	
 	for (sp=controls.begin(); sp!=controls.end(); sp++) {
-		store_float_id("param", (*sp)->get_value(), (*sp)->get_persistence_id());
+		store_float_sp("param", (*sp)->get_value(), (*(*sp)));
 	}
 	
 	store_bool("panel_hidden", panel->is_hidden());
@@ -293,7 +293,6 @@ void vtt_fx_ladspa :: load(xmlDocPtr doc, xmlNodePtr node) {
 	bool hidden=false;
 	list <tX_seqpar_vttfx *> :: iterator sp=controls.begin();
 	int elementFound;
-	guint32 pid=0;
 	double val;
 	
 	for (xmlNodePtr cur=node->xmlChildrenNode; cur!=NULL; cur=cur->next) {
@@ -302,21 +301,16 @@ void vtt_fx_ladspa :: load(xmlDocPtr doc, xmlNodePtr node) {
 			
 			restore_int("ladspa_id", dummy);
 			restore_bool("panel_hidden", hidden);
+			
 			if ((!elementFound) && (xmlStrcmp(cur->name, (xmlChar *) "param")==0)) {
 				val=0;
-				elementFound=1;
+				elementFound=0;
+				double dvalue;
 			
 				if (sp==controls.end()) {
 					tX_warning("found unexpected parameters for ladspa plugin [%i].", dummy);
-				} else {			
-					char *buff=(char *) xmlGetProp(cur, (xmlChar *) "id");
-					sscanf(buff, "%i", &pid);
-			
-					if  (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {
-						sscanf((char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%lf", &val); 
-					}
-					(*sp)->set_persistence_id(pid);
-					(*sp)->do_exec(val);
+				} else {
+					restore_float_id("param", val, (*(*sp)), (*sp)->do_exec(val));					
 					(*sp)->do_update_graphics();
 					sp++;
 				}
