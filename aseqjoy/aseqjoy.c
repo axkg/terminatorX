@@ -17,7 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  * Note: that these sources contain a few lines of Vojtech Pavlik's jstest.c 
- * example.
+ * example, which is GPL'd, too and available from:
+ * http://atrey.karlin.mff.cuni.cz/~vojtech/joystick/
  */
 
 #include <sys/ioctl.h>
@@ -137,8 +138,6 @@ void loop()
 		printf("  %2i -> %3i\n", i, values[i].controller);
 		values[i].last_value=0;		
 	}
-	
-	
 	
 	puts("Ready, entering loop - use Ctrl-C to exit.");	
 
