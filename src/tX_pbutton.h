@@ -33,13 +33,16 @@
 #define TX_ICON_STOP 6
 #define TX_ICON_RECORD 7
 #define TX_ICON_EDIT 8
+#define TX_ICON_MIN_AUDIO 8
 #define TX_ICON_RELOAD 9
 #define TX_ICON_MINIMIZE 10
 #define TX_ICON_FX_UP 11
 #define TX_ICON_FX_DOWN 12
 #define TX_ICON_FX_CLOSE 13
+#define TX_ICON_MINIMIZE_PANEL 14
+#define TX_ICON_MIN_CONTROL 15
 
 extern GtkWidget *tx_pixmap_widget(int icon_id);
-extern GtkWidget *tx_xpm_label_box(int	icon_id, gchar *label_text );
-extern GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle);
+extern GtkWidget *tx_xpm_label_box(int icon_id, gchar *label_text, GtkWidget **labelwidget=NULL);
+extern GtkWidget *tx_xpm_button_new(int icon_id, char *label, int toggle, GtkWidget **labelwidget=NULL);
 #endif

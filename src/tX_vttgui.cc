@@ -436,6 +436,26 @@ void solo_vtt(GtkWidget *widget, vtt_class *vtt)
 	}
 }      
 
+void minimize_control_panel(GtkWidget *wid, vtt_class *vtt)
+{
+	vtt->hide_control(true);
+}
+
+void unminimize_control_panel(GtkWidget *wid, vtt_class *vtt)
+{
+	vtt->hide_control(false);
+}
+
+void minimize_audio_panel(GtkWidget *wid, vtt_class *vtt)
+{
+	vtt->hide_audio(true);
+}
+
+void unminimize_audio_panel(GtkWidget *wid, vtt_class *vtt)
+{
+	vtt->hide_audio(false);
+}
+
 void vg_display_xcontrol(vtt_class *vtt)
 {
 	char buffer[2048];
@@ -616,8 +636,8 @@ void gui_connect_signals(vtt_class *vtt)
 
 	connect_entry(name, name_changed);
 	connect_adj(volume, volume_changed);
-	connect_button(edit, edit_vtt_buffer);
-	connect_button(reload, reload_vtt_buffer);
+/*	connect_button(edit, edit_vtt_buffer);
+	connect_button(reload, reload_vtt_buffer);*/
 	connect_adj(pitch, pitch_changed);
 	connect_adj(pan, pan_changed);
 	connect_button(file, load_file);
@@ -644,6 +664,9 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_adj(ec_volume, ec_volume_changed);	
 	connect_button(x_control, vg_xcontrol_popup);
 	connect_button(y_control, vg_ycontrol_popup);
+
+	connect_button(control_minimize, minimize_control_panel);
+	connect_button(audio_minimize, minimize_audio_panel);
 
 	static GtkTargetEntry drop_types [] = {
 		{ "text/uri-list", 0, 0}
@@ -685,17 +708,31 @@ void build_vtt_gui(vtt_class *vtt)
 	g->audio_box=gtk_vbox_new(FALSE,2);
 	gtk_widget_show(g->audio_box);
 	
-	tempbox=gtk_hbox_new(FALSE,2);
-	gtk_widget_show(tempbox);
-	gtk_box_pack_start(GTK_BOX(g->audio_box), tempbox, WID_FIX);
+	tempbox2=gtk_hbox_new(FALSE,2);
+	gtk_widget_show(tempbox2);
+	gtk_box_pack_start(GTK_BOX(g->audio_box), tempbox2, WID_FIX);
 	
+	tempbox=gtk_hbox_new(TRUE,2);
+	gtk_widget_show(tempbox);
+	gtk_box_pack_start(GTK_BOX(tempbox2), tempbox, WID_DYN);
+
+	GtkWidget *pixmap;
+	g->audio_minimize=gtk_button_new();
+	pixmap=tx_pixmap_widget(TX_ICON_MINIMIZE_PANEL);
+	gtk_container_add (GTK_CONTAINER (g->audio_minimize), pixmap);	
+	gtk_box_pack_end(GTK_BOX(tempbox2), g->audio_minimize, WID_FIX);
+	gtk_widget_show(pixmap);
+	gtk_widget_show(g->audio_minimize);
+
+
 	g->audio_label=gtk_label_new(vtt->name);
+	gtk_misc_set_alignment(GTK_MISC(g->audio_label), 0.1, 0.5);
 	gtk_widget_show(g->audio_label);
 	gtk_box_pack_start(GTK_BOX(tempbox), g->audio_label, WID_DYN);
 
-	dummy=gtk_vseparator_new();
+	/*dummy=gtk_vseparator_new();
 	gtk_widget_show(dummy);
-	gtk_box_pack_start(GTK_BOX(tempbox), dummy, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(tempbox), dummy, WID_FIX);*/
 
 	nicer_filename(nice_name, vtt->filename);
 	g->file = gtk_button_new_with_label(nice_name);
@@ -703,7 +740,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gui_set_tooltip(g->file, "Click here to load an audiofile into this turntable. As an alternative you may drop an audiofile over this button or the audio-data display.");
 	gtk_box_pack_start(GTK_BOX(tempbox), g->file, WID_DYN);
 
-	g->edit=tx_xpm_button_new(TX_ICON_EDIT, "Edit", 0);
+	/*g->edit=tx_xpm_button_new(TX_ICON_EDIT, "Edit", 0);
 	gtk_widget_show(g->edit);
 	gui_set_tooltip(g->edit, "Click this button to run the soundfile editor for the audiofile loaded into this turntable. You can configure which soundfile editor to use in the Options dialog.");
 	gtk_box_pack_start(GTK_BOX(tempbox), g->edit, WID_FIX);
@@ -711,9 +748,9 @@ void build_vtt_gui(vtt_class *vtt)
 	g->reload=tx_xpm_button_new(TX_ICON_RELOAD, "Reload", 0);
 	gtk_widget_show(g->reload);
 	gui_set_tooltip(g->reload, "Click here to reload the audiofile loaded into this turntable.");
-	gtk_box_pack_start(GTK_BOX(tempbox), g->reload, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(tempbox), g->reload, WID_FIX);*/
 	
-	dummy=gtk_vseparator_new();
+	/*dummy=gtk_vseparator_new();
 	gtk_widget_show(dummy);
 	gtk_box_pack_start(GTK_BOX(tempbox), dummy, WID_FIX);
 
@@ -728,7 +765,7 @@ void build_vtt_gui(vtt_class *vtt)
 
 	dummy=gtk_label_new("Y:");
 	gtk_widget_show(dummy);
-	gtk_box_pack_start(GTK_BOX(tempbox), dummy, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(tempbox), dummy, WID_FIX);*/
 	
 	g->y_control=gtk_button_new_with_label(vtt->y_par->get_name());
 	gtk_widget_show(g->y_control);
@@ -744,11 +781,22 @@ void build_vtt_gui(vtt_class *vtt)
 	
 	g->control_box=gtk_vbox_new(FALSE,2);
 	gtk_widget_show(g->control_box);
-	
+
+	tempbox2=gtk_hbox_new(FALSE, 2);
+	gtk_widget_show(tempbox2);
+	gtk_box_pack_start(GTK_BOX(g->control_box), tempbox2, WID_FIX);
+
 	g->control_label=gtk_label_new(vtt->name);
 	gtk_widget_show(g->control_label);
-	gtk_box_pack_start(GTK_BOX(g->control_box), g->control_label, WID_FIX);
-	
+	gtk_box_pack_start(GTK_BOX(tempbox2), g->control_label, WID_DYN);
+
+	g->control_minimize=gtk_button_new();
+	pixmap=tx_pixmap_widget(TX_ICON_MINIMIZE_PANEL);
+	gtk_container_add (GTK_CONTAINER (g->control_minimize), pixmap);	
+	gtk_box_pack_end(GTK_BOX(tempbox2), g->control_minimize, WID_FIX);
+	gtk_widget_show(pixmap);
+	gtk_widget_show(g->control_minimize);
+
 	g->scrolled_win=gtk_scrolled_window_new (NULL, NULL);
 	gtk_container_set_border_width (GTK_CONTAINER (g->scrolled_win), 0);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (g->scrolled_win),
@@ -949,6 +997,9 @@ void build_vtt_gui(vtt_class *vtt)
 	g->file_dialog=NULL;
 
 	gui_connect_signals(vtt);
+	
+	g->audio_minimized_panel_bar_button=NULL;
+	g->control_minimized_panel_bar_button=NULL;
 }
 
 void fx_up(GtkWidget *wid, vtt_fx *effect)
@@ -1090,6 +1141,14 @@ void gui_set_name(vtt_class *vtt, char *newname)
 	gtk_label_set_text(GTK_LABEL(vtt->gui.audio_label), newname);
 	gtk_label_set_text(GTK_LABEL(vtt->gui.control_label), newname);
 	gtk_entry_set_text(GTK_ENTRY(vtt->gui.name), newname);
+	
+	if (vtt->gui.audio_minimized_panel_bar_button!=NULL) {
+		gtk_label_set_text(GTK_LABEL(vtt->gui.audio_minimized_panel_bar_label), newname);
+	}
+
+	if (vtt->gui.control_minimized_panel_bar_button!=NULL) {
+		gtk_label_set_text(GTK_LABEL(vtt->gui.control_minimized_panel_bar_label), newname);
+	}
 }
 
 void gui_set_filename (vtt_class *vtt, char *newname)
@@ -1112,8 +1171,41 @@ void gui_update_display(vtt_class *vtt)
 	gtk_tx_set_data(GTK_TX(vtt->gui.display), vtt->buffer, vtt->samples_in_buffer);
 }
 
+void gui_hide_control_panel(vtt_class *vtt, bool hide) {
+	if (hide) {
+		gtk_widget_hide(vtt->gui.control_box);
+		vtt->gui.control_minimized_panel_bar_button=tx_xpm_button_new(TX_ICON_MIN_CONTROL, vtt->name, 0, &vtt->gui.control_minimized_panel_bar_label);
+		gtk_signal_connect(GTK_OBJECT(vtt->gui.control_minimized_panel_bar_button), "clicked", (GtkSignalFunc) unminimize_control_panel, vtt);
+		gtk_widget_show(vtt->gui.control_minimized_panel_bar_button);
+		add_to_panel_bar(vtt->gui.control_minimized_panel_bar_button);
+	} else {
+		gtk_widget_show(vtt->gui.control_box);
+		remove_from_panel_bar(vtt->gui.control_minimized_panel_bar_button);
+		gtk_widget_destroy(vtt->gui.control_minimized_panel_bar_button);
+		vtt->gui.control_minimized_panel_bar_button=NULL;
+	}
+}
+
+void gui_hide_audio_panel(vtt_class *vtt, bool hide) {
+	if (hide) {
+		gtk_widget_hide(vtt->gui.audio_box);
+		vtt->gui.audio_minimized_panel_bar_button=tx_xpm_button_new(TX_ICON_MIN_AUDIO, vtt->name, 0, &vtt->gui.audio_minimized_panel_bar_label);
+		gtk_signal_connect(GTK_OBJECT(vtt->gui.audio_minimized_panel_bar_button), "clicked", (GtkSignalFunc) unminimize_audio_panel, vtt);		
+		gtk_widget_show(vtt->gui.audio_minimized_panel_bar_button);
+		add_to_panel_bar(vtt->gui.audio_minimized_panel_bar_button);
+	} else {
+		gtk_widget_show(vtt->gui.audio_box);
+		remove_from_panel_bar(vtt->gui.audio_minimized_panel_bar_button);
+		gtk_widget_destroy(vtt->gui.audio_minimized_panel_bar_button);
+		vtt->gui.audio_minimized_panel_bar_button=NULL;
+	}
+}
+
 void delete_gui(vtt_class *vtt)
 {
+	if (vtt->gui.control_minimized_panel_bar_button!=NULL) gui_hide_control_panel(vtt, false);
+	if (vtt->gui.audio_minimized_panel_bar_button!=NULL) gui_hide_audio_panel(vtt, false);
+
 	delete vtt->gui.main_panel;
 	delete vtt->gui.trigger_panel;
 	
@@ -1211,3 +1303,4 @@ void vg_init_all_non_seqpars()
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON((*vtt)->gui.sync_master), (*vtt)->is_sync_master);
 	}	
 }
+
