@@ -12,8 +12,8 @@ message represents the joystick's position along the axis (eg 'left' -> 0,
 
 aseqjoy uses the ALSA sequencer API to emit the MIDI events. Therefor it
 creates and output port named after joystick used. You can then use for example
-the alsa-patch-bay to connect an aseqjoy instance to an input port of your
-choice. 
+aconnect (from alsa-utils) or Robert Ham's alsa-patch-bay to connect an aseqjoy
+instance to an input port of your choice. 
 
 Requirements:
 -------------
