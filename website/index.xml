@@ -32,11 +32,13 @@
               <listitem><para>I've added a <bold>new audio back-end</bold> for the 
                   <dblink id="jack">JACK Audio Connection Kit</dblink>. To make use of it
                   the JACK Daemon has to run <italic>before</italic> starting terminatorX.
-                  <bold>Note:</bold> just before the release I noticed that JACK doesn't seem
-                  to like clients running with SCHED_FIFO (realtime scheduling). So, if you use
-                  the JACK back-end do not run terminatorX with realtime scheduling - the
-                  capabilities based approach in JACK itself works fine (for more details
-                  see the this 
+                  </para>
+                  <para>
+                  <bold>Note:</bold> JACK seems to lockup when clients run with realtime
+                  scheduling (SCHED_FIFO) - terminatorX can work around this when running
+                  with capabilities, but not with the old <screen>--enable-suidroot</screen>
+                  mode - so don't enable it when you want to use the JACK back-end. Reniceing
+                  via libjack works fine btw (see this
                   <link ref="http://jackit.sourceforge.net/docs/faq.php#a5">JACK FAQ entry</link>).
                 </para></listitem>
               <listitem><para>A new <bold>Parameter Menu</bold>: simply right-click on the 
