@@ -26,12 +26,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <sys/soundcard.h>
 #include <config.h>
 
 #include "tX_endian.h"
+
+#define __USE_XOPEN // we need this for swab()
+#include <unistd.h>
+#undef __USE_XOPEN
 
 void tX_audiodevice :: init()
 {
@@ -79,14 +82,6 @@ void tX_audiodevice :: play(int16_t* dummy)
 
 #ifdef USE_OSS
 
-/* this is required as open() overloads 
-   ansi open() - better solutions anybody? ;)
-*/
-inline int open_hack(char *name,  int flags, mode_t mode)
-{
-	return open(name, flags, mode);
-}
-
 int tX_audiodevice_oss :: open()
 {
 	int i=0;
@@ -94,7 +89,7 @@ int tX_audiodevice_oss :: open()
 	int buff_cfg;
 
 	if (fd) return (1);
-        fd = open_hack(globals.audio_device, O_WRONLY, 0);
+        fd = ::open(globals.audio_device, O_WRONLY, 0);
 	
 	/* setting buffer size */	
 	buff_cfg=(globals.buff_no<<16) | globals.buff_size;
@@ -135,11 +130,6 @@ int tX_audiodevice_oss :: open()
         return(i);	
 }
 
-inline int closewrapper(int fd)
-{
-	return close(fd);
-}
-
 int tX_audiodevice_oss :: close()
 {
 	void *dummy;
@@ -148,7 +138,7 @@ int tX_audiodevice_oss :: close()
 	{	
 		return(1);		
 	}
-	closewrapper(fd);
+	::close(fd);
 	fd=0;
 	blocksize=0;
 		

@@ -262,6 +262,8 @@ tX_engine_error tX_engine :: run() {
 	stop_flag=false;
 	/* Trigger the engine thread... */
 	pthread_mutex_unlock(&start);
+	
+	return NO_ERROR;
 }
 
 void tX_engine :: stop() {
