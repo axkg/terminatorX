@@ -146,6 +146,21 @@ typedef struct {
 	int filename_length;
 	
 	int restore_midi_connections;
+	
+	char wav_display_bg_focus[8];
+	char wav_display_bg_no_focus[8];
+	
+	char wav_display_fg_focus[8];
+	char wav_display_fg_no_focus[8];	
+	
+	char wav_display_cursor[8];	
+	char wav_display_cursor_mute[8];
+	
+	char vu_meter_bg[8];
+	char vu_meter_loud[8];
+	char vu_meter_normal[8];
+	double vu_meter_border_intensity;
+	
 } tx_global;
 
 extern tx_global globals;

@@ -46,6 +46,7 @@ class tx_mouse
 	XMotionEvent *xmot;
 	XKeyEvent *xkey;
 	XButtonEvent *xbut;
+	bool warp_override;
 
 #ifdef USE_DGA2	
 	XEvent xev_copy;

@@ -31,3 +31,15 @@ on_del_mode_cancel_clicked             (GtkButton       *button,
 void
 on_del_mode_ok_clicked                 (GtkButton       *button,
                                         gpointer         user_data);
+
+void
+color_clicked                          (GtkButton       *button,
+                                        gpointer         user_data);
+
+void
+on_color_selection_ok_clicked          (GtkButton       *button,
+                                        gpointer         user_data);
+
+void
+on_color_selection_cancel_clicked      (GtkButton       *button,
+                                        gpointer         user_data);
