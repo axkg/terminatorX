@@ -60,6 +60,9 @@
 #	include <vorbis/codec.h>
 #	include <vorbis/vorbisfile.h>
 #	include <errno.h>
+#	include <sys/stat.h>
+#	include <fcntl.h>
+#	include <sys/mman.h>
 #endif
 
 #ifdef USE_AUDIOFILE_INPUT
@@ -463,9 +466,9 @@ static enum mad_flow tX_mad_error(void *data, struct mad_stream *stream, struct 
 
 /* From minimad.c of mad */
 static inline signed int scale(mad_fixed_t sample) {
-#ifdef BIG_ENDIAN_MACHINE
-	swap32_inline(&sample);
-#endif
+//#ifdef BIG_ENDIAN_MACHINE
+//	swap32_inline(&sample);
+//#endif
   /* round */
   sample += (1L << (MAD_F_FRACBITS - 16));
 
