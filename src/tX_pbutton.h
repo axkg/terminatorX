@@ -27,20 +27,18 @@
 #define TX_ICON_AUDIOENGINE 0
 #define TX_ICON_POWER 1
 #define TX_ICON_GRAB 2
-#define TX_ICON_LOGO 3
-#define TX_ICON_SEQUENCER 4
-#define TX_ICON_PLAY 5
-#define TX_ICON_STOP 6
-#define TX_ICON_RECORD 7
-#define TX_ICON_EDIT 8
-#define TX_ICON_MIN_AUDIO 8
-#define TX_ICON_RELOAD 9
-#define TX_ICON_MINIMIZE 10
-#define TX_ICON_FX_UP 11
-#define TX_ICON_FX_DOWN 12
-#define TX_ICON_FX_CLOSE 13
-#define TX_ICON_MINIMIZE_PANEL 14
-#define TX_ICON_MIN_CONTROL 15
+#define TX_ICON_SEQUENCER 3
+#define TX_ICON_PLAY 4
+#define TX_ICON_STOP 5
+#define TX_ICON_RECORD 6
+#define TX_ICON_MIN_AUDIO 7
+#define TX_ICON_RELOAD 8
+#define TX_ICON_MINIMIZE 9
+#define TX_ICON_FX_UP 10
+#define TX_ICON_FX_DOWN 11
+#define TX_ICON_FX_CLOSE 12
+#define TX_ICON_MINIMIZE_PANEL 13
+#define TX_ICON_MIN_CONTROL 14
 
 extern GtkWidget *tx_pixmap_widget(int icon_id);
 extern GtkWidget *tx_xpm_label_box(int icon_id, gchar *label_text, GtkWidget **labelwidget=(GtkWidget **) NULL);

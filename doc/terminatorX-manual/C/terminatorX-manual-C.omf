@@ -1,8 +1,8 @@
-<?xml version="1.0" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <omf>
   <resource>
     <creator>
-	alex@lisas.de (Alexander Koenig)
+	alex@lisas.de (Alexander König)
     </creator>
     <title>
       terminatorX Manual
@@ -22,6 +22,6 @@
     <identifier url="file:/usr/share/terminatorX/doc/terminatorX-manual/C/terminatorX-manual.xml"/>
     <language code="C"/>
     <relation seriesid="9c4f02ba-fe53-11d6-810b-a240cc571a07"/>
-    <rights type="GNU FDL" license.version="1.1" holder="Alexander Koenig"/>
+    <rights type="GNU FDL" license.version="1.1" holder="Alexander König"/>
   </resource>
 </omf>
