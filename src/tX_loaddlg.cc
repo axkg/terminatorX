@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ int ld_create_loaddlg(int mode, int count)
 	ld_mode=mode;
 	ld_count=count;
 
-	ld_loaddlg=gtk_window_new(GTK_WINDOW_POPUP);
+	ld_loaddlg=gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_position(GTK_WINDOW(ld_loaddlg), GTK_WIN_POS_CENTER_ON_PARENT);
 	gtk_window_set_title(GTK_WINDOW(ld_loaddlg), "terminatorX - loading");
 	gtk_window_set_transient_for(GTK_WINDOW(ld_loaddlg), GTK_WINDOW(main_window));

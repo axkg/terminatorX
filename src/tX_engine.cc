@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -127,7 +127,7 @@ void tX_engine::loop() {
 			parm.sched_priority=sched_get_priority_max(SCHED_FIFO);
 						
 			if (pthread_setschedparam(pthread_self(), SCHED_FIFO, &parm)) {
-				tX_error("loop(): failed to set realtime priority.");
+				tX_msg("loop(): failed to set realtime priority.");
 			} else {
 				tX_debug("loop(): set SCHED_FIFO.");
 			}
@@ -136,7 +136,7 @@ void tX_engine::loop() {
 			parm.sched_priority=sched_get_priority_max(SCHED_OTHER);
 						
 			if (pthread_setschedparam(pthread_self(), SCHED_OTHER, &parm)) {
-				tX_error("loop(): failed to set non-realtime priority.");
+				tX_msg("loop(): failed to set non-realtime priority.");
 			} else {
 				tX_debug("loop(): set SCHED_OTHER.");
 			}			
@@ -146,7 +146,19 @@ void tX_engine::loop() {
 		pthread_mutex_unlock(&start);
 
 		if (!stop_flag) device->start(); // Hand flow control over to the device
+
+		// in case we got kicked out by jack we might have
+		// to kill the mouse grab
+		if (grab_active) {
+			mouse->ungrab();
+			grab_active=false;
+			grab_off(); // for the mastergui this is...
+		}
 		
+		if (!stop_flag) {
+			runtime_error=true;
+			usleep(100);
+		}
 		/* Stopping engine... */
 		loop_is_active=false;
 	}
@@ -156,71 +168,30 @@ void *engine_thread_entry(void *engine_void) {
 	tX_engine *engine=(tX_engine*) engine_void;
 	int result;
 	
-	/* Dropping root privileges for the engine thread - if running suid. */
-	
-	if ((!geteuid()) && (getuid() != geteuid())) {
-#ifdef USE_CAPABILITIES
-		tX_error("engine_thread_entry(): using capabilities but still suid root?");
-		tX_error("engine_thread_entry(): Please report this.");
-		exit(-1);
-#endif
-		
-#ifndef ALLOW_SUID_ROOT
-		tX_error("This binary doesn't support running suid-root.");
-		tX_error("Reconfigure with --enable-capabilities or --enable-suidroot if you really want that.");
-		exit(-1);
-#endif		
-		tX_debug("engine_thread_entry() - Running suid root - dropping privileges.");
-		
-		result=setuid(getuid());
-		
-		if (result!=0) {
-			tX_error("engine_thread_entry() - Failed to drop root privileges.");
-			exit(2);
-		}
-	}
-
 #ifdef USE_SCHEDULER
 	pid_t pid=getpid();
 	struct sched_param parm;
 
-#ifdef USE_CAPABILITIES
-	if (have_nice_capability()) {
-		if (globals.use_realtime) {
-			sched_getparam(pid, &parm);
-			parm.sched_priority=sched_get_priority_max(SCHED_FIFO);
-						
-			if (pthread_setschedparam(pthread_self(), SCHED_FIFO, &parm)) {
-				tX_error("engine_thread_entry(): failed to set realtime priority.");
-			} else {
-				tX_debug("engine_thread_entry(): set SCHED_FIFO via capabilities.");
-			}
+	if (globals.use_realtime) {
+		sched_getparam(pid, &parm);
+		parm.sched_priority=sched_get_priority_max(SCHED_FIFO);
+					
+		if (pthread_setschedparam(pthread_self(), SCHED_FIFO, &parm)) {
+			tX_warning("engine_thread_entry(): failed to set realtime priority.");
+		} else {
+			tX_debug("engine_thread_entry(): set SCHED_FIFO via capabilities.");
 		}
-	} else {
-		tX_warning("engine_thread_entry(): can't set SCHED_FIFO -> lacking capabilities.");
 	}
-#endif //USE_CAPABILITIES
 	int policy=0;
-	
-	pthread_getschedparam(pthread_self(), &policy, &parm);
-	if (policy!=SCHED_FIFO) {
-		tX_warning("engine_thread_entry() - engine has no realtime priority scheduling.");
-	}
 #endif //USE_SCHEDULER
 		
 #ifdef USE_JACK
 	/* Create the client now, so the user has something to connect to. */
 	tX_jack_client::get_instance();
 #endif	
-
-#ifdef USE_SCHEDULER
-	tX_debug("engine_thread_entry() engine thread is p: %i, t: %i and has policy %i.", getpid(), (int) pthread_self(), sched_getscheduler(getpid()));
-#endif
 	
 	engine->loop();
-	
 	tX_debug("engine_thread_entry() engine thread terminating.");
-	
 	pthread_exit(NULL);
 }
 
@@ -231,58 +202,11 @@ tX_engine :: tX_engine() {
 	pthread_mutex_lock(&start);
 	thread_terminate=false;
 	
-	/* Creating the actual engine thread.. */
-#ifdef USE_SCHEDULER	
-	if (!geteuid() /* && globals.use_realtime */) {
-
-#ifndef ALLOW_SUID_ROOT
-		tX_error("This binary doesn't support running suid-root.");
-		tX_error("Reconfigure with --enable-capabilities or --enable-suidroot if you really want that.");
-		exit(-1);
-#endif		
-		
-		pthread_attr_t pattr;
-		struct sched_param sparm;
-		
-		tX_debug("tX_engine() - setting SCHED_FIFO.");
-		
-		pthread_attr_init(&pattr);
-		pthread_attr_setdetachstate(&pattr, PTHREAD_CREATE_JOINABLE);
-		pthread_attr_setschedpolicy(&pattr, SCHED_FIFO);
-	
-		sched_getparam(getpid(), &sparm);
-		sparm.sched_priority=sched_get_priority_max(SCHED_FIFO);
-	
-		pthread_attr_setschedparam(&pattr, &sparm);
-		pthread_attr_setinheritsched(&pattr, PTHREAD_EXPLICIT_SCHED);
-		pthread_attr_setscope(&pattr, PTHREAD_SCOPE_SYSTEM);
-		
-		result=pthread_create(&thread, &pattr, engine_thread_entry, (void *) this);
-	} else {
-#endif // USE_SCHEDULER
-		//tX_debug("tX_engine() - can't set SCHED_FIFO euid: %i.", geteuid());
-		
-		result=pthread_create(&thread, NULL, engine_thread_entry, (void *) this);
-#ifdef USE_SCHEDULER		
-	}
-#endif
+	result=pthread_create(&thread, NULL, engine_thread_entry, (void *) this);
 	
 	if (result!=0) {
 		tX_error("tX_engine() - Failed to create engine thread. Errno is %i.", errno);
 		exit(1);
-	}
-	
-	/* Dropping root privileges for the main thread - if running suid. */
-	
-	if ((!geteuid()) && (getuid() != geteuid())) {
-		tX_debug("tX_engine() - Running suid root - dropping privileges.");
-		
-		result=setuid(getuid());
-		
-		if (result!=0) {
-			tX_error("tX_engine() - Failed to drop root privileges.");
-			exit(2);
-		}
 	}
 	
 	mouse=new tx_mouse();
@@ -306,6 +230,7 @@ void tX_engine :: set_recording_request (bool recording) {
 tX_engine_error tX_engine :: run() {
 	list <vtt_class *> :: iterator vtt;
 	
+	runtime_error=false;
 	if (loop_is_active) return ERROR_BUSY;
 	
 	switch (globals.audiodevice_type) {

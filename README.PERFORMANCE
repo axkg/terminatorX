@@ -17,27 +17,21 @@ happens fast. Some gtk+ engines can slow down drawing signifcantly
 2. Install suid root
 --------------------
 
-Note: Installing a program suid-root is always potentially dangerous. However
+Note: Installing a program suid-root is always potentially dangerous. However,
 a program needs special privileges to acquire realtime scheduling (which 
-improves playback quality signifcantly). Since release 3.81 terminatorX provides
-two methods of running suid root:
+improves playback quality signifcantly). Since release 3.82 terminatorX provides
+only one method of running suid root:
 
 - Linux' POSIX capabilities: when capabilities support is available at
   compile time (requires libcap) terminatorX can make use of Linux' POSIX
   capabilities. The binary has to be installed suid root but the program
   will drop root privileges right on startup - after aquiring the CAP_SYS_NICE
   capability.
-  
-- The "old" suid-root way: terminatorX starts the engine thread with root
-  privileges (and realtime scheduling). Then both threads drop root privileges.
-  Unfortunately the standard Linux 2.4 pthreads implementation has an extra
-  "manager" thread that keeps running as root. So it might be possible to gain
-  root privileges somehow. This has been shown before - the detected holes 
-  have been close, but I'm confident that others do exist.
 
-As the 2nd approach is more dangerous you have to explictly enable it at
-compile time (run configure with --enable-suidroot). However both methods might
-be exploitable somehow - so your not getting any garanties either way.
+While the capabilities based approach seems much more secure than the approach
+that was previously implemented, it might still be exploitable. So, for 100%
+security you have to do without realtime scheduling and not install terminatorX
+suid root.
 
 3. Compile an optimized binary
 ------------------------------
@@ -56,8 +50,8 @@ in the options dialog.
 5. Optimize your kernel
 -----------------------
 
-2.6 Kernels have much lower latency than older Kernels - if you want to work 
-with a stable Kernel however I recommend patching the 2.4 Series with Con 
-Kolivas' "ck" patches. They improve terminatorX performace signifcantly - if you
-dont forget to renice your X to '0' (see Con Kolivas' FAQ at 
+2.6 Kernels have much lower latency than previous versions - if you prefer 2.4
+Kernels however, I recommend patching the 2.4 Series with Con Kolivas' "ck" 
+patches. They improve terminatorX performace signifcantly - if you dont forget 
+to renice your X to '0' (see Con Kolivas' FAQ at 
 http://members.optusnet.com.au/ckolivas/kernel/).

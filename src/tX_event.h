@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,16 +41,18 @@ class tX_event
 	tX_seqpar		*sp;
 	
 	public:
-	tX_event(guint32 time, float val, tX_seqpar *sp_in)
-		{
-			timestamp=time;
-			value=val;
-			sp=sp_in;
-		}
+	tX_event(guint32 time, float val, tX_seqpar *sp_in) {
+		timestamp=time;
+		value=val;
+		sp=sp_in;
+	}
+	
 #ifdef ENABLE_TX_LEGACY		
 	tX_event(FILE *input);
 #endif		
-	tX_event(xmlDocPtr, xmlNodePtr);
+	static tX_event* load_event(xmlDocPtr, xmlNodePtr);
+	tX_event(tX_seqpar *p, guint32 t, float v) : sp(p),timestamp(t),value(v) {}
+	
 	void store(FILE *rc, gzFile rz, char *indent);
 
 	tX_seqpar *get_sp() { return sp; }
@@ -58,13 +60,12 @@ class tX_event
 	float get_value() { return value; }
 	void set_value(float val) { value=val; }
 
-        char *get_vtt_name() { return sp->get_vtt_name(); }
-        const char *get_seqpar_name() { return sp->get_name(); }
+	char *get_vtt_name() { return sp->get_vtt_name(); }
+	const char *get_seqpar_name() { return sp->get_name(); }
 
-	void playback()
-		{
-			if (sp->is_untouched()) sp->exec_value(value);
-		}
+	void playback() {
+		if (sp->is_untouched()) sp->exec_value(value);
+	}
 };
 
 #endif

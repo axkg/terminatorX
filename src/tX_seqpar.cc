@@ -150,8 +150,7 @@ void tX_seqpar :: untouch_all()
 {
 	list <tX_seqpar *> :: iterator sp;
 	
-	for (sp=all.begin(); sp!=all.end(); sp++)
-	{
+	for (sp=all.begin(); sp!=all.end(); sp++) {
 		(*sp)->untouch();
 	}
 }
@@ -161,8 +160,7 @@ void tX_seqpar :: create_persistence_ids()
 	list <tX_seqpar *> :: iterator sp;
 	int pid=0;
 	
-	for (sp=all.begin(); sp!=all.end(); sp++)
-	{
+	for (sp=all.begin(); sp!=all.end(); sp++) {
 		pid++;
 		(*sp)->set_persistence_id(pid);
 	}
@@ -172,12 +170,11 @@ tX_seqpar* tX_seqpar :: get_sp_by_persistence_id(unsigned int pid)
 {
 	list <tX_seqpar *> :: iterator sp;
 	
-	for (sp=all.begin(); sp!=all.end(); sp++)
-	{
+	for (sp=all.begin(); sp!=all.end(); sp++) {
 		if ((*sp)->get_persistence_id()==pid) return ((*sp));
 	}
 	
-	fprintf (stderr, "oops: failed to lookup persistence id [%i].\n", pid);	
+	//tX_error("failed to resolve persistence id [%i].", pid);
 	return (NULL);
 }
 
@@ -191,17 +188,16 @@ void tX_seqpar :: record_value(const float value)
 	  last_event_recorded was for the current timestamp
 	  we simply set that event's value to the current one.
 	*/
-	if ((last_event) && (last_event->get_timestamp() == sequencer.get_timestamp()))
-	{
+	if ((last_event) && (last_event->get_timestamp() == sequencer.get_timestamp())) {
 		last_event->set_value(value);
+	} else {
+		last_event_recorded=(void *) sequencer.record(this, value);
 	}
-	else last_event_recorded=(void *) sequencer.record(this, value);
 }
 
 void tX_seqpar :: receive_gui_value(const float value)
 {
-	if (gui_active)
-	{
+	if (gui_active) {
 		touch();
 		do_exec(value);
 		record_value(value);
@@ -224,8 +220,7 @@ void tX_seqpar :: materialize_forward_values()
 {
 	list <tX_seqpar *> :: iterator sp;
 	
-	for (sp=all.begin(); sp!=all.end(); sp++)
-	{
+	for (sp=all.begin(); sp!=all.end(); sp++) {
 		(*sp)->exec_value((*sp)->fwd_value);
 	}	
 	gdk_flush();
@@ -346,15 +341,13 @@ void tX_seqpar :: update_all_graphics()
 
 	pthread_mutex_lock(&update_lock);
 
-	if (!update.size())
-	{
+	if (!update.size()) {
 		pthread_mutex_unlock(&update_lock);
 		return;	
 	}
 	
 	while (gtk_events_pending()) gtk_main_iteration();	
-	for (sp=update.begin(); sp!=update.end(); sp++)
-	{
+	for (sp=update.begin(); sp!=update.end(); sp++) {
 		(*sp)->update_graphics();
 	}
 	update.erase(update.begin(), update.end());
@@ -367,8 +360,7 @@ void tX_seqpar :: init_all_graphics()
 
 	pthread_mutex_lock(&update_lock);
 	
-	for (sp=all.begin(); sp!=all.end(); sp++)
-	{
+	for (sp=all.begin(); sp!=all.end(); sp++) {
 		(*sp)->update_graphics();
 	}
 	while (gtk_events_pending()) gtk_main_iteration();	

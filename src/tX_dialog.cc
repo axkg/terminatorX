@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2003  Alexander König
+    Copyright (C) 1999-2004  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -158,10 +158,8 @@ void apply_options(GtkWidget *dialog) {
 		gtk_widget_queue_draw((*vtt)->gui.flash);
 	}
 	
-	gtk_tx_flash_update_colors(GTK_TX_FLASH(main_flash_l));
-	gtk_widget_queue_draw(main_flash_l);
-	gtk_tx_flash_update_colors(GTK_TX_FLASH(main_flash_r));
-	gtk_widget_queue_draw(main_flash_r);
+	gtk_tx_flash_update_colors(GTK_TX_FLASH(main_flash));
+	gtk_widget_queue_draw(main_flash);
 	
 #ifdef USE_JACK
 	jack_check();
@@ -565,7 +563,7 @@ void show_about(int nag)
 		gtk_misc_set_alignment(GTK_MISC(label), 0.1, 0.5);
 		gtk_widget_show(label);
 
-		label=gtk_label_new("Copyright (C) 1999-2003 by Alexander K\xC3\xB6nig");
+		label=gtk_label_new("Copyright (C) 1999-2004 by Alexander K\xC3\xB6nig");
 		gtk_box_pack_start(GTK_BOX(box2), label, WID_DYN);
 		gtk_misc_set_alignment(GTK_MISC(label), 0.9, 0.5);
 		gtk_widget_show(label);
@@ -583,7 +581,7 @@ void show_about(int nag)
 		sep=gtk_hseparator_new();
 		add_about_wid_fix(sep);
 		
-		label=gtk_label_new("This is "PACKAGE" release "VERSION" - Copyright (C) 1999-2003 by Alexander K\xC3\xB6nig"
+		label=gtk_label_new("This is "PACKAGE" release "VERSION" - Copyright (C) 1999-2004 by Alexander K\xC3\xB6nig"
 		"\nSend comments, patches and scratches to: alex@lisas.de\nterminatorX-homepage: http://www.terminatorX.cx");
 
 		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
