@@ -32,7 +32,67 @@ AC_PROG_RANLIB
 
 dnl Checks for libraries.
 AC_CHECK_LIB(m, floor,, AC_MSG_ERROR([** math-lib not installed or broken **]))
-AC_CHECK_LIB(pthread, pthread_mutex_lock,, AC_MSG_ERROR([** POSIX threads not installed or broken **]))
+
+dnl Checking whether -pthreads, -lpthreads or simply nothing
+
+tX_threads=no
+
+dnl Some machines don't require any switches for pthread support...
+
+AC_MSG_CHECKING([whether gcc supports pthreads out of the box])
+	no_threads_flags=no
+	AC_LANG_SAVE
+	AC_LANG_C
+	AC_TRY_LINK([#include <pthread.h>], [void *ptr = pthread_mutex_lock;],
+		no_threads_flags=yes,
+		no_threads_flags=no
+	)
+	AC_LANG_RESTORE
+AC_MSG_RESULT([$no_threads_flags])
+
+if test "$no_threads_flags" = "yes"; then
+	tX_threads=auto
+fi
+
+dnl *BSD wants a "-pthread" among the CFLAGS...
+
+if test "$tX_threads" = "no"; then
+	AC_MSG_CHECKING([whether gcc requires -pthread])
+		use_gcc_threads=no
+		ac_save_CFLAGS=$CFLAGS
+		CFLAGS="$CFLAGS -pthread"
+		AC_LANG_SAVE
+		AC_LANG_C
+		AC_TRY_LINK([#include <pthread.h>], [void *ptr = pthread_mutex_lock;],
+			use_gcc_threads=yes,
+			use_gcc_threads=no
+		)
+		AC_LANG_RESTORE
+		CFLAGS=$ac_save_CFLAGS
+	AC_MSG_RESULT([$use_gcc_threads])
+	
+	if test "$use_gcc_threads" = "yes"; then
+		tX_threads=gcc
+		CFLAGS="$CFLAGS -pthread"
+	fi
+fi
+
+dnl If we haven't found it yet will try -lpthread...
+
+if test "$tX_threads" = "no"; then
+	pthread_lib=no
+	AC_CHECK_LIB(pthread, pthread_mutex_lock, pthread_lib=yes, pthread_lib=no)
+	
+	if test "$pthread_lib" = "yes"; then
+		tX_threads=lpthread
+	fi
+fi
+
+dnl If we still haven't found it, we panic...
+
+if test "$tX_threads" = "no"; then
+	AC_MSG_ERROR([** failed to detect pthreads implementation **])
+fi
 
 gtk2="no"
 gtk12="no"
@@ -123,7 +183,7 @@ if test "$enable_xsetpointer" != "no"; then
 	fi
 fi
 
-if test "$enable_movqfix" == "no"; then
+if test "$enable_movqfix" = "no"; then
 	AC_DEFINE(OVERRIDE_MOVQ_AUTODETECT)
 fi
 
@@ -223,21 +283,21 @@ if test "$enable_dga2" = yes; then
 fi
 
 AC_MSG_CHECKING(for GNOME)
-AC_MSG_RESULT([in progress])
-AC_CHECK_PROG(gnomepresent, gnome-name-service, yes, no)
-    if test "$gnomepresent" = yes; then
-   AC_CHECK_PROG(gnomeconfig, gnome-config, yes)
-        if test "$gnomeconfig" = yes; then
-       gnomedatadir=`gnome-config --datadir`
-   else
-       gnomedatadir=${datadir}
-        fi
-   AC_SUBST(gnomedatadir)
-   AM_CONDITIONAL(GNOMEpresent, test "$gnomepresent" = yes)
-   AC_MSG_RESULT([You have GNOME. I'll install terminatorX.desktop])
-    else
-   AC_MSG_RESULT([You don't have GNOME.])
-    fi
+	AC_MSG_RESULT([in progress])
+	AC_CHECK_PROG(gnomepresent, gnome-name-service, yes, no)
+	if test "$gnomepresent" = yes; then
+		AC_CHECK_PROG(gnomeconfig, gnome-config, yes)
+		if test "$gnomeconfig" = yes; then
+			gnomedatadir=`gnome-config --datadir`
+		else
+			gnomedatadir=${datadir}
+		fi
+		AC_SUBST(gnomedatadir)
+		AM_CONDITIONAL(GNOMEpresent, test "$gnomepresent" = yes)
+   		AC_MSG_RESULT([Found GNOME - installing terminatorX.desktop.])
+    	else
+   		AC_MSG_RESULT([GNOME not found.])
+    	fi
 
 
 dnl Now Check for Xlibs - I do this here as other tests fail if these run earlier
