@@ -45,6 +45,9 @@ extern "C" {
 #define BUTTON_TYPE_TEXT 2
 #define BUTTON_TYPE_BOTH 3
 
+#define TX_AUDIODEVICE_TYPE_OSS 0
+#define TX_AUDIODEVICE_TYPE_ALSA 1
+
 typedef struct {
 	char	audio_device[PATH_MAX];
 	
@@ -98,6 +101,22 @@ typedef struct {
 	int update_delay; 
 	
 	char *current_path;
+	
+	/* new audiodevice handling 
+	   we have *all* variables for *all* audiodevice types -
+	   even if support for them is not compiled in - to keep
+	   the .terminatorX3rc.bin in sync.
+	*/
+	
+	int audiodevice_type; // TX_AUDIODEVICE_TYPE_OSS etc.
+	int audiodevice_buffer; // buffer in samples
+	
+	/* OSS specific options */
+	int audiodevice_oss_devicename[PATH_MAX];
+	
+	/* ALSA specific options */
+	int audiodevice_alsa_card;
+	int audiodevice_alsa_pcm;		
 } tx_global;
 
 extern tx_global globals;
