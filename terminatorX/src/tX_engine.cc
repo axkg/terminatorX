@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2002  Alexander König
+    Copyright (C) 1999-2003  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 	is created on startup and kept alive until termination
 */    
 
+#include <config.h>
 #include "tX_types.h"
 #include "tX_engine.h"
 #include "tX_audiodevice.h"
@@ -108,7 +109,7 @@ void tX_engine :: loop() {
 			}
 
 #ifdef USE_ALSA_MIDI_IN			
-			midi->check_event();
+			if (midi->get_is_open()) midi->check_event();
 #endif			
 		
 			/* Playback the audio... */
@@ -230,13 +231,15 @@ tX_engine_error tX_engine :: run() {
 	
 	switch (globals.audiodevice_type) {
 #ifdef USE_OSS	
-		case TX_AUDIODEVICE_TYPE_OSS:
-			device=new tX_audiodevice_oss(); break;
+		case OSS:
+			device=new tX_audiodevice_oss(); 
+		break;
 #endif			
 
 #ifdef USE_ALSA			
-		case TX_AUDIODEVICE_TYPE_ALSA:
-			device=new tX_audiodevice_alsa(); break;
+		case ALSA:
+			device=new tX_audiodevice_alsa(); 
+		break;
 #endif
 		
 		default:

@@ -67,11 +67,16 @@ class tX_midiin
 {
 	snd_seq_t *ALSASeqHandle;
 	tX_midievent last_event;
-		
+	bool is_open;
+	
   public:
  	tX_midiin();
 	~tX_midiin();
 
+	bool get_is_open() {
+		return is_open;
+	}
+	
 	int check_event();
 
 	void configure_bindings( vtt_class* );

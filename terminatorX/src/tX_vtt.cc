@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2002  Alexander König
+    Copyright (C) 1999-2003  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -1721,6 +1721,7 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 			restore_bool_ac("lowpass_panel_hidden", hidden, gui.lp_panel->hide(hidden));			
 			restore_bool_ac("echo_panel_hidden", hidden, gui.ec_panel->hide(hidden));
 			restore_float_ac("audio_x_zoom", tmp, gui_set_audio_x_zoom(this,tmp));
+			vg_adjust_zoom(gui.zoom, this);
 			
 			if (xmlStrcmp(cur->name, (xmlChar *) "fx")==0) {
 				xmlNodePtr fx=cur;
