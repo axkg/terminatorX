@@ -122,4 +122,4 @@ AC_CHECK_LIB(Xxf86dga, XF86DGAQueryExtension,, AC_MSG_ERROR([** DGA not installe
 if test "$enable_dga2" = yes; then
 	AC_CHECK_LIB(Xxf86dga, XDGASelectInput,, AC_MSG_ERROR([** DGA2 not installed. Try using dga1 instead. **]), $X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS)
 fi
-AC_OUTPUT(Makefile src/Makefile gnome-support/Makefile src/gui_icons/Makefile src/smallknob/Makefile doc/Makefile doc/img/Makefile)
+AC_OUTPUT(Makefile src/Makefile gnome-support/Makefile src/gui_icons/Makefile src/smallknob/Makefile doc/Makefile doc/img/Makefile terminatorX.spec)
