@@ -1608,6 +1608,21 @@ void vtt_class :: delete_all()
 	while (main_list.size()) {
 		delete((*main_list.begin()));
 	}
+	
+	/* Take care of the master events.. */
+	sequencer.delete_all_events();
+	
+	/* Now reset master settings ot the default: */
+	set_master_pitch(1.0);
+	set_master_volume(1.0);
+	
+	sp_master_pitch.do_exec(1.0);
+	sp_master_pitch.do_update_graphics();
+
+	sp_master_volume.do_exec(1.0);
+	sp_master_volume.do_update_graphics();
+	
+	seq_update();
 }
 
 

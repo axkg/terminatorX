@@ -289,7 +289,7 @@ GtkSignalFunc new_tables() {
 
 	vtt_class::delete_all();
 	new_table(NULL, NULL);
-	sequencer.delete_all_events();
+
 	gtk_window_set_title(GTK_WINDOW(main_window), "terminatorX");
 
 	return NULL;
@@ -387,7 +387,9 @@ void do_load_tables(GtkWidget *wid)
 	load_dialog=NULL;
 	load_dialog_win=NULL;
 
-	load_tt_part(buffer);	
+	tX_cursor::set_cursor(tX_cursor::WAIT_CURSOR);
+	load_tt_part(buffer);
+	tX_cursor::reset_cursor();
 }
 
 GtkSignalFunc load_tables()
@@ -752,7 +754,7 @@ gboolean quit()
 	
 	turn_audio_off();
 	vtt_class::delete_all();
-	
+
 	if (update_tag)
 	gtk_timeout_remove(update_tag);
 	globals.width=main_window->allocation.width;
@@ -1512,4 +1514,47 @@ void display_browser() {
 	
 		browser_tag=gtk_idle_add((GtkFunction) browser_checker, NULL);
 	}
+}
+
+
+
+GdkCursor *tX_cursor::cursors[MAX_CURSOR]={NULL, NULL, NULL};
+tX_cursor::cursor_shape tX_cursor::current_shape=tX_cursor::DEFAULT_CURSOR;
+
+void tX_cursor::set_cursor(cursor_shape shape)
+{
+	switch (shape) {
+		case DEFAULT_CURSOR:
+			cursors[shape]=NULL;
+			break;
+		
+		case WAIT_CURSOR:
+			if (!cursors[shape]) cursors[shape]=gdk_cursor_new(GDK_WATCH);
+			break;
+		
+		case WAIT_A_SECOND_CURSOR:
+			/* FIXME: What's that short-time wait cursor's id? */
+			if (!cursors[shape]) cursors[shape]=gdk_cursor_new(GDK_WATCH);
+			break;
+		
+		default:
+			tX_debug("No such cursor shape.");
+			return;
+	}
+	
+	/* Still here? Ok... */
+	current_shape=shape;
+	
+	gdk_window_set_cursor(main_window->window, cursors[shape]);
+}
+
+GdkCursor *tX_cursor::get_cursor()
+{
+	return cursors[current_shape];
+}
+
+void tX_cursor::reset_cursor()
+{
+	current_shape=DEFAULT_CURSOR;
+	gdk_window_set_cursor(main_window->window, cursors[current_shape]);
 }
