@@ -108,6 +108,8 @@ class tX_midiin
 	
 	static gboolean midi_learn_cancel(GtkWidget *, tX_midiin *);
 	static gboolean midi_learn_destroy(GtkWidget *, tX_midiin *);	
+	static void auto_assign_midi_mappings(GtkWidget *, gpointer);
+	static void clear_midi_mappings(GtkWidget *, gpointer);
 	
   private:
 

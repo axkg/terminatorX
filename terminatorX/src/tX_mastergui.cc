@@ -46,6 +46,7 @@
 #include "tX_glade_support.h"
 #include <sys/time.h>
 #include <sys/wait.h>
+#include "tX_midiin.h"
 
 #ifdef USE_SCHEDULER
 #include <sys/resource.h>
@@ -241,28 +242,11 @@ GtkSignalFunc new_table(GtkWidget *, char *fn)
 	
 	if (fn) ld_destroy();		
 	mg_update_status();
-	return NULL;
-}
-
-GtkSignalFunc drop_new_table(GtkWidget *widget, GdkDragContext *context,
-		gint x, gint y, GtkSelectionData *selection_data,
-		guint info, guint time, vtt_class *vtt)
-{
-	char filename[PATH_MAX];
-	char *fn;
 	
-	strncpy(filename, (char *) selection_data->data, (size_t) selection_data->length);
-	filename[selection_data->length]=0;
-
-	fn = strchr (filename, '\r');
-	*fn=0;	
+#ifdef USE_ALSA_MIDI_IN
+	if (globals.auto_assign_midi) tX_midiin::auto_assign_midi_mappings(NULL, NULL);
+#endif
 	
-	fn = strchr (filename, ':');
-	if (fn) fn++; else fn=(char *) selection_data->data;
-	
-	new_table(NULL, fn);
-
-	strcpy (filename, "dont segfault workaround ;)");
 	return NULL;
 }
 
@@ -284,6 +268,10 @@ GtkSignalFunc new_tables() {
 	vtt_class::delete_all();
 	new_table(NULL, NULL);
 
+#ifdef USE_ALSA_MIDI_IN
+	if (globals.auto_assign_midi) tX_midiin::auto_assign_midi_mappings(NULL, NULL);
+#endif
+	
 	gtk_window_set_title(GTK_WINDOW(main_window), "terminatorX");
 
 	return NULL;
@@ -368,6 +356,9 @@ void load_tt_part(char * buffer)
 	gtk_adjustment_set_value(volume_adj, globals.volume);
 	gtk_adjustment_set_value(pitch_adj, globals.pitch);
 	sprintf(wbuf,"terminatorX - %s", strip_path(buffer));
+#ifdef USE_ALSA_MIDI_IN
+	if (globals.auto_assign_midi) tX_midiin::auto_assign_midi_mappings(NULL, NULL);
+#endif	
 	gtk_window_set_title(GTK_WINDOW(main_window), wbuf);		
 }
 
@@ -977,8 +968,30 @@ GCallback create_table_sequencer_menu(GtkWidget *widget, void *param)
 
 GCallback toggle_confirm_events(GtkWidget *widget, void *dummy)
 {	
-	globals.confirm_events=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));
-	
+	globals.confirm_events=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));	
+	return NULL;	
+}
+
+GCallback toggle_auto_assign(GtkWidget *widget, void *dummy)
+{	
+	globals.auto_assign_midi=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));
+#ifdef USE_ALSA_MIDI_IN
+	tX_midiin::auto_assign_midi_mappings(NULL, NULL);
+#endif
+/*	if (globals.auto_assign_midi) {
+		GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window), 
+		GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO,
+		"Note: Enabling \"Auto Assign Default MIDI Settings\" will constantly overwrite the\
+MIDI mappings for the standard parameters. \
+Are you sure you really want this?");
+		
+		int res=gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+			
+		if (res!=GTK_RESPONSE_YES) {
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(widget), 0);
+		}			
+	} */
 	return NULL;	
 }
 
@@ -1040,6 +1053,48 @@ void create_master_menu()
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_A, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);	
 	g_signal_connect(menu_item, "activate", (GCallback) new_table, NULL);
+
+	menu_item = gtk_menu_item_new ();
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	gtk_widget_set_sensitive (menu_item, FALSE);
+
+	menu_item = gtk_menu_item_new_with_mnemonic("Assign _Default MIDI Mappings");
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_M, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+#ifdef USE_ALSA_MIDI_IN
+	g_signal_connect(menu_item, "activate", G_CALLBACK(tX_midiin::auto_assign_midi_mappings), (void *) true);
+#else
+	gtk_widget_set_sensitive(menu_item, FALSE);
+#endif
+
+	menu_item = gtk_check_menu_item_new_with_mnemonic("A_uto Assign Default MIDI Mappings");
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), globals.auto_assign_midi);
+#ifdef USE_ALSA_MIDI_IN	
+	g_signal_connect(menu_item, "activate", (GCallback) toggle_auto_assign, NULL);
+#else
+	gtk_widget_set_sensitive(menu_item, FALSE);
+#endif
+
+	menu_item = gtk_menu_item_new_with_mnemonic("_Clear MIDI Mappings");
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_C, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+#ifdef USE_ALSA_MIDI_IN
+	g_signal_connect(menu_item, "activate", G_CALLBACK(tX_midiin::clear_midi_mappings), (void *) true);
+#else
+	gtk_widget_set_sensitive(menu_item, FALSE);
+#endif
+
+	menu_item = gtk_menu_item_new ();
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	gtk_widget_set_sensitive (menu_item, FALSE);
 
 	menu_item = gtk_check_menu_item_new_with_mnemonic("_Record Audio To Disk");
 	rec_menu_item = menu_item;

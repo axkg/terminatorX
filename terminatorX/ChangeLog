@@ -4,6 +4,11 @@ This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.81]
+- removed the disfunctional "Cancel" button from the load-progress dialog.
+- switched default MIDI mapping to non-destructive. (previous settings will not
+  be overwritten now).
+- added a default MIDI mapping accessible via the "Turntables" menu. The actual
+  mapping is documented in the manual.
 - fixed a bug that caused enabling sync-client setting via MIDI to fail.
 - when compiled with rt-scheduling suppport terminatorX will now display the 
   resulting scheduling policy in the "About" dialog.
