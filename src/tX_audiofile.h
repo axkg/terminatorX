@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999, 2000  Alexander König
+    Copyright (C) 1999-2002  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,7 +35,11 @@
 #endif
 
 #ifdef USE_MPG123_INPUT
+#define MPG123_STR "mpg123 -qs \"%s\" | sox -t raw -s -w -r 44100 -c 2 - -t raw -c 1 -r 44100 -s -w -"
+/* The Original MPG123_STR - probably slightly faster than the one above but
+but mpg321 doesn't support -m yet.
 #define MPG123_STR "mpg123 -qms \"%s\""
+*/
 #endif
 
 #ifdef USE_OGG123_INPUT
