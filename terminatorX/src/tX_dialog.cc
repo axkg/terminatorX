@@ -288,7 +288,7 @@ void init_tx_options(GtkWidget *dialog) {
 
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget(dialog, "oss_buffers")), globals.oss_buff_no);
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "oss_buffersize")), globals.oss_buff_size);
-	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "oss_buffersize"), "Set the size of the kernel level audio buffers. On slower systems you might have to increase this value (if you hear \"clicks\"). Lower values mean lower latency though.", NULL);	
+	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "oss_buffersize"), "Set the size of the kernel level audio buffers. On slower systems you might have to increase this value (if you hear \"clicks\" or drop-outs). Lower values mean lower latency though.", NULL);	
 	gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "oss_samplerate")), get_sampling_rates_list());
 	char tmp[32];
 	sprintf(tmp, "%i", globals.oss_samplerate);
@@ -300,7 +300,9 @@ void init_tx_options(GtkWidget *dialog) {
 	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "alsa_audio_device"))->entry), globals.alsa_device);
 
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "alsa_buffer_time")), globals.alsa_buffer_time/1000);
+	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "alsa_buffer_time"), "Sets the size of the ALSA ring buffer. On slower systems you might have to increase this value (if you hear \"clicks\" or drop-outs). Lower values mean lower latency though.", NULL);	
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "alsa_period_time")), globals.alsa_period_time/1000);
+	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "alsa_period_time"), "The ALSA period time determines how much audio data will be written to the device at once. It is recommended to set this value to a half or a third of the ALSA buffer time.", NULL);	
 
 	gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "alsa_samplerate")), get_sampling_rates_list());
 	sprintf(tmp, "%i", globals.alsa_samplerate);

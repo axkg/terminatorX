@@ -292,6 +292,11 @@ void tX_engine :: stop() {
 	tX_debug("tX_engine::stop() - waiting for loop to stop.");
 	
 	while (loop_is_active) {
+		/* Due to gtk+ signal handling this can cause a deadlock
+		   on the seqpars' update list. So we need to handle events
+		   while waiting...			
+		*/
+		while (gtk_events_pending()) gtk_main_iteration();
 		usleep(50);
 	}
 	

@@ -944,8 +944,8 @@
       <title>Grab Mode Operation</title>
 
       <para>After pressing the <emphasis>Mouse Grab button</emphasis>
-      terminatorX enters &#34;grab mode&#34;. This mode actually locks the
-      mouse (as this input is now used to control the real time parameters)
+      terminatorX enters &#34;grab mode&#34;. This mode actually blocks the
+      mouse (as its input is now used to control the real time parameters)
       and therefore you&#39;ll have to know some mouse/keyboard shortcuts to
       control the software without the GUI.</para>
 
@@ -960,8 +960,8 @@
       <para>Now the turntable that has the focus is the one you will
       manipulate with your mouse and keyboard inputs: Note that you can
       actually map different functions to the mouse x/y axis - so what
-      actually happens when you move your mouse depends on what you select on
-      the x/y control panels for each turntable.</para>
+      actually happens when you move your mouse depends on what you select via the
+      <emphasis>Mouse Mapping</emphasis> for each turntable.</para>
 
       <table>
         <title>Keyboard Controls in Grab Mode</title>
