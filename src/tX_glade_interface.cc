@@ -617,6 +617,9 @@ create_tx_options (void)
   g_signal_connect ((gpointer) tx_options, "destroy",
                     G_CALLBACK (on_tx_options_destroy),
                     NULL);
+  g_signal_connect_swapped ((gpointer) alsa_buffer_time, "value_changed",
+                            G_CALLBACK (on_alsa_buffer_time_value_changed),
+                            GTK_OBJECT (alsa_period_time));
   g_signal_connect ((gpointer) pref_cancel, "clicked",
                     G_CALLBACK (on_pref_cancel_clicked),
                     NULL);
