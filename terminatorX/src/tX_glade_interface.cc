@@ -176,6 +176,8 @@ create_tx_options (void)
   GtkWidget *alsa_period_time;
   GtkWidget *label32;
   GtkWidget *alsa_buffer_time;
+  GtkWidget *label39;
+  GtkWidget *alsa_free_hwstats;
   GtkWidget *label16;
   GtkWidget *table1;
   GtkWidget *label5;
@@ -207,6 +209,9 @@ create_tx_options (void)
   GSList *buttons_text_and_icon_group = NULL;
   GtkWidget *buttons_icon_only;
   GtkWidget *buttons_text_only;
+  GtkWidget *label38;
+  GtkObject *filename_length_adj;
+  GtkWidget *filename_length;
   GtkWidget *label2;
   GtkWidget *table3;
   GtkWidget *label13;
@@ -367,7 +372,7 @@ create_tx_options (void)
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 1), label15);
   gtk_label_set_justify (GTK_LABEL (label15), GTK_JUSTIFY_LEFT);
 
-  table6 = gtk_table_new (4, 2, FALSE);
+  table6 = gtk_table_new (5, 2, FALSE);
   gtk_widget_show (table6);
   gtk_container_add (GTK_CONTAINER (notebook1), table6);
   gtk_container_set_border_width (GTK_CONTAINER (table6), 4);
@@ -441,6 +446,21 @@ create_tx_options (void)
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
   gtk_scale_set_digits (GTK_SCALE (alsa_buffer_time), 0);
+
+  label39 = gtk_label_new ("Free HWstats:");
+  gtk_widget_show (label39);
+  gtk_table_attach (GTK_TABLE (table6), label39, 0, 1, 4, 5,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label39), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (label39), 0, 0.5);
+
+  alsa_free_hwstats = gtk_check_button_new_with_mnemonic ("Enabled");
+  gtk_widget_show (alsa_free_hwstats);
+  gtk_table_attach (GTK_TABLE (table6), alsa_free_hwstats, 1, 2, 4, 5,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (alsa_free_hwstats), TRUE);
 
   label16 = gtk_label_new ("Audio: ALSA");
   gtk_widget_show (label16);
@@ -537,7 +557,7 @@ create_tx_options (void)
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 3), label4);
   gtk_label_set_justify (GTK_LABEL (label4), GTK_JUSTIFY_LEFT);
 
-  table2 = gtk_table_new (6, 2, FALSE);
+  table2 = gtk_table_new (7, 2, FALSE);
   gtk_widget_show (table2);
   gtk_container_add (GTK_CONTAINER (notebook1), table2);
   gtk_container_set_border_width (GTK_CONTAINER (table2), 4);
@@ -649,6 +669,21 @@ create_tx_options (void)
   gtk_box_pack_start (GTK_BOX (hbox1), buttons_text_only, FALSE, FALSE, 0);
   gtk_radio_button_set_group (GTK_RADIO_BUTTON (buttons_text_only), buttons_text_and_icon_group);
   buttons_text_and_icon_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (buttons_text_only));
+
+  label38 = gtk_label_new ("Filename Length:");
+  gtk_widget_show (label38);
+  gtk_table_attach (GTK_TABLE (table2), label38, 0, 1, 6, 7,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label38), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (label38), 0, 0.5);
+
+  filename_length_adj = gtk_adjustment_new (8, 3, 255, 1, 10, 10);
+  filename_length = gtk_spin_button_new (GTK_ADJUSTMENT (filename_length_adj), 1, 0);
+  gtk_widget_show (filename_length);
+  gtk_table_attach (GTK_TABLE (table2), filename_length, 1, 2, 6, 7,
+                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
 
   label2 = gtk_label_new ("User Interface");
   gtk_widget_show (label2);
@@ -802,6 +837,8 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, alsa_period_time, "alsa_period_time");
   GLADE_HOOKUP_OBJECT (tx_options, label32, "label32");
   GLADE_HOOKUP_OBJECT (tx_options, alsa_buffer_time, "alsa_buffer_time");
+  GLADE_HOOKUP_OBJECT (tx_options, label39, "label39");
+  GLADE_HOOKUP_OBJECT (tx_options, alsa_free_hwstats, "alsa_free_hwstats");
   GLADE_HOOKUP_OBJECT (tx_options, label16, "label16");
   GLADE_HOOKUP_OBJECT (tx_options, table1, "table1");
   GLADE_HOOKUP_OBJECT (tx_options, label5, "label5");
@@ -832,6 +869,8 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, buttons_text_and_icon, "buttons_text_and_icon");
   GLADE_HOOKUP_OBJECT (tx_options, buttons_icon_only, "buttons_icon_only");
   GLADE_HOOKUP_OBJECT (tx_options, buttons_text_only, "buttons_text_only");
+  GLADE_HOOKUP_OBJECT (tx_options, label38, "label38");
+  GLADE_HOOKUP_OBJECT (tx_options, filename_length, "filename_length");
   GLADE_HOOKUP_OBJECT (tx_options, label2, "label2");
   GLADE_HOOKUP_OBJECT (tx_options, table3, "table3");
   GLADE_HOOKUP_OBJECT (tx_options, label13, "label13");
