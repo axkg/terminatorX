@@ -245,7 +245,7 @@ tX_engine_error tX_engine :: run() {
 	}
 	
 	if (device->open()) {
-		device->close();
+		if (device->get_is_open()) device->close();
 		delete device;
 		device=NULL;		
 		return ERROR_AUDIO;
@@ -299,7 +299,7 @@ void tX_engine :: stop() {
 	
 	tX_debug("tX_engine::stop() - loop has stopped.");
 
-	device->close();
+	if (device->get_is_open()) device->close();
 	delete device;
 	device=NULL;
 	

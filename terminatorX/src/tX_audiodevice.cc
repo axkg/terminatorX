@@ -49,7 +49,7 @@
 #include "tX_engine.h"
 
 tX_audiodevice :: tX_audiodevice() : samples_per_buffer(0),
-current_buffer(0), buffer_pos(0)
+current_buffer(0), buffer_pos(0), is_open(false)
 {
 	sample_buffer[0]=NULL;
 	sample_buffer[1]=NULL;
@@ -113,11 +113,18 @@ int tX_audiodevice_oss :: open()
 	if (fd) return (1);
 	fd=::open(globals.oss_device, O_WRONLY, 0);
 	
+	if (fd==-1) {
+		tX_error("tX_audiodevice_oss::open() can't open device: %s", strerror(errno));
+		return -1;
+	}
+	
+	is_open=true;
+	
 	/* setting buffer size */	
 	buff_cfg=(globals.oss_buff_no<<16) | globals.oss_buff_size;
 	p=buff_cfg;
 
-	tX_debug("tX_adudiodevice_oss::open() - buff_no: %i, buff_size: %i, buff_cfg: %08x", globals.oss_buff_no, globals.oss_buff_size, buff_cfg);
+	tX_debug("tX_audiodevice_oss::open() - buff_no: %i, buff_size: %i, buff_cfg: %08x", globals.oss_buff_no, globals.oss_buff_size, buff_cfg);
 		
 	i = ioctl(fd, SNDCTL_DSP_SETFRAGMENT, &p);
 	ioctl(fd, SNDCTL_DSP_RESET, 0);		
@@ -158,6 +165,7 @@ int tX_audiodevice_oss :: close()
 	{	
 		return(1);		
 	}
+	is_open=false;
 	::close(fd);
 	fd=0;
 	blocksize=0;
@@ -207,6 +215,8 @@ int tX_audiodevice_alsa :: open()
 		tX_error("ALSA: Failed to access PCM device \"%s\"", pcm_name);
 		return -1;
 	}
+	
+	is_open=true;
 
 	snd_pcm_hw_params_alloca(&hw_params);	
 	
@@ -294,12 +304,15 @@ int tX_audiodevice_alsa :: open()
 	}
 	
 	snd_pcm_hw_params_free (hw_params);
-	return snd_pcm_prepare(pcm_handle);
+	return 0; //snd_pcm_prepare(pcm_handle);
 }
 
 int tX_audiodevice_alsa :: close()
 {
-	snd_pcm_close(pcm_handle);
+	if (is_open) {
+		snd_pcm_close(pcm_handle);
+	}
+	is_open=false;
 	
 	return 0;
 }
@@ -308,7 +321,6 @@ double tX_audiodevice_alsa :: get_latency()
 {
 	return 0;
 }
-
 
 tX_audiodevice_alsa :: tX_audiodevice_alsa() : tX_audiodevice(),
 pcm_handle(NULL) {}
