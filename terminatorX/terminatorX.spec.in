@@ -85,7 +85,7 @@ find . -name "Makefile*" -print -exec rm -rf {} \;
 
 %files
 %defattr(0644,root,root,0755)
-%doc COPYING AUTHORS ChangeLog INSTALL NEWS README THANKS TODO README.GNOME README.PERFORMANCE doc
+%doc COPYING COPYING-DOCS AUTHORS ChangeLog INSTALL NEWS README THANKS TODO README.GNOME README.PERFORMANCE doc
 %attr(0755,root,root) %{_bindir}/terminatorX
 %{_mandir}/man1/terminatorX.1*
 %{_datadir}/mime-info/terminatorX.keys
@@ -93,11 +93,16 @@ find . -name "Makefile*" -print -exec rm -rf {} \;
 %{_datadir}/pixmaps/terminatorX-app.png
 %{_datadir}/pixmaps/terminatorX-mime.png
 %{_datadir}/gnome/apps/Multimedia/terminatorX.desktop
+%{_datadir}/omf/scrollkeeper-example2
+%{_datadir}/scrollkeeper-example2
 
 %post
+if which scrollkeeper-update>/dev/null 2>&1; then scrollkeeper-update -q -o %{_datadir}/omf/terminatorX; fi
 echo Note: Installing terminatorX \"suid root\" improves terminatorX\' performance 
 echo for non-root users, but poses a potential security threat. See \'INSTALL\' for
 echo details. To install terminatorX \"suid root\" run the following command:
 echo
 echo chmod u+s /usr/bin/terminatorX
 
+%postun
+if which scrollkeeper-update>/dev/null 2>&1; then scrollkeeper-update -q; fi
