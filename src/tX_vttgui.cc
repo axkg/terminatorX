@@ -223,13 +223,7 @@ void do_load_file(GtkWidget *wid, vtt_class *vtt)
 	
 	load_part(newfile, vtt);
 	
-	if (!globals.current_path)
-	{
-		free(globals.current_path);
-		globals.current_path = NULL;
-	}
-
-	globals.current_path = strdup(newfile);
+	strcpy(globals.current_path, newfile);
 
 	vtt->gui.file_dialog=NULL;
 	
@@ -281,19 +275,16 @@ GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 	sprintf(buffer, "Select Audio File for %s", vtt->name);
 	vtt->gui.fs=gtk_file_selection_new(buffer);
 	
-	if (strlen(vtt->filename) > 0)
-	{
+	if (vtt->audiofile) {
 		gtk_file_selection_set_filename(GTK_FILE_SELECTION(vtt->gui.fs), vtt->filename);	
+	} else if (strlen(globals.current_path)>0 ) {
+		gtk_file_selection_set_filename(GTK_FILE_SELECTION(vtt->gui.fs),globals.current_path);
 	}
 	
 	gtk_widget_show(GTK_WIDGET(vtt->gui.fs));
 	
 	vtt->gui.file_dialog=vtt->gui.fs->window;
 	
-	if (globals.current_path)
-		{
-			gtk_file_selection_set_filename(GTK_FILE_SELECTION(vtt->gui.fs),globals.current_path);
-		}
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->ok_button), "clicked", GTK_SIGNAL_FUNC(do_load_file), vtt);
 	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->cancel_button), "clicked", GTK_SIGNAL_FUNC (cancel_load_file), vtt);	
 	gtk_signal_connect (GTK_OBJECT(vtt->gui.fs), "delete-event", GTK_SIGNAL_FUNC(quit_load_file), vtt);	

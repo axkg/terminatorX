@@ -111,7 +111,7 @@ typedef struct {
 	int true_block_size;
 	int update_delay; 
 	
-	char *current_path;
+	char current_path[PATH_MAX];
 	
 	/* new audiodevice handling 
 	   we have *all* variables for *all* audiodevice types -
