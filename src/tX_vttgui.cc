@@ -47,6 +47,7 @@
 #include "tX_extdial.h"
 #include "tX_panel.h"
 #include "tX_ladspa.h"
+#include "tX_ladspa_class.h"
 #include "tX_engine.h"
 
 #ifdef USE_DIAL
@@ -616,13 +617,6 @@ void vg_adjust_zoom(GtkWidget *wid, vtt_class *vtt) {
 	gtk_tx_set_zoom(GTK_TX(vtt->gui.display), adj->value/100.0);
 }
 
-static vtt_class * fx_vtt;
-
-void new_effect(GtkWidget *wid, LADSPA_Plugin *plugin)
-{
-	fx_vtt->add_effect(plugin);
-}
-
 void fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt_gui *g=&vtt->gui;
@@ -633,30 +627,10 @@ void fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
 	char oldfile[1024]="";
 	GtkWidget *submenu=NULL;
 
-	fx_vtt=vtt; /* AAAAARGH - Long live ugly code */
+	LADSPA_Class::set_current_vtt(vtt);
 
 	if (g->ladspa_menu) gtk_object_destroy(GTK_OBJECT(g->ladspa_menu));
-	g->ladspa_menu=gtk_menu_new();
-	
-	for (i=0; i<LADSPA_Plugin::getPluginCount(); i++)
-	{
-		plugin=LADSPA_Plugin::getPluginByIndex(i);
-		if (strcmp(plugin->get_file_name(), oldfile))
-		{
-			strcpy(oldfile, plugin->get_file_name());
-			item = gtk_menu_item_new_with_label(oldfile);
-			submenu=gtk_menu_new();
-			gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), submenu);
-			gtk_menu_append(GTK_MENU(g->ladspa_menu), item);
-			gtk_widget_show(item);
-		}
-		sprintf(buffer, "%s - [%li, %s]", plugin->getName(), plugin->getUniqueID(), plugin->getLabel());
-		item=gtk_menu_item_new_with_label(buffer);
-		gtk_menu_append(GTK_MENU(submenu), item);
-		gtk_widget_show(item);
-		gtk_signal_connect(GTK_OBJECT(item), "activate", GTK_SIGNAL_FUNC(new_effect), plugin);
-	}
-	
+	g->ladspa_menu=LADSPA_Class::get_ladspa_menu();
 	gtk_menu_popup (GTK_MENU(g->ladspa_menu), NULL, NULL, NULL, NULL, 0, 0);
 
 	/* gtk+ is really waiting for this.. */

@@ -195,73 +195,74 @@ void tX_midiin::configure_bindings( vtt_class* vtt )
 tX_midiin::midi_binding_gui::midi_binding_gui ( GtkTreeModel* _model, tX_midiin* _midi )
 	: model(_model), midi( _midi )
 {
-  GtkWidget *hbox1;
-  GtkWidget *scrolledwindow1;
-  GtkWidget *vbox1;
-  GtkWidget *label1;
-  GtkWidget *frame1;
-
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (window), "Configure MIDI Bindings");
-
-  hbox1 = gtk_hbox_new (FALSE, 0);
-  gtk_widget_show (hbox1);
-  gtk_container_add (GTK_CONTAINER (window), hbox1);
-
-  scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
-  gtk_widget_show (scrolledwindow1);
-  gtk_box_pack_start (GTK_BOX (hbox1), scrolledwindow1, TRUE, TRUE, 0);
-
-  parameter_treeview = gtk_tree_view_new_with_model (model);
-    gtk_widget_show (parameter_treeview);
-  gtk_container_add (GTK_CONTAINER (scrolledwindow1), parameter_treeview);
-
-  GtkCellRenderer   *renderer = gtk_cell_renderer_text_new ();
-  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW( parameter_treeview ),
+	GtkWidget *hbox1;
+	GtkWidget *scrolledwindow1;
+	GtkWidget *vbox1;
+	GtkWidget *label1;
+	GtkWidget *frame1;
+	
+	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_title (GTK_WINDOW (window), "Configure MIDI Bindings");
+	gtk_window_set_default_size(GTK_WINDOW(window), 400, 260);
+	
+	hbox1 = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show (hbox1);
+	gtk_container_add (GTK_CONTAINER (window), hbox1);
+	
+	scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
+	gtk_widget_show (scrolledwindow1);
+	gtk_box_pack_start (GTK_BOX (hbox1), scrolledwindow1, TRUE, TRUE, 0);
+	
+	parameter_treeview = gtk_tree_view_new_with_model (model);
+	gtk_widget_show (parameter_treeview);
+	gtk_container_add (GTK_CONTAINER (scrolledwindow1), parameter_treeview);
+	
+	GtkCellRenderer   *renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW( parameter_treeview ),
 											   -1, "Parameter", renderer,
 											   "text", 0,
 											   NULL );
-  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW( parameter_treeview ),
+	gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW( parameter_treeview ),
 											   -1, "Event", renderer,
 											   "text", 1,
 											   NULL );
-  gtk_tree_view_set_headers_visible( GTK_TREE_VIEW(parameter_treeview), TRUE );
-
-  vbox1 = gtk_vbox_new (FALSE, 0);
-  gtk_widget_show (vbox1);
-  gtk_box_pack_start (GTK_BOX (hbox1), vbox1, FALSE, FALSE, 0);
-
-  label1 = gtk_label_new ("Selected MIDI Event:");
-  gtk_widget_show (label1);
-  gtk_box_pack_start (GTK_BOX (vbox1), label1, FALSE, FALSE, 0);
-  gtk_label_set_justify (GTK_LABEL (label1), GTK_JUSTIFY_LEFT);
-
-  frame1 = gtk_frame_new (NULL);
-  gtk_widget_show (frame1);
-  gtk_box_pack_start (GTK_BOX (vbox1), frame1, TRUE, TRUE, 0);
-  gtk_container_set_border_width (GTK_CONTAINER (frame1), 1);
-  gtk_frame_set_label_align (GTK_FRAME (frame1), 0, 0);
-  gtk_frame_set_shadow_type (GTK_FRAME (frame1), GTK_SHADOW_IN);
-
-  midi_event_info = gtk_label_new ("Use a MIDI thing to select it.");
-  gtk_widget_show (midi_event_info);
-  gtk_container_add (GTK_CONTAINER (frame1), midi_event_info);
-  gtk_label_set_justify (GTK_LABEL (midi_event_info), GTK_JUSTIFY_LEFT);
-
-  bind_button = gtk_button_new_with_mnemonic ("Bind");
-  gtk_widget_show (bind_button);
-  gtk_box_pack_start (GTK_BOX (vbox1), bind_button, FALSE, FALSE, 0);
-
-  GtkWidget* close_button = gtk_button_new_with_mnemonic ("Close");
-  gtk_widget_show (close_button);
-  gtk_box_pack_start (GTK_BOX (vbox1), close_button, FALSE, FALSE, 0);
-
-  gtk_signal_connect(GTK_OBJECT(bind_button), "clicked", (GtkSignalFunc) bind_clicked, (void *) this);
-  gtk_signal_connect(GTK_OBJECT(close_button), "clicked", (GtkSignalFunc) close_clicked, (void *) this);
-
-  timer_tag = gtk_timeout_add( 100, (GtkFunction) timer, (void *) this);
-
-  gtk_widget_show_all( GTK_WIDGET( window ) );
+	gtk_tree_view_set_headers_visible( GTK_TREE_VIEW(parameter_treeview), TRUE );
+	
+	vbox1 = gtk_vbox_new (FALSE, 0);
+	gtk_widget_show (vbox1);
+	gtk_box_pack_start (GTK_BOX (hbox1), vbox1, FALSE, FALSE, 0);
+	
+	label1 = gtk_label_new ("Selected MIDI Event:");
+	gtk_widget_show (label1);
+	gtk_box_pack_start (GTK_BOX (vbox1), label1, FALSE, FALSE, 0);
+	gtk_label_set_justify (GTK_LABEL (label1), GTK_JUSTIFY_LEFT);
+	
+	frame1 = gtk_frame_new (NULL);
+	gtk_widget_show (frame1);
+	gtk_box_pack_start (GTK_BOX (vbox1), frame1, TRUE, TRUE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (frame1), 1);
+	gtk_frame_set_label_align (GTK_FRAME (frame1), 0, 0);
+	gtk_frame_set_shadow_type (GTK_FRAME (frame1), GTK_SHADOW_IN);
+	
+	midi_event_info = gtk_label_new ("Use a MIDI thing to select it.");
+	gtk_widget_show (midi_event_info);
+	gtk_container_add (GTK_CONTAINER (frame1), midi_event_info);
+	gtk_label_set_justify (GTK_LABEL (midi_event_info), GTK_JUSTIFY_LEFT);
+	
+	bind_button = gtk_button_new_with_mnemonic ("Bind");
+	gtk_widget_show (bind_button);
+	gtk_box_pack_start (GTK_BOX (vbox1), bind_button, FALSE, FALSE, 0);
+	
+	GtkWidget* close_button = gtk_button_new_with_mnemonic ("Close");
+	gtk_widget_show (close_button);
+	gtk_box_pack_start (GTK_BOX (vbox1), close_button, FALSE, FALSE, 0);
+	
+	gtk_signal_connect(GTK_OBJECT(bind_button), "clicked", (GtkSignalFunc) bind_clicked, (void *) this);
+	gtk_signal_connect(GTK_OBJECT(close_button), "clicked", (GtkSignalFunc) close_clicked, (void *) this);
+	
+	timer_tag = gtk_timeout_add( 100, (GtkFunction) timer, (void *) this);
+	
+	gtk_widget_show_all( GTK_WIDGET( window ) );
 }
 
 void tX_midiin::midi_binding_gui::bind_clicked( GtkButton *button, gpointer _this )
