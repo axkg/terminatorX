@@ -932,7 +932,7 @@ GCallback menu_delete_all_events_for_vtt(GtkWidget *, vtt_class *vtt)
 	
 	menu_del_mode=ALL_EVENTS_FOR_TURNTABLE;
 	
-	sprintf(label_str, "Delete <b>all</b> events for turntable <b>%s</b> turntables.", vtt->name);
+	sprintf(label_str, "Delete <b>all</b> events for turntable <b>%s</b>.", vtt->name);
 	gtk_label_set_markup(GTK_LABEL(label), label_str);
 	gtk_widget_show(del_dialog);
 }
@@ -951,7 +951,7 @@ GCallback menu_delete_all_events_for_sp(GtkWidget *, tX_seqpar *sp)
 	
 	menu_del_mode=ALL_EVENTS_FOR_SP;
 	del_sp=sp;
-	sprintf(label_str, "Delete all <b>%s</b> events for turntable <b>%s</b> turntables.", sp->get_name(), ((vtt_class *) sp->vtt)->name);
+	sprintf(label_str, "Delete all <b>%s</b> events for turntable <b>%s</b>.", sp->get_name(), ((vtt_class *) sp->vtt)->name);
 	gtk_label_set_markup(GTK_LABEL(label), label_str);
 	gtk_widget_show(del_dialog);
 }
@@ -1339,7 +1339,7 @@ void create_mastergui(int x, int y)
 	pitch_adj=dumadj;
 	connect_adj(dumadj, master_pitch_changed, NULL);
 	
-	tX_extdial *pdial=new tX_extdial("Pitch", pitch_adj, true);
+	tX_extdial *pdial=new tX_extdial("Pitch", pitch_adj, &sp_master_pitch, true);
 	gtk_box_pack_start(GTK_BOX(right_hbox), pdial->get_widget(), WID_FIX);
 	gui_set_tooltip(pdial->get_entry(), "Use this dial to adjust the master pitch (affecting *all* turntables).");
 	
@@ -1359,6 +1359,8 @@ void create_mastergui(int x, int y)
 	dummy=gtk_vscale_new(dumadj);
 	//gtk_range_set_inverted(GTK_RANGE(dummy), TRUE);
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), False);
+	gtk_signal_connect(GTK_OBJECT(dummy), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &sp_master_volume);	
+	
 	gtk_box_pack_end(GTK_BOX(master_vol_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);	
 	gui_set_tooltip(dummy, "Adjust the master volume. This parameter will effect *all* turntables in the set.");

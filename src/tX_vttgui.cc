@@ -909,16 +909,19 @@ void build_vtt_gui(vtt_class *vtt)
 	g->stop=gtk_button_new_with_label("Stop.");
 	gui_set_tooltip(g->stop, "Stop this turntable's playback.");
 	p->add_client_widget(g->stop);
+	gtk_signal_connect(GTK_OBJECT(g->trigger), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_trigger);		
+	gtk_signal_connect(GTK_OBJECT(g->stop), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_trigger);		
 	
 	g->autotrigger=gtk_check_button_new_with_label("Auto");
 	p->add_client_widget(g->autotrigger);
 	gui_set_tooltip(g->autotrigger, "If turned on, this turntable will be automagically triggered whenever the audio engine is turned on.");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->autotrigger), vtt->autotrigger);
-	
+
 	g->loop=gtk_check_button_new_with_label("Loop");
 	p->add_client_widget(g->loop);
 	gui_set_tooltip(g->loop, "Enable this option to make the turntable loop the audio data.");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->loop), vtt->loop);
+	gtk_signal_connect(GTK_OBJECT(g->loop), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_loop);		
 	
 	g->sync_master=gtk_check_button_new_with_label("Master");
 	p->add_client_widget(g->sync_master);
@@ -929,11 +932,13 @@ void build_vtt_gui(vtt_class *vtt)
 	p->add_client_widget(g->sync_client);
 	gui_set_tooltip(g->sync_client, "If enabled this turntable will be (re-)triggerd in relation to the sync-master turntable.");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->sync_client), vtt->is_sync_client);
+	gtk_signal_connect(GTK_OBJECT(g->sync_client), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_sync_client);	
 	
 	g->cycles=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->sync_cycles, 0, 10.0, 1,1,1));
 	dummy=gtk_spin_button_new(g->cycles, 1.0, 0);
 	p->add_client_widget(dummy);
 	gui_set_tooltip(dummy, "Determines how often a sync-client turntable gets triggered. 0 -> this turntable will be triggered with every trigger of the sync-master table, 1 -> the table will be triggered every 2nd master trigger and so on.");
+	gtk_signal_connect(GTK_OBJECT(dummy), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_sync_cycles);	
 
 	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
 
@@ -953,6 +958,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gui_set_tooltip(g->lp_enable, "Click here to enable the built-in lowpass effect.");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->lp_enable), vtt->lp_enable);
 	p->add_client_widget(vg_create_fx_bar(vtt, vtt->lp_fx, 0));
+	gtk_signal_connect(GTK_OBJECT(g->lp_enable), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_ec_enable);	
 
 	p->add_client_widget(g->lp_enable);
 
@@ -960,15 +966,15 @@ void build_vtt_gui(vtt_class *vtt)
 	g->lp_reso=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->lp_reso, 0, 0.99, 0.1, 0.01, 0.01));
 	g->lp_freq=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->lp_freq, 0, 1, 0.1, 0.01, 0.01));
 
-	g->lp_gaind=new tX_extdial("Input Gain", g->lp_gain);
+	g->lp_gaind=new tX_extdial("Input Gain", g->lp_gain, &vtt->sp_lp_gain);
 	p->add_client_widget(g->lp_gaind->get_widget());
 	gui_set_tooltip(g->lp_gaind->get_entry(), "Adjust the input gain. with this parameter you can either amplify or damp the input-signal for the lowpass effect.");
 
-	g->lp_freqd=new tX_extdial("Frequency", g->lp_freq);
+	g->lp_freqd=new tX_extdial("Frequency", g->lp_freq, &vtt->sp_lp_freq);
 	p->add_client_widget(g->lp_freqd->get_widget());
 	gui_set_tooltip(g->lp_freqd->get_entry(), "Adjust the cutoff frequency of the lowpass filter. 0 is 0 Hz, 1 is 22.1 kHz.");
 
-	g->lp_resod=new tX_extdial("Resonance", g->lp_reso);
+	g->lp_resod=new tX_extdial("Resonance", g->lp_reso, &vtt->sp_lp_reso);
 	p->add_client_widget(g->lp_resod->get_widget());
 	gui_set_tooltip(g->lp_resod->get_entry(), "Adjust the resonance of the lowpass filter. This value determines how much the signal at the cutoff frequency will be amplified.");
 
@@ -985,25 +991,26 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->ec_enable), vtt->ec_enable);
 	p->add_client_widget(g->ec_enable);
 	gui_set_tooltip(g->ec_enable, "Enable the built-in echo effect.");
+	gtk_signal_connect(GTK_OBJECT(g->ec_enable), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_ec_enable);	
 
 	g->ec_length=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->ec_length, 0, 1, 0.1, 0.01, 0.001));
 	g->ec_feedback=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->ec_feedback, 0, 1, 0.1, 0.01, 0.001));
 	g->ec_pan=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->ec_pan, -1.0, 1, 0.1, 0.01, 0.001));
 	g->ec_volume=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->ec_volume, 0.0, 3.0, 0.1, 0.01, 0.001));
 
-	g->ec_lengthd=new tX_extdial("Duration", g->ec_length);
+	g->ec_lengthd=new tX_extdial("Duration", g->ec_length, &vtt->sp_ec_length);
 	p->add_client_widget(g->ec_lengthd->get_widget());
 	gui_set_tooltip(g->ec_lengthd->get_entry(), "Adjust the length of the echo buffer.");
 
-	g->ec_feedbackd=new tX_extdial("Feedback", g->ec_feedback);
+	g->ec_feedbackd=new tX_extdial("Feedback", g->ec_feedback, &vtt->sp_ec_feedback);
 	p->add_client_widget(g->ec_feedbackd->get_widget());
 	gui_set_tooltip(g->ec_feedbackd->get_entry(), "Adjust the feedback of the echo effect. Note that a value of 1 will result in a constant signal.");
 
-	g->ec_volumed=new tX_extdial("Volume", g->ec_volume);
+	g->ec_volumed=new tX_extdial("Volume", g->ec_volume, &vtt->sp_ec_volume);
 	p->add_client_widget(g->ec_volumed->get_widget());
 	gui_set_tooltip(g->ec_volumed->get_entry(), "Adjust the volume of the echo effect.");
 
-	g->ec_pand=new tX_extdial("Pan", g->ec_pan);
+	g->ec_pand=new tX_extdial("Pan", g->ec_pan, &vtt->sp_ec_pan);
 	p->add_client_widget(g->ec_pand->get_widget());
 	gui_set_tooltip(g->ec_pand->get_entry(), "Adjust the panning of the echo effect.");
 
@@ -1022,12 +1029,12 @@ void build_vtt_gui(vtt_class *vtt)
 	g->pitch=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->rel_pitch, -3, +3, 0.1, 0.01, 0.001));
 	g->pan=GTK_ADJUSTMENT(gtk_adjustment_new(0, -1, 1, 0.1, 0.01, 0.001));
 
-	g->pitchd=new tX_extdial("Pitch", g->pitch);
+	g->pitchd=new tX_extdial("Pitch", g->pitch, &vtt->sp_pitch);
 	gui_set_tooltip(g->pitchd->get_entry(), "Adjust this turntable's pitch.");
 
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->pitchd->get_widget(), WID_FIX);
 
-	g->pand=new tX_extdial("Pan", g->pan);
+	g->pand=new tX_extdial("Pan", g->pan, &vtt->sp_pan);
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->pand->get_widget(), WID_FIX);
 	gui_set_tooltip(g->pand->get_entry(), "Specifies the position of this turntable within the stereo spectrum: -1 -> left, 0-> center, 1->right.");
 
@@ -1056,6 +1063,7 @@ void build_vtt_gui(vtt_class *vtt)
 	dummy=gtk_vscale_new(GTK_ADJUSTMENT(g->volume)); 
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), False);
 	gui_set_tooltip(dummy, "Adjust this turntable's volume.");
+	gtk_signal_connect(GTK_OBJECT(dummy), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_volume);	
 
 	gtk_box_pack_start(GTK_BOX(tempbox2), dummy, WID_FIX);
 	gtk_widget_show(dummy);
