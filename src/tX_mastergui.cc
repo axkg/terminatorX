@@ -370,7 +370,7 @@ void load_tt_part(char * buffer)
 	tX_seqpar :: init_all_graphics();
 	vg_init_all_non_seqpars();
 		
-	gtk_adjustment_set_value(volume_adj, 2.0-globals.volume);
+	gtk_adjustment_set_value(volume_adj, globals.volume);
 	gtk_adjustment_set_value(pitch_adj, globals.pitch);
 	sprintf(wbuf,"terminatorX - %s", strip_path(buffer));
 	gtk_window_set_title(GTK_WINDOW(main_window), wbuf);		
@@ -857,13 +857,15 @@ void seq_update()
 	gtk_adjustment_set_value(seq_adj, sequencer.get_timestamp_as_float());
 	
 }
-void seq_slider_released(GtkWidget *wid, void *d)
+gboolean seq_slider_released(GtkWidget *wid, void *d)
 {
 	seq_adj_care=0;
 	gtk_widget_set_sensitive(seq_slider, 0);	
 	sequencer.forward_to_start_timestamp(0);
 	gtk_widget_set_sensitive(seq_slider, 1);	
 	seq_adj_care=1;
+	
+	return FALSE;
 }
 void sequencer_move(GtkWidget *wid, void *d)
 {
@@ -1198,11 +1200,12 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_start(GTK_BOX(right_hbox), master_vol_box, WID_DYN);
 	gtk_widget_show(master_vol_box);	
 	
-	dumadj=(GtkAdjustment*) gtk_adjustment_new(2.0-globals.volume, 0, 2, 0.01, 0.05, 0.005);
+	dumadj=(GtkAdjustment*) gtk_adjustment_new(globals.volume, 0, 2, 0.01, 0.05, 0.005);
 	volume_adj=dumadj;
 
 	connect_adj(dumadj, master_volume_changed, NULL);	
 	dummy=gtk_vscale_new(dumadj);
+	//gtk_range_set_inverted(GTK_RANGE(dummy), TRUE);
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), False);
 	gtk_box_pack_end(GTK_BOX(master_vol_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);	

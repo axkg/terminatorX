@@ -228,8 +228,8 @@ void store_globals() {
 	char rc_name[PATH_MAX]="";
 	char device_type[16];
 	char indent[]="\t";
-	FILE *rc;
-	gzFile rz;
+	FILE *rc=NULL;
+	gzFile rz=NULL;
 	_store_compress_xml=0;
 	char tmp_xml_buffer[4096];
 	

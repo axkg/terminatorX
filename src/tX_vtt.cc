@@ -360,7 +360,6 @@ void vtt_class :: recalc_pitch()
 	res_pitch*=audiofile_pitch_correction;
 	speed=res_pitch;
 	ec_set_length(ec_length);
-	tX_debug("setting pitch: rel: %lf -> res: %lf", rel_pitch, res_pitch);
 }
 
 void vtt_class :: set_autotrigger(int newstate)

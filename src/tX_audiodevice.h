@@ -48,6 +48,7 @@ class tX_audiodevice
 	int buffer_pos;
 	int vtt_buffer_size;
 	tX_engine *engine;
+	bool is_open;
 	
 	int sample_rate;
 	tX_audiodevice();
@@ -62,6 +63,7 @@ class tX_audiodevice
 	
 	void fill_buffer(int16_t *target_buffer, int16_t *next_target_buffer);
 
+	bool get_is_open() { return is_open; }
 	virtual void start();	
 	virtual void play(int16_t*)=0; /* play blocked */
 };
