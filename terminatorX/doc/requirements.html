@@ -4,7 +4,7 @@
 >Requirements</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.61
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
 "><LINK
 REL="HOME"
 TITLE="terminatorX - Manual"
@@ -28,6 +28,7 @@ ALINK="#0000FF"
 ><DIV
 CLASS="NAVHEADER"
 ><TABLE
+SUMMARY="Header navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -45,6 +46,7 @@ ALIGN="left"
 VALIGN="bottom"
 ><A
 HREF="features.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -58,6 +60,7 @@ ALIGN="right"
 VALIGN="bottom"
 ><A
 HREF="installation.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR
@@ -70,9 +73,7 @@ CLASS="SECTION"
 ><H1
 CLASS="SECTION"
 ><A
-NAME="REQUIREMENTS"
->1.4. Requirements</A
-></H1
+NAME="REQUIREMENTS">1.4. Requirements</H1
 ><P
 ></P
 ><UL
@@ -90,39 +91,56 @@ NAME="REQUIREMENTS"
 ><UL
 ><LI
 ><P
->The Linux Operating System (Version &gt;= 2.0)</P
+>The Linux Operating System (Version &gt;=
+		    2.0) or FreeBSD</P
 ></LI
 ><LI
 ><P
->glibc2 (pthreads). Note that there are reports of terminatorX functioning nicely with libc5/pthread setups.</P
+>glibc2 (pthreads).</P
 ></LI
 ><LI
 ><P
->XFree86 (with DGA DirectMouse support). Note that XFree86 Release 4.0 has a bug resulting in broken DirectMouse support. This has been fixed by the XFree86-Team with Release 4.0.1 available from your distribution or the <A
+>XFree86 (with DGA DirectMouse
+		    support). Note that XFree86 Release 4.0 has a bug
+		    resulting in broken DirectMouse support. This has
+		    been fixed by the XFree86-Team with Release 4.0.1
+		    available from your distribution or the 
+		    <A
 HREF="http://www.xfree86.org"
 TARGET="_top"
->XFree86 homepage</A
->.</P
+>XFree86
+		      homepage</A
+>.
+		  </P
 ></LI
 ><LI
 ><P
->The Gimp Toolkit: gtk+ (&#62;= 1.2.5). If your distribution doesn't provide a current version of gtk+ get it from the <A
+>The Gimp Toolkit: gtk+ (&#62;= 1.2.5) - Version 2 of gtk+ is
+		    supported, too. If your distribution doesn't provide
+		    a current version of gtk+ get it from the 
+		    <A
 HREF="http://www.gtk.org"
 TARGET="_top"
->gtk+ homepage</A
->.</P
+>gtk+
+		      homepage</A
+>.
+		  </P
 ></LI
 ><LI
 ><P
->LADSPA - the Linux Audio Developer's Simple Plugin API. Get it from the <A
+>LADSPA - the Linux Audio Developer's
+		    Simple Plugin API. Get it from the
+		    <A
 HREF="http://www.ladpsa.org"
 TARGET="_top"
 >LADSPA homepage</A
-></P
+>
+		  </P
 ></LI
 ><LI
 ><P
->a compiler (gcc)</P
+>a compiler
+		    (gcc)</P
 ></LI
 ></UL
 ></LI
@@ -134,19 +152,30 @@ TARGET="_top"
 ><UL
 ><LI
 ><P
-><A
+>		    <A
 HREF="http://home.sprynet.com/~cbagwell/sox.html"
 TARGET="_top"
 >sox</A
-> for enhanced audio file support</P
+>
+		    for enhanced audio file support</P
 ></LI
 ><LI
 ><P
-><A
+>		    <A
 HREF="http://www-ti.informatik.uni-tuebingen.de/~hippm/mpg123.html"
 TARGET="_top"
 >mpg123</A
-> for mp3 support</P
+>
+		    for mp3 support</P
+></LI
+><LI
+><P
+>		    <A
+HREF="http://www.xiph.org/ogg/vorbis/"
+TARGET="_top"
+>ogg123</A
+>
+		    for Ogg Vorbis support</P
 ></LI
 ></UL
 ></LI
@@ -160,30 +189,43 @@ TARGET="_top"
 ><UL
 ><LI
 ><P
->A OSS compatible soundcard capable of stereo output. This includes <I
+>An OSS compatible soundcard
+		capable of stereo output. This includes
+		<SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >all</I
-> <A
+></SPAN
+> 
+		<A
 HREF="http://www.alsa-project.org"
 TARGET="_top"
 >ALSA-driven</A
-> soundcards as this enhanced audio device interface includes support for the OSS API.</P
+> 
+		soundcards as this enhanced audio device interface includes support for
+		the OSS API.</P
 ></LI
 ><LI
 ><P
->A good clean mouse and pad, a good X-Pointer setup.</P
+>A good clean mouse and pad, a good X-Pointer
+		setup.</P
 ></LI
 ></UL
 ></LI
 ></UL
 ><P
->A note on performance: terminatorX is known to run satisfyingly on pentium-class (~100 MHz) systems (or above of course). Increasing the number of turntables or plugins will of course require more performant systems.</P
+>A note on performance: terminatorX is known to run
+	satisfyingly on pentium-class systems (or above of
+	course). Increasing the number of turntables or plugins will of
+	course require more performant systems.</P
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
 ><HR
 ALIGN="LEFT"
 WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -195,6 +237,7 @@ ALIGN="left"
 VALIGN="top"
 ><A
 HREF="features.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -203,6 +246,7 @@ ALIGN="center"
 VALIGN="top"
 ><A
 HREF="index.html"
+ACCESSKEY="H"
 >Home</A
 ></TD
 ><TD
@@ -211,6 +255,7 @@ ALIGN="right"
 VALIGN="top"
 ><A
 HREF="installation.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR
@@ -226,6 +271,7 @@ ALIGN="center"
 VALIGN="top"
 ><A
 HREF="introduction.html"
+ACCESSKEY="U"
 >Up</A
 ></TD
 ><TD
