@@ -1401,7 +1401,8 @@ void display_help() {
 	
 	if (help_child==0) {
 		// child
-		execlp("gnome-help","gnome-help","ghelp:/" INSTALL_PREFIX "/terminatorX/doc/terminatorX-manual/C/terminatorX-manual.xml", NULL);
+		// execlp("gnome-help","gnome-help","ghelp:/" INSTALL_PREFIX "/terminatorX/doc/terminatorX-manual/C/terminatorX-manual.xml", NULL);
+		execlp("gnome-help","gnome-help","ghelp:/" XML_MANUAL, NULL);		
 		_exit(-1);
 	} else if (help_child==-1) {
 		tx_note("System error: couldn't fork() to run the help process.", true);
