@@ -125,8 +125,6 @@ vtt_class *old_focus=NULL;
 int grab_status=0;
 int last_grab_status=0;
 
-void tx_note(const char *message);
-
 GtkTooltips *gui_tooltips=NULL;
 
 void gui_set_tooltip(GtkWidget *wid, char *tip)
@@ -300,27 +298,27 @@ void load_tt_part(char * buffer)
 		fread(idbuff, strlen(TX_SET_ID_10), 1, in);
 		if (strncmp(idbuff, TX_SET_ID_10, strlen(TX_SET_ID_10))==0)
 		{
-			if (vtt_class::load_all_10(in, buffer)) tx_note("Error while reading set.");
+			if (vtt_class::load_all_10(in, buffer)) tx_note("Error while reading set.", true);
 		}
 		else if (strncmp(idbuff, TX_SET_ID_11, strlen(TX_SET_ID_11))==0)
 		{
-			if (vtt_class::load_all_11(in, buffer)) tx_note("Error while reading set.");			
+			if (vtt_class::load_all_11(in, buffer)) tx_note("Error while reading set.", true);			
 		}
 		else if (strncmp(idbuff, TX_SET_ID_12, strlen(TX_SET_ID_12))==0)
 		{
-			if (vtt_class::load_all_12(in, buffer)) tx_note("Error while reading set.");			
+			if (vtt_class::load_all_12(in, buffer)) tx_note("Error while reading set.", true);			
 		}
 		else if (strncmp(idbuff, TX_SET_ID_13, strlen(TX_SET_ID_13))==0)
 		{
-			if (vtt_class::load_all_13(in, buffer)) tx_note("Error while reading set.");			
+			if (vtt_class::load_all_13(in, buffer)) tx_note("Error while reading set.", true);			
 		}
 		else if (strncmp(idbuff, TX_SET_ID_14, strlen(TX_SET_ID_14))==0)
 		{
-			if (vtt_class::load_all_14(in, buffer)) tx_note("Error while reading set.");			
+			if (vtt_class::load_all_14(in, buffer)) tx_note("Error while reading set.", true);			
 		}
 		else
 		{
-			tx_note("Sorry, this file is not a terminatorX set-file.");
+			tx_note("This file is not a terminatorX set-file.", true);
 			fclose(in);
 			return;
 		}
@@ -339,7 +337,7 @@ void load_tt_part(char * buffer)
 		strcpy(idbuff, "Failed to access file: \"");	// I'm stealing the unrelated sting for a temp :)
 		strcat(idbuff, globals.tables_filename);
 		strcat(idbuff, "\"");
-		tx_note(idbuff);
+		tx_note(idbuff, true);
 	}
 }
 
@@ -452,14 +450,14 @@ void do_save_tables(GtkWidget *wid)
 	{
 		strcpy(idbuffer, TX_SET_ID_14);
 		fwrite(idbuffer, strlen(idbuffer), 1, out);
-		if (vtt_class::save_all(out)) tx_note("Error while saving set.");
+		if (vtt_class::save_all(out)) tx_note("Error while saving set.", true);
 		fclose(out);
 		sprintf(wbuf,"terminatorX - %s", strip_path(buffer));
 		gtk_window_set_title(GTK_WINDOW(main_window), wbuf);				
 	}
 	else
 	{
-		tx_note("Failed to access file.");
+		tx_note("Failed to open file for write access.", true);
 	}
 }
 
@@ -537,15 +535,15 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 			switch(res)
 			{
 				case ERROR_BUSY:
-				tx_note("Error starting engine: engine is already running.");
+				tx_note("Error starting engine: engine is already running.", true);
 				break;
 				case ERROR_AUDIO:
-				tx_note("Error starting engine: failed to access audiodevice.");
+				tx_note("Error starting engine: failed to access audiodevice.", true);
 				break;
 				case ERROR_TAPE:
-				tx_note("Error starting engine: failed to open the recording file.");
+				tx_note("Error starting engine: failed to open the recording file.", true);
 				break;
-				default:tx_note("Error starting engine: Unknown error.");
+				default:tx_note("Error starting engine: Unknown error.", true);
 			}
 			return 0;
 		}
@@ -687,7 +685,7 @@ GtkSignalFunc seq_play(GtkWidget *w, void *)
 	if ((sequencer.is_empty()) && 	(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(seq_rec_btn)))) {
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
 		 {
-			tx_note("Sequencer playback triggered - but no events\nrecorded yet - nothing to playback!\n\nTo perform live with terminatorX just activate the\naudio engine with the \"Power\" button.");
+			tx_note("Sequencer playback triggered - but no events recorded yet - nothing to playback!\n\nTo perform live with terminatorX just activate the audio engine with the \"Power\" button.");
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w), 0);
 		 }
 	} else {
@@ -1127,9 +1125,23 @@ void note_destroy(GtkWidget *widget, GtkWidget *mbox)
 	gtk_widget_destroy(GTK_WIDGET(mbox));
 }
 
-void tx_note(const char *message)
+void tx_note(const char *message, bool isError=false)
 {
-	char buffer[4096]="\nterminatorX Note:\n\n";
+	char buffer[4096]="terminatorX ";
+	if (isError) {
+		strcat(buffer, "note:\n\n");
+	} else {
+		strcat(buffer, "error:\n\n");
+	}
+	
+#ifdef USE_GTK2
+	strcat(buffer, message);
+	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window),
+		GTK_DIALOG_DESTROY_WITH_PARENT,
+		isError ? GTK_MESSAGE_ERROR : GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, message);
+	int result=gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_widget_destroy(dialog);	
+#else	
 	
 	GtkWidget *mbox;
 	GtkWidget *label;
@@ -1140,10 +1152,10 @@ void tx_note(const char *message)
 	mbox=gtk_dialog_new();
 	win=&(GTK_DIALOG(mbox)->window);
 
-	gtk_box_set_spacing(GTK_BOX(GTK_DIALOG(mbox)->vbox), 2);
+	gtk_box_set_spacing(GTK_BOX(GTK_DIALOG(mbox)->vbox), 4);
 	gtk_container_set_border_width(GTK_CONTAINER(mbox), 10);
 	
-	label=gtk_label_new("terminatorX Note");
+	label=gtk_label_new("terminatorX note");
 	gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->vbox), label, TRUE, TRUE, 0);
 	gtk_widget_show(label);
@@ -1152,10 +1164,8 @@ void tx_note(const char *message)
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->vbox), sp, TRUE, TRUE, 0);
 	gtk_widget_show(sp);
 
-	strcpy(buffer, "\n");
-	strcat(buffer, message);
-	strcat(buffer, "\n");
-	label=gtk_label_new(buffer);
+	label=gtk_label_new(message);
+	gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mbox)->vbox), label, TRUE, TRUE, 0);
 	gtk_widget_show(label);	
 
@@ -1171,11 +1181,21 @@ void tx_note(const char *message)
 	gtk_widget_grab_default(btn);
 	gtk_widget_show(btn);
 	gtk_widget_show(mbox);
+#endif	
 }
 
 
 void tx_l_note(const char *message)
 {
+#ifdef USE_GTK2
+	char buffer[4096]="Plugin info:\n\n";
+	strcat(buffer, message);
+	
+	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window),
+		GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, message);
+	int result=gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_widget_destroy(dialog);	
+#else		
 	char buffer[4096]="\n   Plugin Info:  \n   ------------  \n\n";
 	
 	GtkWidget *mbox;
@@ -1201,6 +1221,7 @@ void tx_l_note(const char *message)
 	gtk_window_set_default_size(win, 200, 100);
 	gtk_window_set_position(win, GTK_WIN_POS_CENTER_ALWAYS);	
 	gtk_widget_show(mbox);
+#endif	
 }
 
 void display_mastergui()

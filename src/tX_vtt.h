@@ -300,7 +300,7 @@ class vtt_class
 	static int load_all_13(FILE *, char *fname); /* fname is for display only*/
 	static int load_all_14(FILE *, char *fname); /* fname is for display only*/
 	static int save_all(FILE *);
-	int load_file(char *name);	
+	tX_audio_error load_file(char *name);	
 
 	void render_scratch();
 	void render_lp();
