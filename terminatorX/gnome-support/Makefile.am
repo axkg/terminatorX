@@ -14,7 +14,7 @@ gnomeapp_DATA=terminatorX.desktop
 mimetypedir=$(gnomedir)/mime-info
 mimetype_DATA=terminatorX.keys terminatorX.mime
 
-pixmapdir=$(gnomedir)/pixmap
+pixmapdir=$(gnomedir)/pixmaps
 pixmap_DATA=terminatorX-app.xpm terminatorX-mime.xpm
 
 endif
