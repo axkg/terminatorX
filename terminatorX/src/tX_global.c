@@ -73,7 +73,7 @@ void set_global_defaults() {
 	strcpy(globals.xinput_device, "");
 	globals.xinput_enable=0;
 	
-	globals.update_idle=18;
+	globals.update_idle=14;
 	globals.update_delay=1;
 	
 	strcpy(globals.oss_device, "/dev/dsp");
@@ -86,7 +86,7 @@ void set_global_defaults() {
 	globals.alsa_period_time=5000;
 	globals.alsa_samplerate=44100;
 	
-	globals.sense_cycles=12;
+	globals.sense_cycles=80;
 	
 	globals.mouse_speed=0.8;
 	
@@ -359,4 +359,3 @@ char *decode_xml(char *dest, const char *src) {
 	
 	return dest;
 }
-	

@@ -16,3 +16,7 @@ on_pref_ok_clicked                     (GtkButton       *button,
 void
 on_tx_options_destroy                  (GtkObject       *object,
                                         gpointer         user_data);
+
+void
+on_alsa_buffer_time_value_changed      (GtkRange        *range,
+                                        gpointer         user_data);

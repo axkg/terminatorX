@@ -250,6 +250,8 @@ GList *get_xinput_devices_list() {
 }
 
 void init_tx_options(GtkWidget *dialog) {
+	GtkTooltips *tooltips=GTK_TOOLTIPS(lookup_widget(dialog, "tooltips"));
+	
 	/* Audio */
 	switch (globals.audiodevice_type) {		
 		case ALSA: gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "alsa_driver")), 1);
@@ -286,7 +288,7 @@ void init_tx_options(GtkWidget *dialog) {
 
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget(dialog, "oss_buffers")), globals.oss_buff_no);
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "oss_buffersize")), globals.oss_buff_size);
-
+	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "oss_buffersize"), "Set the size of the kernel level audio buffers. On slower systems you might have to increase this value (if you hear \"clicks\"). Lower values mean lower latency though.", NULL);	
 	gtk_combo_set_popdown_strings(GTK_COMBO(lookup_widget(dialog, "oss_samplerate")), get_sampling_rates_list());
 	char tmp[32];
 	sprintf(tmp, "%i", globals.oss_samplerate);
@@ -317,7 +319,10 @@ void init_tx_options(GtkWidget *dialog) {
 	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(lookup_widget(dialog, "xinput_device"))->entry), globals.xinput_device);
 
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "mouse_speed")), globals.mouse_speed);
+	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "mouse_speed"), "The speed of your mouse in scratch mode. Use negative values to invert motion.", NULL);
+	
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "stop_sense_cycles")), globals.sense_cycles);
+	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "stop_sense_cycles"),"If there is no \"motion-event\" for x cycles, where x is the number of cycles you select here, terminatorX assumes mouse motion has stopped. For smaller buffer sizes (=> shorter cycle times) you might have to increase this value", NULL);	
 	
 	/* User Interface */ 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "startup_nagbox")), globals.show_nag);
@@ -338,8 +343,11 @@ void init_tx_options(GtkWidget *dialog) {
 	}
 	
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "update_delay")), globals.update_delay);
+	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "update_delay"), "How often to update the slow widgets.", NULL);	
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "update_idle")), globals.update_idle);
+	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "update_idle"), "The update thread will idle for the selcted amount of milliseconds. If you want to have a more responsive display update increase this value - if you have performance problems reduce this value.", NULL);	
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "vumeter_decay")), globals.flash_response);
+	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "vumeter_decay"), "Defines how fast the maximum values of the VU meters should be decayed.", NULL);	
 
 	/* Misc */
 	gtk_entry_set_text(GTK_ENTRY(lookup_widget(dialog, "soundfile_editor")), globals.file_editor);
@@ -355,15 +363,6 @@ void create_options()
 	init_tx_options(opt_dialog);
 	gtk_widget_show(opt_dialog);
 }
-
-/* void create_options()
-{
-	// gtk_tooltips_set_tip(opt_tips, buff_size_slider, "Sets the size of the kernel level audio buffers. On slower systems you might have to increase this value (if you hear \"clicks\"). Lower values mean lower latency though.", NULL);
-	// gtk_tooltips_set_tip(opt_tips, mouse_speed_slider, "The speed of your mouse in scratch mode. Use negative values to invert motion.", NULL);
-	// gtk_tooltips_set_tip(opt_tips, sense_cycles_slider, "If there is no \"motion-event\" for x cycles, where x is the number of cycles you select here, terminatorX assumes mouse motion has stopped. For smaller buffer sizes (=> shorter cycle times) you might have to increase this value", NULL);
-	// gtk_tooltips_set_tip(opt_tips,	update_idle_slider, "The update thread will idle for the selcted amount of milliseconds. If you want to have a more responsive display update increase this value - if you have performance problems reduce this value.", NULL);
-	// gtk_tooltips_set_tip(opt_tips,	update_delay_slider, "How often to update the slow widgets.", NULL);
-} */
 
 void display_options()
 {
