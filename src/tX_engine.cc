@@ -101,6 +101,7 @@ void *engine(void *nil)
 	int stop_sense=globals.sense_cycles;
 	f_prec warp=1.0;
 	int16_t *temp;
+	int result;
 	
 /*	want_recording=0;
 	is_recording=0; */
@@ -129,7 +130,17 @@ void *engine(void *nil)
 		
 			do_grab_mouse=new_grab_mouse;
 			
-			if (do_grab_mouse) mouse->grab();
+			if (do_grab_mouse) 
+			{
+				result=mouse->grab();
+				if (result)
+				{
+					fprintf(stderr, "tX_engine: quitting due to grab-error. (%i)\n", result);
+					do_grab_mouse=0;
+					mouse->ungrab();
+					engine_quit=1;
+				}
+			}
 			else
 			{
 				mouse->ungrab();
