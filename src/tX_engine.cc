@@ -45,207 +45,119 @@
 #include "tX_widget.h"
 #include <config.h>
 #include "tX_sequencer.h"
+#include <errno.h>
 
-#ifdef USE_SCHEDULER
 #include <sys/time.h>
 #include <sys/resource.h>
-#endif
 
-pthread_t engine_thread=0;
-
-pthread_mutex_t stat_lock=PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t thread_lock=PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t pos_lock=PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t run_lock=PTHREAD_MUTEX_INITIALIZER;
+tX_engine *engine=NULL;
 
 tx_mouse *mouse=new tx_mouse();
 tX_audiodevice *device=NULL;
 tx_tapedeck *tape=new tx_tapedeck();
 
-int engine_quit=0;
-
-int engine_status=ENG_STOPPED;
-
-int realpos=0;
-
-int do_grab_mouse=0;
-int new_grab_mouse=0;
-
-int want_recording=0;
-int is_recording=0;
-
-void grab_mouse(int newstate)
-{
-	new_grab_mouse=newstate;
+void tX_engine :: set_grab_request() {
+	grab_request=true;
 }
 
-int get_engine_status()
-{
-	int tmp;
-	pthread_mutex_lock(&stat_lock);
-	tmp=engine_status;
-	pthread_mutex_unlock(&stat_lock);
-	return(tmp);
-}
-
-void set_engine_status(int status)
-{
-	pthread_mutex_lock(&stat_lock);
-	engine_status=status;
-	pthread_mutex_unlock(&stat_lock);
-}
-
-void *engine(void *nil)
-{
-	int scratch=0;		
-	int stop_sense=globals.sense_cycles;
-	f_prec warp=1.0;
+void tX_engine :: loop() {
 	int16_t *temp;
 	int result;
 	
-/*	want_recording=0;
-	is_recording=0; */
+	while (!thread_terminate) {
+		/* Waiting for the trigger */
+		pthread_mutex_lock(&start);
+		loop_is_active=true;
+		pthread_mutex_unlock(&start);
 
-/*
-#ifdef USE_SCHEDULER
-		setpriority(PRIO_PROCESS, getpid(), -20);
-#endif
-*/
-	
-#ifdef ENABLE_DEBUG_OUTPUT
-	fprintf(stderr, "[engine()] Engine thread up, PID: %i\n", getpid());
-#endif			
-	pthread_mutex_lock(&run_lock);
-
-	set_engine_status(ENG_RUNNING);
-
-	/*render first block*/
-	sequencer.step();
-	temp=vtt_class::render_all_turntables();
-
-	while (!engine_quit)
-	{	
-		if (new_grab_mouse!=do_grab_mouse)
-		{
+		/* Render first block */
+		sequencer.step();
+		temp=vtt_class::render_all_turntables();
 		
-			do_grab_mouse=new_grab_mouse;
-			
-			if (do_grab_mouse) 
-			{
-				result=mouse->grab();
-				if (result)
-				{
-					fprintf(stderr, "tX_engine: quitting due to grab-error. (%i)\n", result);
-					do_grab_mouse=0;
+		while (!stop_flag) {
+			/* Checking whether to grab or not  */
+			if (grab_request!=grab_active) {
+				if (grab_request) {
+					/* Activating grab... */
+					result=mouse->grab(); 
+					if (result!=0) {
+						tX_error("tX_engine::loop(): failed to grab mouse - error %i", result);
+						grab_active=false;
+						/* Reseting grab_request, too - doesn't help keeping it, does it ? ;) */
+						grab_request=false;
+						// mouse->ungrab() // do we need this?
+					} else {
+						grab_active=true;
+					}
+				} else {
+					/* Deactivating grab... */
 					mouse->ungrab();
-					engine_quit=1;
+					grab_active=false;
+					grab_off(); // for the mastergui this is...
 				}
 			}
-			else
-			{
-				mouse->ungrab();
-				grab_off();
+
+			/* Handling input events... */
+			if (grab_active) {
+				if (mouse->check_event()) {
+					/* If we're here the user pressed ESC */
+					grab_request=false;
+				}
 			}
+		
+			/* Playback the audio... */
+			device->play(temp);
+		
+			/* Record the audio if necessary... */
+			if (is_recording()) tape->eat(temp);
+			
+			/* Forward the sequencer... */
+			sequencer.step();
+			
+			/* Render the next block... */
+			temp=vtt_class::render_all_turntables();					
 		}
 		
-		if (do_grab_mouse)
-		if (mouse->check_event())
-		{
-			new_grab_mouse=0;
-		}
-		
-		device->play(temp);
-		if (is_recording) tape->eat(temp);
-		sequencer.step();
-		temp=vtt_class::render_all_turntables();					
+		/* Stopping engine... */
+		loop_is_active=false;
 	}
-	
-//	device->dev_close();
-
-	if (engine_quit==1) set_engine_status(ENG_STOPPED);
-	else set_engine_status(ENG_FINISHED);
-
-	pthread_mutex_unlock(&run_lock);
-		
-	pthread_exit(NULL);
 }
 
-int run_engine()
-{
-#ifdef USE_SCHEDULER
-	pthread_attr_t pattr;
-	struct sched_param sparm;
-#endif
-	char buffer[PATH_MAX];
-	list <vtt_class *> :: iterator vtt;	
+void *engine_thread_entry(void *engine_void) {
+	tX_engine *engine=(tX_engine*) engine_void;
+	int result;
 	
-	pthread_mutex_lock(&thread_lock);
+	/* Dropping root privileges for the engine thread - if running suid. */
 	
-	if (engine_thread)
-	{
-		pthread_mutex_unlock(&thread_lock);
-		return(TX_ENG_ERR_BUSY);
-	}
-
-	pthread_mutex_lock(&run_lock);
-	
-	switch (globals.audiodevice_type)
-	{
-#ifdef USE_OSS	
-		case TX_AUDIODEVICE_TYPE_OSS:
-			device=new tX_audiodevice_oss();
-			break;
-#endif			
-
-#ifdef USE_ALSA			
-		case TX_AUDIODEVICE_TYPE_ALSA:
-			device=new tX_audiodevice_alsa();
-			break;
-#endif
+	if ((!geteuid()) && (getuid() != geteuid())) {
+		tX_debug("engine_thread_entry() - Running suid root - dropping privileges.");
 		
-		default:
-			device=NULL;
-			pthread_mutex_unlock(&run_lock);
-			pthread_mutex_unlock(&thread_lock);
-			return TX_ENG_ERR_DEVICE;
-	}
-	
-	if (device->open())
-	{
-		device->close();
-		delete device;
-		device=NULL;		
-		pthread_mutex_unlock(&run_lock);
-		pthread_mutex_unlock(&thread_lock);
-		return TX_ENG_ERR_DEVICE;
-	}
-	
-	is_recording=0;
-	
-	if (want_recording)
-	{
-		if (!tape->start_record(globals.record_filename, device->get_buffersize()*sizeof(int16_t)))
-			is_recording=1;
-		else
-		{
-			device->close();
-			delete device;
-			device=NULL;			
-			pthread_mutex_unlock(&run_lock);
-			pthread_mutex_unlock(&thread_lock);
-			return TX_ENG_ERR_TAPE;			
+		result=setuid(getuid());
+		
+		if (result!=0) {
+			tX_error("engine_thread_entry() - Failed to drop root privileges.");
+			exit(2);
 		}
 	}
-
-	vtt_class::set_mix_buffer_size(device->get_buffersize()/2); //mixbuffer is mono
 	
-	engine_quit=0;
-#ifdef USE_SCHEDULER	
-        if (!geteuid())
-	{
-#ifdef ENABLE_DEBUG_OUTPUT
-		fprintf(stderr, "[run_engine()] enabling fifo scheduling.\n");
-#endif
+	engine->loop();
+}
+
+tX_engine :: tX_engine() {
+	int result;
+	
+	pthread_mutex_init(&start, NULL);
+	pthread_mutex_lock(&start);
+	thread_terminate=false;
+	
+	/* Creating the actual engine thread.. */
+	
+	if (!geteuid()) {
+		pthread_attr_t pattr;
+		struct sched_param sparm;
+		
+		tX_debug("tX_engine() - Have root privileges - using SCHED_FIFO.");
+		
 		pthread_attr_init(&pattr);
 		pthread_attr_setdetachstate(&pattr, PTHREAD_CREATE_JOINABLE);
 		pthread_attr_setschedpolicy(&pattr, SCHED_FIFO);
@@ -257,79 +169,125 @@ int run_engine()
 		pthread_attr_setinheritsched(&pattr, PTHREAD_EXPLICIT_SCHED);
 		pthread_attr_setscope(&pattr, PTHREAD_SCOPE_SYSTEM);
 		
-		pthread_create(&engine_thread, &pattr, engine, NULL);
+		result=pthread_create(&thread, &pattr, engine_thread_entry, (void *) this);
+	} else {
+		tX_debug("tX_engine() - Lacking root privileges - no realtime scheduling!");
+		
+		result=pthread_create(&thread, NULL, engine_thread_entry, (void *) this);
 	}
-	else
-	{
-#ifdef ENABLE_DEBUG_OUTPUT
-		fprintf(stderr, "[run_engine()] NO fifo scheduling.\n");
-#endif
-		pthread_create(&engine_thread, NULL, engine, NULL);		
-	}
-#else
-	pthread_create(&engine_thread, NULL, engine, NULL);	
-#endif
 	
-	if (!engine_thread)
-	{
-		device->close();
-		delete device;		
-		device=NULL;
-		pthread_mutex_unlock(&run_lock);
-		pthread_mutex_unlock(&thread_lock);
-		return(TX_ENG_ERR_THREAD);
+	if (result!=0) {
+		tX_error("tX_engine() - Failed to create engine thread. Errno is %i.", errno);
+		exit(1);
 	}
+	
+	/* Dropping root privileges for the main thread - if running suid. */
+	
+	if ((!geteuid()) && (getuid() != geteuid())) {
+		tX_debug("tX_engine() - Running suid root - dropping privileges.");
+		
+		result=setuid(getuid());
+		
+		if (result!=0) {
+			tX_error("tX_engine() - Failed to drop root privileges.");
+			exit(2);
+		}
+	}
+	
+	mouse=new tx_mouse();
+	tape=new tx_tapedeck();
+	device=NULL;
+	recording=false;
+	recording_request=false;
+	loop_is_active=false;
+	grab_request=false;
+	grab_active=false;
+}
 
-//	gtk_label_set(GTK_LABEL(GTK_BUTTON(action_btn)->child), "Stop");	
+void tX_engine :: set_recording_request (bool recording) {
+	this->recording_request=recording;
+}
 
-	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++)
-	{
+tX_engine_error tX_engine :: run() {
+	list <vtt_class *> :: iterator vtt;
+	
+	if (loop_is_active) return ERROR_BUSY;
+	
+	switch (globals.audiodevice_type) {
+#ifdef USE_OSS	
+		case TX_AUDIODEVICE_TYPE_OSS:
+			device=new tX_audiodevice_oss(); break;
+#endif			
+
+#ifdef USE_ALSA			
+		case TX_AUDIODEVICE_TYPE_ALSA:
+			device=new tX_audiodevice_alsa(); break;
+#endif
+		
+		default:
+			device=NULL; return ERROR_AUDIO;
+	}
+	
+	if (device->open()) {
+		device->close();
+		delete device;
+		device=NULL;		
+		return ERROR_AUDIO;
+	}	
+
+	vtt_class::set_mix_buffer_size(device->get_buffersize()/2); //mixbuffer is mono
+	
+	if (recording_request) {
+		if (tape->start_record(globals.record_filename, device->get_buffersize()*sizeof(int16_t))) {
+			recording=true;
+			device->close();
+			delete device;
+			device=NULL;			
+			return ERROR_TAPE;			
+		}		
+	}
+	
+	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++) {
 		if ((*vtt)->autotrigger) (*vtt)->trigger();
 	}
 	
 	sequencer.forward_to_start_timestamp(1);	
-	
-	pthread_detach(engine_thread);
-
-	set_engine_status(ENG_INIT);
-	
-	pthread_mutex_unlock(&thread_lock);
-	
-	pthread_mutex_unlock(&run_lock);
-		
-	return (TX_ENG_OK);
+	stop_flag=false;
+	/* Trigger the engine thread... */
+	pthread_mutex_unlock(&start);
 }
 
-int stop_engine()
-{
+void tX_engine :: stop() {
 	list <vtt_class *> :: iterator vtt;
-	void *ret;
-
-	pthread_mutex_lock(&thread_lock);	
-	if (!engine_thread)
-	{
-		pthread_mutex_unlock(&thread_lock);
-		return(1);
+	
+	if (!loop_is_active) {
+		tX_error("tX_engine::stop() - but loop's not running?");
 	}
 	
-	engine_quit=1;
+	pthread_mutex_lock(&start);
+	stop_flag=true;
 	
-	pthread_join(engine_thread, &ret);
+	tX_debug("tX_engine::stop() - waiting for loop to stop.");
 	
-	engine_thread=0;
+	while (loop_is_active) {
+		usleep(50);
+	}
 	
-	pthread_mutex_unlock(&thread_lock);
+	tX_debug("tX_engine::stop() - loop has stopped.");
+
 	device->close();
 	delete device;
 	device=NULL;
 	
-	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++)
-	{
+	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++) {
 		(*vtt)->stop();
 		(*vtt)->ec_clear_buffer();
 	}
 	
-	if (is_recording) tape->stop_record();
-	is_recording=0;
-	return (0);
+	if (is_recording()) tape->stop_record();
+	recording=false;
+}
+
+tX_engine :: ~tX_engine() {
+	
 }
