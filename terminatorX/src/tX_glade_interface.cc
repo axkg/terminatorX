@@ -187,6 +187,8 @@ create_tx_options (void)
   GtkWidget *stop_sense_cycles;
   GtkWidget *label25;
   GtkWidget *xinput_enable;
+  GtkWidget *label37;
+  GtkWidget *vtt_inertia;
   GtkWidget *label4;
   GtkWidget *table2;
   GtkWidget *label8;
@@ -445,7 +447,7 @@ create_tx_options (void)
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 2), label16);
   gtk_label_set_justify (GTK_LABEL (label16), GTK_JUSTIFY_LEFT);
 
-  table1 = gtk_table_new (4, 2, FALSE);
+  table1 = gtk_table_new (5, 2, FALSE);
   gtk_widget_show (table1);
   gtk_container_add (GTK_CONTAINER (notebook1), table1);
   gtk_container_set_border_width (GTK_CONTAINER (table1), 4);
@@ -515,6 +517,20 @@ create_tx_options (void)
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_tooltips_set_tip (tooltips, xinput_enable, "CAREFUL! Enable this *only* if you want to use an input device than your default X-Pointer (yes, your mouse ;). You have to select your desired device as well. Selecting the default mouse pointer will crash terminatorX so if you want to use that keep this option disabled.", NULL);
+
+  label37 = gtk_label_new ("Turntable Inertia:");
+  gtk_widget_show (label37);
+  gtk_table_attach (GTK_TABLE (table1), label37, 0, 1, 4, 5,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label37), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (label37), 0, 0.5);
+
+  vtt_inertia = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (10, 1, 310, 0.01, 1, 10)));
+  gtk_widget_show (vtt_inertia);
+  gtk_table_attach (GTK_TABLE (table1), vtt_inertia, 1, 2, 4, 5,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
 
   label4 = gtk_label_new ("Input");
   gtk_widget_show (label4);
@@ -797,6 +813,8 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, stop_sense_cycles, "stop_sense_cycles");
   GLADE_HOOKUP_OBJECT (tx_options, label25, "label25");
   GLADE_HOOKUP_OBJECT (tx_options, xinput_enable, "xinput_enable");
+  GLADE_HOOKUP_OBJECT (tx_options, label37, "label37");
+  GLADE_HOOKUP_OBJECT (tx_options, vtt_inertia, "vtt_inertia");
   GLADE_HOOKUP_OBJECT (tx_options, label4, "label4");
   GLADE_HOOKUP_OBJECT (tx_options, table2, "table2");
   GLADE_HOOKUP_OBJECT (tx_options, label8, "label8");

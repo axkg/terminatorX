@@ -287,21 +287,6 @@ float tX_seqpar :: get_value()
 	return 0.0;	
 }
 
-void tX_seqpar :: do_exec(const float value)
-{
-	fprintf(stderr, "oops: called do_exec() of tX_seqpar.\n");
-}
-
-void tX_seqpar :: exec_value(const float value)
-{
-	fprintf(stderr, "oops: called exec_value() of tX_seqpar.\n");
-}
-
-void tX_seqpar :: do_update_graphics()
-{
-	fprintf(stderr, "oops: called do_update_graphics() of tX_seqpar.\n");
-}
-
 void tX_seqpar :: update_graphics()
 {
 	gui_active=0;

@@ -42,7 +42,7 @@ static gboolean midi_callback(GIOChannel *source, GIOCondition condition, gpoint
 	tX_midiin *midi=(tX_midiin *) data;
 	midi->check_event();
 	
-	return false;
+	return TRUE;
 }
 
 tX_midiin::tX_midiin()
