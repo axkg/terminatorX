@@ -3,6 +3,10 @@ All changes were done by me (Alexander König) if not stated otherwise.
 This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
+[v3.74]
+- fixed a gcc 3.2 compilation bug - thanks to 
+  Adam Duck <duck@informatik.uni-frankfurt.de>
+
 [v3.73]
 - Fixed a compilation bug ocurring on big endian systems only.
 - Fixed the built-in wav loading routines for big endian systems (again).
