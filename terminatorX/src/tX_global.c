@@ -155,6 +155,7 @@ void set_global_defaults() {
 	strcpy(globals.vu_meter_loud, "#FF0000");
 	strcpy(globals.vu_meter_normal, "#00FF00");	
 	globals.vu_meter_border_intensity=0.7;
+	globals.quit_confirm=1;
 }
 
 int load_globals_xml() {
@@ -250,6 +251,8 @@ int load_globals_xml() {
 			restore_string("vu_meter_loud", globals.vu_meter_loud);
 			
 			restore_float("vu_meter_border_intensity", globals.vu_meter_border_intensity);
+
+			restore_int("quit_confirm", globals.quit_confirm);
 
 #ifdef USE_ALSA_MIDI_IN
 			if (!elementFound && (xmlStrcmp(cur->name, (xmlChar *) "midi_connections")==0)) {
@@ -352,7 +355,6 @@ void store_globals() {
 		store_string("last_path", globals.current_path);
 		store_int("restore_midi_connections", globals.restore_midi_connections);
 
-
 		store_string("wav_display_bg_focus", globals.wav_display_bg_focus);
 		store_string("wav_display_bg_no_focus", globals.wav_display_bg_no_focus);
 		store_string("wav_display_fg_focus", globals.wav_display_fg_focus);
@@ -366,6 +368,8 @@ void store_globals() {
 			
 		store_float("vu_meter_border_intensity", globals.vu_meter_border_intensity);
 
+		store_int("quit_confirm", globals.quit_confirm);
+		
 #ifdef USE_ALSA_MIDI_IN
 		tX_midiin_store_connections(rc, indent);
 #endif		

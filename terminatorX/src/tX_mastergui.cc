@@ -99,9 +99,9 @@ GtkWidget *fullscreen_item;
 int rec_dont_care=0;
 gint update_tag;
 
-#define connect_entry(wid, func, ptr); gtk_signal_connect(GTK_OBJECT(wid), "activate", (GtkSignalFunc) func, (void *) ptr);
-#define connect_adj(wid, func, ptr); gtk_signal_connect(GTK_OBJECT(wid), "value_changed", (GtkSignalFunc) func, (void *) ptr);
-#define connect_button(wid, func, ptr); gtk_signal_connect(GTK_OBJECT(wid), "clicked", (GtkSignalFunc) func, (void *) ptr);
+#define connect_entry(wid, func, ptr); g_signal_connect(G_OBJECT(wid), "activate", (GtkSignalFunc) func, (void *) ptr);
+#define connect_adj(wid, func, ptr); g_signal_connect(G_OBJECT(wid), "value_changed", (GtkSignalFunc) func, (void *) ptr);
+#define connect_button(wid, func, ptr); g_signal_connect(G_OBJECT(wid), "clicked", (GtkSignalFunc) func, (void *) ptr);
 
 Window xwindow;
 #define WID_DYN TRUE, TRUE, 0
@@ -228,14 +228,14 @@ void mg_update_status()
 				found=1;
 				sscanf(buffer, "VmSize: %i kB", &mem);
 				sprintf(buffer, "%i", mem);
-				gtk_label_set(GTK_LABEL(used_mem), buffer);
+				gtk_label_set_text(GTK_LABEL(used_mem), buffer);
 			}
 		}
 	}
 	fclose(procfs);	
 	
 	sprintf(buffer, "%i", vtt_class::vtt_amount);
-	gtk_label_set(GTK_LABEL(no_of_vtts), buffer);
+	gtk_label_set_text(GTK_LABEL(no_of_vtts), buffer);
 }
 
 GtkSignalFunc new_table(GtkWidget *, char *fn)
@@ -312,11 +312,12 @@ GtkSignalFunc cancel_load_tables(GtkWidget *wid)
 
 void load_tt_part(char * buffer)
 {
-	FILE *in;
 	char idbuff[256];
 	char wbuf[PATH_MAX];
 	xmlDocPtr doc;
-	
+#ifdef ENABLE_TX_LEGACY
+	FILE *in;
+#endif	
 	turn_audio_off();
 	
 	strcpy(globals.tables_filename, buffer);
@@ -419,9 +420,9 @@ GtkSignalFunc load_tables()
 	
 	load_dialog_win=load_dialog->window;
 	
-	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(load_dialog)->ok_button), "clicked", GTK_SIGNAL_FUNC(do_load_tables), NULL);
-	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(load_dialog)->cancel_button), "clicked", GTK_SIGNAL_FUNC (cancel_load_tables), NULL);	
-	gtk_signal_connect (GTK_OBJECT(load_dialog), "delete-event", GTK_SIGNAL_FUNC(cancel_load_tables), NULL);	
+	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(load_dialog)->ok_button), "clicked", G_CALLBACK(do_load_tables), NULL);
+	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(load_dialog)->cancel_button), "clicked", G_CALLBACK (cancel_load_tables), NULL);	
+	g_signal_connect (G_OBJECT(load_dialog), "delete-event", G_CALLBACK(cancel_load_tables), NULL);	
 	
 	return NULL;
 }
@@ -540,9 +541,9 @@ GtkSignalFunc save_tables_as()
 	
 	save_dialog_win=save_dialog->window;
 	
-	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(save_dialog)->ok_button), "clicked", GTK_SIGNAL_FUNC(do_save_tables), NULL);
-	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(save_dialog)->cancel_button), "clicked", GTK_SIGNAL_FUNC (cancel_save_tables), NULL);	
-	gtk_signal_connect (GTK_OBJECT(save_dialog), "delete-event", GTK_SIGNAL_FUNC(cancel_save_tables), NULL);	
+	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(save_dialog)->ok_button), "clicked", G_CALLBACK(do_save_tables), NULL);
+	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(save_dialog)->cancel_button), "clicked", G_CALLBACK (cancel_save_tables), NULL);	
+	g_signal_connect (G_OBJECT(save_dialog), "delete-event", G_CALLBACK(cancel_save_tables), NULL);	
 
 	return NULL;
 }
@@ -699,9 +700,9 @@ GtkSignalFunc select_rec_file()
 	
 	rec_dialog_win=rec_dialog->window;
 	
-	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(rec_dialog)->ok_button), "clicked", GTK_SIGNAL_FUNC(do_rec), NULL);
-	gtk_signal_connect (GTK_OBJECT(GTK_FILE_SELECTION(rec_dialog)->cancel_button), "clicked", GTK_SIGNAL_FUNC (cancel_rec), NULL);	
-	gtk_signal_connect (GTK_OBJECT(rec_dialog), "delete-event", GTK_SIGNAL_FUNC(cancel_rec), NULL);	
+	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(rec_dialog)->ok_button), "clicked", G_CALLBACK(do_rec), NULL);
+	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(rec_dialog)->cancel_button), "clicked", G_CALLBACK (cancel_rec), NULL);	
+	g_signal_connect (G_OBJECT(rec_dialog), "delete-event", G_CALLBACK(cancel_rec), NULL);	
 	
 	return NULL;
 }
@@ -741,17 +742,19 @@ void grab_off()
 
 gboolean quit()
 {	
-	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window), 
-	GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
-	"Exit terminatorX and loose all unsaved data?");
-	
-	int res=gtk_dialog_run(GTK_DIALOG(dialog));
-	gtk_widget_destroy(dialog);
+	if (globals.quit_confirm) {
+		GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window), 
+		GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
+		"Exit terminatorX and loose all unsaved data?");
 		
-	if (res!=GTK_RESPONSE_YES) {
-		return TRUE;
+		int res=gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+			
+		if (res!=GTK_RESPONSE_YES) {
+			return TRUE;
+		}
 	}
-
+	
 	tX_shutdown=true;
 	
 	turn_audio_off();
@@ -903,6 +906,8 @@ GtkWidget *del_dialog=NULL;
 GCallback menu_delete_all_events(GtkWidget *, void *param)
 {	
 	del_dialog=create_tx_del_mode();
+	tX_set_icon(del_dialog);
+	
 	GtkWidget *label=lookup_widget(del_dialog, "delmode_label");
 	
 	menu_del_mode=ALL_EVENTS_ALL_TURNTABLES;
@@ -921,6 +926,8 @@ GCallback menu_delete_all_events_for_vtt(GtkWidget *, vtt_class *vtt)
 	char label_str[512];
 	
 	del_dialog=create_tx_del_mode();
+	tX_set_icon(del_dialog);
+
 	del_vtt=vtt;
 	GtkWidget *label=lookup_widget(del_dialog, "delmode_label");
 	
@@ -929,6 +936,8 @@ GCallback menu_delete_all_events_for_vtt(GtkWidget *, vtt_class *vtt)
 	sprintf(label_str, "Delete <b>all</b> events for turntable <b>%s</b>.", vtt->name);
 	gtk_label_set_markup(GTK_LABEL(label), label_str);
 	gtk_widget_show(del_dialog);
+	
+	return NULL;
 }
 
 GCallback menu_delete_all_events_for_sp(GtkWidget *, tX_seqpar *sp)
@@ -941,6 +950,8 @@ GCallback menu_delete_all_events_for_sp(GtkWidget *, tX_seqpar *sp)
 	char label_str[512];
 	
 	del_dialog=create_tx_del_mode();
+	tX_set_icon(del_dialog);
+	
 	GtkWidget *label=lookup_widget(del_dialog, "delmode_label");
 	
 	menu_del_mode=ALL_EVENTS_FOR_SP;
@@ -948,6 +959,8 @@ GCallback menu_delete_all_events_for_sp(GtkWidget *, tX_seqpar *sp)
 	sprintf(label_str, "Delete all <b>%s</b> events for turntable <b>%s</b>.", sp->get_name(), ((vtt_class *) sp->vtt)->name);
 	gtk_label_set_markup(GTK_LABEL(label), label_str);
 	gtk_widget_show(del_dialog);
+
+	return NULL;
 }
 
 static GtkWidget *table_menu=NULL;
@@ -991,11 +1004,15 @@ GCallback create_table_sequencer_menu(GtkWidget *widget, void *param)
 	}
 	
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(table_menu_item), table_menu);
+	
+	return NULL;
 }
 
 GCallback toggle_confirm_events(GtkWidget *widget, void *dummy)
 {	
 	globals.confirm_events=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));
+	
+	return NULL;	
 }
 
 void create_master_menu() 
@@ -1261,7 +1278,8 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 	
-	dummy=gtk_entry_new_with_max_length(12);
+	dummy=gtk_entry_new();
+	gtk_entry_set_max_length(GTK_ENTRY(dummy), 12);
 	seq_entry=dummy;
 	//gtk_widget_set_usize(dummy, 65, 20);
 	gtk_entry_set_text(GTK_ENTRY(dummy), "00:00.00");
@@ -1273,9 +1291,9 @@ void create_mastergui(int x, int y)
 	seq_adj=dumadj;
 	connect_adj(dumadj, sequencer_move, NULL);	
 	dummy=gtk_hscale_new(dumadj);
-	gtk_widget_set_usize(dummy, 65, 20);
+	gtk_widget_set_size_request(dummy, 65, 20);
 	seq_slider=dummy;
-	gtk_signal_connect(GTK_OBJECT(seq_slider), "button-release-event", (GtkSignalFunc) seq_slider_released, NULL);
+	g_signal_connect(G_OBJECT(seq_slider), "button-release-event", (GtkSignalFunc) seq_slider_released, NULL);
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), FALSE);
 	
 	gui_set_tooltip(dummy, "Select the start position for the sequencer in song-time.");
@@ -1353,7 +1371,7 @@ void create_mastergui(int x, int y)
 	dummy=gtk_vscale_new(dumadj);
 	gtk_range_set_inverted(GTK_RANGE(dummy), TRUE);
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), False);
-	gtk_signal_connect(GTK_OBJECT(dummy), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &sp_master_volume);	
+	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &sp_master_volume);	
 	
 	gtk_box_pack_end(GTK_BOX(master_vol_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);	
@@ -1432,7 +1450,7 @@ void create_mastergui(int x, int y)
 
 	new_table(NULL, NULL); // to give the user something to start with ;)
 
-	gtk_signal_connect (GTK_OBJECT(main_window), "delete-event", (GtkSignalFunc) quit, NULL);	
+	g_signal_connect (G_OBJECT(main_window), "delete-event", (GtkSignalFunc) quit, NULL);	
 	
 	if (globals.tooltips) gtk_tooltips_enable(gui_tooltips);
 	else gtk_tooltips_disable(gui_tooltips);
@@ -1540,8 +1558,8 @@ void display_mastergui()
 {
 	GtkWidget *top;
 	gtk_widget_realize(main_window);
-	tX_set_icon(main_window, "terminatorX");
-	load_knob_pixs(main_window);
+	tX_set_icon(main_window);
+	load_knob_pixs();
 	gtk_widget_show(main_window);
 	fullscreen_setup();	
 	top=gtk_widget_get_toplevel(main_window);

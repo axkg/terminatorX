@@ -87,7 +87,7 @@ struct _GtkTxClass {
 };
 
 GtkWidget* gtk_tx_new	(int16_t *wavdata, int wavsamples);
-guint gtk_tx_get_type	(void);
+GType gtk_tx_get_type	(void);
 void gtk_tx_set_data  (GtkTx *tx, int16_t *wavdata, int wavsamples);
 void gtk_tx_cleanup_pos_display (GtkTx *tx);
 void	gtk_tx_update_pos_display  (GtkTx *tx, int sample, int mute);

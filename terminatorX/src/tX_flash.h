@@ -34,15 +34,14 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-#define GTK_TX_FLASH(obj)          GTK_CHECK_CAST (obj, gtk_tx_flash_get_type (), GtkTxFlash)
-#define GTK_TX_FLASH_CLASS(klass)  GTK_CHECK_CLASS_CAST (klass, gtk_tx_flash_get_type (), GtkTxFlashClass)
-#define GTK_IS_TX_FLASH(obj)       GTK_CHECK_TYPE (obj, gtk_tx_flash_get_type ())
+#define GTK_TX_FLASH(obj) GTK_CHECK_CAST (obj, gtk_tx_flash_get_type(), GtkTxFlash)
+#define GTK_TX_FLASH_CLASS(klass) GTK_CHECK_CLASS_CAST (klass, gtk_tx_flash_get_type(), GtkTxFlashClass)
+#define GTK_IS_TX_FLASH(obj) GTK_CHECK_TYPE (obj, gtk_tx_flash_get_type())
 
-typedef struct _GtkTxFlash        GtkTxFlash;
-typedef struct _GtkTxFlashClass   GtkTxFlashClass;
+typedef struct _GtkTxFlash GtkTxFlash;
+typedef struct _GtkTxFlashClass GtkTxFlashClass;
 
-struct _GtkTxFlash
-{
+struct _GtkTxFlash {
 	GtkWidget widget;
 
 	GdkColor colors[5];	
@@ -58,16 +57,15 @@ struct _GtkTxFlash
 	int max, max_cycles;
 };
 
-struct _GtkTxFlashClass
-{
+struct _GtkTxFlashClass {
 	GtkWidgetClass parent_class;
 };
 
-GtkWidget*     gtk_tx_flash_new	();
-guint	       gtk_tx_flash_get_type (void);
-void           gtk_tx_flash_set_level (GtkWidget *widget, f_prec new_value);
-void           gtk_tx_flash_clear (GtkWidget *widget);
-void 		   gtk_tx_flash_update_colors(GtkTxFlash *tx);
+GtkWidget* gtk_tx_flash_new();
+GType gtk_tx_flash_get_type (void);
+void gtk_tx_flash_set_level (GtkWidget *widget, f_prec new_value);
+void gtk_tx_flash_clear (GtkWidget *widget);
+void gtk_tx_flash_update_colors(GtkTxFlash *tx);
 
 #ifdef __cplusplus
 }

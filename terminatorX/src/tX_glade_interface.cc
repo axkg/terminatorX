@@ -248,6 +248,8 @@ create_tx_options (void)
   GtkWidget *compress_set_files;
   GtkWidget *label40;
   GtkWidget *reconnect_enabled;
+  GtkWidget *label57;
+  GtkWidget *quit_confirm;
   GtkWidget *label3;
   GtkWidget *dialog_action_area3;
   GtkWidget *pref_reset;
@@ -881,7 +883,7 @@ create_tx_options (void)
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 6), label52);
   gtk_label_set_justify (GTK_LABEL (label52), GTK_JUSTIFY_LEFT);
 
-  table3 = gtk_table_new (5, 2, FALSE);
+  table3 = gtk_table_new (6, 2, FALSE);
   gtk_widget_show (table3);
   gtk_container_add (GTK_CONTAINER (notebook1), table3);
   gtk_container_set_border_width (GTK_CONTAINER (table3), 4);
@@ -960,6 +962,20 @@ create_tx_options (void)
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_tooltips_set_tip (tooltips, reconnect_enabled, "When enabled soundfiles will be playedback when selected in a file dialog (before loading them).", NULL);
+
+  label57 = gtk_label_new ("Ask for \"Quit\" confirmation:");
+  gtk_widget_show (label57);
+  gtk_table_attach (GTK_TABLE (table3), label57, 0, 1, 5, 6,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label57), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (label57), 0, 0.5);
+
+  quit_confirm = gtk_check_button_new_with_mnemonic ("Enabled");
+  gtk_widget_show (quit_confirm);
+  gtk_table_attach (GTK_TABLE (table3), quit_confirm, 1, 2, 5, 6,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
 
   label3 = gtk_label_new ("Misc");
   gtk_widget_show (label3);
@@ -1140,6 +1156,8 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, compress_set_files, "compress_set_files");
   GLADE_HOOKUP_OBJECT (tx_options, label40, "label40");
   GLADE_HOOKUP_OBJECT (tx_options, reconnect_enabled, "reconnect_enabled");
+  GLADE_HOOKUP_OBJECT (tx_options, label57, "label57");
+  GLADE_HOOKUP_OBJECT (tx_options, quit_confirm, "quit_confirm");
   GLADE_HOOKUP_OBJECT (tx_options, label3, "label3");
   GLADE_HOOKUP_OBJECT_NO_REF (tx_options, dialog_action_area3, "dialog_action_area3");
   GLADE_HOOKUP_OBJECT (tx_options, pref_reset, "pref_reset");
