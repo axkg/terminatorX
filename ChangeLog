@@ -17,11 +17,28 @@ changed.
   hard to handle as LAPDSA control ports can have very wide value ranges. It is
   possible to enter precise values though.
   Get LADSPA and the CMT plugins from http://www.ladspa.org
+  All parameters for LADSPA-plugins are "sequencable parameters", so you can
+  record parameter-change events for the plugin's knobs just as for the
+  standard parameters.
 - GUI re-design to support dynamic plugin GUIs. The audiofile-display is now 
   seperated from the turntable's controls. The groups are split in to panels
-  which can be minimized if not required (orange arrow).
-- setformat
-- mappable parameters
+  which can be minimized if not required (orange arrow). The panels'
+  minimized-status will be saved within the set files.
+  To add a plugin effect into the turntables effect chain click on the "FX"-
+  button and choose the plugin of your choice. To get more info on the
+  plugin effects click on their panel's label.
+  NOTE: The panning-control is not working yet. It'll work as soon as stereo
+  is done.
+- As always when introducing something new, the set-file file-format ha
+  changed.
+- The parameter-to-mouse-axis mapping has been moved from hardcoded to
+  dynamic. You can now map any parameter that's considered "mappable" to the
+  mouse-axis of your choice (for each turntable separately). This is true
+  for the control ports of LADSPA-plugins, too.
+- Josh Steiner <joschi@eds.org> has joined terminatorX development. For this 
+  release he has added some startup parameters for terminatorX, some of them
+  aiming for future MIDI support, and therefor not functional yet. Run
+  "terminatorX --help" to get more details.
 
 [v3.61] (unreleased)
 - applied a tiny patch from Atsushi Yamagata <yamagata@plathome.co.jp>
