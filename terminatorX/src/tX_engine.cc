@@ -322,6 +322,8 @@ tX_engine :: ~tX_engine() {
 	pthread_join(thread, &dummy);	
 	
 	delete mouse;
+#ifdef USE_ALSA_MIDI_IN		
 	delete midi;
+#endif	
 	delete tape;	
 }

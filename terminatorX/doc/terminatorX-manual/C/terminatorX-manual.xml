@@ -1250,7 +1250,7 @@
       it is possible to control parameters through MIDI events (since 3.80).
       The MIDI interface is based upon the ALSA sequencer API. On startup
       terminatorX creates a MIDI input port called &#34;terminatorX&#34;. You
-      can now use for example the <ulink url="alsa-patch-bay link here">alsa-patch-pay</ulink>
+      can now use for example the <ulink url="http://pkl.net/%7Enode/alsa-patch-bay.html">alsa-patch-pay</ulink>
       to connect an output port of your choice (either a hardware MIDI input
       device or a software generating midi events) to the terminatorX input
       port.</para>
@@ -1285,7 +1285,7 @@
       <para>If you want to use your joystick to control terminatorX - I wrote
       a tiny tool to create MIDI events from joystick motion called
       <emphasis>aseqjoy</emphasis>. It&#39;s available from the <ulink
-      url="http://terminatorX.cx/aseqjoy">terminatorX website</ulink>, too.</para>
+      url="http://terminatorX.cx/aseqjoy.html">terminatorX website</ulink>, too.</para>
     </sect2>
   </sect1>
 
