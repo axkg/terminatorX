@@ -2,6 +2,11 @@ section = main download faq screenshots scratches turntable aseqjoy docs
 
 all: index.html aseqjoy.html download.html faq.html scratches.html docs.html turntable.html screenshots.html
 
+XMLFILES=$(wildcard *.xml) $(wildcard *.xsl)
+
+pretty:
+	list='$(XMLFILES)'; for file in $$list; do tidy -i -w 80 -xml < $$file > tmp; if [ $$? -eq 0 ]; then mv tmp $$file; else echo error: $$?; fi; done
+
 clean:	Makefile
 	rm -rf *.html *.tmp
 
