@@ -31,6 +31,8 @@
 
 #include "tX_midiin.h"
 #include "tX_vtt.h"
+#include "tX_glade_interface.h"
+#include "tX_glade_support.h"
 
 #ifdef USE_ALSA_MIDI_IN
 #include "tX_global.h"
@@ -50,6 +52,8 @@ tX_midiin::tX_midiin()
 	
 	int portid;
 	is_open=false;
+	sp_to_learn=NULL;
+	learn_dialog=NULL;
 	
 	if (snd_seq_open(&ALSASeqHandle, "default", SND_SEQ_OPEN_INPUT, 0) < 0) {
 		tX_error("tX_midiin(): failed to open the default sequencer device.");
@@ -144,24 +148,32 @@ int tX_midiin::check_event()
 
 		snd_seq_free_event(ev);
 		
-		if( event_usable )
-		{
-			if (event.channel<0 || event.channel>15)
-			{
+		if( event_usable ) {
+			if (event.channel<0 || event.channel>15) {
 				tX_error("tX_midiin::check_event(): invaild event channel %i.", event.channel);
 				return -1;
 			}
 
-			// This should be solved with a hash table. Possibly.
-			
-			list <tX_seqpar *> :: iterator sp;			
-			
-			for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
-				if ( (*sp)->bound_midi_event.type_matches (event) ) {
-					(*sp)->handle_midi_input (event);
+			if (sp_to_learn) {
+				sp_to_learn->bound_midi_event=event;
+				sp_to_learn=NULL;
+				
+				if (learn_dialog) {
+					gtk_widget_destroy(learn_dialog);
+					learn_dialog=NULL;
+				}
+			} else {
+				// This should be solved with a hash table. Possibly.
+				
+				list <tX_seqpar *> :: iterator sp;			
+				
+				for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
+					if ( (*sp)->bound_midi_event.type_matches (event) ) {
+						(*sp)->handle_midi_input (event);
+					}
 				}
 			}
-
+			
 			last_event = event;
 		}
 
@@ -365,5 +377,46 @@ tX_midiin::midi_binding_gui::~midi_binding_gui ()
 {
 	gtk_timeout_remove( timer_tag );
 }
+
+void tX_midiin::set_midi_learn_sp(tX_seqpar *sp)
+{
+	char buffer[512];
+	
+	if (learn_dialog) {
+		gtk_widget_destroy(learn_dialog);
+	}
+	
+	sp_to_learn=sp;
+	
+	if (!sp_to_learn) return;
+	
+	learn_dialog=create_tX_midilearn();
+	GtkWidget *label=lookup_widget(learn_dialog, "midilabel");
+	
+	sprintf(buffer, "Learning MIDI mapping for <b>%s</b>\nfor turntable <b>%s</b>.\n\nWaiting for MIDI event...", sp->get_name(), sp->get_vtt_name());
+	gtk_label_set_markup(GTK_LABEL(label), buffer);
+	gtk_widget_show(learn_dialog);
+	
+	g_signal_connect(G_OBJECT(lookup_widget(learn_dialog, "cancel")), "clicked", G_CALLBACK (tX_midiin::midi_learn_cancel), this);
+	g_signal_connect(G_OBJECT(learn_dialog), "destroy", G_CALLBACK (tX_midiin::midi_learn_destroy), this);
+}
+
+void tX_midiin::cancel_midi_learn()
+{
+	sp_to_learn=NULL;
+	learn_dialog=NULL;
+}
+
+gboolean tX_midiin::midi_learn_cancel(GtkWidget *widget, tX_midiin *midi)
+{
+	midi->sp_to_learn=NULL;
+	gtk_widget_destroy(midi->learn_dialog);
+}
+
+gboolean tX_midiin::midi_learn_destroy(GtkWidget *widget, tX_midiin *midi)
+{
+	midi->cancel_midi_learn();
+}
+
 
 #endif // USE_ALSA_MIDI_IN

@@ -28,6 +28,7 @@
 #include "tX_global.h"
 #include "tX_sequencer.h"
 #include "tX_extdial.h"
+#include "tX_engine.h"
 #include <malloc.h>
 
 #define TX_SEQPAR_DEFAULT_SCALE 0.05
@@ -1020,7 +1021,7 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gp
 		gtk_menu_append(menu, item);
 		gtk_widget_show(item);		
 
-		if (sp->bound_midi_event.type!=tX_midievent::NONE) {
+		if (sp->bound_midi_event.type==tX_midievent::NONE) {
 			gtk_widget_set_sensitive(item, FALSE);
 		}
 		g_signal_connect(item, "activate", (GCallback) tX_seqpar::remove_midi_binding, sp);		
@@ -1059,7 +1060,7 @@ gboolean tX_seqpar::remove_midi_binding(GtkWidget *widget, gpointer data) {
 gboolean tX_seqpar::learn_midi_binding(GtkWidget *widget, gpointer data) {
 	tX_seqpar *sp=(tX_seqpar *) data;
 
-	/* THIS NEEDS CODE. */
+	tX_engine::get_instance()->get_midi()->set_midi_learn_sp(sp);
 	
 	return TRUE;
 }
