@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2002  Alexander König
+    Copyright (C) 1999-2003  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -32,6 +32,10 @@
 #include <sys/time.h>
 
 #define NON_RT_BUFF 12
+
+#ifdef USE_ALSA
+#include <alsa/asoundlib.h>
+#endif
 
 class tX_audiodevice
 {
@@ -75,7 +79,9 @@ class tX_audiodevice_oss : public tX_audiodevice
 #ifdef USE_ALSA
 
 class tX_audiodevice_alsa : public tX_audiodevice
-{	
+{
+	snd_pcm_t *pcm_handle;
+	
 	public:
 	virtual int open();
 	virtual int close();
