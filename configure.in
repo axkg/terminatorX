@@ -492,9 +492,8 @@ AC_OUTPUT(Makefile
 	src/gui_icons/Makefile 
 	src/smallknob/Makefile 
 	doc/Makefile 
-	doc/img/Makefile 
 	doc/terminatorX-manual/Makefile
-	doc/termintorX-manual/C/Makefile	
+	doc/terminatorX-manual/C/Makefile	
 	terminatorX.spec 
 	terminatorX.1)
 

@@ -1,0 +1,786 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+  <!ENTITY legal SYSTEM "legal.xml">
+  <!ENTITY GFDL SYSTEM "fdl-appendix.xml">
+  <!ENTITY appversion "0.3.5">
+  <!ENTITY manrevision "0.1.1">
+  <!ENTITY date "March 18, 2002">
+  <!-- Information about the entities
+       The legal.xml file contains legal information, there is no need to edit the file.
+       Use the appversion entity to specify the version of the application.
+       Use the manrevision entity to specify the revision number of this manual.
+       Use the date entity to specify the release date of this manual.
+       Use the app entity to specify the name of the application. -->
+]>
+<article id="index" lang="en">
+  <articleinfo>
+    <title>terminatorX - Manual</title>
+    <author><firstname>Alexander</firstname>
+      <surname>K&ouml;nig</surname></author>
+    <copyright><year>1999 - 2002</year>
+      <holder ROLE="mailto:alex@rhlx01.fht-esslingen.de">Alexander K&ouml;nig</holder></copyright>
+    <releaseinfo>Version 3.73</releaseinfo></articleinfo>
+  <preface id="preface">
+    <title>Preface</title>
+    <para>This is free software see the
+      <filename moreinfo="NONE">COPYING</filename>
+      file that came with this distribution for details.</para>
+    <para><emphasis>Warning:</emphasis> TerminatorX comes with
+      <emphasis>ABSOLUTELY NO WARRANTY</emphasis>. This software is
+      known o lockup X11 or cause other problems under rare conditions. Don't
+      use it on production servers. You have been
+      warned!</para></preface>
+
+  <section id="INTRODUCTION"><title>Introduction</title>
+    <section id="WHATITIS"><title>What it is</title>
+      <para><application moreinfo="NONE">terminatorX</application> is a
+	realtime audio synthesizer that allows you to "scratch" on
+	digitally sampled audio data (*.wav, *.au, *.mp3, *.ogg etc.)
+	the way hiphop-DJs scratch on vinyl records. It features
+	multiple turntables, realtime effects (built-in as well as
+	LADSPA plugin effects), a sequencer and an easy-to-use gtk+
+	GUI.</para>
+
+      <para>This is <emphasis>beta</emphasis> Software please help me
+	fix bugs. See <xref linkend="CONTACT"/>
+	(Contact/Download). Please read this manual and take a look at
+	the
+	<ulink url="http://www.terminatorX.cx">homepage</ulink>.
+      </para></section>
+
+    <section id="QUICKSTART"><title>Quickstart</title>
+      <orderedlist CONTINUATION="RESTARTS"
+		   INHERITNUM="IGNORE"><listitem><para>If you don't have
+	    <application moreinfo="NONE">LADSPA</application> (Linux
+	    Audio Developer's Simple Plugin API) installed, go and get
+	    it from the 
+	    <ulink url="http://www.ladspa.org">LADSPA-homepage</ulink>
+	    and install the SDK. terminatorX requires 
+	    <filename moreinfo="NONE">ladspa.h</filename>.</para></listitem>
+	<listitem><para>Install terminatorX (see 
+	    <filename moreinfo="NONE">INSTALL</filename>)</para></listitem>
+	<listitem><para>Run terminatorX</para></listitem>
+	<listitem><para>Load an audiofile into the available turntable
+	    (you can add more turntables if you want) (Hint: Click on
+	    the button that holds "NONE" to load an audiofile, or drop
+	    one over the audiofile display from your filemanager if your
+	    filemanager is efm, gmc, Nautilus or compatible (kfm does
+	    <emphasis>not</emphasis> work))</para></listitem>
+	<listitem>
+	  <para>Load a LADSPA plugin of your choice by clicking the
+	    turntable's <emphasis>FX</emphasis> button and enable it.
+	  </para>
+	</listitem>
+
+	<listitem><para>Click on the "Audio Engine"-button to start
+	    playback.</para></listitem>
+
+	<listitem><para>Click on the "Mouse-Grab"-button to enter grab
+	    mode. The turntable with the red border has the input
+	    focus.</para></listitem>
+
+	<listitem><para>Press <keycap moreinfo="NONE">SPACE</keycap> or
+	    left mouse button to scratch.</para></listitem>
+
+	<listitem><para>Release <keycap moreinfo="NONE">SPACE</keycap>  or left mouse button to let the scratch-file run at the turntable's default speed.</para></listitem>
+	<listitem><para>Press <keycap moreinfo="NONE">ESCAPE</keycap> to
+	    quit grab mode.</para></listitem></orderedlist></section>
+
+    <section id="FEATURES"><title>Features</title>
+      <itemizedlist><listitem><para>Scratching ;)</para></listitem>
+	<listitem><para>Multiple turntables</para></listitem>
+	<listitem><para>Built-in Sequencer</para></listitem>
+	<listitem><para>Pitch / Volume settings for each turntable</para></listitem>
+	<listitem><para>Effects (Lowpass/Echo) configurable for each turntable</para></listitem>
+	<listitem><para>Syncing tables to one master turntable</para></listitem>
+	<listitem><para>Broad audiofile-type support through the use of sox and mpg123</para></listitem>
+	<listitem><para>Recording (straight to disk now)</para></listitem>
+	<listitem><para>Save turntable sets (.tX - files)</para></listitem>
+	<listitem><para>Support for the LADSPA-plugin-standard.</para></listitem>
+	<listitem><para>and more</para></listitem></itemizedlist></section>
+    <section id="REQUIREMENTS"><title>Requirements</title>
+      <itemizedlist><listitem><para>Software</para>
+	  <itemizedlist><listitem><para>required</para>
+	      <itemizedlist><listitem><para>The Linux Operating System (Version &gt;=
+		    2.0) or FreeBSD</para></listitem>
+		<listitem><para>glibc2 (pthreads).</para></listitem>
+		<listitem><para>XFree86 (with DGA DirectMouse
+		    support). Note that XFree86 Release 4.0 has a bug
+		    resulting in broken DirectMouse support. This has
+		    been fixed by the XFree86-Team with Release 4.0.1
+		    available from your distribution or the 
+		    <ulink url="http://www.xfree86.org">XFree86
+		      homepage</ulink>.
+		  </para></listitem>
+		<listitem><para>The Gimp Toolkit: gtk+ (>= 1.2.5) - Version 2 of gtk+ is
+		    supported, too. If your distribution doesn't provide
+		    a current version of gtk+ get it from the 
+		    <ulink url="http://www.gtk.org">gtk+
+		      homepage</ulink>.
+		  </para></listitem>
+		<listitem><para>LADSPA - the Linux Audio Developer's
+		    Simple Plugin API. Get it from the
+		    <ulink url="http://www.ladpsa.org">LADSPA homepage</ulink>
+		  </para></listitem>
+		<listitem><para>a compiler
+		    (gcc)</para></listitem></itemizedlist></listitem>
+	    <listitem><para>optional</para>
+	      <itemizedlist><listitem><para>
+		    <ulink url="http://home.sprynet.com/~cbagwell/sox.html">sox</ulink>
+		    for enhanced audio file support</para></listitem>
+		<listitem><para>
+		    <ulink url="http://www-ti.informatik.uni-tuebingen.de/~hippm/mpg123.html">mpg123</ulink>
+		    for mp3 support</para></listitem>
+		<listitem><para>
+		    <ulink url="http://www.xiph.org/ogg/vorbis/">ogg123</ulink>
+		    for Ogg Vorbis support</para></listitem>
+
+	      </itemizedlist></listitem></itemizedlist></listitem>
+	<listitem><para>Hardware</para>
+	  <itemizedlist><listitem><para>An OSS compatible soundcard
+		capable of stereo output. This includes
+		<emphasis>all</emphasis> 
+		<ulink url="http://www.alsa-project.org">ALSA-driven</ulink> 
+		soundcards as this enhanced audio device interface includes support for
+		the OSS API.</para></listitem>
+
+	    <listitem><para>A good clean mouse and pad, a good X-Pointer
+		setup.</para></listitem></itemizedlist></listitem></itemizedlist>
+
+      <para>A note on performance: terminatorX is known to run
+	satisfyingly on pentium-class systems (or above of
+	course). Increasing the number of turntables or plugins will of
+	course require more performant systems.</para></section>
+
+    <section id="INSTALLATION"><title>Installation</title>
+      <para>For GNU-standards' sake this information is now located in
+	the <filename moreinfo="NONE">INSTALL</filename> file that came
+	with this distribution of
+	terminatorX.</para></section></section>
+
+  <section id="OPERATION"><title>Operation</title>
+    <para>With Release Version 3.70 the terminatorX has undergone some
+      redesign again. It's split up in the main controls (master,
+      sequencer, engine controls and menu buttons) and the individual
+      turntable's controls. Each turntable has it's own GUI split up
+      into control and audio panel.</para>
+
+    <section id="MAINCONTROLS"><title>Main Controls</title>
+      <para>The controls of the master gui are located in the top and
+	the right bar of the terminatorX main window.</para>
+      <itemizedlist><listitem><para><emphasis>Audio Engine Power / Mouse
+	      Grab</emphasis></para>
+
+	  <para>With the Audio Engine Button you can en- and disable the
+	    audio playback engine without activating the
+	    sequencer. Unlike earlier versions you will not
+	    automatically enter mouse-grab mode so you can modify
+	    volume/pitch/echo settings etc. while you actually hear what
+	    you do. </para>
+
+	  <para>Some functions are not available when the audio engine is on, their controls will be marked insensitive when you enable the engine. To actually enter grab mode you'll have to click on the "Mouse Grab" button. See <xref linkend="GRABMODE"/> (Grab Mode Operation) to find out how to control the software then.</para></listitem>
+	<listitem><para><emphasis>Record (Audio
+	      Engine)</emphasis></para>
+
+	  <para>To enable recording you have to enable the "Record"-toggle button BEFORE you 
+	    start the audio engine. You will be prompted for a filename after enabling the
+	    button. Audio will then be recorded to that file in stereo
+	    RIFF/WAV format from the moment you turn the audio engine on
+	    until you turn it off again. Please be aware of the fact
+	    that recording audio requires <emphasis>a lot</emphasis> of
+	    harddisk space!</para></listitem>
+
+	<listitem><para><emphasis>Sequencer Play / Record / Stop</emphasis></para>
+	  <para>Please read the Sequencer-Section to find out more about
+	    the sequencer.</para></listitem>
+
+	<listitem><para><emphasis>Master Volume /
+	      Pitch</emphasis></para>
+
+	  <para>The volume and pitch settings of the individual
+	    turntables are relative to these master settings. This
+	    information will be stored within the .tX set
+	    files.</para></listitem>
+
+	<listitem><para><emphasis>Add Turntable</emphasis></para>
+	  <para>Oh well, it says it all: adds a (new) turntable to the
+	    current set.</para></listitem>
+
+	<listitem><para><emphasis>Save Set</emphasis></para>
+	  <para>With this button you can save your current set and all related settings to a 
+	    .tX set file. Note that the audiofiles themselves will not be stored within
+	    these files but only references to them. Therefore on loading the set the 
+	    audiofiles have to be at the same location in the filesystem as they were when
+	    putting that set together.</para></listitem>
+	<listitem><para><emphasis>Load Set</emphasis></para>
+	  <para>Loads a previously saved set (see above). The current
+	    set will be destroyed!</para></listitem>
+
+	<listitem><para><emphasis>Options</emphasis></para>
+	  <para>Displays the options dialog. See
+	    <xref linkend="CONFIGURATION"/>
+	    (Options/Configuration).</para>
+	</listitem>
+	<listitem><para><emphasis>About/Legal</emphasis></para>
+	  <para>Displays a dialog with some info about the prog and the
+	    binary itself plus the good old GPL.</para></listitem>
+
+	<listitem><para><emphasis>Quit</emphasis></para>
+	  <para>No comment.</para></listitem></itemizedlist></section>
+    <section id="TURNtableCONTROLS"><title>Turntable Controls</title>
+      <para>The turntable GUI contains multiple controls and the
+	realtime displays for each turntable. To save some space on your
+	desktop and to give terminatorX the traditional
+	audio-application look, terminatorX features
+	&quot;knob&quot;-widgets. These widgets work pretty
+	straight-forward: click somewhere within the widget and keep the
+	left mouse-button pressed. Now move the mouse up and down or
+	left and right to increase/decrease the control's value. All
+	those widget are coupled with a text entry field since 3.70,
+	which allows you to enter values directly.</para>
+
+      <para>A turntable is visualized by two panels: the control and the
+	audio panel. These are no longer combined for better layout
+	management.</para>
+      <para>
+	Sometimes you might find a certain audio or control panel
+	unnecessary - simply eating up space. Since release 3.73 it is
+	possible to minimize audio and control panels to the 
+	<emphasis>panel bar</emphasis> with the tiny button with a blue
+	bar icon in the upper right edge of each panel. This bar works
+	just like GNOME's
+	window list or KDE's kicker: When a panel is minimized a button in
+	the bar will appear, representing the minimized window. On
+	clicking this button the button will be removed and the
+	minimized panel is displayed again. When no panels are minimized
+	the panel bar automatically disappears to save display space.
+</para>
+      <section><title>Turntable Audio Panel</title>
+	<para>The complete audio-file loaded into a turntable is
+	  displayed in the green-on-black audio-widget. When playing
+	  terminatorX will indicate the current position within the
+	  sample with a red cursor (a blue/green cursor indicates the
+	  turntable is muted).</para>
+
+	<para>Additionaly there are some controls above the audio-display:</para>
+	<itemizedlist><listitem><para><emphasis>Turntable Label</emphasis></para>
+	    <para>This label indicates the turntables name. The name can
+	      be set via the control panel</para></listitem>
+
+	  <listitem><para><emphasis>File Button</emphasis></para>
+	    <para>This button holds the name of the audio-file currently
+	      loaded. When there's no sample loaded the button will read
+	      &quot;NONE&quot; to indicate the current status. 
+	      Click on this button to get a menu from which you can
+	      load/reload a sound file or run an external soundfile
+	      editor. Alternatively you can drag'n'drop
+	      files over the audio-display to load
+	      them.</para>
+	    <itemizedlist>
+	      <title>The File Button Menu</title>
+	      <listitem><para><emphasis>Load File</emphasis></para>
+		<para>Choose this menu entry to select a soundfile from
+		  the file-selection dialog that will pop-up.
+		</para></listitem>
+
+	      <listitem><para><emphasis>Reload File</emphasis></para>
+		<para>Choose this menu entry to re-read the
+		  audio-file.</para></listitem>
+
+	      <listitem><para><emphasis>Edit File</emphasis></para>
+		<para>This menu entry will run the external audiofile-editor
+		  (that can be specified via the options-dialog) with
+		  the current audio-file as a parameter. Choose
+		  reload after editing and saving the
+		  file.</para></listitem>
+
+	    </itemizedlist>
+	  </listitem>
+	  
+	  <listitem>
+	    <para><emphasis>Mouse Mapping</emphasis></para>
+	    <para>terminatorX allows mapping misc parameters to the
+	      mouse axis of your choice. These mappings will be
+	      activated in grab mode, so if you move your mouse in X or
+	      Y direction in grab mode the parameters you selected from
+	      this menu will be affected (for this turntable). Since
+	      Version 3.70 this mappings are no longer hardcoded to
+	      built-in controls but available for all parameters that
+	      qualify as &quot;mappable&quot;. Note that this includes
+	      plugins' controls as
+	      well.</para></listitem></itemizedlist></section>
+
+      <section><title>Turntable Controls</title>
+	<para>These controls are now grouped within functional
+	  panels. The number of panels depends on the number of plugins
+	  loaded. terminatorX allows hiding the controls not required
+	  via the yellow triangle button. To un-hide just click the
+	  button again. The first panels are the standard controls for a
+	  turntable, then follows the dynamic FX-section and below that
+	  follow the pitch and volume controls.</para>
+	
+	<section><title>Main Panel</title>
+	  <itemizedlist><listitem><para><emphasis>Name Field</emphasis></para>
+	      <para>The main panel features a text entry field that
+		allows setting a name for the related turntable. The
+		Labels for the controls and the audio-display will
+		update accordingly.</para></listitem>
+
+	    <listitem><para><emphasis>Delete Button</emphasis></para>
+	      <para>Pressing this button remove the tunrtable from the
+		current setup. Note that all sequencer events recorded
+		for this turntable will be erased,
+		too.</para></listitem></itemizedlist></section>
+
+	<section><title>Trigger Panel</title>
+	  <para>The trigger panel holds all controls related to
+	    triggering the turntable. For more details on
+	    synchronization see <xref linkend="SYNCHRONIZATION"/>
+	    (synchronization).</para>
+
+	  <itemizedlist><listitem><para><emphasis>Trigger! Button</emphasis></para>
+	      <para>Pressing this button triggers the turntable
+		now. With the audio engine enabled this will cause the
+		turntable to start playing back audio from the beginning
+		of the sample.</para></listitem>
+
+	    <listitem><para><emphasis>Stop Button</emphasis></para>
+	      <para>Guess what, this stops this turntable's
+		audio-playback.</para></listitem>
+
+	    <listitem><para><emphasis>Master Button</emphasis></para>
+	      <para>Enabling this button makes this turntable the
+		<emphasis>sync-master</emphasis>. Note that only
+		<emphasis>one</emphasis> turntable at a time can be the
+		sync-master.</para></listitem>
+
+	    <listitem><para><emphasis>Client Button</emphasis></para>
+	      <para>This button marks the turntable as
+		<emphasis>sync-client</emphasis>, so it will be triggerd
+		with the master automatically.</para></listitem>
+
+	    <listitem><para><emphasis>Sync-Cycles Selection</emphasis></para>
+	      <para>The sync cycles determine how often a sync-client
+		should be triggered. With a setting of zero the
+		sync-client will be (re-)triggered with
+		<emphasis>every</emphasis> trigger of the sync-master. A
+		setting of 1 will (re-)trigger the client every
+		<emphasis>second</emphasis> master-triger and so
+		on.</para></listitem></itemizedlist>
+
+	  <para>Below the effect queue a turntable shows some more controls:
+	    <itemizedlist>
+	      <listitem>
+		<para><emphasis>Pitch Control</emphasis></para>
+		<para>The pitch control allows setting the default playback
+		  speed for that turntable (the "motor" speed). Negative values
+		  will result in the sample being played backwards.</para>
+	      </listitem>
+	      <listitem>
+		<para><emphasis>PAN Control</emphasis></para>
+		<para>This parameter allows setting the position of the
+		  turntable's main signal within the stereo panorama.</para>
+	      </listitem>
+	      <listitem>
+		<para><emphasis>VU Meter</emphasis></para>
+		<para>The displayed signal shows the turntable's current
+		  signal not including the echo-signal which is mixed
+		  separately.</para>
+	      </listitem>
+	    </itemizedlist>
+
+	  </para>
+
+	</section></section>
+      <section><title>The Effect Queue</title>
+	<para>With release 3.70 the effects are no longer hardcoded into
+	  the turntable. The effects are now arranged within an
+	  per-turntable effect-queue. The effect sequence is
+	  configurable by the user. To move an effect to higher position
+	  within the queue, press the <emphasis>blue upward arrow
+	    button</emphasis>. This will cause the effect to be renderd
+	  <emphasis>before</emphasis> the following effects. The
+	  <emphasis>blue downward arrow button</emphasis> will move the
+	  effect down by one position. It will then be rendered
+	  <emphasis>after</emphasis> the preceding effects.</para>
+
+
+	<para>There are two types of effects: the traditional built-in
+	  effects (Lowpass and Echo) and LADSPA plugins. The built-in
+	  effects are always available and cannot be removed (but
+	  disabled). There can be only one instance of a built-in
+	  effect. The LADSPA plugins on the other hand may be
+	  instanciated multiple times and can be removed from the effect
+	  queue. Press the <emphasis>blue cross button</emphasis> to
+	  achieve this.</para>
+
+	<figure float="0">
+	  <title>An example for a terminatorX effect queue</title>
+	  <graphic fileref="figures/signalflow" scale="27"/>
+	</figure>
+	<para>Now since release 3.71 the built-in echo effect is treated
+	  differently from other effects. Where all other effects feed
+	  their signal back into the effect queue the echo effect
+	  doesn't touch the input signal. It's echo-signal is mixed
+	  seperately from the turntable's main signal to allow a
+	  different panning value for the echo-signal. This mode of
+	  operation does have some side-effects: imagine a lowpass
+	  filter with a position after the echo effect in the effect
+	  queue. This will result in the turntable's main signal being
+	  lowpassed but it will leave the echo-signal
+	  un-lowpassed.</para>
+
+	<para>Some may call this behaviour a bug - whereas I would
+	  consider it a feature ;). Anyway if the above description
+	  didn't clear things up maybe the displayed figure does. It
+	  shows a schematic effect queue with the built-in effects and
+	  two LADSPA effects enabled. Now with this setup you will not
+	  hear anything from the second LADSPA effect in the
+	  echo-signal.</para>
+
+
+	<para>For more information on a LADSPA plugin, press it's panel's label and a small info box will pop up.</para>
+	<itemizedlist><listitem><para><emphasis>FX Button</emphasis></para>
+	    <para>Press this button to load a LADSPA plugin into the
+	      effect queue of the turntable. A menu holding the
+	      available (terminatorX-&quot;compatible&quot;)
+	      LADSPA-plugins will pop up. The plugins are grouped within
+	      submenus according to the modules the plugins are
+	      contained in. Simply select the plugin you want to load
+	      from this menu and a panel for it will pop up at the end
+	      of the effect queue.</para>
+
+	    <para>Note that due to the wide parameter ranges some LADSPA
+	      plugins have they sometimes might be hard to control with
+	      the knob widget. In these cases you might want to use the
+	      text field to enter values. For more details on Plugins
+	      see <xref linkend="LADSPAPLUGINS"/>
+	      (LASDPA).</para></listitem></itemizedlist></section>
+
+      <section><title>Lowpass Panel</title>
+	<para>terminatorX features a builtin resonating lowpass filter
+	  that can be configured with this panel.</para>
+
+	<itemizedlist><listitem><para><emphasis>Enable Button</emphasis></para>
+	    <para>Activating this button will enable the lowpass filter
+	      for this turntable.</para></listitem>
+
+	  <listitem><para><emphasis>Input Gain Control</emphasis></para>
+	    <para>With this parameter you can amplify the signal that
+	      goes into the lowpass filter if
+	      required.</para></listitem>
+
+	  <listitem><para><emphasis>Frequency Control</emphasis></para>
+	    <para>Use this parameter to set the cutoff frequency for the
+	      lowpass filter. Minimum: 0=0Hz, Maximum:
+	      1=22KHz.</para></listitem>
+
+	  <listitem><para><emphasis>Resonance</emphasis></para>
+	    <para>Use this parameter to set the
+	      resonance-value. Minimum: 0=no resonance, Maximum: 1=max
+	      resonance.</para></listitem></itemizedlist></section>
+
+      <section><title>Echo Panel</title>
+	<para>Additionaly terminatorX features a built-in echo
+	  effect. It can be configured with this panel.</para>
+
+	<itemizedlist><listitem><para><emphasis>Enable
+		Button</emphasis></para>
+
+	    <para>Activating this button will enable the echo effect for
+	      this turntable.</para></listitem>
+
+	  <listitem><para><emphasis>Duration Control</emphasis></para>
+	    <para>Use this parameter to set the length of the echo. The
+	      duration parameter scales to the actual sample length: so
+	      if you set it to 0.5 you will hear the echo when the red
+	      playback cursor is half way  through the sample. This is
+	      true for samples that are shorter than terminatorX'
+	      maximum echo buffer size only.</para></listitem>
+
+	  <listitem><para><emphasis>Feedback Control</emphasis></para>
+	    <para>Set the echo's feedback amount with this
+	      parameter.</para></listitem>
+
+	  <listitem><para><emphasis>Volume Control</emphasis></para>
+	    <para>This parameter can additionally amplify the echo
+	      signal. Unlike the feedback parameter above this parameter
+	      has no influence on the signal fed back into the
+	      echo-buffer, it effects merely the playback volume of the
+	      echo signal.</para></listitem>
+
+	  <listitem><para><emphasis>Pan Control</emphasis></para>
+	    <para>The echo effect differs from other effects as it's
+	      output signal will be mixed seperately. The main goal here
+	      is to allow positioning the echo signal at a position in
+	      the stereo panorama that differs from the main panning
+	      positon of the turntable to achieve a somewhat spacial
+	      effect. The easy example is: turntable's panning left,
+	      echo's panning right. As both pan parameters are
+	      sequencable you can create nice motion effects from this
+	      starting point.</para></listitem>
+
+
+	</itemizedlist></section></section>
+    <section id="SYNCHRONIZATION"><title>Synchronization</title>
+      <para>Let's start off with an example: Say you have two drumloops
+	and one bassline loaded in three turntables. Of course you want
+	these samples to be triggered at the same time but you don't
+	want to invest time to cut them to the exact length. Therefore
+	you decide which of the drumloops to make the sync
+	master. You'll have to do this before you enable the audio
+	engine (for now). Only one turntable can be the sync master. Now
+	you can make the other two sync clients which will cause them to
+	be (re-)triggered whenever the master is (re-)triggered. The
+	number you can select to the right of the <emphasis>client
+	  button</emphasis> sets the trigger delay for the button: if
+	it's set to zero the turntable will be triggered with every
+	master trigger, if it's set to 1 it'll be triggered every 2nd
+	master trigger and so on.</para>
+
+      <para>A nice side effect of this feature is: you can now scratch
+	the second (sync client) drum loop and no matter whether you're
+	scratching is good or not the beat will be triggered correctly
+	again ;)</para></section>
+
+    <section id="GRABMODE"><title>Grab Mode Operation</title>
+      <para>After pressing the <emphasis>Mouse Grab button</emphasis>
+	terminatorX enters "grab mode". This mode actually locks the
+	mouse (as this input is now used to control the realtime
+	parameters) and therefore you'll have to know some
+	mouse/keyboard shortcuts to control the software without the
+	GUI.</para>
+
+      <para>Press <keycap moreinfo="NONE">ESCAPE</keycap> to quit grab mode.</para>
+      <para>Select the turntable with input focus: The first turntable
+	to hold the input focus will be the first turntable. You can now
+	use <keycap moreinfo="NONE">TAB</keycap> or right mouse button
+	to switch to the next turntable. Alternativley you can use
+	<keycap moreinfo="NONE">F1</keycap> to 
+	<keycap moreinfo="NONE">F12</keycap> to select turtntable 1 to 12.</para>
+
+      <para>Now the turntable that has the focus is the one you will
+	manipulate with your mouse and keyboard inputs: Note that you
+	can actually map different functions to the mouse x/y axis - so
+	what actually happens when you move your mouse depends on what
+	you select on the x/y control panels for each turntable.</para>
+
+      <table><title>Keyboard Controls in Grab Mode</title>
+	<tgroup COLS="2"><thead><row><entry>Key</entry>
+	      <entry>Function</entry></row></thead>
+	  <tbody><row><entry><keycap moreinfo="NONE">TAB</keycap></entry>
+	      <entry>select next turntable</entry></row>
+	    <row><entry><keycap moreinfo="NONE">F1</keycap> to
+		<keycap moreinfo="NONE">F12</keycap></entry>
+	      <entry>select turntable 1 to 12</entry></row>
+	    <row><entry><keycap moreinfo="NONE">RETURN</keycap></entry>
+	      <entry>triggers the turntable</entry></row>
+	    <row><entry><keycap moreinfo="NONE">BACKSPACE</keycap></entry>
+	      <entry>stops the turntable</entry></row>
+	    <row><entry><keycap moreinfo="NONE">S</keycap></entry>
+	      <entry>toggles "Sync Client"</entry></row>
+	    <row><entry><keycap moreinfo="NONE">SPACE</keycap></entry>
+	      <entry>while pressed turntable speed is mapped to mouse
+		speed (scratching!)</entry></row>
+
+	    <row><entry><keycap moreinfo="NONE">ALT</keycap></entry>
+	      <entry>mute on/off</entry></row>
+	    <row><entry><keycap moreinfo="NONE">CTRL</keycap></entry>
+	      <entry>mute on/off (inverted)</entry></row>
+	    <row><entry><keycap moreinfo="NONE">F</keycap></entry>
+	      <entry>("fast") warp mode (while scratching)</entry></row>
+	    <row><entry><keycap moreinfo="NONE">W</keycap></entry>
+	      <entry>same as above but the audio will be muted while
+		warping</entry></row></tbody></tgroup></table>
+
+      <table><title>Mouse Button Controls in Grab Mode</title>
+	<tgroup COLS="2"><thead><row><entry>Mouse Button</entry>
+	      <entry>Function</entry></row></thead>
+	  <tbody><row><entry><emphasis>Left button</emphasis></entry>
+	      <entry>same as <keycap moreinfo="NONE">SPACE</keycap>:
+		scratching (triggers the turntable when
+		stopped)</entry></row>
+
+	    <row><entry><emphasis>Right button</emphasis></entry>
+	      <entry>select next turntable</entry></row>
+	    <row><entry><emphasis>Middle button</emphasis></entry>
+	      <entry>mute on/off</entry></row></tbody></tgroup></table>
+      <para>Scratching works as before: press <keycap
+						      moreinfo="NONE">SPACE</keycap> or left mouse button to actually scratch: now your mouse controls the turntables speed. Release it to let that turntable spin at default speed again.</para></section>
+
+    <section id="DRAGNDROP"><title>Drag And Drop</title>
+      <para>Since V3.55 terminatorX provides multiple DND-Drop-Targets
+	for use with GNOME / gmc (gmc is the GNU Midnight Commander),
+	Nautilus or the Elightenment File Manager (efm). You can load an
+	audiofile into an existing turntable by dragging it from a gmc
+	(or efm or whatever)-window and drop it  over a. the
+	<emphasis>file button</emphasis> (audio-display) or b. (the
+	easier target ;) over the audio-display (the green on black
+	widget that displays the audiodata).</para>
+
+      <para>To add a file to the set (== to load the file into a *new*
+	turntable) simply drop the audiofile over the "New Turntable"
+	Button. To load a complete terminatorX-set simply drop the
+	setfile (*.tX) over the "Load Set" button.</para></section>
+
+    <section id="SEQUENCER"><title>The Sequencer</title>
+      <para>Release 3.60 introduced the sequencer. It can record and
+	play back events for the following parameters:</para>
+
+      <itemizedlist><listitem><para>master volume &amp; pitch</para></listitem>
+	<listitem><para>scratching</para></listitem>
+	<listitem><para>(turntable) volume &amp; pitch</para></listitem>
+	<listitem><para>triggers</para></listitem>
+	<listitem><para>loop (on/off)</para></listitem>
+	<listitem><para>sync client settings</para></listitem>
+	<listitem><para>muting</para></listitem>
+	<listitem><para><emphasis>all</emphasis> parameters for the
+	    effects. This includes built-in effects (lowpass and echo)
+	    as well as LADSPA plugins.</para></listitem></itemizedlist>
+
+      <para>To record events simply press the
+	<emphasis>Record</emphasis> button of the sequencer, then press
+	the <emphasis>Play</emphasis> button. All actions (for
+	sequencable parameters - see above) you now take will be
+	recorded into the song list. Press <emphasis>Stop</emphasis> and
+	<emphasis>Play</emphasis> again to see/hear how terminatorX
+	plays back the events recorded before. You can now record events
+	again for e.g. another turntable or record other parameters for
+	the same turntable - whatever you want to do. Recording events
+	for parameters for wich events have been recorded before will
+	result in dubbing: if you touch a parameter while recording,
+	events previously recorded will be erased from the moment you
+	touch the paramater until you stop recording.</para>
+
+      <para>When recording long sequences/songs you can use the
+	sequencer-scale to start recording/playback from any
+	song-position you want. To record a single paramteter value at a
+	certain position simply move the sequencer-scale to that
+	position, press <emphasis>Record,</emphasis> set the parameter
+	and press <emphasis>Stop</emphasis> again.</para>
+
+      <para>There is no other the way to edit the sequencer events
+	currently, but future releases may feature an event-list
+	editor.</para></section>
+
+    <section id="LADSPAPLUGINS"><title>Plugins (LADSPA)</title>
+      <para>Since release 3.70 terminatorX supports
+	LADSPA-plugins. LADSPA is the &quot;Linux Audio Developer's
+	Simple Plugin API&quot; which was designed by developers on the
+	Linux-Audio-Developer-Mailinglist and is maintained by Richard
+	W.E. Furse. For more information on LADSPA, other LADSPA-hosts
+	and LADSPA-plugins checkout the 
+	<ulink url="http://www.ladspa.org">LADSPA homepage</ulink>.</para>
+
+      <para>Not every plugin is supported by terminatorX though. As the
+	plugins are inserted into the per-turntable effect-queue, they
+	have to be mono plugins (as is that queue) for now. This is why
+	terminatorX will load plugins with <emphasis>one</emphasis>
+	audio-in port and <emphasis>one</emphasis> audio-out port
+	only.</para>
+
+      <para>The decision on wether a plugin is terminatorX-suitable is
+	made on terminatorX startup, so only plugins that fit into the
+	effect queue will be offered in the plugin-menu that pops up
+	when the <emphasis>FX</emphasis> button is clicked. On startup
+	terminatorX will print some information on the LADSPA-plugins
+	analysis process to the standard output. Watch the terminal you
+	run terminatorX from for that info if you have problems loading
+	a plugin.</para>
+
+      <para>As specified in the LADSPA-standard LADSPA-plugins can be
+	located in multiple directories across the filesystem. To enable
+	LADSPA-hosts to find those plugins you have to set the
+	environment variable <ENVAR>LADSPA_PATH</ENVAR>
+	accordingly. Let's say you store your plugins in 
+	<filename moreinfo="NONE">/usr/lib/ladspa</filename>
+	and <filename moreinfo="NONE">/home/yourlogin/plugins</filename>
+	then you would have to set:</para>
+
+
+      <para><ENVAR>LADSPA_PATH</ENVAR>=
+	<filename moreinfo="NONE">/usr/lib/ladspa:/home/yourlogin/plugins</filename></para>
+      <para>As a fallback terminatorX will look in the standard
+	directories <filename moreinfo="NONE">/usr/lib/ladspa</filename>
+	and <filename moreinfo="NONE">/usr/local/lib/ladspa</filename>
+	if the environment variable  is not set. Note that this is just
+	a convenience-function, in order for other LADSPA-hosts to work
+	properly, be sure to set your <ENVAR>LADSPA_PATH</ENVAR>
+	correctly. It is a good idea to do that from somewhere in your
+	system configuration (either in your rc-scripts or 
+	<filename moreinfo="NONE">/etc/profile</filename> 
+	or whereever you perefer).</para></section></section>
+
+  <section id="CONFIGURATION"><title>Configuration</title>
+    <para>All configuration business now happens in the
+      Options-dialog. The features that are not completely
+      self-explaining do have tooltips.</para>
+
+    <para>A word on the settings in general: your settings are stored in
+      the file <filename
+			 moreinfo="NONE">~/.terminatorX3rc.bin</filename> so if you think you completely messed up your settings you will have to exit terminatorX - delete this file - and then re-run terminatorX with the default settings.</para>
+
+    <section id="AUDIOSETUP"><title>Audio Setup</title>
+      <para>TerminatorX renders audio blockwise. If you want to have
+	near-realtime operation you need to have really small
+	blocks. The values of these blocks can be influenced via the
+	<emphasis>buffer size</emphasis> option. The setting you select
+	actually results in a 2^x blocksize (size-setting == 8 -> true
+	buffer size in bytes is 2^8=256).</para>
+
+      <para>The problem is the smaller the value you select is the
+	faster your machine has to be. So if you here "clicks", or
+	"drops" in audio output that are not related to your
+	sample-material you will have to increase the buffer size. On
+	the other hand if you believe terminatorX does not react fast
+	enough you have to decrease this parameter. The default value is
+	8, but as my machine handles 7 nicely (running with root
+	privileges for realtime scheduling) I use 7.</para></section>
+
+    <section id="MOUSEINPUTSETUP"><title>Mouse/Input Setup</title>
+      <para>Between rendering and outputing these blocks terminatorX
+	checks for mouse motion. The problem with mice is: they don't
+	report when they have stopped. This is why terminatorX assumes
+	your mouse has stopped if there is no motion reported for
+	certain amount of render/output-cycles. This value is
+	configurable via the <emphasis>Stop-sense-cycles</emphasis>
+	option. If you decrease your buffsize of course you shorten the
+	cycle time as well, therefore if you here strange stop/run
+	behaviour of the audio ouput while scratching after you
+	decreased the buffersize you might have to increase the
+	stop-sense value too.</para>
+
+      <para>Xinput Device: <emphasis>WARNING:</emphasis> Use this option
+	*only* if you want to use an input device other than your
+	default-mouse for scratching. Selecting your default pointer
+	will cause terminatorX to crash. See the "Using a turntable"
+	section on the terminatorX homepage for
+	details.</para></section>
+
+    <section id="GUISETUP"><title>GUI Setup</title>
+      <para>With <emphasis>Update Idle</emphasis> / <emphasis>Update
+	  Delay</emphasis> you can configure GUI resposivness: Higher
+	<emphasis>Update Idle</emphasis> will cause the wav-display
+	(position display) and flash-widgets to update less
+	often. Higher <emphasis>Update Delay</emphasis> values will
+	cause the parameter widgets to update less
+	often.</para></section>
+
+    <section id="SOUNDFILEEDITOR"><title>Soundfile-Editor integration</title>
+      <para>You can now enter the soundfile editor of your choice in the
+	"Soundfile editor" field. This editor will be started when
+	clicking the <emphasis>Edit</emphasis>-button in the  main panel
+	of the vtt-gui. If you enter for example "myeditor" terminatorX
+	will run "myeditor
+	sample_in_vtt.wav".</para></section></section>
+
+  <section id="CONTACT"><title>Contact / Download</title>
+    <para>Find out more about terminatorX at it's <ulink url="http://www.terminatorX.cx">homepage</ulink>.</para>
+    <para>Send me comments, bug-reports, patches or scratches (see
+      scratches section on the terminatorX homepage) at:
+      <email>alkoit00@fht-esslingen.de</email></para></section>
+</article>
+
+
+
