@@ -465,9 +465,9 @@ tX_audiodevice_jack::tX_audiodevice_jack():tX_audiodevice()
 int tX_audiodevice_jack::open()
 {
 	tX_jack_client *jack_client=tX_jack_client::get_instance();
-	sample_rate=jack_client->get_sample_rate();
 	
 	if (jack_client) {
+		sample_rate=jack_client->get_sample_rate();
 		client=jack_client;
 		is_open=true;
 		
