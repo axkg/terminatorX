@@ -38,4 +38,4 @@ terminatorX_SOURCES =	tX_endian.c tX_dialog.cc tX_widget.c wav_write.c \
 			tX_midiin.h tX_midiin.cc tX_glade_interface.cc \
 			tX_glade_interface.h tX_glade_callbacks.cc \
 			tX_glade_callbacks.h tX_glade_support.cc \
-			tX_glade_support.h
+			tX_glade_support.h tX_ladspa_class.h tX_ladspa_class.cc
