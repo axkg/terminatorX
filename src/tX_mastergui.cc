@@ -617,7 +617,7 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 				tx_note("Error starting engine: engine is already running.", true);
 				break;
 				case ERROR_AUDIO:
-				tx_note("Error starting engine: failed to access audiodevice.", true);
+				tx_note("Error starting engine: failed to access audiodevice.\nPlease check the audio device settings in the \"Preferences\" dialog.", true);
 				break;
 				case ERROR_TAPE:
 				tx_note("Error starting engine: failed to open the recording file.", true);
