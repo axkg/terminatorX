@@ -1,4 +1,4 @@
-SOURCES=terminatorX-app.png\
+EXTRA_DIST=terminatorX-app.png\
 	terminatorX-mime.png\
 	terminatorX.mime\
 	tx-gnome-install\

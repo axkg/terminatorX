@@ -2,11 +2,15 @@ LIBS=@X_LIBS@ @GTK_LIBS@ @LIBS@
 
 SUBDIRS = gui_icons smallknob
 
+EXTRA_DIST = README.MMX
+
 CFLAGS=@CFLAGS@ @GTK_CFLAGS@ -D_REENTRANT
 CXXFLAGS=@CFLAGS@ @GTK_CFLAGS@ -D_REENTRANT
 
 license.c: $(top_srcdir)/COPYING
 	@AWK@ -f $(srcdir)/licmak.awk < $(top_srcdir)/COPYING > $(srcdir)/license.c
+
+tX_dialog.o: license.c
 
 BUILT_SOURCES = license.c
 
@@ -24,7 +28,7 @@ terminatorX_SOURCES =	tX_endian.c tX_dialog.cc tX_widget.c wav_write.c \
 			tX_audiodevice.cc tX_audiodevice.h tX_mastergui.cc \
 			3dnow.h mmx.h tX_audiofile.cc \
 			tX_audiofile.h tX_loaddlg.cc tX_loaddlg.h tX_icon.c \
-			tX_icon.h README.MMX tX_prelis.cc tX_prelis.h \
+			tX_icon.h tX_prelis.cc tX_prelis.h \
 			tX_seqpar.h tX_seqpar.cc tX_pbutton.cc tX_pbutton.h \
 			tX_event.h tX_event.cc tX_sequencer.h tX_sequencer.cc \
 			tX_knobloader.h tX_knobloader.c tX_dial.c tX_dial.h \

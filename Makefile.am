@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign 
 SUBDIRS = src gnome-support doc
-SOURCES = README.GNOME README.PERFORMANCE terminatorX.spec terminatorX.spec.in
+EXTRA_DIST = COPYING-DOCS README.GNOME README.PERFORMANCE terminatorX.spec terminatorX.spec.in
 
 man_MANS = terminatorX.1
