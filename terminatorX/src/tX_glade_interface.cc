@@ -989,3 +989,49 @@ create_tx_del_mode (void)
   return tx_del_mode;
 }
 
+GtkWidget*
+create_tX_midilearn (void)
+{
+  GtkWidget *tX_midilearn;
+  GtkWidget *dialog_vbox5;
+  GtkWidget *vbox4;
+  GtkWidget *midilabel;
+  GtkWidget *dialog_action_area5;
+  GtkWidget *button1;
+
+  tX_midilearn = gtk_dialog_new ();
+  gtk_window_set_title (GTK_WINDOW (tX_midilearn), "MIDI Learn");
+
+  dialog_vbox5 = GTK_DIALOG (tX_midilearn)->vbox;
+  gtk_widget_show (dialog_vbox5);
+
+  vbox4 = gtk_vbox_new (FALSE, 0);
+  gtk_widget_show (vbox4);
+  gtk_box_pack_start (GTK_BOX (dialog_vbox5), vbox4, TRUE, TRUE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (vbox4), 4);
+
+  midilabel = gtk_label_new ("Waiting for MIDI event....");
+  gtk_widget_show (midilabel);
+  gtk_box_pack_start (GTK_BOX (vbox4), midilabel, TRUE, TRUE, 0);
+  gtk_label_set_justify (GTK_LABEL (midilabel), GTK_JUSTIFY_LEFT);
+
+  dialog_action_area5 = GTK_DIALOG (tX_midilearn)->action_area;
+  gtk_widget_show (dialog_action_area5);
+  gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area5), GTK_BUTTONBOX_END);
+
+  button1 = gtk_button_new_from_stock ("gtk-cancel");
+  gtk_widget_show (button1);
+  gtk_dialog_add_action_widget (GTK_DIALOG (tX_midilearn), button1, GTK_RESPONSE_CANCEL);
+  GTK_WIDGET_SET_FLAGS (button1, GTK_CAN_DEFAULT);
+
+  /* Store pointers to all widgets, for use by lookup_widget(). */
+  GLADE_HOOKUP_OBJECT_NO_REF (tX_midilearn, tX_midilearn, "tX_midilearn");
+  GLADE_HOOKUP_OBJECT_NO_REF (tX_midilearn, dialog_vbox5, "dialog_vbox5");
+  GLADE_HOOKUP_OBJECT (tX_midilearn, vbox4, "vbox4");
+  GLADE_HOOKUP_OBJECT (tX_midilearn, midilabel, "midilabel");
+  GLADE_HOOKUP_OBJECT_NO_REF (tX_midilearn, dialog_action_area5, "dialog_action_area5");
+  GLADE_HOOKUP_OBJECT (tX_midilearn, button1, "button1");
+
+  return tX_midilearn;
+}
+
