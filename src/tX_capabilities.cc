@@ -32,7 +32,6 @@ bool have_nice_capability()
 {
 	cap_t caps;
 	cap_flag_value_t cap;
-	pid_t pid;
 
 	caps=cap_get_proc();
 	

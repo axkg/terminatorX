@@ -1137,6 +1137,7 @@ void vtt_class :: set_sync_master(int master)
 
 void vtt_class :: set_sync_client(int slave, int cycles)
 {
+	tX_debug("vtt_class::set_sync_client() setting %i, %i.", slave, cycles);
 	is_sync_client=slave;
 	sync_cycles=cycles;
 //	sync_countdown=cycles; 

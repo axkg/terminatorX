@@ -4,6 +4,7 @@ This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.81]
+- fixed a bug that caused enabling sync-client setting via MIDI to fail.
 - when compiled with rt-scheduling suppport terminatorX will now display the 
   resulting scheduling policy in the about dialog.
 - if terminatorX was setup to use realtime priority for the audio engine thread
