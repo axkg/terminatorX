@@ -433,6 +433,30 @@ const char * tX_seqpar_vtt_volume :: get_name()
         return "Volume";
 }
 
+/**** Sequencable Parameter : Pan ****/
+
+tX_seqpar_vtt_pan :: tX_seqpar_vtt_pan()
+{
+	set_mapping_parameters(1.0, -1.0, TX_SEQPAR_DEFAULT_SCALE, 1);
+}
+
+float tX_seqpar_vtt_pan :: get_value(){ return tt->pan; }
+
+void tX_seqpar_vtt_pan :: do_exec(const float value)
+{
+	tt->set_pan(value);
+}
+
+void tX_seqpar_vtt_pan :: do_update_graphics ()
+{
+	gtk_adjustment_set_value(tt->gui.pan, tt->pan);
+}
+
+const char * tX_seqpar_vtt_pan :: get_name()
+{
+        return "Pan";
+}
+
 /**** Sequencable Parameter: TURNTABLE PITCH ****/
 
 tX_seqpar_vtt_pitch :: tX_seqpar_vtt_pitch()
@@ -703,6 +727,30 @@ void tX_seqpar_vtt_ec_feedback :: do_update_graphics ()
 const char * tX_seqpar_vtt_ec_feedback :: get_name()
 {
         return "Echo: Feedback";
+}
+
+/**** Sequencable Parameter: TURNTABLE ECHO PAN ****/
+
+tX_seqpar_vtt_ec_pan :: tX_seqpar_vtt_ec_pan()
+{
+	set_mapping_parameters(1.0, -1.0, TX_SEQPAR_DEFAULT_SCALE, 1);
+}
+
+float tX_seqpar_vtt_ec_pan :: get_value() { return tt->ec_pan; }
+
+void tX_seqpar_vtt_ec_pan :: do_exec(const float value)
+{
+	tt->ec_set_pan(value);
+}
+
+void tX_seqpar_vtt_ec_pan :: do_update_graphics ()
+{
+	gtk_adjustment_set_value(tt->gui.ec_pan, tt->ec_pan);
+}
+
+const char * tX_seqpar_vtt_ec_pan :: get_name()
+{
+        return "Echo: Pan";
 }
 
 /**** Sequencable Parameter: TURNTABLE MUTE ****/

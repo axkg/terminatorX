@@ -54,6 +54,7 @@
 #define TX_SET_ID_10 "terminatorX turntable set file - version 1.0 - data:"
 #define TX_SET_ID_11 "terminatorX turntable set file - version 1.1 - data:"
 #define TX_SET_ID_12 "terminatorX turntable set file - version 1.2 - data:"
+#define TX_SET_ID_13 "terminatorX turntable set file - version 1.3 - data:"
 
 int audioon=0;
 int sequencer_ready=1;
@@ -64,7 +65,8 @@ GtkWidget *audio_parent;
 GtkWidget *main_window;
 GtkWidget *wav_progress;
 GtkWidget *grab_button;
-GtkWidget *main_flash;
+GtkWidget *main_flash_l;
+GtkWidget *main_flash_r;
 GtkWidget *rec_btn;
 
 GtkWidget *seq_rec_btn;
@@ -153,7 +155,8 @@ gint pos_update(gpointer data)
 		tX_seqpar :: update_all_graphics();
 		if (old_focus) gui_show_frame(old_focus, 0);
 		old_focus=NULL;
-		gtk_tx_flash_clear(main_flash);
+		gtk_tx_flash_clear(main_flash_l);
+		gtk_tx_flash_clear(main_flash_r);
 		gdk_flush();	
 		update_tag=0;
 		return(FALSE);
@@ -161,9 +164,17 @@ gint pos_update(gpointer data)
 	else
 	{
 		update_all_vtts();
-		temp=vtt_class::mix_max;
-		vtt_class::mix_max=0;
-		gtk_tx_flash_set_level(main_flash, temp);
+		
+		/*left vu meter */
+		temp=vtt_class::mix_max_l;
+		vtt_class::mix_max_l=0;
+		gtk_tx_flash_set_level(main_flash_l, temp);
+
+		/*right vu meter */
+		temp=vtt_class::mix_max_r;
+		vtt_class::mix_max_r=0;
+		gtk_tx_flash_set_level(main_flash_r, temp);
+		
 		if (vtt_class::focused_vtt!=old_focus)
 		{
 			if (old_focus) gui_show_frame(old_focus, 0);
@@ -303,6 +314,10 @@ void load_tt_part(char * buffer)
 		{
 			if (vtt_class::load_all_12(in, buffer)) tx_note("Error while reading set.");			
 		}
+		else if (strncmp(idbuff, TX_SET_ID_13, strlen(TX_SET_ID_13))==0)
+		{
+			if (vtt_class::load_all_13(in, buffer)) tx_note("Error while reading set.");			
+		}
 		else
 		{
 			tx_note("Sorry, this file is not a terminatorX set-file.");
@@ -435,7 +450,7 @@ void do_save_tables(GtkWidget *wid)
 	
 	if (out)
 	{
-		strcpy(idbuffer, TX_SET_ID_12);
+		strcpy(idbuffer, TX_SET_ID_13);
 		fwrite(idbuffer, strlen(idbuffer), 1, out);
 		if (vtt_class::save_all(out)) tx_note("Error while saving set.");
 		fclose(out);
@@ -653,7 +668,7 @@ GtkSignalFunc tape_on(GtkWidget *w, void *d)
 	}
 }
 
-GtkSignalFunc grab_on(GtkWidget *w, void *d)
+void grab_on(GtkWidget *w, void *d)
 {
 	grab_mouse(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)));
 	grab_status=1;
@@ -664,7 +679,7 @@ void grab_off()
 	grab_status=0;
 }
 
-GtkSignalFunc hide_clicked(GtkWidget *w, void *d)
+void hide_clicked(GtkWidget *w, void *d)
 {
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
 	{
@@ -766,7 +781,7 @@ void seq_update()
 	gtk_adjustment_set_value(seq_adj, sequencer.get_timestamp_as_float());
 	
 }
-GtkSignalFunc seq_slider_released(GtkWidget *wid, void *d)
+void seq_slider_released(GtkWidget *wid, void *d)
 {
 	seq_adj_care=0;
 	gtk_widget_set_sensitive(seq_slider, 0);	
@@ -774,7 +789,7 @@ GtkSignalFunc seq_slider_released(GtkWidget *wid, void *d)
 	gtk_widget_set_sensitive(seq_slider, 1);	
 	seq_adj_care=1;
 }
-GtkSignalFunc sequencer_move(GtkWidget *wid, void *d)
+void sequencer_move(GtkWidget *wid, void *d)
 {
 	u_int32_t pos;
 	
@@ -1123,9 +1138,13 @@ void create_mastergui(int x, int y)
 	gui_set_tooltip(dummy, "Adjust the master volume. This parameter will effect *all* turntables in the set.");
 	
 #ifdef USE_FLASH	
-	main_flash=gtk_tx_flash_new();
-	gtk_box_pack_end(GTK_BOX(small_box), main_flash, WID_DYN);
-	gtk_widget_show(main_flash);
+	main_flash_r=gtk_tx_flash_new();
+	gtk_box_pack_end(GTK_BOX(small_box), main_flash_r, WID_DYN);
+	gtk_widget_show(main_flash_r);
+
+	main_flash_l=gtk_tx_flash_new();
+	gtk_box_pack_end(GTK_BOX(small_box), main_flash_l, WID_DYN);
+	gtk_widget_show(main_flash_l);
 #endif	
 	gtk_window_set_default_size(GTK_WINDOW(main_window), x, y);	
 	gtk_widget_set_sensitive(grab_button, 0);
