@@ -317,10 +317,14 @@ void tX_engine :: stop() {
 
 tX_engine :: ~tX_engine() {
 	void *dummy;
-	
+		
 	thread_terminate=true;
 	stop_flag=true;
 	pthread_mutex_unlock(&start);
 	tX_debug("~tX_engine() - Waiting for engine thread to terminate.");
 	pthread_join(thread, &dummy);	
+	
+	delete mouse;
+	delete midi;
+	delete tape;	
 }

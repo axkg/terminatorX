@@ -302,8 +302,9 @@ GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 void delete_vtt(GtkWidget *wid, vtt_class *vtt)
 {
 	if (audioon) tx_note("Sorry, you'll have to stop playback first.");
-	else
-	delete(vtt);
+	else delete(vtt);
+		
+	mg_update_status();
 }
 
 void edit_vtt_buffer(GtkWidget *wid, vtt_class *vtt)

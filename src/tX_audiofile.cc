@@ -162,19 +162,8 @@ tX_audio_error tx_audiofile :: load(char *p_file_name)
 }
 
 tx_audiofile :: ~tx_audiofile() {
-	switch (mem_type) {
-		case TX_AUDIO_MMAP: break;
-		case TX_AUDIO_LOAD: {
-			free(mem);
-			break;
-		}
-		case TX_AUDIO_UNDEFINED: break;
-	}	
-
- 	if (file) {
-		if (mem_type==TX_AUDIO_MMAP) {
-			// free mmap
-		}
+	if (mem) {
+		free(mem);
 	}
  }
  
