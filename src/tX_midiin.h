@@ -24,12 +24,6 @@
 #ifndef _tx_midiin_h
 #define _tx_midiin_h 1
 
-#include <config.h>
-#ifdef USE_ALSA_MIDI_IN
-
-#include <alsa/asoundlib.h>
-#include <gtk/gtk.h>
-
 class vtt_class;
 
 class tX_midievent
@@ -58,9 +52,16 @@ class tX_midievent
 		value = 0;
 		is_noteon = false;
 	}
-
-	void print( const char* prefix ) const;
+	
+	/* not being used anyway */
+	// void print( const char* prefix ) const;
 };
+
+#include <config.h>
+#ifdef USE_ALSA_MIDI_IN
+
+#include <alsa/asoundlib.h>
+#include <gtk/gtk.h>
 
 class tX_midiin
 {
