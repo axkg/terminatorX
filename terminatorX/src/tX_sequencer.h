@@ -82,7 +82,7 @@ class tX_sequencer
 	void delete_all_events_for_sp(tX_seqpar *sp);
 	void delete_all_events();
 	
-	void save(FILE *, char *indent);
+	void save(FILE *, gzFile, char *indent);
 #ifdef ENABLE_TX_LEGACY	
 	void load(FILE *);
 #endif	

@@ -101,6 +101,8 @@ create_tx_options (void)
   GtkWidget *prelisten_enabled;
   GtkWidget *label31;
   GtkWidget *ladspa_rdf_path;
+  GtkWidget *label33;
+  GtkWidget *compress_set_files;
   GtkWidget *label3;
   GtkWidget *dialog_action_area1;
   GtkWidget *pref_cancel;
@@ -523,7 +525,7 @@ create_tx_options (void)
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 4), label2);
   gtk_label_set_justify (GTK_LABEL (label2), GTK_JUSTIFY_LEFT);
 
-  table3 = gtk_table_new (3, 2, FALSE);
+  table3 = gtk_table_new (4, 2, FALSE);
   gtk_widget_show (table3);
   gtk_container_add (GTK_CONTAINER (notebook1), table3);
   gtk_container_set_border_width (GTK_CONTAINER (table3), 4);
@@ -547,7 +549,7 @@ create_tx_options (void)
 
   label26 = gtk_label_new ("\"Pre-Listen\" to soundfiles:");
   gtk_widget_show (label26);
-  gtk_table_attach (GTK_TABLE (table3), label26, 0, 1, 2, 3,
+  gtk_table_attach (GTK_TABLE (table3), label26, 0, 1, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_label_set_justify (GTK_LABEL (label26), GTK_JUSTIFY_LEFT);
@@ -555,7 +557,7 @@ create_tx_options (void)
 
   prelisten_enabled = gtk_check_button_new_with_mnemonic ("Enabled");
   gtk_widget_show (prelisten_enabled);
-  gtk_table_attach (GTK_TABLE (table3), prelisten_enabled, 1, 2, 2, 3,
+  gtk_table_attach (GTK_TABLE (table3), prelisten_enabled, 1, 2, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_tooltips_set_tip (tooltips, prelisten_enabled, "When enabled soundfiles will be playedback when selected in a file dialog (before loading them).", NULL);
@@ -572,6 +574,20 @@ create_tx_options (void)
   gtk_widget_show (ladspa_rdf_path);
   gtk_table_attach (GTK_TABLE (table3), ladspa_rdf_path, 1, 2, 1, 2,
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+
+  label33 = gtk_label_new ("Compress set files:");
+  gtk_widget_show (label33);
+  gtk_table_attach (GTK_TABLE (table3), label33, 0, 1, 2, 3,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_label_set_justify (GTK_LABEL (label33), GTK_JUSTIFY_LEFT);
+  gtk_misc_set_alignment (GTK_MISC (label33), 0, 0.5);
+
+  compress_set_files = gtk_check_button_new_with_mnemonic ("Enabled");
+  gtk_widget_show (compress_set_files);
+  gtk_table_attach (GTK_TABLE (table3), compress_set_files, 1, 2, 2, 3,
+                    (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
 
   label3 = gtk_label_new ("Misc");
@@ -681,6 +697,8 @@ create_tx_options (void)
   GLADE_HOOKUP_OBJECT (tx_options, prelisten_enabled, "prelisten_enabled");
   GLADE_HOOKUP_OBJECT (tx_options, label31, "label31");
   GLADE_HOOKUP_OBJECT (tx_options, ladspa_rdf_path, "ladspa_rdf_path");
+  GLADE_HOOKUP_OBJECT (tx_options, label33, "label33");
+  GLADE_HOOKUP_OBJECT (tx_options, compress_set_files, "compress_set_files");
   GLADE_HOOKUP_OBJECT (tx_options, label3, "label3");
   GLADE_HOOKUP_OBJECT_NO_REF (tx_options, dialog_action_area1, "dialog_action_area1");
   GLADE_HOOKUP_OBJECT (tx_options, pref_cancel, "pref_cancel");

@@ -64,7 +64,7 @@ class vtt_fx
 	
 	virtual const char *get_info_string();
 	
-	virtual void save(FILE *output, char *indent);
+	virtual void save(FILE *rc, gzFile rz, char *indent);
 	
 	GtkWidget* get_panel_widget() { return panel_widget; }
 	void set_panel_widget(GtkWidget *widget) { panel_widget=widget; }
@@ -85,7 +85,7 @@ class vtt_fx_lp : public vtt_fx
 	virtual void run();	
 	virtual int isEnabled();
 
-	virtual void save(FILE *output, char *indent);
+	virtual void save(FILE *rc, gzFile rz, char *indent);
 	virtual const char *get_info_string();
 };
 
@@ -98,7 +98,7 @@ class vtt_fx_ec : public vtt_fx
 	virtual void run();	
 	virtual int isEnabled();
 
-	virtual void save(FILE *output, char *indent);
+	virtual void save(FILE *rc, gzFile rz, char *indent);
 	virtual const char *get_info_string();	
 };
 
@@ -126,7 +126,7 @@ class vtt_fx_ladspa : public vtt_fx
 	virtual int isEnabled();
 	virtual void reconnect_buffer();
 	virtual const char *get_info_string();	
-	virtual void save(FILE *output, char *indent);
+	virtual void save(FILE *rc, gzFile rz, char *indent);
 #ifdef ENABLE_TX_LEGACY	
 	virtual void load(FILE *);
 #endif	

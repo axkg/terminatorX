@@ -154,6 +154,9 @@ if test "$have_ladspa" = "no"; then
 	AC_MSG_ERROR([** couldn't find ladspa.h - Install the LADSPA SDK from http://www.ladspa.org first. **])
 fi
 
+AC_CHECK_HEADERS(zlib.h,, AC_MSG_ERROR([** couldn't find zlib.h **]))
+AC_CHECK_LIB(z,gzprintf, LIBS="$LIBS -lz", AC_MSG_ERROR([** couldn't find libz library **]))
+
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
 AC_TYPE_SIZE_T
