@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE section SYSTEM "./tX.dtd">
+<section name="changelog">
+<changelog>
+	<version name="0.5">
+		<listitem><para></para></listitem>
+	</version>
+	<version name="0.5">
+		<listitem><para></para></listitem>
+	</version>
+	<version name="0.5">
+		<listitem><para></para></listitem>
+	</version>
+	<version name="0.5">
+		<listitem><para></para></listitem>
+	</version>
+	<version name="2.2">
+		<listitem><para>first released version</para></listitem>
+		<listitem><para>added colors, more standard use of X11</para></listitem>
+		<listitem><para>added loop support</para></listitem>
+		<listitem><para>added statusbar with mode/status display</para></listitem>
+		<listitem><para>added commandline options and help (on usage and keys)</para></listitem>
+		<listitem><para>added raw/mixed save scratch feature</para></listitem>
+		<listitem><para>added licmak to include license into binary</para></listitem>
+		<listitem><para>new handling of XAutoRepeat, only turned off now when SPACE pressed</para></listitem>
+		<listitem><para>modified wave display (faster + nicer + incorrect (who cares anyway))</para></listitem>
+		<listitem><para>Makefile fixed by <person><name>Adrian Reber</name><email>adrian@lisas.de</email></person></para></listitem>
+		<listitem><para>bug fixes</para></listitem>
+	</version>
+	<version name="2.1" unreleased="true">
+		<listitem><para>added recording, playback of recording functionality</para></listitem>
+	</version>
+	<version name="2.0" unreleased="true">
+		<listitem><para>moved from multithreaded to singlethreaded</para></listitem>
+		<listitem><para>position feedback</para></listitem>
+		<listitem><para>bug fixes</para></listitem>
+	</version>
+	<version name="1.0" unreleased="true">
+		<listitem><para>mouse support</para></listitem>
+		<listitem><para>no more position display due to pthread/X probs</para></listitem>
+		<listitem><para>bug fixes</para></listitem>
+	</version>
+	<version name="0.5" unreleased="true">
+		<listitem><para>first version</para></listitem>
+		<listitem><para>no mouse handling</para></listitem>
+		<listitem><para>accelerating vtt via sinus</para></listitem>
+		<listitem><para>multithreaded</para></listitem>
+		<listitem><para>sound aliasing</para></listitem>
+	</version>
+</changelog>
+</section>

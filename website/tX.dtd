@@ -1,4 +1,4 @@
-<!ELEMENT section (linkdb?, (main|bugs|download|screenshots|scratches|links|faq|turntable|aseqjoy|docs))>
+<!ELEMENT section (linkdb?, (main|bugs|download|screenshots|scratches|links|faq|turntable|aseqjoy|docs|changelog))>
 <!ATTLIST section
   name CDATA #REQUIRED>
 
@@ -12,6 +12,7 @@
 <!ELEMENT docs (para*)>
 <!ELEMENT bugs (subsection)+>
 <!ELEMENT screenshots (subsection)+>
+<!ELEMENT changelog (version+)>
 
 <!ELEMENT linkdb (dlink*)>
 <!ELEMENT dlink EMPTY>
@@ -123,3 +124,9 @@
 <!ELEMENT person (name, email)>
 <!ELEMENT name (#PCDATA)>
 <!ELEMENT email (#PCDATA)>
+
+<!ELEMENT version (listitem+)>
+<!ATTLIST version
+  name CDATA #REQUIRED
+  unreleased CDATA 'false'>
+
