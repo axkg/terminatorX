@@ -69,6 +69,12 @@
 #include "tX_vtt.h"
 #endif
 
+#ifdef USE_SCHEDULER
+#include <sched.h>
+#include <sys/types.h>
+#include <unistd.h>
+#endif
+
 #ifdef USE_JACK	
 void jack_check()
 {
@@ -239,9 +245,12 @@ int main(int argc, char **argv)
 #ifdef USE_JACK	
 	tX_jack_client::init();
 #endif	
+
+#ifdef USE_SCHEDULER
+	tX_debug("main() GUI thread is p:%i, t:%i and has policy %i.", getpid(), pthread_self(), sched_getscheduler(getpid()));
+#endif	
 	
 	create_mastergui(globals.width, globals.height);
-
 	
 	if (globals.show_nag) {
 		while (!timesup) {

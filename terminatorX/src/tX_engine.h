@@ -82,14 +82,7 @@ class tX_engine {
 	tX_midiin *get_midi() { return midi; }
 #endif	
 
-#ifdef USE_SCHEDULER
-	private:
-	pid_t pid;
-	
-	public:
-	pid_t get_pid() { return pid; }
-	void set_pid(pid_t value) { pid=value; }
-#endif
+	pthread_t get_thread_id() { return thread; }
 	
 	static tX_engine *get_instance();
 	tX_engine();
