@@ -457,7 +457,7 @@
       <xsl:if test='@distribution'> built for: <i>
         <xsl:value-of select='@distribution' />
       </i></xsl:if>
-      <xsl:if test='@note'> <b>note:</b>  
+      <xsl:if test='@note'> <b> note: </b>  
       <xsl:value-of select='@note' /></xsl:if>
     </li>
   </xsl:template>

@@ -14,7 +14,7 @@
 	<dlink id="alsa" url="http://www.alsa-project.org" text="ALSA"/>
 	<dlink id="changelog" url="ChangeLog" text="ChangeLog"/>
 	<dlink id="install" url="INSTALL" text="INSTALL"/>
-	<dlink id="oldtable" url="oldturntable.html" text="old turntable to tX device description"/>
+	<dlink id="oldtable" url="oldtable.html" text="old turntable to tX device description"/>
 	<dlink id="aseqjoy_man" url="aseqjoy-man.html" text="aseqjoy man page"/>
 	<dlink id="liblrdf" url="http://plugin.org.uk/releases/lrdf/" text="liblrdf"/>
 </linkdb>
