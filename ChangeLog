@@ -4,6 +4,9 @@ This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.81]
+- JACK doesn't seem to like SCHED_FIFO clients so I added a little switch that
+  will set SCHED_OTHER when jack output was selected. This will work for true
+  root or a capabilities-enabled suid-root binary only.
 - removed the disfunctional "Cancel" button from the load-progress dialog.
 - switched default MIDI mapping to non-destructive. (previous settings will not
   be overwritten now).
