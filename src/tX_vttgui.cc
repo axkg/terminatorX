@@ -968,7 +968,7 @@ void build_vtt_gui(vtt_class *vtt)
 
 	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
 				
-	p=new tX_panel("Trigger", g->control_subbox);
+	p=new tX_panel("Playback", g->control_subbox);
 	g->trigger_panel=p;
 	
 	g->trigger=gtk_button_new_with_label("Trigger!");
@@ -1207,8 +1207,7 @@ GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel)
 	
 	box=gtk_hbox_new(FALSE,0);
 
-	if (showdel)
-	{
+	if (showdel) {
 		button=gtk_button_new();
 		pixmap=tx_pixmap_widget(FX_CLOSE);
 		gtk_container_add (GTK_CONTAINER (button), pixmap);	
@@ -1506,7 +1505,6 @@ void vg_enable_critical_buttons(int enable)
 		gtk_widget_set_sensitive(vgui.sync_master, enable);
 	}
 }
-
 
 void vg_init_all_non_seqpars()
 {
