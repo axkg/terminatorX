@@ -47,6 +47,7 @@
 #include "tX_extdial.h"
 #include "tX_panel.h"
 #include "tX_ladspa.h"
+#include "tX_engine.h"
 
 #ifdef USE_DIAL
 #include "tX_dial.h"
@@ -388,6 +389,13 @@ void ec_enabled(GtkWidget *wid, vtt_class *vtt)
 	vtt->sp_ec_enable.receive_gui_value(GTK_TOGGLE_BUTTON(wid)->active);
 }
 
+#ifdef USE_ALSA_MIDI_IN
+void midi_mapping_clicked(GtkWidget *wid, vtt_class *vtt)
+{
+	engine->midi->configure_bindings(vtt);
+}
+#endif
+
 void ec_length_changed(GtkWidget *wid, vtt_class *vtt)
 {
 	vtt->sp_ec_length.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
@@ -698,6 +706,9 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_adj(lp_freq, lp_freq_changed);
 	
 	connect_button(ec_enable, ec_enabled);
+#ifdef USE_ALSA_MIDI_IN	
+	connect_button(midi_mapping, midi_mapping_clicked);
+#endif	
 	connect_adj(ec_length, ec_length_changed);
 	connect_adj(ec_feedback, ec_feedback_changed);
 	connect_adj(ec_pan, ec_pan_changed);
@@ -779,8 +790,14 @@ void build_vtt_gui(vtt_class *vtt)
 	g->mouse_mapping=gtk_button_new_with_label("Mouse Mapping");
 	gtk_widget_show(g->mouse_mapping);
 	gui_set_tooltip(g->mouse_mapping, "Determines what parameters should be affected on mouse moition in mouse grab mode.");
-   
 	gtk_box_pack_start(GTK_BOX(tempbox), g->mouse_mapping, WID_DYN);
+
+#ifdef USE_ALSA_MIDI_IN
+	g->midi_mapping=gtk_button_new_with_label("MIDI Mapping");
+	gtk_widget_show(g->midi_mapping);
+	gui_set_tooltip(g->midi_mapping, "Determines what parameters should be bound to what MIDI events.");
+	gtk_box_pack_start(GTK_BOX(tempbox), g->midi_mapping, WID_DYN);
+#endif
 
 	tempbox=gtk_hbox_new(FALSE, 2);
 
@@ -823,7 +840,7 @@ void build_vtt_gui(vtt_class *vtt)
 	g->scrolled_win=gtk_scrolled_window_new (NULL, NULL);
 	gtk_container_set_border_width (GTK_CONTAINER (g->scrolled_win), 0);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (g->scrolled_win),
-                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+                                    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	gtk_widget_show(g->scrolled_win);
 	gtk_box_pack_start(GTK_BOX(g->control_box), g->scrolled_win, WID_DYN);
 				    

@@ -25,6 +25,7 @@
 #include <list>
 #include <gtk/gtk.h>
 #include "tX_extdial.h"
+#include "tX_midiin.h"
 
 #ifndef _tx_seqpar_h
 #define _tx_seqpar_h 1
@@ -40,6 +41,10 @@ class tX_seqpar
 	public:
 	static list <tX_seqpar *> all;
 	void *vtt; /* have to make this void as tX_vtt.h includes this */
+
+#ifdef USE_ALSA_MIDI_IN
+	tX_midievent bound_midi_event;
+#endif	
 	protected:
 	static list <tX_seqpar *> update;
 	static pthread_mutex_t update_lock;
@@ -103,7 +108,10 @@ class tX_seqpar
 	
 	/* slot for mouse and keyboard actions (updating graphics) */
 	virtual void handle_mouse_input(float adjustment);
-	void receive_input_value(const float value); 
+	void receive_input_value(const float value);
+#ifdef USE_ALSA_MIDI_IN	
+	virtual void handle_midi_input( const tX_midievent& );
+#endif	
 	
 	/* Make it so ;) */
 	static void materialize_forward_values();
@@ -117,6 +125,9 @@ class tX_seqpar
 	float max_value;
 	float min_value;
 	float scale_value;
+
+	bool is_boolean;
+	
 	public:
 	int is_mappable;	
 };

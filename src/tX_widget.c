@@ -30,6 +30,7 @@
 #include "tX_types.h"
 #include "tX_global.h"
 #include <malloc.h>
+#include <stdlib.h>
 
 #ifndef WIN32
 #include <unistd.h>

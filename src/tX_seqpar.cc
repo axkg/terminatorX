@@ -46,6 +46,7 @@ void tX_seqpar :: default_constructor()
 	max_value=0;
 	min_value=0;
 	scale_value=0;
+	is_boolean=false;
 	is_mappable=1;
 	all.push_back(this);
 	last_event_recorded=NULL;
@@ -104,6 +105,40 @@ void tX_seqpar :: handle_mouse_input(float adjustment)
 	
 	receive_input_value(tmpvalue);
 }
+
+#ifdef USE_ALSA_MIDI_IN
+void tX_seqpar :: handle_midi_input( const tX_midievent& event )
+{
+	float tmpvalue = -1000;
+
+	//event.print( (string(__FUNCTION__) + " - " + get_name()).c_str() );
+	
+	if( !is_boolean )
+	{
+		if( event.type == tX_midievent::CC || event.type == tX_midievent::PITCHBEND )
+		{	
+			tmpvalue = event.value * (max_value-min_value) + min_value;
+		}
+		else if( event.type == tX_midievent::NOTE )
+		{
+			tmpvalue = event.is_noteon;
+		}
+		else
+		{
+			return;
+		}
+
+		if (tmpvalue>max_value) tmpvalue=max_value;
+		if (tmpvalue<min_value) tmpvalue=min_value;
+	}
+	else
+	{
+		tmpvalue=event.value;
+	}
+		
+	receive_input_value(tmpvalue);
+}
+#endif
 
 void tX_seqpar :: set_vtt (void *mytt)
 {
@@ -486,7 +521,8 @@ const char * tX_seqpar_vtt_pitch :: get_name()
 
 tX_seqpar_vtt_trigger :: tX_seqpar_vtt_trigger()
 {
-	set_mapping_parameters(0, 0, 0, 0);
+	set_mapping_parameters(0.01, 0, 1, 1);
+	is_boolean=true;
 }
 
 void tX_seqpar_vtt_trigger :: do_exec(const float value)
@@ -505,6 +541,8 @@ const char * tX_seqpar_vtt_trigger :: get_name()
 tX_seqpar_vtt_loop :: tX_seqpar_vtt_loop()
 {
 	set_mapping_parameters(0, 0, 0, 0);
+	
+	is_boolean=true;
 }
 
 void tX_seqpar_vtt_loop :: do_exec(const float value)
@@ -570,7 +608,8 @@ const char * tX_seqpar_vtt_sync_cycles :: get_name()
 
 tX_seqpar_vtt_lp_enable :: tX_seqpar_vtt_lp_enable()
 {
-	set_mapping_parameters(0,0,0,0);
+	set_mapping_parameters(0.01,0,1,1);
+	is_boolean=true;
 }
 
 void tX_seqpar_vtt_lp_enable :: do_exec(const float value)
@@ -664,7 +703,8 @@ void tX_seqpar_vtt_lp_freq :: do_update_graphics ()
 
 tX_seqpar_vtt_ec_enable :: tX_seqpar_vtt_ec_enable()
 {
-	set_mapping_parameters(1.0, 0, 0, 0);
+	set_mapping_parameters(0.01,0,1,1);
+	is_boolean=true;
 }
 
 void tX_seqpar_vtt_ec_enable :: do_exec(const float value)
@@ -783,7 +823,8 @@ const char * tX_seqpar_vtt_ec_volume :: get_name()
 
 tX_seqpar_vtt_mute :: tX_seqpar_vtt_mute()
 {
-	set_mapping_parameters(0,0,0,0);
+	set_mapping_parameters(0.01,0,1,1);
+	is_boolean=true;
 }
 
 void tX_seqpar_vtt_mute :: do_exec(const float value)
