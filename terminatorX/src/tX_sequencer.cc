@@ -67,7 +67,7 @@ tX_event *tX_sequencer :: record_event (tX_seqpar *sp, float value)
 {
 	tX_event *new_event;
 	
-	new_event=new tX_event(current_timestamp, value, sp);
+	new_event=new tX_event(current_timestamp, sp, value);
 	
 	pthread_mutex_lock(&record_lock);
 	record_list.push_back(new_event);

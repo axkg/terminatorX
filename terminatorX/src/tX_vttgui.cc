@@ -290,7 +290,7 @@ GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 		char buffer[32]="*.";
 		
 		gtk_file_filter_add_pattern(filter, strcat(buffer, extensions[i]));
-		for (int c=0; c<strlen(buffer); c++) {
+		for (unsigned int c=0; c<strlen(buffer); c++) {
 			buffer[c]=toupper(buffer[c]);
 		}
 		gtk_file_filter_add_pattern(filter, buffer);
