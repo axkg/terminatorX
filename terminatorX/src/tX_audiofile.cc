@@ -342,10 +342,17 @@ int tx_audiofile :: load_wav()
 	}
 
 	p=data;
-	
+#ifdef ENABLE_DEBUG_OUTPUT
+	int output=1;
+	unsigned char *debug_p=(unsigned char *) p;
+#endif	
 	while (wav_in.len>allbytes)
 	{	
 		bytes = fread(p, 1, min(1024, wav_in.len-allbytes), wav_in.handle);
+
+#ifdef ENABLE_DEBUG_OUTPUT
+		if (output) { tX_debug("tX_audiofile::load_wav() read %i Bytes [%02x %02x %02x %02x %02x %02x ..]", bytes, (unsigned int) debug_p[0],  (unsigned int) debug_p[1], (unsigned int) debug_p[2], (unsigned int) debug_p[3], (unsigned int) debug_p[4], (unsigned int) debug_p[5]); }
+#endif
 
 		if (bytes<=0) {
 			free(data);
@@ -355,6 +362,12 @@ int tx_audiofile :: load_wav()
 #ifdef BIG_ENDIAN_MACHINE
 		swapbuffer(p, bytes/sizeof(int16_t));
 #endif		
+
+#ifdef ENABLE_DEBUG_OUTPUT
+		if (output) { tX_debug("tX_audiofile::load_wav() swapped %i Bytes [%02x %02x %02x %02x %02x %02x ..]", bytes, (unsigned int) debug_p[0],  (unsigned int) debug_p[1], (unsigned int) debug_p[2], (unsigned int) debug_p[3], (unsigned int) debug_p[4], (unsigned int) debug_p[5]); }
+		output=0;
+#endif
+
 		allbytes+=bytes;
 		
 		ld_set_progress((float) allbytes/(float)wav_in.len);
