@@ -370,6 +370,7 @@ static void gtk_tx_update(GtkTx * tx) {
 
 void gtk_tx_prepare_pos_display(GtkTx * tx) {
 	tx->cursor_pos=-1;
+	tx->lastmute=-1;
 }
 
 void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {

@@ -103,6 +103,15 @@ vtt_class :: vtt_class (int do_create_gui)
 	strcpy(filename, "NONE");
 	buffer=NULL;
 	samples_in_buffer=0;
+
+	pan=0;
+	rel_pitch=1; 
+	ec_volume=1; 
+	ec_pan=1; 
+	audiofile_pitch_correction=1.0;
+	ec_length=1;
+	ec_output_buffer=NULL;
+	output_buffer=NULL;
 	
 	set_volume(1);
 	set_pitch(1);
@@ -180,6 +189,7 @@ vtt_class :: vtt_class (int do_create_gui)
 	
 	audiofile = NULL;
 	audiofile_pitch_correction=1.0;
+	mute=0;
 	mix_solo=0;
 	mix_mute=0;
 	res_mute=mute;
@@ -187,6 +197,10 @@ vtt_class :: vtt_class (int do_create_gui)
 	
 	audio_hidden=false;
 	control_hidden=false;
+	
+	do_scratch=0;
+	speed_last=1;
+	speed_real=1;
 }
 
 vtt_class :: ~vtt_class()
@@ -1141,11 +1155,13 @@ int vtt_class :: trigger()
 	return(0);
 }
 
+static bool do_unlock=true;
+
 int vtt_class :: stop_nolock()
 {
 	list <vtt_fx *> :: iterator effect;
 
-	if (!is_playing) 
+	if ((!is_playing) && do_unlock)
 	{
 		pthread_mutex_unlock(&render_lock);
 		return(1);
@@ -1174,8 +1190,12 @@ int vtt_class :: stop()
 	
 	pthread_mutex_lock(&render_lock);
 
+	do_unlock=false;
+	
 	res=stop_nolock();
 
+	do_unlock=true;
+	
 	pthread_mutex_unlock(&render_lock);
 
 	return(res);

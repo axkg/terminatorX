@@ -60,6 +60,9 @@ void tX_audiodevice :: start() {
 	sample_buffer[0]=new int16_t[samples_per_buffer*2];
 	sample_buffer[1]=new int16_t[samples_per_buffer*2];
 	int current=0;
+	vtt_buffer_size=vtt_class::get_mix_buffer_size()<<1;
+	
+	buffer_pos=0;
 	
 	while (!engine->is_stopped()) {
 		current=current ? 0 : 1;
@@ -76,19 +79,16 @@ void tX_audiodevice :: start() {
 }
 
 void tX_audiodevice :: fill_buffer(int16_t *target_buffer, int16_t *next_target_buffer) {
-	int vtt_buffer_size=vtt_class::get_mix_buffer_size()<<1;
-	int prefill;
+	int prefill=0;
 	
-	while (buffer_pos < samples_per_buffer) {
+	while (buffer_pos <= samples_per_buffer) {
 		int16_t *data=engine->render_cycle();
 		
-		int rest=samples_per_buffer-(buffer_pos+vtt_buffer_size);		
+		int rest=(buffer_pos+vtt_buffer_size)-samples_per_buffer;
 		
-		if (rest>0) {
-			memcpy(&target_buffer[buffer_pos], data, samples_per_buffer << 1);
+		if (rest<=0) {
+			memcpy(&target_buffer[buffer_pos], data, vtt_buffer_size << 1);
 		} else {
-			rest*=-1;
-					
 			memcpy(&target_buffer[buffer_pos], data, (vtt_buffer_size-rest) << 1);
 			memcpy(next_target_buffer, &data[vtt_buffer_size-rest], rest << 1);
 			prefill=rest;
@@ -196,7 +196,6 @@ int tX_audiodevice_alsa :: open()
 	char pcm_name[64];
 	char foo[PATH_MAX];
 	
-	snd_pcm_hw_params_alloca(&hw_params);	
 	
 	int card;
 	int device;
@@ -206,9 +205,10 @@ int tX_audiodevice_alsa :: open()
 	
 	if (snd_pcm_open(&pcm_handle, pcm_name, stream, SND_PCM_NONBLOCK) < 0) {
 		tX_error("ALSA: Failed to access PCM device \"%s\"", pcm_name);
-		snd_pcm_hw_params_free (hw_params);
 		return -1;
 	}
+
+	snd_pcm_hw_params_alloca(&hw_params);	
 	
 	if (snd_pcm_hw_params_any(pcm_handle, hw_params) < 0) {
 		tX_error("ALSA: Failed to configure PCM device \"%s\"", pcm_name);
