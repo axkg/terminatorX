@@ -1,0 +1,340 @@
+/*
+    terminatorX - realtime audio scratching software
+    Copyright (C) 1999, 2000  Alexander König
+ 
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+ 
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ 
+    File: tX_mouse.cc
+ 
+    Description: This implements the mouse AND keyboard Input handling in
+    		 Grab-Mode.
+*/    
+
+
+#include "tX_mouse.h"
+#include "tX_mastergui.h"
+#include "tX_global.h"
+#include "tX_engine.h"
+#include "tX_vtt.h"
+
+#define TX_MOUSE_SPEED_NORMAL 0.05
+#define TX_MOUSE_SPEED_WARP 250000
+
+tx_mouse :: tx_mouse()
+{
+	mask=PointerMotionMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask;
+	xmot=(XMotionEvent *) &xev;
+	xkey=(XKeyEvent *) &xev;
+	xbut=(XButtonEvent *) &xev;
+	
+#ifdef USE_DGA2
+	xdgamot=(XDGAMotionEvent *) &xev;
+	xdgakey=(XDGAKeyEvent *) &xev;
+	xdgabut=(XDGAButtonEvent *) &xev;
+#endif	
+	
+	grabbed=0;
+	warp=TX_MOUSE_SPEED_NORMAL;
+}
+
+int tx_mouse :: grab()
+{	
+#ifdef USE_DGA2
+	XDGAMode *mode;
+#endif	
+	int i, num=0;
+	
+
+	if (grabbed) return(0);
+
+	dpy=XOpenDisplay(NULL); // FIXME: use correct display
+	if (!dpy)
+	{
+		fputs("GrabMode Error: couldn't connect to XDisplay.", stderr);
+		return(ENG_ERR_XOPEN);
+	}
+
+
+#ifdef USE_DGA2
+	mode=XDGAQueryModes(dpy,DefaultScreen(dpy), &num);
+	
+	printf("Found %i DGA2-Modes:\n", num);
+	
+	for(i=0; i<num; i++)
+	{
+		printf("%2i: %s\n", i, mode[i].name);
+	}
+	XFree(mode);
+#endif	
+
+	if (globals.xinput_enable)
+	{
+		if (set_xinput())
+		{
+			XCloseDisplay(dpy);
+			fputs("GrabMode Error: failed to setup XInput.", stderr);
+			return(ENG_ERR_XINPUT);
+		}
+	}
+				
+	XSelectInput(dpy, xwindow, mask);	
+
+	XSetInputFocus(dpy, xwindow, None, CurrentTime);
+
+        if (GrabSuccess != XGrabPointer(dpy, xwindow, False, ButtonPressMask|ButtonReleaseMask|PointerMotionMask, GrabModeAsync,GrabModeAsync,None,None,CurrentTime))
+	{
+		reset_xinput();
+		XCloseDisplay(dpy);
+		fputs("GrabMode Error: XGrabPointer failed.", stderr);
+		return(ENG_ERR_GRABMOUSE);
+	}	
+	
+        if (GrabSuccess != XGrabKeyboard(dpy, xwindow, False, GrabModeAsync,GrabModeAsync,CurrentTime))
+	{
+		XUngrabPointer (dpy, CurrentTime);
+		reset_xinput();		
+		XCloseDisplay(dpy);
+		fputs("GrabMode Error: XGrabKeyboard failed.", stderr);
+		return(ENG_ERR_GRABKEY);
+	}
+	
+
+#ifdef USE_DGA2
+	if (!XDGASetMode(dpy, DefaultScreen(dpy), 1))
+#else	
+	if (!XF86DGADirectVideo(dpy,DefaultScreen(dpy),XF86DGADirectMouse))
+#endif
+	{
+		XUngrabKeyboard(dpy, CurrentTime);				
+		XUngrabPointer (dpy, CurrentTime);
+		reset_xinput();		
+		XCloseDisplay(dpy);
+		fputs("GrabMode Error: Failed to enable XF86DGA.", stderr);		
+		return(ENG_ERR_DGA);
+	}
+
+#ifdef USE_DGA2
+	XDGASelectInput(dpy, DefaultScreen(dpy), mask);
+#endif	
+
+	XAutoRepeatOff(dpy);	
+	otime=CurrentTime;
+	
+	grabbed=1;
+	vtt_class::focus_no(0);
+	warp=TX_MOUSE_SPEED_NORMAL;
+	
+	return(0);
+}
+
+void tx_mouse :: ungrab()
+{
+	if (!grabbed) return;
+	
+#ifdef USE_DGA2	
+	XDGASetMode(dpy, DefaultScreen(dpy), 0);
+#else
+	XF86DGADirectVideo(dpy,DefaultScreen(dpy),0);
+#endif	
+
+	XUngrabKeyboard(dpy, CurrentTime);		
+	XUngrabPointer (dpy, CurrentTime);
+	XAutoRepeatOn(dpy);
+
+	reset_xinput();	
+	
+	XCloseDisplay(dpy);
+
+	vtt_class::unfocus();
+
+	grabbed=0;
+}
+
+
+
+int tx_mouse :: set_xinput()
+{
+	XDeviceInfo *devlist;			
+	int listmax, i;
+	int match=-1;
+	
+	if (globals.xinput_enable)
+	{	
+		devlist=XListInputDevices(dpy, &listmax);
+	
+		for (i=0; i<listmax; i++)
+		{
+			if(!strcmp(globals.xinput_device,devlist[i].name))
+			{
+				match=i;
+			}
+		
+			if(devlist[i].use == IsXPointer)
+			{
+				OrgXPointer=devlist[i].id;
+			}
+		}
+		
+		if (match>=0)
+		{
+			input_device=NULL;
+			input_device=XOpenDevice(dpy,devlist[match].id);
+/*			if (XChangePointerDevice(dpy,input_device, 0, 1)!=Success)
+			{
+				match=-1;
+			}*/
+			XCloseDevice(dpy, input_device);
+		}
+		
+		XFreeDeviceList(devlist);		
+	
+		if (match>=0) return(0); 
+		else return(1);
+	}
+	
+	return(0);
+}
+
+#define vtt vtt_class::focused_vtt
+
+int tx_mouse :: check_event()
+{
+	if (XCheckWindowEvent(dpy, xwindow, mask, &xev))
+	{
+#ifdef USE_DGA2
+		puts("Got an event");
+#endif		
+		if (vtt)
+		switch(xev.type)
+		{
+			case MotionNotify:
+				vtt->xy_input(((f_prec) xmot->x_root)*warp,((f_prec) xmot->y_root)*warp);
+				break;
+			
+			case ButtonPress:
+				switch(xbut->button)
+				{
+					case 1: if (vtt->is_playing)
+							vtt->set_scratch(1); 
+						else
+							vtt->sp_trigger.receive_input_value(1);
+						break;
+					case 2: vtt->sp_mute.receive_input_value(1); break;
+					case 3: vtt_class::focus_next(); break;
+				}
+				break;
+			
+			case ButtonRelease:
+				switch (xbut->button)
+				{	
+					case 1: vtt->set_scratch(0); break;
+					case 2: vtt->sp_mute.receive_input_value(0); break;
+				}
+				break;
+			case KeyPress:
+#ifdef USE_DGA2
+				puts("Yeah its a key");
+				XDGAKeyEventToXKeyEvent(xdgakey, (XKeyEvent *) &xev_copy);
+				memcpy(&xev, &xev_copy, sizeof(XEvent));
+#endif			
+			{
+				key=XKeycodeToKeysym(dpy, xkey->keycode, 0);
+				
+				switch(key)
+				{
+					case XK_space: vtt->set_scratch(1); break;
+					case XK_Escape: return(1);
+					
+					case XK_Return: vtt->sp_trigger.receive_input_value(1); break;
+					case XK_BackSpace : vtt->sp_trigger.receive_input_value(0); break;
+					
+					case XK_Tab: vtt_class::focus_next(); break;
+					
+					case XK_s: vtt->sp_sync_client.receive_input_value(!vtt->is_sync_client); break;
+					
+					case XK_m:
+					case XK_Control_L:
+					case XK_Control_R:						
+					vtt->sp_mute.receive_input_value(1);
+					break;
+						
+					case XK_Alt_L:
+					case XK_Alt_R:
+					vtt->sp_mute.receive_input_value(0);
+					break;
+					
+					case XK_w:
+					vtt->sp_mute.receive_input_value(1);
+					case XK_f: 
+					warp=((float) vtt->samples_in_buffer)/TX_MOUSE_SPEED_WARP;	
+					vtt->set_scratch(1);
+					break;
+						
+					case XK_F1: vtt_class::focus_no(0); break;
+					case XK_F2: vtt_class::focus_no(1); break;
+					case XK_F3: vtt_class::focus_no(2); break;
+					case XK_F4: vtt_class::focus_no(3); break;
+					case XK_F5: vtt_class::focus_no(4); break;
+					case XK_F6: vtt_class::focus_no(5); break;
+					case XK_F7: vtt_class::focus_no(6); break;
+					case XK_F8: vtt_class::focus_no(7); break;
+					case XK_F9: vtt_class::focus_no(8); break;
+					case XK_F10: vtt_class::focus_no(9); break;
+					case XK_F11: vtt_class::focus_no(10); break;
+					case XK_F12: vtt_class::focus_no(11); break;
+				}
+			} break;
+			
+			case KeyRelease:
+			{
+				key=XKeycodeToKeysym (dpy, xkey->keycode, 0);
+				
+				switch(key)
+				{
+					case XK_space: vtt->set_scratch(0); break;
+					
+					case XK_m:
+					case XK_Control_L:
+					case XK_Control_R:						
+					vtt->sp_mute.receive_input_value(0);
+					break;
+						
+					case XK_Alt_L:
+					case XK_Alt_R:
+					vtt->sp_mute.receive_input_value(1);
+					break;
+					
+					case XK_w:
+					vtt->sp_mute.receive_input_value(0);
+					case XK_f: warp=TX_MOUSE_SPEED_NORMAL;
+					vtt->set_scratch(0);
+					break;					
+				}
+			}
+		}
+		else {	puts("no vtt"); return(1); }
+	}
+	return(0);
+}
+
+void tx_mouse :: reset_xinput()
+{
+	/*	if (globals.xinput_enable)
+	{
+		input_device=XOpenDevice(dpy, OrgXPointer);
+		XChangePointerDevice(dpy, input_device, 0, 1);
+		XCloseDevice(dpy,input_device);	
+	}*/
+}
