@@ -154,7 +154,7 @@ vtt_fx_ladspa :: vtt_fx_ladspa(LADSPA_Plugin *p, void *v)
 	sp->set_vtt(vtt);
 	controls.push_back(sp);	
 
-	if (plugin->getDescriptor()->run_adding && plugin->getDescriptor()->set_run_adding_gain) {	
+	/* if (plugin->getDescriptor()->run_adding && plugin->getDescriptor()->set_run_adding_gain) {	
 		sp = sp_outgain = new tX_seqpar_vttfx_float();
 		sp->set_mapping_parameters(3, 0, 0.01, 1);
 		sprintf(buffer, "%s: Out Gain", plugin->getName());
@@ -163,7 +163,9 @@ vtt_fx_ladspa :: vtt_fx_ladspa(LADSPA_Plugin *p, void *v)
 		controls.push_back(sp);
 	} else {
 		sp_outgain = NULL;
-	}
+	} */
+	
+	sp_outgain=NULL;
 	
 	/* connecting ports */
 	for (port=0; port < plugin->getPortCount(); port++)
