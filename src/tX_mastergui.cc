@@ -799,25 +799,18 @@ void sequencer_move(GtkWidget *wid, void *d)
 	gtk_widget_show(dummy);\
 
 #define add_sep2(); 	dummy=gtk_hseparator_new ();\
-	gtk_box_pack_end(GTK_BOX(smaller_box), dummy, WID_FIX);\
+	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);\
 	gtk_widget_show(dummy);\
 
 void fullscreen_toggle(GtkCheckMenuItem *item, gpointer data);
+void display_help();
 
 void create_master_menu() {
 	GtkWidget *menu_item;
 	GtkWidget *sub_menu;
 	GtkAccelGroup* accel_group=gtk_accel_group_new();
 	gtk_window_add_accel_group(GTK_WINDOW(main_window), accel_group);
-      /*gtk_signal_connect (GTK_OBJECT (dummy), "drag_data_received",
-        gtk_signal_connect(GTK_OBJECT(dummy), "clicked", GtkSignalFunc(new_table), NULL);       
-        gtk_signal_connect(GTK_OBJECT(dummy), "clicked", GtkSignalFunc(load_tables), NULL);     
-        gtk_signal_connect (GTK_OBJECT (dummy), "drag_data_received",
-        gtk_signal_connect(GTK_OBJECT(dummy), "clicked", GtkSignalFunc(save_tables), NULL);     
-        gtk_signal_connect (GTK_OBJECT(dummy), "clicked", (GtkSignalFunc) display_options, NULL);
-        gtk_signal_connect (GTK_OBJECT(dummy), "clicked", (GtkSignalFunc) mplcfitx, NULL);      
-        gtk_signal_connect (GTK_OBJECT(dummy), "clicked", (GtkSignalFunc) quit, NULL);
-*/
+
 	/* FILE */
 	menu_item = gtk_menu_item_new_with_mnemonic ("_File");
 	gtk_widget_show (menu_item);
@@ -900,14 +893,31 @@ void create_master_menu() {
 	menu_item = gtk_menu_item_new_with_mnemonic ("_Help");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (main_menubar), menu_item);
-
+	gtk_menu_item_set_right_justified(GTK_MENU_ITEM(menu_item), TRUE);
+	
 	sub_menu = gtk_menu_new ();
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), sub_menu);
+
+	menu_item = gtk_menu_item_new_with_mnemonic ("_Contents");
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	g_signal_connect(menu_item, "activate", (GCallback) display_help, NULL);
+	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_F1, (GdkModifierType) 0, GTK_ACCEL_VISIBLE);
 
 	menu_item = gtk_menu_item_new_with_mnemonic ("_About");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) mplcfitx, NULL);
+	
+	menu_item = gtk_menu_item_new ();
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	gtk_widget_set_sensitive (menu_item, FALSE);
+
+	menu_item = gtk_menu_item_new_with_mnemonic ("_Visit terminatorX.cx");
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	//g_signal_connect(menu_item, "activate", (GCallback) mplcfitx, NULL);
 }
 
 void create_mastergui(int x, int y)
@@ -920,8 +930,8 @@ void create_mastergui(int x, int y)
 	GtkWidget *sequencer_box;
 	GtkAdjustment *dumadj;
 	GtkWidget *dummy;
-	GtkWidget *small_box;
-	GtkWidget *smaller_box;
+	GtkWidget *master_vol_box;
+	GtkWidget *status_box;
 	
 	static GtkTargetEntry drop_types [] = {
 		{ "text/uri-list", 0, 0}
@@ -998,20 +1008,6 @@ void create_mastergui(int x, int y)
 	gui_set_tooltip(dummy, "Record the audio the terminatorX' audio engine renders. You will be prompted to enter a name for the target wav-file.");
 	gtk_widget_show(dummy);
 	
-	dummy=gtk_label_new("Pitch:");
-	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-
-	dumadj=(GtkAdjustment*) gtk_adjustment_new(globals.pitch, -3, 3, 0.001, 0.001, 0.01);
-	pitch_adj=dumadj;
-	connect_adj(dumadj, master_pitch_changed, NULL);	
-	dummy=gtk_hscale_new(dumadj);
-	gtk_scale_set_digits(GTK_SCALE(dummy), 2);
-	gtk_scale_set_value_pos(GTK_SCALE(dummy), GTK_POS_LEFT);
-	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_DYN);
-	gui_set_tooltip(dummy, "Use this scale to adjust the master pitch (affecting *all* turntables).");
-	gtk_widget_show(dummy);
-
 	dummy=tx_xpm_label_box(TX_ICON_SEQUENCER, "Sequencer");
 	gtk_box_pack_start(GTK_BOX(sequencer_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
@@ -1090,119 +1086,47 @@ void create_mastergui(int x, int y)
 	right_hbox=gtk_vbox_new(FALSE, 5);
 	gtk_box_pack_start(GTK_BOX(main_vbox), right_hbox, WID_FIX);
 	gtk_widget_show(right_hbox);
-/*	
-	dummy=gtk_button_new_with_label("Add Turntable");
-	AddTable=dummy;	
-	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
-	gui_set_tooltip(dummy, "Click this button to add a new turntable to the current set.");
-	gtk_widget_show(dummy);
 
-	gtk_drag_dest_set (GTK_WIDGET (dummy), (GtkDestDefaults) (GTK_DEST_DEFAULT_MOTION |GTK_DEST_DEFAULT_HIGHLIGHT |GTK_DEST_DEFAULT_DROP),
-			drop_types, n_drop_types,
-			GDK_ACTION_COPY);
-						
-	gtk_signal_connect (GTK_OBJECT (dummy), "drag_data_received",
-			GTK_SIGNAL_FUNC(drop_new_table), NULL);
+	/* Master */
 	
-	gtk_signal_connect(GTK_OBJECT(dummy), "clicked", GtkSignalFunc(new_table), NULL);	
-
-	dummy=gtk_button_new_with_label("Load Set");
-	LoadSet=dummy;
-	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-	gui_set_tooltip(dummy, "Click to load a previously saved terminatorX-set-file. As an alternative you can drop a set file over this button.");
-	gtk_signal_connect(GTK_OBJECT(dummy), "clicked", GtkSignalFunc(load_tables), NULL);	
-
-	gtk_drag_dest_set (GTK_WIDGET (dummy), (GtkDestDefaults) (GTK_DEST_DEFAULT_MOTION |GTK_DEST_DEFAULT_HIGHLIGHT |GTK_DEST_DEFAULT_DROP),
-			drop_types, n_drop_types,
-			GDK_ACTION_COPY);
-						
-	gtk_signal_connect (GTK_OBJECT (dummy), "drag_data_received",
-			GTK_SIGNAL_FUNC(drop_set), NULL);
-	
-	dummy=gtk_button_new_with_label("Save Set");
-	SaveSet=dummy;
-	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-	gui_set_tooltip(dummy, "Click here to save the current set.");
-	gtk_signal_connect(GTK_OBJECT(dummy), "clicked", GtkSignalFunc(save_tables), NULL);	
-
-	add_sep();
-	
-	dummy=gtk_button_new_with_label("Options");
-	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-	gui_set_tooltip(dummy, "Click here to configure terminatorX.");
-	gtk_signal_connect (GTK_OBJECT(dummy), "clicked", (GtkSignalFunc) display_options, NULL);
-
-	dummy=gtk_button_new_with_label("About/Legal");
-	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-	gui_set_tooltip(dummy, "Click here to read the license and to get some information about this binary.");
-	gtk_signal_connect (GTK_OBJECT(dummy), "clicked", (GtkSignalFunc) mplcfitx, NULL);	
-
-	dummy=gtk_button_new_with_label("Quit");
-	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-	gui_set_tooltip(dummy, "Click here to exit terminatorX.");
-	gtk_signal_connect (GTK_OBJECT(dummy), "clicked", (GtkSignalFunc) quit, NULL);
-
-	add_sep();		
-*/
-	small_box=gtk_hbox_new(FALSE, 5);
-	gtk_box_pack_start(GTK_BOX(right_hbox), small_box, WID_DYN);
-	gtk_widget_show(small_box);
-	
-	smaller_box=gtk_vbox_new(FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(small_box), smaller_box, WID_FIX);
-	gtk_widget_show(smaller_box);
-	
-	dummy = tx_pixmap_widget(TX_ICON_LOGO);
-	gtk_box_pack_start(GTK_BOX(smaller_box), dummy, WID_FIX);
-	gtk_widget_show( dummy );
-
-	dummy=gtk_label_new("0");
-	used_mem=dummy;
-	gtk_misc_set_alignment(GTK_MISC(dummy), 1, 0.5);
-	gtk_box_pack_end(GTK_BOX(smaller_box), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-
-	dummy=gtk_label_new("Mem/kB:");
-	gtk_misc_set_alignment(GTK_MISC(dummy), 0, 0.5);
-	gtk_box_pack_end(GTK_BOX(smaller_box), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-	
-	add_sep2();
-
-	dummy=gtk_label_new("1");
-	no_of_vtts=dummy;
-	gtk_misc_set_alignment(GTK_MISC(dummy), 1, 0.5);
-	gtk_box_pack_end(GTK_BOX(smaller_box), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-
-	dummy=gtk_label_new("Vtts:");
-	gtk_misc_set_alignment(GTK_MISC(dummy), 0, 0.5);
-	gtk_box_pack_end(GTK_BOX(smaller_box), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-
-	add_sep2();
-
-	dummy=gtk_label_new(VERSION);
-	gtk_misc_set_alignment(GTK_MISC(dummy), 1, 0.5);
-	gtk_box_pack_end(GTK_BOX(smaller_box), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-
-	dummy=gtk_label_new("Release:");
-	gtk_misc_set_alignment(GTK_MISC(dummy), 0, 0.5);
-	gtk_box_pack_end(GTK_BOX(smaller_box), dummy, WID_FIX);
-	gtk_widget_show(dummy);
-	
-	add_sep2();
-
-	dummy=gtk_label_new("Status:");
+	dummy=gtk_label_new("Master");
 	gtk_misc_set_alignment(GTK_MISC(dummy), 0.5, 0.5);
-	gtk_box_pack_end(GTK_BOX(smaller_box), dummy, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
+	gtk_widget_show(dummy);	
+
+	dummy=gtk_hseparator_new();
+	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
+
+	 /* Pitch */
+	 
+	/*dummy=gtk_label_new("Pitch:");
+	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
+	gtk_widget_show(dummy);*/
+
+	dumadj=(GtkAdjustment*) gtk_adjustment_new(globals.pitch, -3, 3, 0.001, 0.001, 0.01);
+	pitch_adj=dumadj;
+	connect_adj(dumadj, master_pitch_changed, NULL);
+	
+	tX_extdial *pdial=new tX_extdial("Pitch", pitch_adj, true);
+	gtk_box_pack_start(GTK_BOX(right_hbox), pdial->get_widget(), WID_FIX);
+	gui_set_tooltip(pdial->get_entry(), "Use this dial to adjust the master pitch (affecting *all* turntables).");
+	
+/*	dummy=gtk_hscale_new(dumadj);
+	gtk_scale_set_digits(GTK_SCALE(dummy), 2);
+	gtk_scale_set_value_pos(GTK_SCALE(dummy), GTK_POS_LEFT);
+	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_DYN);
+	gui_set_tooltip(dummy, "Use this scale to adjust the master pitch (affecting *all* turntables).");
+	gtk_widget_show(dummy);
+*/
+	dummy=gtk_hseparator_new();
+	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
+	gtk_widget_show(dummy);
+	
+	/* Volume */
+	master_vol_box=gtk_hbox_new(FALSE, 2);
+	gtk_box_pack_start(GTK_BOX(right_hbox), master_vol_box, WID_DYN);
+	gtk_widget_show(master_vol_box);	
 	
 	dumadj=(GtkAdjustment*) gtk_adjustment_new(2.0-globals.volume, 0, 2, 0.01, 0.05, 0.005);
 	volume_adj=dumadj;
@@ -1210,19 +1134,78 @@ void create_mastergui(int x, int y)
 	connect_adj(dumadj, master_volume_changed, NULL);	
 	dummy=gtk_vscale_new(dumadj);
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), False);
-	gtk_box_pack_end(GTK_BOX(small_box), dummy, WID_DYN);
+	gtk_box_pack_end(GTK_BOX(master_vol_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);	
 	gui_set_tooltip(dummy, "Adjust the master volume. This parameter will effect *all* turntables in the set.");
 	
 #ifdef USE_FLASH	
 	main_flash_r=gtk_tx_flash_new();
-	gtk_box_pack_end(GTK_BOX(small_box), main_flash_r, WID_DYN);
+	gtk_box_pack_end(GTK_BOX(master_vol_box), main_flash_r, WID_DYN);
 	gtk_widget_show(main_flash_r);
 
 	main_flash_l=gtk_tx_flash_new();
-	gtk_box_pack_end(GTK_BOX(small_box), main_flash_l, WID_DYN);
+	gtk_box_pack_end(GTK_BOX(master_vol_box), main_flash_l, WID_DYN);
 	gtk_widget_show(main_flash_l);
 #endif	
+	dummy=gtk_label_new("Volume");
+	gtk_misc_set_alignment(GTK_MISC(dummy), 0.5, 0.5);
+	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
+	gtk_widget_show(dummy);
+
+	/* STATUS BOX */ 
+	dummy=gtk_hseparator_new();
+	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
+	gtk_widget_show(dummy);
+	
+	status_box=gtk_vbox_new(FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(right_hbox), status_box, WID_FIX);
+	gtk_widget_show(status_box);
+	
+	dummy=gtk_label_new("0");
+	used_mem=dummy;
+	gtk_misc_set_alignment(GTK_MISC(dummy), 1, 0.5);
+	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
+	gtk_widget_show(dummy);
+
+	dummy=gtk_label_new("Mem/kB:");
+	gtk_misc_set_alignment(GTK_MISC(dummy), 0, 0.5);
+	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
+	gtk_widget_show(dummy);
+	
+	add_sep2();
+
+	dummy=gtk_label_new("1");
+	no_of_vtts=dummy;
+	gtk_misc_set_alignment(GTK_MISC(dummy), 1, 0.5);
+	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
+	gtk_widget_show(dummy);
+
+	dummy=gtk_label_new("Vtts:");
+	gtk_misc_set_alignment(GTK_MISC(dummy), 0, 0.5);
+	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
+	gtk_widget_show(dummy);
+
+	add_sep2();
+
+	dummy=gtk_label_new(VERSION);
+	gtk_misc_set_alignment(GTK_MISC(dummy), 1, 0.5);
+	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
+	gtk_widget_show(dummy);
+
+	dummy=gtk_label_new("Release:");
+	gtk_misc_set_alignment(GTK_MISC(dummy), 0, 0.5);
+	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
+	gtk_widget_show(dummy);
+	
+	add_sep2();
+
+	dummy=gtk_label_new("Status:");
+	gtk_misc_set_alignment(GTK_MISC(dummy), 0.5, 0.5);
+	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
+	gtk_widget_show(dummy);
+	
+	/* END GUI */
+	
 	gtk_window_set_default_size(GTK_WINDOW(main_window), x, y);	
 	gtk_widget_set_sensitive(grab_button, 0);
 
@@ -1359,4 +1342,19 @@ void display_mastergui()
 	fullscreen_setup();	
 	top=gtk_widget_get_toplevel(main_window);
 	xwindow=GDK_WINDOW_XWINDOW(top->window);
+}
+
+void display_help() {
+	pid_t child;
+	
+	child=fork();
+	
+	if (child==0) {
+		// child
+		execlp("gnome-help","gnome-help","ghelp://home/alex/devel/terminatorX/terminatorX/doc/terminatorX-manual/C/terminatorX-manual.xml", NULL);
+		//tx_note("Couldn't run the gnome-help command (alias \"yelp\") to display the terminatorX manual. Please ensure that \"yelp\" is installed.", true);
+		exit(-1);
+	} else if (child==-1) {
+		tx_note("System error: couldn't fork() to run the help process.", true);
+	}
 }
