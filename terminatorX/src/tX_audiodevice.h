@@ -136,7 +136,7 @@ class tX_jack_client
 	~tX_jack_client();
 	
 	private:
-	tX_jack_client();
+	tX_jack_client();	
 	static tX_jack_client *instance;
 	static void error(const char *desc);
 	static int srate(jack_nframes_t nframes, void *arg);
@@ -147,10 +147,12 @@ class tX_jack_client
 	tX_audiodevice_jack *device;
 	jack_port_t *left_port;
 	jack_port_t *right_port;
+	bool jack_shutdown;
 	int play(jack_nframes_t nframes);
 	
 	public:
 	int get_sample_rate();
+	bool get_jack_shutdown() { return jack_shutdown; }
 	void set_device(tX_audiodevice_jack *dev) { device=dev; }
 };
 
