@@ -42,6 +42,8 @@
 #include "tX_sequencer.h"
 #include "tX_mastergui.h"
 #include "tX_knobloader.h"
+#include "tX_glade_interface.h"
+#include "tX_glade_support.h"
 #include <sys/time.h>
 #include <sys/wait.h>
 
@@ -126,6 +128,9 @@ vtt_class *old_focus=NULL;
 
 int grab_status=0;
 int last_grab_status=0;
+
+GtkWidget *delete_all_item=NULL;
+GtkWidget *delete_all_vtt_item=NULL;
 
 GtkTooltips *gui_tooltips=NULL;
 
@@ -578,6 +583,9 @@ void mg_enable_critical_buttons(int enable)
 	gtk_widget_set_sensitive(seq_slider, enable);
 
 	gtk_widget_set_sensitive(rec_menu_item, enable);
+	gtk_widget_set_sensitive(delete_all_item, enable);
+	gtk_widget_set_sensitive(delete_all_vtt_item, enable);
+	
 	vg_enable_critical_buttons(enable);
 }
 
@@ -892,7 +900,112 @@ void fullscreen_toggle(GtkCheckMenuItem *item, gpointer data);
 void display_help();
 void display_browser();
 
-void create_master_menu() {
+tX_seqpar *del_sp=NULL;
+vtt_class *del_vtt=NULL;
+tx_menu_del_mode menu_del_mode=ALL_EVENTS_ALL_TURNTABLES;
+
+GtkWidget *del_dialog=NULL;
+
+GCallback menu_delete_all_events(GtkWidget *, void *param)
+{	
+	del_dialog=create_tx_del_mode();
+	GtkWidget *label=lookup_widget(del_dialog, "delmode_label");
+	
+	menu_del_mode=ALL_EVENTS_ALL_TURNTABLES;
+	
+	gtk_label_set_markup(GTK_LABEL(label), "Delete <b>all</b> events for <b>all</b> turntables.");
+	gtk_widget_show(del_dialog);
+}
+
+GCallback menu_delete_all_events_for_vtt(GtkWidget *, vtt_class *vtt)
+{	
+	if (!vtt) {
+		tX_error("No vtt passed to menu_delete_all_events_for_vtt().");
+		return FALSE;
+	}
+	
+	char label_str[512];
+	
+	del_dialog=create_tx_del_mode();
+	del_vtt=vtt;
+	GtkWidget *label=lookup_widget(del_dialog, "delmode_label");
+	
+	menu_del_mode=ALL_EVENTS_FOR_TURNTABLE;
+	
+	sprintf(label_str, "Delete <b>all</b> events for turntable <b>%s</b> turntables.", vtt->name);
+	gtk_label_set_markup(GTK_LABEL(label), label_str);
+	gtk_widget_show(del_dialog);
+}
+
+GCallback menu_delete_all_events_for_sp(GtkWidget *, tX_seqpar *sp)
+{	
+	if (!sp) {
+		tX_error("No sp passed to menu_delete_all_events_for_sp().");
+		return FALSE;
+	}
+	
+	char label_str[512];
+	
+	del_dialog=create_tx_del_mode();
+	GtkWidget *label=lookup_widget(del_dialog, "delmode_label");
+	
+	menu_del_mode=ALL_EVENTS_FOR_SP;
+	del_sp=sp;
+	sprintf(label_str, "Delete all <b>%s</b> events for turntable <b>%s</b> turntables.", sp->get_name(), ((vtt_class *) sp->vtt)->name);
+	gtk_label_set_markup(GTK_LABEL(label), label_str);
+	gtk_widget_show(del_dialog);
+}
+
+static GtkWidget *table_menu=NULL;
+static GtkWidget *table_menu_item=NULL;
+
+GCallback create_table_sequencer_menu(GtkWidget *widget, void *param) 
+{
+	char label[328];
+	table_menu=gtk_menu_new();
+	
+	list <vtt_class *> :: iterator vtt;
+
+	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++) {
+		GtkWidget *menu_item=gtk_menu_item_new_with_label((*vtt)->name);
+		gtk_container_add (GTK_CONTAINER (table_menu), menu_item);
+		gtk_widget_show(menu_item);
+		
+		GtkWidget *seqpar_menu=gtk_menu_new();
+		list <tX_seqpar *> :: iterator sp;
+		
+		GtkWidget *all=gtk_menu_item_new_with_label("Delete All Events");
+		gtk_container_add (GTK_CONTAINER (seqpar_menu), all);
+		g_signal_connect(all, "activate", (GCallback) menu_delete_all_events_for_vtt, (*vtt));
+		gtk_widget_show(all);
+
+		GtkWidget *sep = gtk_menu_item_new ();
+		gtk_widget_show(sep);
+		gtk_container_add(GTK_CONTAINER (seqpar_menu), sep);
+		gtk_widget_set_sensitive (sep, FALSE);
+		
+		for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
+			if ((*sp)->vtt==(*vtt)) {
+				sprintf(label, "Delete '%s' Events", (*sp)->get_name());
+				GtkWidget *menu_item=gtk_menu_item_new_with_label(label);
+				g_signal_connect(menu_item, "activate", (GCallback) menu_delete_all_events_for_sp, (*sp));
+				gtk_container_add(GTK_CONTAINER(seqpar_menu), menu_item);
+				gtk_widget_show(menu_item);
+			}
+		}
+		gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item), seqpar_menu);
+	}
+	
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(table_menu_item), table_menu);
+}
+
+GCallback toggle_confirm_events(GtkWidget *widget, void *dummy)
+{	
+	globals.confirm_events=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));
+}
+
+void create_master_menu() 
+{
 	GtkWidget *menu_item;
 	GtkWidget *sub_menu;
 	GtkAccelGroup* accel_group=gtk_accel_group_new();
@@ -955,6 +1068,43 @@ void create_master_menu() {
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) tape_on, NULL);
+
+	/* Sequencer */
+	
+	menu_item = gtk_menu_item_new_with_mnemonic("_Sequencer");
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (main_menubar), menu_item);
+
+	sub_menu = gtk_menu_new ();
+	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), sub_menu);
+		
+	table_menu = gtk_menu_new();
+	menu_item = gtk_menu_item_new_with_mnemonic("Delete _Events");
+	delete_all_vtt_item = menu_item;
+	table_menu_item = menu_item;
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(table_menu_item), table_menu);
+	
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	g_signal_connect_swapped (G_OBJECT (menu_item), "select", G_CALLBACK (create_table_sequencer_menu), NULL);
+	
+	menu_item = gtk_menu_item_new_with_mnemonic("Delete _All Events");
+	delete_all_item = menu_item;
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	g_signal_connect(menu_item, "activate", (GCallback) menu_delete_all_events, NULL);
+
+	menu_item = gtk_menu_item_new ();
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	gtk_widget_set_sensitive (menu_item, FALSE);
+
+	menu_item = gtk_check_menu_item_new_with_mnemonic("_Confirm Recorded Events");
+	//rec_menu_item = menu_item;
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), globals.confirm_events);
+	g_signal_connect(menu_item, "activate", (GCallback) toggle_confirm_events, NULL);
 
 	/* Options */
 	menu_item = gtk_menu_item_new_with_mnemonic ("_Options");

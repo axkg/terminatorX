@@ -138,6 +138,7 @@ typedef struct {
 	int compress_set_files;
 	
 	int fullscreen_enabled;
+	int confirm_events;
 } tx_global;
 
 extern tx_global globals;

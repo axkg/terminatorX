@@ -78,7 +78,6 @@ tX_event *tX_sequencer :: record_event (tX_seqpar *sp, float value)
 
 int tX_sequencer :: trig_rec()
 {
-	//set_timestamp(0);
 	record_start_timestamp=start_timestamp;
 
 	mode = TX_SEQMODE_PLAYREC;
@@ -87,11 +86,9 @@ int tX_sequencer :: trig_rec()
 
 int tX_sequencer :: trig_play()
 {
-//	set_timestamp(0);
 	run=1;
 	return 1;
 }
-
 
 //#define SEQ_DEBUG 1
 //#define SEQ_DEBUG_MAX 1
@@ -107,7 +104,8 @@ void tX_sequencer :: trig_stop()
 
 	mode = TX_SEQMODE_PLAYONLY;
 	run=0;
-
+	int confirm=GTK_RESPONSE_YES;
+	
 	record_stop_timestamp=current_timestamp;
 	
 	if (oldmode==TX_SEQMODE_PLAYREC)
@@ -116,57 +114,66 @@ void tX_sequencer :: trig_stop()
 #ifdef SEQ_DEBUG		
 		printf ("Recorded from %i to %i.\n", record_start_timestamp, record_stop_timestamp);
 		printf ("* Song: %i events, Recorded: %i events, sum=%i\n", song_list.size(), record_list.size(), song_list.size() + record_list.size());
-#endif		
-		/* removing all events for touched parameters in song_list */
+#endif	
+
+		if (globals.confirm_events) {
+			GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window), 
+								GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
+								"Apply all events recorded with this take?");
+	
+			confirm=gtk_dialog_run(GTK_DIALOG(dialog));
+			gtk_widget_destroy(dialog);
+		}
 		
-		song_event=song_list.begin();
-
-		while ((song_event!=song_list.end()) && ((*song_event)->get_timestamp() < record_start_timestamp))
-			song_event++;
-
-		while ((song_event!=song_list.end()) && ((*song_event)->get_timestamp() <= record_stop_timestamp))
-		{
-			sp = (*song_event)->get_sp();
+		if (confirm==GTK_RESPONSE_YES) {
+			/* The user wants to keep the recorded events... */
+			
+			/* removing all events for touched parameters in song_list */
+			
+			song_event=song_list.begin();
+	
+			while ((song_event!=song_list.end()) && ((*song_event)->get_timestamp() < record_start_timestamp))
+				song_event++;
+	
+			while ((song_event!=song_list.end()) && ((*song_event)->get_timestamp() <= record_stop_timestamp))
+			{
+				sp = (*song_event)->get_sp();
 #ifdef SEQ_DEBUG_MAX			
-			printf("sp %08x (%i) touched at: %i - timestamp %i.\n", sp, sp->is_touched(), sp->get_touch_timestamp(), (*song_event)->get_timestamp());
+				printf("sp %08x (%i) touched at: %i - timestamp %i.\n", sp, sp->is_touched(), sp->get_touch_timestamp(), (*song_event)->get_timestamp());
 #endif			
-			
-			if (sp->is_touched() && (sp->get_touch_timestamp()<= (*song_event)->get_timestamp()))
-			{
-				temp_song_event=song_event;
-				song_event++;
-				delete (*temp_song_event);
-				song_list.erase(temp_song_event);
+				
+				if (sp->is_touched() && (sp->get_touch_timestamp()<= (*song_event)->get_timestamp())) {
+					temp_song_event=song_event;
+					song_event++;
+					delete (*temp_song_event);
+					song_list.erase(temp_song_event);
+				} else {
+					song_event++;
+				}
 			}
-			else
-			{
-				song_event++;
-			}
-		}
-
-		/* inserting all recorded events into song_list */
-					
-		for (record_event=record_list.begin(), song_event=song_list.begin(); record_event != record_list.end();)
-		{
-			if (song_event==song_list.end())
-			{
-				song_list.insert(song_event, record_event, record_list.end());
-				break;
-			}
-			
-			if ((*song_event)->get_timestamp() >= (*record_event)->get_timestamp())
-			{
-/*				if (song_event==song_list.begin()) song_list.push_front((*record_event));
-				else */
-				song_list.insert(song_event, (*record_event));				
-				record_event++;
-			}
-			else 
-			{
-				song_event++;
+	
+			/* inserting all recorded events into song_list */
+						
+			for (record_event=record_list.begin(), song_event=song_list.begin(); record_event != record_list.end();) {
+				if (song_event==song_list.end()) {
+					song_list.insert(song_event, record_event, record_list.end());
+					break;
+				}
+				
+				if ((*song_event)->get_timestamp() >= (*record_event)->get_timestamp()) {
+					song_list.insert(song_event, (*record_event));				
+					record_event++;
+				} else {
+					song_event++;
+				}
+			}		
+		} else {
+			/* The user wants to drop the events from this take */
+			for (record_event=record_list.begin(); record_event!=record_list.end(); record_event++) {
+				delete (*record_event);
 			}
 		}
-//		swap(song_list, record_list);
+		
 		record_list.erase(record_list.begin(), record_list.end());	
 
 #ifdef SEQ_DEBUG		
@@ -199,47 +206,60 @@ void tX_sequencer :: trig_stop()
 	seq_update();
 }
 
-void tX_sequencer :: delete_all_events() {
-	while (song_list.size()) {
-		list <tX_event *> :: iterator ev=song_list.begin();
-		delete (*ev);
-		song_list.erase(ev);
-	}
-
-	start_timestamp=0;
-	current_timestamp=0;
-	max_timestamp=0;
-}
-
-void tX_sequencer :: delete_all_events_for_sp(tX_seqpar *sp)
+void tX_sequencer :: delete_all_events(del_mode mode)
 {
 	list <tX_event *> :: iterator song_event;
 	list <tX_event *> :: iterator temp_song_event;
 	
-#ifdef SEQ_DEBUG
-	int ctr=0;
-#endif		
-	
-	for (song_event=song_list.begin(); song_event!=song_list.end();)
-	{
-		if (sp == (*song_event)->get_sp())
+	for (song_event=song_list.begin(); song_event!=song_list.end();) {
+		if (((mode==DELETE_ALL) || 
+			((mode==DELETE_UPTO_CURRENT) && ((*song_event)->get_timestamp()<current_timestamp)) ||
+			((mode==DELETE_FROM_CURRENT) && ((*song_event)->get_timestamp()>=current_timestamp))))
 		{
 			temp_song_event=song_event;
 			song_event++;
 			delete (*temp_song_event);
 			song_list.erase(temp_song_event);
-#ifdef SEQ_DEBUG
-			ctr++;
-#endif			
-		}
-		else
-		{
+		} else {
 			song_event++;
 		}
 	}
-#ifdef SEQ_DEBUG
-	printf ("removed %i events for seqpar %08x.\n", ctr, sp);
-#endif				
+	
+	start_timestamp=0;
+	current_timestamp=0;
+	max_timestamp=0;
+}
+
+void tX_sequencer :: delete_all_events_for_vtt(vtt_class *vtt, del_mode mode)
+{
+	list <tX_seqpar *> :: iterator sp;
+	
+	for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
+		if ((*sp)->vtt==vtt) {
+			delete_all_events_for_sp((*sp), mode);
+		}
+	}
+}
+
+void tX_sequencer :: delete_all_events_for_sp(tX_seqpar *sp, del_mode mode)
+{
+	list <tX_event *> :: iterator song_event;
+	list <tX_event *> :: iterator temp_song_event;
+	
+	for (song_event=song_list.begin(); song_event!=song_list.end();) {
+		if ((sp == (*song_event)->get_sp()) &&
+			((mode==DELETE_ALL) || 
+			((mode==DELETE_UPTO_CURRENT) && ((*song_event)->get_timestamp()<current_timestamp)) ||
+			((mode==DELETE_FROM_CURRENT) && ((*song_event)->get_timestamp()>=current_timestamp))))
+		{
+			temp_song_event=song_event;
+			song_event++;
+			delete (*temp_song_event);
+			song_list.erase(temp_song_event);
+		} else {
+			song_event++;
+		}
+	}
 }
 
 void tX_sequencer :: save(FILE *rc, gzFile rz, char *indent) {
