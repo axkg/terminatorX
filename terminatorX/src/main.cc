@@ -64,6 +64,7 @@
 #include "tX_ladspa_class.h"
 #include "tX_engine.h"
 #include "tX_capabilities.h"
+#include "tX_pbutton.h"
 
 #ifdef CREATE_BENCHMARK 
 #include "tX_vtt.h"
@@ -240,7 +241,7 @@ int main(int argc, char **argv)
 #ifdef USE_SCHEDULER
 	tX_debug("main() GUI thread is p:%i, t:%i and has policy %i.", getpid(), (int) pthread_self(), sched_getscheduler(getpid()));
 #endif	
-	
+	tx_icons_init();
 	create_mastergui(globals.width, globals.height);
 	
 	if (globals.show_nag) {

@@ -75,6 +75,8 @@ class tX_engine {
 	bool grab_request;
 	bool grab_active;
 	bool runtime_error;
+	bool overload_error;
+	int cycles_ctr;
 	
 #ifdef USE_ALSA_MIDI_IN
 	private: tX_midiin *midi;
@@ -83,7 +85,10 @@ class tX_engine {
 	public:
 
 	pthread_t get_thread_id() { return thread; }
+	bool check_error() { return runtime_error || overload_error; }
 	bool get_runtime_error() { return runtime_error; }
+	bool get_overload_error() { return overload_error; }
+	void reset_cycles_ctr() { /*tX_msg("cycles reset at %i.", cycles_ctr);*/ cycles_ctr=0; } // locking?
 	static tX_engine *get_instance();
 	tX_engine();
 	~tX_engine();

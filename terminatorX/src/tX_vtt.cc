@@ -908,8 +908,11 @@ int16_t * vtt_class :: render_all_turntables()
 		for (sample=0; sample<samples_in_mix_buffer; sample++) {
 			f_prec temp=mix_buffer[sample];
 #ifndef TX_DO_CLIP
-			if(temp < FL_SHRT_MIN) temp = FL_SHRT_MIN;
-			else if (temp > FL_SHRT_MAX) temp = FL_SHRT_MAX;
+			if(temp < FL_SHRT_MIN)  {
+				temp = mix_buffer[sample] = FL_SHRT_MIN;
+			} else if (temp > FL_SHRT_MAX) {
+				temp = mix_buffer[sample] = FL_SHRT_MAX;
+			}
 #endif					
 			mix_out_buffer[sample]=(int16_t) temp;
 			
@@ -1470,7 +1473,7 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gui.mute), mix_mute);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gui.solo), mix_solo);
-	
+
 	return 0;
 }
 

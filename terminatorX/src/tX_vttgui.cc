@@ -63,6 +63,8 @@
 #define WID_DYN TRUE, TRUE, 0
 #define WID_FIX FALSE, FALSE, 0
 
+static gint vg_show_fx_menu(GtkWidget *wid, GdkEventButton *event, vtt_fx *effect);
+
 void nicer_filename(char *dest, char *source)
 {
 		char *fn;
@@ -527,7 +529,7 @@ void vg_adjust_pitch_vtt(GtkWidget *wid, vtt_class *vtt) {
 	g_signal_connect(G_OBJECT(cancel_button), "clicked", G_CALLBACK(vg_cancel_pitch_adjust), vtt);
 }
 
-void vg_mouse_mapping_pressed(GtkWidget *wid, vtt_class *vtt) {
+static gint vg_mouse_mapping_pressed(GtkWidget *wid, GdkEventButton *event, vtt_class *vtt) {
 	if (vtt->gui.mouse_mapping_menu) {
 		gtk_widget_destroy(vtt->gui.mouse_mapping_menu);
 		vtt->gui.mouse_mapping_menu=NULL;
@@ -598,13 +600,14 @@ void vg_mouse_mapping_pressed(GtkWidget *wid, vtt_class *vtt) {
 	
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(x_item), vtt->gui.mouse_mapping_menu_x);
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(y_item), vtt->gui.mouse_mapping_menu_y);
-	
 	gtk_menu_popup (GTK_MENU(vtt->gui.mouse_mapping_menu), NULL, NULL, NULL, NULL, 0, 0);
-
+	
 	g_signal_emit_by_name(G_OBJECT(wid), "released", vtt);
+	
+	return TRUE;
 }
 
-void vg_file_button_pressed(GtkWidget *wid, vtt_class *vtt) {
+static gint vg_file_button_pressed(GtkWidget *wid, GdkEventButton *event, vtt_class *vtt) {
 	if (vtt->gui.file_menu==NULL) {
 		GtkWidget *item;
 		
@@ -629,9 +632,10 @@ void vg_file_button_pressed(GtkWidget *wid, vtt_class *vtt) {
 	}
 	
 	gtk_menu_popup(GTK_MENU(vtt->gui.file_menu), NULL, NULL, NULL, NULL, 0,0);
-
 	/* gtk+ is really waiting for this.. */
 	g_signal_emit_by_name(G_OBJECT(wid), "released", vtt);
+	
+	return TRUE;
 }
 
 void vg_adjust_zoom(GtkWidget *wid, vtt_class *vtt) {	
@@ -639,7 +643,7 @@ void vg_adjust_zoom(GtkWidget *wid, vtt_class *vtt) {
 	gtk_tx_set_zoom(GTK_TX(vtt->gui.display), adj->value/100.0);
 }
 
-void fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
+static gint fx_button_pressed(GtkWidget *wid, GdkEventButton *event, vtt_class *vtt)
 {
 	vtt_gui *g=&vtt->gui;
 
@@ -651,9 +655,11 @@ void fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
 
 	/* gtk+ is really waiting for this.. */
 	g_signal_emit_by_name(G_OBJECT(wid), "released", vtt);
+	
+	return TRUE;
 }
 
-void stereo_fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
+static gint stereo_fx_button_pressed(GtkWidget *wid, GdkEventButton *event, vtt_class *vtt)
 {
 	vtt_gui *g=&vtt->gui;
 
@@ -665,6 +671,8 @@ void stereo_fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
 
 	/* gtk+ is really waiting for this.. */
 	g_signal_emit_by_name(G_OBJECT(wid), "released", vtt);
+	
+	return TRUE;
 }
 
 void gui_set_name(vtt_class *vtt, char *newname)
@@ -692,7 +700,7 @@ void gui_set_name(vtt_class *vtt, char *newname)
 #define connect_button(wid, func); g_signal_connect(G_OBJECT(g->wid), "clicked", G_CALLBACK(func), (void *) vtt);
 #define connect_range(wid, func); g_signal_connect(G_OBJECT(gtk_range_get_adjustment(GTK_RANGE(g->wid))), "value_changed", G_CALLBACK(func), (void *) vtt);
 #define connect_scale_format(wid, func); g_signal_connect(G_OBJECT(g->wid), "format-value", G_CALLBACK(func), (void *) vtt);
-#define connect_press_button(wid, func); g_signal_connect(G_OBJECT(g->wid), "pressed", G_CALLBACK(func), (void *) vtt);
+#define connect_press_button(wid, func); g_signal_connect(G_OBJECT(g->wid), "button_press_event", G_CALLBACK(func), (void *) vtt);
 #define connect_rel_button(wid, func); g_signal_connect(G_OBJECT(g->wid), "released", G_CALLBACK(func), (void *) vtt);
 
 GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel);
@@ -759,8 +767,6 @@ void gui_connect_signals(vtt_class *vtt)
 	
 }
 
-void vg_show_fx_menu(GtkWidget *, vtt_fx *effect);
-
 void build_vtt_gui(vtt_class *vtt)
 {
 	GtkWidget *tempbox;
@@ -790,7 +796,7 @@ void build_vtt_gui(vtt_class *vtt)
 
 	GtkWidget *pixmap;
 	g->audio_minimize=gtk_button_new();
-	pixmap=tx_pixmap_widget(TX_ICON_MINIMIZE_PANEL);
+	pixmap=tx_pixmap_widget(MINIMIZE_PANEL);
 	gtk_container_add (GTK_CONTAINER (g->audio_minimize), pixmap);	
 	gtk_box_pack_end(GTK_BOX(tempbox2), g->audio_minimize, WID_FIX);
 	gtk_widget_show(pixmap);
@@ -858,7 +864,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->control_label, WID_DYN);
 
 	g->control_minimize=gtk_button_new();
-	pixmap=tx_pixmap_widget(TX_ICON_MINIMIZE_PANEL);
+	pixmap=tx_pixmap_widget(MINIMIZE_PANEL);
 	gtk_container_add (GTK_CONTAINER (g->control_minimize), pixmap);	
 	gtk_box_pack_end(GTK_BOX(tempbox2), g->control_minimize, WID_FIX);
 	gtk_widget_show(pixmap);
@@ -956,7 +962,7 @@ void build_vtt_gui(vtt_class *vtt)
 	/* Lowpass Panel */
 
 	p=new tX_panel("Lowpass", g->fx_box);
-	g_signal_connect(G_OBJECT(p->get_labelbutton()), "pressed", G_CALLBACK(vg_show_fx_menu), vtt->lp_fx);
+	g_signal_connect(G_OBJECT(p->get_labelbutton()), "button_press_event", G_CALLBACK(vg_show_fx_menu), vtt->lp_fx);
 	g->lp_panel=p;
 		
 	g->lp_enable=gtk_check_button_new_with_label("Enable");
@@ -988,7 +994,7 @@ void build_vtt_gui(vtt_class *vtt)
 	/* Echo Panel */
 
 	p=new tX_panel("Echo", g->fx_box);
-	g_signal_connect(G_OBJECT(p->get_labelbutton()), "pressed",  G_CALLBACK(vg_show_fx_menu), vtt->ec_fx);
+	g_signal_connect(G_OBJECT(p->get_labelbutton()), "button_press_event",  G_CALLBACK(vg_show_fx_menu), vtt->ec_fx);
 	g->ec_panel=p;
 
 	p->add_client_widget(vg_create_fx_bar(vtt, vtt->ec_fx, 0));
@@ -1140,7 +1146,7 @@ GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel)
 	if (showdel)
 	{
 		button=gtk_button_new();
-		pixmap=tx_pixmap_widget(TX_ICON_FX_CLOSE);
+		pixmap=tx_pixmap_widget(FX_CLOSE);
 		gtk_container_add (GTK_CONTAINER (button), pixmap);	
 		gtk_box_pack_end(GTK_BOX(box), button, WID_FIX);
 		gtk_widget_show(pixmap);
@@ -1149,7 +1155,7 @@ GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel)
 	}
 
 	button=gtk_button_new();
-	pixmap=tx_pixmap_widget(TX_ICON_FX_DOWN);
+	pixmap=tx_pixmap_widget(FX_DOWN);
 	gtk_container_add (GTK_CONTAINER (button), pixmap);	
 	gtk_box_pack_end(GTK_BOX(box), button, WID_FIX);
 	gtk_widget_show(pixmap);
@@ -1157,7 +1163,7 @@ GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel)
 	g_signal_connect(G_OBJECT(button), "clicked", (GtkSignalFunc) fx_down, (void *) effect);
 
 	button=gtk_button_new();
-	pixmap=tx_pixmap_widget(TX_ICON_FX_UP);
+	pixmap=tx_pixmap_widget(FX_UP);
 	gtk_container_add (GTK_CONTAINER (button), pixmap);	
 	gtk_box_pack_end(GTK_BOX(box), button, WID_FIX);
 	gtk_widget_show(pixmap);
@@ -1200,9 +1206,10 @@ void vg_move_fx_panel_down(GtkWidget *wid, vtt_class *vtt, bool stereo)
 	gtk_box_reorder_child(GTK_BOX(box), wid, pos+1);
 }
 
-void vg_show_fx_info(GtkWidget *wid, vtt_fx *effect)
+static gint vg_show_fx_info(GtkWidget *wid, vtt_fx *effect)
 {
 	tx_l_note(effect->get_info_string());
+	return TRUE;
 }
 
 void vg_toggle_drywet(GtkWidget *wid, vtt_fx *effect)
@@ -1210,57 +1217,61 @@ void vg_toggle_drywet(GtkWidget *wid, vtt_fx *effect)
 	effect->toggle_drywet();
 }
 
-void vg_show_fx_menu(GtkWidget *wid, vtt_fx *effect)
+static gint vg_show_fx_menu(GtkWidget *wid, GdkEventButton *event, vtt_fx *effect)
 {
-	GtkWidget *menu=gtk_menu_new();
-	GtkWidget *item=gtk_menu_item_new_with_label("View Plugin Details");
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-	gtk_widget_set_sensitive(item, (effect->has_drywet_feature()!=NOT_DRYWET_CAPABLE));
-	gtk_widget_show(item);
-	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(vg_show_fx_info), effect);
+	if (event->button==3) {
+		GtkWidget *menu=gtk_menu_new();
+		GtkWidget *item=gtk_menu_item_new_with_label("View Plugin Details");
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+		gtk_widget_set_sensitive(item, (effect->has_drywet_feature()!=NOT_DRYWET_CAPABLE));
+		gtk_widget_show(item);
+		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(vg_show_fx_info), effect);
+		
+		switch (effect->has_drywet_feature()) {
+			case (NOT_DRYWET_CAPABLE):
+				item=gtk_menu_item_new_with_label("Add Dry/Wet Control");
+				gtk_widget_set_sensitive(item, FALSE);
+				break;
+			case (DRYWET_ACTIVE):
+				item=gtk_menu_item_new_with_label("Remove Dry/Wet Control");
+				break;
+			case (DRYWET_AVAILABLE):
+				item=gtk_menu_item_new_with_label("Add Dry/Wet Control");
+				break;
+		}
+		
+		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(vg_toggle_drywet), effect);	
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+		gtk_widget_show(item);
+		
+		item = gtk_menu_item_new();
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+		gtk_widget_set_sensitive(item, FALSE);
+		gtk_widget_show(item);
 	
-	switch (effect->has_drywet_feature()) {
-		case (NOT_DRYWET_CAPABLE):
-			item=gtk_menu_item_new_with_label("Add Dry/Wet Control");
-			gtk_widget_set_sensitive(item, FALSE);
-			break;
-		case (DRYWET_ACTIVE):
-			item=gtk_menu_item_new_with_label("Remove Dry/Wet Control");
-			break;
-		case (DRYWET_AVAILABLE):
-			item=gtk_menu_item_new_with_label("Add Dry/Wet Control");
-			break;
+		item=gtk_menu_item_new_with_label("Up");
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+		gtk_widget_show(item);
+		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(fx_up), effect);
+	
+		item=gtk_menu_item_new_with_label("Down");
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+		gtk_widget_show(item);
+		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(fx_down), effect);
+	
+		item=gtk_menu_item_new_with_label("Delete");
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+		gtk_widget_set_sensitive(item, (effect->has_drywet_feature()!=NOT_DRYWET_CAPABLE));
+		gtk_widget_show(item);
+		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(fx_kill), effect);
+	
+		gtk_menu_popup (GTK_MENU(menu), NULL, NULL, NULL, NULL, 0, 0);
+	
+		/* gtk+ is really waiting for this.. */
+		g_signal_emit_by_name(G_OBJECT(wid), "released", effect);
+		return TRUE;
 	}
-	
-	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(vg_toggle_drywet), effect);	
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-	gtk_widget_show(item);
-	
-	item = gtk_menu_item_new();
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-	gtk_widget_set_sensitive(item, FALSE);
-	gtk_widget_show(item);
-
-	item=gtk_menu_item_new_with_label("Up");
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-	gtk_widget_show(item);
-	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(fx_up), effect);
-
-	item=gtk_menu_item_new_with_label("Down");
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-	gtk_widget_show(item);
-	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(fx_down), effect);
-
-	item=gtk_menu_item_new_with_label("Delete");
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-	gtk_widget_set_sensitive(item, (effect->has_drywet_feature()!=NOT_DRYWET_CAPABLE));
-	gtk_widget_show(item);
-	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(fx_kill), effect);
-
-	gtk_menu_popup (GTK_MENU(menu), NULL, NULL, NULL, NULL, 0, 0);
-
-	/* gtk+ is really waiting for this.. */
-	g_signal_emit_by_name(G_OBJECT(wid), "released", effect);
+	return FALSE;
 }
 
 void vg_create_fx_gui(vtt_class *vtt, vtt_fx_ladspa *effect, LADSPA_Plugin *plugin)
@@ -1288,8 +1299,8 @@ void vg_create_fx_gui(vtt_class *vtt, vtt_fx_ladspa *effect, LADSPA_Plugin *plug
 			p->add_client_widget((*sp)->get_widget());
 	}
 
-	g_signal_connect(G_OBJECT(p->get_labelbutton()), "pressed", (GtkSignalFunc) vg_show_fx_menu, (void *) effect);
-	gui_set_tooltip(p->get_labelbutton(), "Click here for menu");
+	g_signal_connect(G_OBJECT(p->get_labelbutton()), "button_press_event", (GtkSignalFunc) vg_show_fx_menu, (void *) effect);
+	gui_set_tooltip(p->get_labelbutton(), "Right-click to access menu.");
 	effect->set_panel_widget(p->get_widget());
 	effect->set_panel(p);
 
@@ -1311,7 +1322,7 @@ void gui_update_display(vtt_class *vtt)
 void gui_hide_control_panel(vtt_class *vtt, bool hide) {
 	if (hide) {
 		gtk_widget_hide(vtt->gui.control_box);
-		vtt->gui.control_minimized_panel_bar_button=tx_xpm_button_new(TX_ICON_MIN_CONTROL, vtt->name, 0, &vtt->gui.control_minimized_panel_bar_label);
+		vtt->gui.control_minimized_panel_bar_button=tx_xpm_button_new(MIN_CONTROL, vtt->name, 0, &vtt->gui.control_minimized_panel_bar_label);
 		g_signal_connect(G_OBJECT(vtt->gui.control_minimized_panel_bar_button), "clicked", (GtkSignalFunc) unminimize_control_panel, vtt);
 		gtk_widget_show(vtt->gui.control_minimized_panel_bar_button);
 		add_to_panel_bar(vtt->gui.control_minimized_panel_bar_button);
@@ -1326,7 +1337,7 @@ void gui_hide_control_panel(vtt_class *vtt, bool hide) {
 void gui_hide_audio_panel(vtt_class *vtt, bool hide) {
 	if (hide) {
 		gtk_widget_hide(vtt->gui.audio_box);
-		vtt->gui.audio_minimized_panel_bar_button=tx_xpm_button_new(TX_ICON_MIN_AUDIO, vtt->name, 0, &vtt->gui.audio_minimized_panel_bar_label);
+		vtt->gui.audio_minimized_panel_bar_button=tx_xpm_button_new(MIN_AUDIO, vtt->name, 0, &vtt->gui.audio_minimized_panel_bar_label);
 		g_signal_connect(G_OBJECT(vtt->gui.audio_minimized_panel_bar_button), "clicked", (GtkSignalFunc) unminimize_audio_panel, vtt);		
 		gtk_widget_show(vtt->gui.audio_minimized_panel_bar_button);
 		add_to_panel_bar(vtt->gui.audio_minimized_panel_bar_button);
