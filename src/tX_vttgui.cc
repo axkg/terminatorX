@@ -1361,3 +1361,9 @@ void vg_init_all_non_seqpars()
 	}	
 }
 
+f_prec gui_get_audio_x_zoom(vtt_class *vtt) {
+	return gtk_tx_get_zoom(GTK_TX(vtt->gui.display));
+}
+extern void gui_set_audio_x_zoom(vtt_class *vtt, f_prec value) {
+	gtk_tx_set_zoom(GTK_TX(vtt->gui.display), value);
+}

@@ -230,44 +230,23 @@ void tX_sequencer :: delete_all_events_for_sp(tX_seqpar *sp)
 #endif				
 }
 
-void tX_sequencer :: save(FILE *out)
-{
+void tX_sequencer :: save(FILE *rc, char *indent) {
 	guint32 event_count;
 	list <tX_event *> :: iterator song_event;
 	
 	event_count=song_list.size();
+
+	fprintf(rc, "%s<sequencer>\n", indent);
+	strcat(indent, "\t");
 	
-	fwrite((void *) &event_count,  sizeof(event_count), 1, out);
-	
-	for (song_event=song_list.begin(); song_event!=song_list.end(); song_event++)
-	{
-		(*song_event)->store(out);
+	for (song_event=song_list.begin(); song_event!=song_list.end(); song_event++) {
+		(*song_event)->store(rc, indent);
 	}
+	
+	indent[strlen(indent)-1]=0;
+	fprintf(rc, "%s</sequencer>\n", indent);
 }
 
-void tX_sequencer :: load(FILE *in)
-{
-	guint32 event_count=0;
-	guint32 i;
-	tX_event *new_event=NULL;
-	
-	clear();
-	
-	fread ((void *) &event_count, sizeof(event_count), 1, in);
-	
-	max_timestamp=0;
-	
-	for (i=0; i<event_count; i++)
-	{
-		new_event=new tX_event(in);
-		song_list.push_back(new_event);
-	}
-	
-	start_timestamp=0;
-	current_timestamp=0;
-	
-	if (new_event) max_timestamp=new_event->get_timestamp();
-}
 
 void tX_sequencer :: clear()
 {
@@ -335,3 +314,22 @@ void tX_sequencer :: forward_to_start_timestamp(int dont_fake)
 	while (gtk_events_pending()) gtk_main_iteration();
 }
 
+void tX_sequencer :: load(xmlDocPtr doc, xmlNodePtr node) {
+	tX_event *ev=NULL;
+	
+	max_timestamp=0;
+	
+	for (xmlNodePtr cur=node->xmlChildrenNode; cur!=NULL; cur=cur->next) {
+		if (cur->type == XML_ELEMENT_NODE) {
+			if (xmlStrcmp(cur->name, (xmlChar *) "event")==0) {
+				ev=new tX_event(doc, cur);
+				song_list.push_back(ev);
+			} else {
+				tX_warning("unhandled sequencer element %s.", cur->name);
+			}
+		}
+	}
+	
+	start_timestamp=0;
+	current_timestamp=0;
+}

@@ -62,3 +62,6 @@
 
 /* use the newer gtk+ toolkit */
 #undef USE_GTK2
+
+/* Define for supporting old binary tX set files */
+#undef ENABLE_TX_LEGACY

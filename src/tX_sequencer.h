@@ -34,6 +34,9 @@
 #define TX_SEQMODE_PLAYONLY 1
 #define TX_SEQMODE_PLAYREC  0
 
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+
 class tX_sequencer
 {
 	private:
@@ -78,8 +81,11 @@ class tX_sequencer
 	
 	void delete_all_events_for_sp(tX_seqpar *sp);
 	
-	void save(FILE *);
+	void save(FILE *, char *indent);
+#ifdef ENABLE_TX_LEGACY	
 	void load(FILE *);
+#endif	
+	void load(xmlDocPtr, xmlNodePtr);
 	void clear();
 	
 	guint32 set_start_timestamp(float pos);

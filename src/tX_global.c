@@ -41,20 +41,6 @@
 
 tx_global globals;
 
-void get_rc_name_old(char *buffer)
-{
-	strcpy(buffer,"");
-
-	if (getenv("HOME"))
-	{
-		strcpy(buffer, getenv("HOME"));
-		if (buffer[strlen(buffer)-1]!='/')
-		strcat(buffer, "/");
-	}
-	
-	strcat(buffer, ".terminatorX3rc.bin");
-}
-
 void get_rc_name(char *buffer)
 {
 	strcpy(buffer,"");
@@ -142,39 +128,6 @@ void set_global_defaults() {
 
 }
 
-void load_globals_old()
-{	
-	char rc_name[PATH_MAX]="";	
-	FILE *rc;
-	get_rc_name_old(rc_name);
-	
-	rc=fopen(rc_name, "r");
-	if (rc)
-	{
-		fread(&globals, sizeof(tx_global), 1, rc);
-		fclose(rc);
-	}
-	else
-	{
-		fprintf(stderr, "tX: .rc-file '%s' doesn't exist, reverting to defaults\n", rc_name);
-		set_global_defaults();
-	}
-
-	/* i'll have to keep these as they're in the code
-          everywhere but I think it doesn't make sense resetting
-	  to old values on startup....
-	*/
-	globals.use_stdout_cmdline=0;
-	globals.current_path = NULL;
-	globals.pitch=1.0;
-	globals.volume=1.0;	
-	if (!globals.true_block_size) globals.true_block_size=1<globals.buff_size;
-}
-
-#define restore_int(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) { sscanf(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%i", &i); }}
-#define restore_float(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if  (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {sscanf(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%lf", &dvalue); i=dvalue;}}
-#define restore_string(s, i); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {strcpy(i, xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)); }}
-
 int load_globals_xml() {
 	char rc_name[PATH_MAX]="";	
 	xmlDocPtr doc;
@@ -182,7 +135,6 @@ int load_globals_xml() {
 	int elementFound;
 	double dvalue;
 
-	set_global_defaults();
 	get_rc_name(rc_name);
 	
 	doc = xmlParseFile(rc_name);
@@ -241,16 +193,15 @@ int load_globals_xml() {
 			}
 		}
 	}
+
+	xmlFreeDoc(doc);
 	
 	return 0;
 }
 
-#define store_int(s, i); fprintf(rc, "\t<%s>%i</%s>\n", s,(int) i, s);
-#define store_float(s, i); fprintf(rc, "\t<%s>%lf</%s>\n", s,(double) i, s);
-#define store_string(s, i); fprintf(rc, "\t<%s>%s</%s>\n", s, i, s);
-
 void store_globals() {
 	char rc_name[PATH_MAX]="";
+	char indent[]="\t";
 	FILE *rc;
 	
 	get_rc_name(rc_name);
@@ -293,9 +244,17 @@ void store_globals() {
 	}
 }
 
+#ifdef ENABLE_TX_LEGACY
+extern void load_globals_old();
+#endif
+
 void load_globals() {
+	set_global_defaults();
+
 	if (load_globals_xml()!=0) {
 		fprintf(stderr, "tX: Failed loading terminatorXrc - trying to load old binary rc.\n");
+#ifdef ENABLE_TX_LEGACY		
 		load_globals_old();
+#endif		
 	}
 }

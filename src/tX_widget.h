@@ -74,7 +74,6 @@ struct _GtkTx {
 	GtkWidget *peer_scale;
 	
 	f_prec zoom;
-	f_prec zoom_scale;
 		
 	int cursor_pos;
 	int cursor_x_pos;
@@ -99,6 +98,7 @@ void gtk_tx_cleanup_pos_display (GtkTx *tx);
 void	gtk_tx_update_pos_display  (GtkTx *tx, int sample, int mute);
 void gtk_tx_show_frame(GtkTx *tx, int show);
 void gtk_tx_set_zoom(GtkTx *tx, f_prec zoom);
+f_prec gtk_tx_get_zoom(GtkTx *tx);
 
 #ifdef __cplusplus
 }

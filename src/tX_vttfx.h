@@ -38,6 +38,9 @@
 #define TX_FX_BUILTINECHO 2
 #define TX_FX_LADSPA 3
 
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+
 /* abstract super class vtt_fx */
 
 class vtt_fx
@@ -61,7 +64,7 @@ class vtt_fx
 	
 	virtual const char *get_info_string();
 	
-	virtual void save(FILE *output);
+	virtual void save(FILE *output, char *indent);
 	
 	GtkWidget* get_panel_widget() { return panel_widget; }
 	void set_panel_widget(GtkWidget *widget) { panel_widget=widget; }
@@ -82,7 +85,7 @@ class vtt_fx_lp : public vtt_fx
 	virtual void run();	
 	virtual int isEnabled();
 
-	virtual void save(FILE *output);
+	virtual void save(FILE *output, char *indent);
 	virtual const char *get_info_string();
 };
 
@@ -95,7 +98,7 @@ class vtt_fx_ec : public vtt_fx
 	virtual void run();	
 	virtual int isEnabled();
 
-	virtual void save(FILE *output);
+	virtual void save(FILE *output, char *indent);
 	virtual const char *get_info_string();	
 };
 
@@ -123,8 +126,11 @@ class vtt_fx_ladspa : public vtt_fx
 	virtual int isEnabled();
 	virtual void reconnect_buffer();
 	virtual const char *get_info_string();	
-	virtual void save(FILE *output);
-	virtual void load(FILE *input);
+	virtual void save(FILE *output, char *indent);
+#ifdef ENABLE_TX_LEGACY	
+	virtual void load(FILE *);
+#endif	
+	virtual void load(xmlDocPtr, xmlNodePtr);
 };
 
 #endif

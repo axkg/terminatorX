@@ -168,6 +168,7 @@ tx_audiofile :: ~tx_audiofile() {
 			free(mem);
 			break;
 		}
+		case TX_AUDIO_UNDEFINED: break;
 	}	
 
  	if (file) {
