@@ -4,9 +4,35 @@ This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
 [v3.80 - prerelease]
+
+- I hacked support for Steve Harris' cool liblrdf - if you've got that library
+  setup correctly and you use Steve's wonderful plugin collection with RDF 
+  description you should get a nicely structured menu when clicking on the
+  "FX" button. All plugins not categorized through RDF files go to the 
+  "Unclassified" category.
+- I'm no longer including the html and ps versions of the manual - it's now
+  attached in it's XML/DocBook source and will be installed via scrollkeeper.
+  terminatorX offers a menu entry to start gnome-help to display the manual.
+- Reworked the Preferences dialog - I now use glade-2 to create that code -
+  I'm fed up with copy'n'pasting gtk+ code so now I'll let glade-2 do this 
+  whereever possible. The glade project files are included with this tarball
+  in case you want to mess with them.
+- Switched to a fixed blocksize (1 ms) for rendering. This finally allows to
+  playback set files with events recorded on machines with small buffer sizes
+  on slow machines with large buffer sizes. The buffersize of the audiodevice
+  has no effect on the "operating" blocksize anymore.
+  Note that the samlping rate has a - very small - effect though. Depending on
+  the sampling rate terminatorX will try to find a blocksize that fits exactly
+  1 ms - while this is easy for "straight" sampling rates (22000 32000 48000)
+  this results in "44.1" samples for 44100 Hz.
+- Finally hacked a native ALSA backend. It definitley needs some more polish
+  though.
+- Added "Remove Binding" button
+- MIDI now uses a GIOCallback so the effect of MIDI controllers is visible
+  even without the audio engine turned on.
 - Reworked the mastergui for better usabilty and less space consumption, yes,
   terminatorX now features a boring menubar - which helps using it on small
-  displays quite a bit, and should be easier to handle for first time users.
+  displays quite a bit, and should be easier to handle for first-time users.
 - Implemented a suggestion from Darrick Servis <darrick@dcn.davis.ca.us> that
   stops clipping in the mixer routine. The outgoing signal is now limited as it
   should be, which improves the output quality for signals too loud
@@ -19,7 +45,8 @@ changed.
 - Fixed a bug in XML serialization that dropped strings' contents.
 - You can now hit "F11" to turn fullscreen mode on/off - this will help using
   terminatorX on small DJ laptops. Note that the key will have no effect in 
-  scratch - hit it before you get that engine running.
+  scratch mode - hit it before you enter grab mode. This feature requires a 
+  NETWM compliant window manager.
 - terminatorX now stores set files as XML documents, too - so terminatorX has
   become terminatorXML finally. Note: for sets with a large number of events
   recorded into the sequencer - the XML based set files can grow significally
