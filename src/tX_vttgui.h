@@ -32,13 +32,6 @@
 #include <list>
 #include "tX_seqpar.h"
 
-
-#ifdef DONT_USE_FLASH
-#undef USE_FLASH
-#else
-#define USE_FLASH 1
-#endif
-
 typedef struct vtt_gui
 {
 	GtkWidget *control_box;
@@ -75,8 +68,8 @@ typedef struct vtt_gui
 	GtkAdjustment *pitch;
 	GtkAdjustment *pan;
 	GtkAdjustment *volume; 
-    GtkWidget *mute;
-    GtkWidget *solo;
+	GtkWidget *mute;
+	GtkWidget *solo;
 	GtkWidget *flash;
 
 	/* Widgets in Lowpass Panel */

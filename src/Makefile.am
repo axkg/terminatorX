@@ -2,8 +2,6 @@ LIBS=@X_LIBS@ @GTK_LIBS@ @LIBS@
 
 SUBDIRS = gui_icons smallknob
 
-EXTRA_DIST = README.MMX
-
 CFLAGS=@CFLAGS@ @GTK_CFLAGS@ -D_REENTRANT
 CXXFLAGS=@CFLAGS@ @GTK_CFLAGS@ -D_REENTRANT
 
@@ -26,7 +24,7 @@ terminatorX_SOURCES =	tX_endian.c tX_dialog.cc tX_widget.c wav_write.c \
 			tX_dialog.h tX_mastergui.h tX_widget.h wav_file.h \
 			tX_vtt.cc tX_vtt.h tX_vttgui.h tX_vttgui.cc \
 			tX_audiodevice.cc tX_audiodevice.h tX_mastergui.cc \
-			3dnow.h mmx.h tX_audiofile.cc \
+			tX_audiofile.cc \
 			tX_audiofile.h tX_loaddlg.cc tX_loaddlg.h tX_icon.c \
 			tX_icon.h tX_prelis.cc tX_prelis.h \
 			tX_seqpar.h tX_seqpar.cc tX_pbutton.cc tX_pbutton.h \
