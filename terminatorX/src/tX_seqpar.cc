@@ -617,6 +617,7 @@ void tX_seqpar_vtt_loop :: do_update_graphics ()
 tX_seqpar_vtt_sync_client :: tX_seqpar_vtt_sync_client()
 {
 	set_mapping_parameters(0,0,0,0);
+	is_boolean=true;
 }
 
 void tX_seqpar_vtt_sync_client :: do_exec(const float value)
@@ -1059,8 +1060,12 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gp
 		item = gtk_menu_item_new_with_label("MIDI Learn");
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 		gtk_widget_show(item);
+#ifdef USE_ALSA_MIDI_IN
 		g_signal_connect(item, "activate", (GCallback) tX_seqpar::learn_midi_binding, sp);		
-
+#else
+		gtk_widget_set_sensitive(item, FALSE);
+#endif
+		
 		item = gtk_menu_item_new_with_label("Remove MIDI Binding");
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 		gtk_widget_show(item);		
@@ -1068,8 +1073,11 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gp
 		if (sp->bound_midi_event.type==tX_midievent::NONE) {
 			gtk_widget_set_sensitive(item, FALSE);
 		}
+#ifdef USE_ALSA_MIDI_IN
 		g_signal_connect(item, "activate", (GCallback) tX_seqpar::remove_midi_binding, sp);		
-
+#else
+		gtk_widget_set_sensitive(item, FALSE);
+#endif
 		if (!sp->is_boolean) {
 			item = gtk_menu_item_new();
 			gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
@@ -1079,12 +1087,21 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gp
 			item = gtk_menu_item_new_with_label("Set Upper MIDI Bound");
 			gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 			gtk_widget_show(item);
+			
+#ifdef USE_ALSA_MIDI_IN
 			g_signal_connect(item, "activate", (GCallback) tX_seqpar::set_midi_upper_bound, sp);		
+#else
+			gtk_widget_set_sensitive(item, FALSE);
+#endif
 			
 			item = gtk_menu_item_new_with_label("Reset Upper MIDI Bound");
 			gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-			gtk_widget_show(item);			
+			gtk_widget_show(item);
+#ifdef USE_ALSA_MIDI_IN
 			g_signal_connect(item, "activate", (GCallback) tX_seqpar::reset_midi_upper_bound, sp);		
+#else
+			gtk_widget_set_sensitive(item, FALSE);
+#endif
 			
 			if (!sp->midi_upper_bound_set) {
 				gtk_widget_set_sensitive(item, FALSE);				
@@ -1093,12 +1110,20 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gp
 			item = gtk_menu_item_new_with_label("Set Lower MIDI Bound");
 			gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 			gtk_widget_show(item);
+#ifdef USE_ALSA_MIDI_IN
 			g_signal_connect(item, "activate", (GCallback) tX_seqpar::set_midi_lower_bound, sp);					
+#else
+			gtk_widget_set_sensitive(item, FALSE);
+#endif
 			
 			item = gtk_menu_item_new_with_label("Reset Lower MIDI Bound");
 			gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-			gtk_widget_show(item);		
+			gtk_widget_show(item);
+#ifdef USE_ALSA_MIDI_IN
 			g_signal_connect(item, "activate", (GCallback) tX_seqpar::reset_midi_lower_bound, sp);		
+#else
+			gtk_widget_set_sensitive(item, FALSE);
+#endif
 
 			if (!sp->midi_lower_bound_set) {
 				gtk_widget_set_sensitive(item, FALSE);				
@@ -1125,6 +1150,8 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gp
 	
 	return FALSE;
 }
+
+#ifdef USE_ALSA_MIDI_IN
 
 gboolean tX_seqpar::remove_midi_binding(GtkWidget *widget, gpointer data) {
 	tX_seqpar *sp=(tX_seqpar *) data;
@@ -1171,3 +1198,5 @@ gboolean tX_seqpar::reset_midi_lower_bound(GtkWidget *widget, gpointer data) {
 	
 	return TRUE;
 }
+
+#endif // USE_ALSA_MIDI_IN

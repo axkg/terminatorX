@@ -430,11 +430,15 @@ gboolean tX_midiin::midi_learn_cancel(GtkWidget *widget, tX_midiin *midi)
 {
 	midi->sp_to_learn=NULL;
 	gtk_widget_destroy(midi->learn_dialog);
+	
+	return FALSE;
 }
 
 gboolean tX_midiin::midi_learn_destroy(GtkWidget *widget, tX_midiin *midi)
 {
 	midi->cancel_midi_learn();
+	
+	return FALSE;
 }
 
 void tX_midiin::store_connections(FILE *rc, char *indent) 
