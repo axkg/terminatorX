@@ -27,12 +27,14 @@ class tX_panel
 {
 	GtkWidget *container;
 	GtkWidget *mainbox;
-	GtkWidget *pixmap;
+	GtkWidget *pixmap_min;
+	GtkWidget *pixmap_max;
 	GtkWidget *topbox;
 	GtkWidget *clientbox;
 	GtkWidget *clientframe;
 	GtkWidget *labelbutton;
 	GtkWidget *minbutton;
+	GtkWidget *button_box;
 	int client_hidden;
 		
 	public:
@@ -40,10 +42,10 @@ class tX_panel
 	~tX_panel();
 	
 	GtkWidget *get_widget() {return mainbox;};
-	GtkWidget *get_labelbutton() {return labelbutton;}
+	GtkWidget *get_labelbutton() {return minbutton;}
 	void add_client_widget(GtkWidget *w);
 	int is_hidden() { return client_hidden; }
-	void hide(int i) { gtk_toggle_button_set_active((GTK_TOGGLE_BUTTON(minbutton)), i); } 
+	void hide(int i) { client_hidden=i; tX_panel::minimize(NULL, this); } 
 	
 	static void minimize(GtkWidget *w, tX_panel *p);
 };

@@ -111,6 +111,16 @@ int16_t* tX_engine::render_cycle() {
 	/* Record the audio if necessary... */
 	if (is_recording()) tape->eat(data);
 	
+	/* check for GUI thread starvation */
+//	if (cycles_ctr++ > 100) {
+//		tX_error("engine detected overload condition.");
+//		overload_error=true;
+//		stop_flag=true;
+		// give the audio thread some air to breathe
+		// so it can acquire the mutex
+//		usleep(500);
+//	}
+	
 	return  data;
 }
 
@@ -231,6 +241,9 @@ tX_engine_error tX_engine :: run() {
 	list <vtt_class *> :: iterator vtt;
 	
 	runtime_error=false;
+	overload_error=false;
+	reset_cycles_ctr();
+	
 	if (loop_is_active) return ERROR_BUSY;
 	
 	switch (globals.audiodevice_type) {

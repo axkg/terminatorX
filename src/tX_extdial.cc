@@ -41,12 +41,15 @@ GtkSignalFunc tX_extdial :: f_adjustment(GtkWidget *w, tX_extdial *ed)
 	return NULL;	
 }
 
-tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, tX_seqpar * sp, bool text_below)
+tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, tX_seqpar * sp, bool text_below, bool hide_entry)
 {
 	adj=a;
 	fval=adj->value;
 	f2s();
-	if (l) label=gtk_label_new(l);
+	if (l) {
+		label=gtk_label_new(NULL);
+		gtk_label_set_markup(GTK_LABEL(label),l); 
+	}
 	dial=gtk_tx_dial_new(adj);
 	entry=gtk_entry_new();
 	gtk_entry_set_max_length(GTK_ENTRY(entry), 5);
@@ -64,7 +67,7 @@ tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, tX_seqpar * sp, bool t
 	if (l) gtk_box_pack_start(GTK_BOX(mainbox), label, WID_FIX);
 	
 	if (l) gtk_widget_show(label);
-	gtk_widget_show(entry);
+	if (!hide_entry){ gtk_widget_show(entry); }
 	gtk_entry_set_width_chars(GTK_ENTRY(entry), 4);
 	gtk_widget_show(dial);
 	gtk_widget_show(subbox);
