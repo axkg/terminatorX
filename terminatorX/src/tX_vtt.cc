@@ -39,14 +39,6 @@
 #include <config.h>
 #endif
 
-#ifdef DEBUG
-#define tX_freemem(ptr, varname, comment); fprintf(stderr, "** free() [%s] at %08x. %s.\n", varname, ptr, comment); free(ptr);
-#define tX_malloc(ptr, varname, comment, size, type); fprintf(stderr, "**[1/2] malloc() [%s]. Size: %i. %s.\n", varname, size, comment); ptr=type malloc(size); fprintf(stderr, "**[2/2] malloc() [%s]. ptr: %08x.\n", varname, ptr);
-#else
-#define tX_freemem(ptr, varname, comment); free(ptr);
-#define tX_malloc(ptr, varname, comment, size, type); ptr=type malloc(size);
-#endif
-
 #include "tX_loaddlg.h"
 
 #define USE_PREFETCH 1
@@ -514,12 +506,14 @@ void vtt_class :: ec_set_volume(f_prec volume)
 
 void vtt_class :: ec_clear_buffer()
 {
-	f_prec *ptr;
+/*	f_prec *ptr;
 	
 	for (ptr=ec_buffer; ptr<=ec_delay; ptr++) {
 		*ptr=0.0;
-	}
-	ec_ptr=ec_buffer;
+	} */
+	
+	memset(ec_buffer, 0, sizeof(ec_buffer));
+	ec_ptr=ec_buffer; 
 }
 
 void vtt_class :: render()

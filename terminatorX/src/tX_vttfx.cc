@@ -37,6 +37,8 @@ void vtt_fx :: reconnect_buffer()
 }
 
 vtt_fx :: ~vtt_fx() {}
+void vtt_fx::toggle_drywet() {}
+tX_drywet_type vtt_fx::has_drywet_feature() { return NOT_DRYWET_CAPABLE; }
 
 /******************* builtin fx ***/
 
@@ -49,6 +51,7 @@ int vtt_fx_lp :: isEnabled() { return myvtt->lp_enable; }
 void vtt_fx_lp :: save (FILE *rc, gzFile rz, char *indent) { 
 	tX_store("%s<cutoff/>\n", indent);
 }
+
 
 const char *vtt_fx_lp :: get_info_string()
 {
@@ -71,7 +74,6 @@ const char *vtt_fx_ec :: get_info_string()
 	return "TerminatorX built-in echo effect.";
 }
 
-
 /******************** LADSPA fx ***/
 /* short cut "cpd" macro to current port descriptor */
 
@@ -81,8 +83,12 @@ const char *vtt_fx_ec :: get_info_string()
 
 void vtt_fx_ladspa :: reconnect_buffer()
 {
-	plugin->getDescriptor()->connect_port(instance, input_port, myvtt->output_buffer);	
-	plugin->getDescriptor()->connect_port(instance, output_port, myvtt->output_buffer);		
+	plugin->getDescriptor()->connect_port(instance, input_port, myvtt->output_buffer);
+	if (wet_buffer) {
+		plugin->getDescriptor()->connect_port(instance, output_port, wet_buffer);	
+	} else {
+		plugin->getDescriptor()->connect_port(instance, output_port, myvtt->output_buffer);	
+	}
 }
 
 static void wrapstr(char *str)
@@ -154,18 +160,8 @@ vtt_fx_ladspa :: vtt_fx_ladspa(LADSPA_Plugin *p, void *v)
 	sp->set_vtt(vtt);
 	controls.push_back(sp);	
 
-	/* if (plugin->getDescriptor()->run_adding && plugin->getDescriptor()->set_run_adding_gain) {	
-		sp = sp_outgain = new tX_seqpar_vttfx_float();
-		sp->set_mapping_parameters(3, 0, 0.01, 1);
-		sprintf(buffer, "%s: Out Gain", plugin->getName());
-		sp->set_name(buffer, "Out Gain");
-		sp->set_vtt(vtt);
-		controls.push_back(sp);
-	} else {
-		sp_outgain = NULL;
-	} */
-	
-	sp_outgain=NULL;
+	sp_wet=NULL;
+	wet_buffer=NULL;
 	
 	/* connecting ports */
 	for (port=0; port < plugin->getPortCount(); port++) {
@@ -209,23 +205,47 @@ vtt_fx_ladspa :: vtt_fx_ladspa(LADSPA_Plugin *p, void *v)
 	reconnect_buffer();
 }
 
+void vtt_fx_ladspa :: realloc_drywet() 
+{
+	free_drywet();
+	wet_buffer=(f_prec *) malloc(sizeof(float)*vtt_class::samples_in_mix_buffer);
+}
+
+void vtt_fx_ladspa :: free_drywet()
+{
+	if (wet_buffer) {
+		free(wet_buffer);
+		wet_buffer=NULL;
+	}
+}
+
 void vtt_fx_ladspa :: activate()
 {
+	if (sp_wet) {
+		realloc_drywet();
+	}
+	reconnect_buffer(); // we always have to reconnect...
 	if (plugin->getDescriptor()->activate) plugin->getDescriptor()->activate(instance);
 }
 
 void vtt_fx_ladspa :: deactivate()
 {
 	if (plugin->getDescriptor()->deactivate) plugin->getDescriptor()->deactivate(instance);
+	
+	free_drywet();
 }
 
 void vtt_fx_ladspa :: run()
 {
-	if (sp_outgain) {
-		plugin->getDescriptor()->set_run_adding_gain(instance, sp_outgain->get_value());
-		plugin->getDescriptor()->run_adding(instance, (vtt_class :: samples_in_mix_buffer)>>1);
-	} else {
-		plugin->getDescriptor()->run(instance, (vtt_class :: samples_in_mix_buffer)>>1);
+	plugin->getDescriptor()->run(instance, (vtt_class::samples_in_mix_buffer)>>1);
+	
+	if (wet_buffer) {
+		f_prec wet=sp_wet->get_value();
+		f_prec dry=1.0-wet;
+		
+		for (int sample=0; sample < (vtt_class::samples_in_mix_buffer)>>1; sample++) {
+			myvtt->output_buffer[sample]=dry*myvtt->output_buffer[sample]+wet*wet_buffer[sample];
+		}
 	}
 }
 
@@ -250,6 +270,8 @@ vtt_fx_ladspa :: ~vtt_fx_ladspa()
 		delete (*sp);
 	}		
 	plugin->getDescriptor()->cleanup(instance);
+	
+	if (wet_buffer) free(wet_buffer);
 	delete panel;
 }
 
@@ -262,6 +284,7 @@ void vtt_fx_ladspa :: save (FILE *rc, gzFile rz, char *indent) {
 	strcat (indent, "\t");
 	
 	store_int("ladspa_id", ID);
+	store_bool("has_drywet", (sp_wet!=NULL));
 	
 	for (sp=controls.begin(); sp!=controls.end(); sp++) {
 		store_float_sp("param", (*sp)->get_value(), (*(*sp)));
@@ -279,6 +302,7 @@ void vtt_fx_ladspa :: load(xmlDocPtr doc, xmlNodePtr node) {
 	list <tX_seqpar_vttfx *> :: iterator sp=controls.begin();
 	int elementFound;
 	double val;
+	bool bdummy;
 	
 	for (xmlNodePtr cur=node->xmlChildrenNode; cur!=NULL; cur=cur->next) {
 		if (cur->type == XML_ELEMENT_NODE) {
@@ -286,6 +310,7 @@ void vtt_fx_ladspa :: load(xmlDocPtr doc, xmlNodePtr node) {
 			
 			restore_int("ladspa_id", dummy);
 			restore_bool("panel_hidden", hidden);
+			restore_bool_ac("has_drywet", bdummy, add_drywet());
 			
 			if ((!elementFound) && (xmlStrcmp(cur->name, (xmlChar *) "param")==0)) {
 				val=0;
@@ -308,4 +333,47 @@ void vtt_fx_ladspa :: load(xmlDocPtr doc, xmlNodePtr node) {
 	}
 	
 	panel->hide(hidden);
+}
+
+void vtt_fx_ladspa :: toggle_drywet() {
+	if (sp_wet) {
+		remove_drywet();
+	} else {
+		add_drywet();
+	}
+}
+
+void vtt_fx_ladspa :: add_drywet() {
+	char buffer[1024];
+	
+	sp_wet=new tX_seqpar_vttfx_float();
+	sp_wet->set_mapping_parameters(1.0, 0, 0.01, 1);
+	sprintf(buffer, "%s: Dry/Wet", plugin->getLabel());
+	sp_wet->set_name(buffer, "Dry/Wet");
+	sp_wet->set_vtt(vtt);
+	panel->add_client_widget(sp_wet->get_widget());
+	
+	pthread_mutex_lock(&vtt_class::render_lock);
+	controls.push_back(sp_wet);
+	deactivate();
+	activate();
+	pthread_mutex_unlock(&vtt_class::render_lock);
+}
+
+void vtt_fx_ladspa :: remove_drywet() {
+	pthread_mutex_lock(&vtt_class::render_lock);
+	deactivate();
+
+	controls.remove(sp_wet);
+	delete sp_wet;
+	sp_wet=NULL;
+	
+	activate();
+	pthread_mutex_unlock(&vtt_class::render_lock);
+}
+
+tX_drywet_type vtt_fx_ladspa::has_drywet_feature()
+{ 
+	if (sp_wet) return DRYWET_ACTIVE;
+	else return DRYWET_AVAILABLE;
 }

@@ -43,6 +43,12 @@
 
 /* abstract super class vtt_fx */
 
+typedef enum  {
+	NOT_DRYWET_CAPABLE,
+	DRYWET_AVAILABLE,
+	DRYWET_ACTIVE
+} tX_drywet_type;
+
 class vtt_fx
 {
 	protected:
@@ -61,6 +67,8 @@ class vtt_fx
 	virtual void run()=NULL;	
 	virtual int isEnabled()=NULL;
 	virtual void reconnect_buffer();
+	virtual void toggle_drywet();
+	virtual tX_drywet_type has_drywet_feature();
 	
 	virtual const char *get_info_string()=NULL;
 	
@@ -111,7 +119,8 @@ class vtt_fx_ladspa : public vtt_fx
 	list <tX_seqpar_vttfx *> controls;
 	private:
 	tX_seqpar_vttfx *sp_enable;
-	tX_seqpar_vttfx *sp_outgain;
+	tX_seqpar_vttfx *sp_wet;
+	f_prec *wet_buffer;
 	int input_port, output_port;
 	LADSPA_Handle *instance;
 	LADSPA_Plugin *plugin;
@@ -126,7 +135,14 @@ class vtt_fx_ladspa : public vtt_fx
 	virtual void run();		
 	virtual int isEnabled();
 	virtual void reconnect_buffer();
-	virtual const char *get_info_string();	
+	virtual const char *get_info_string();
+	void realloc_drywet();
+	void free_drywet();
+	virtual void toggle_drywet();
+	void add_drywet();
+	void remove_drywet();
+	virtual tX_drywet_type has_drywet_feature();
+	
 	virtual void save(FILE *rc, gzFile rz, char *indent);
 #ifdef ENABLE_TX_LEGACY	
 	virtual void load(FILE *);
