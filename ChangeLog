@@ -3,7 +3,7 @@ All changes were done by me (Alexander König) if not stated otherwise.
 This is not a GNU-style ChangeLog but you sort of get the idea what was
 changed.
 
-[v3.80 - prerelease]
+[v3.80]
 - I've invested quite some time in valgrinding this release, among other things
   a major mem leak showed up - the sample memory wasn't being free'd correctly
   which is now corrected along with many other things. valgrind is a very 
@@ -34,8 +34,7 @@ changed.
   the sampling rate terminatorX will try to find a blocksize that fits exactly
   1 ms - while this is easy for "straight" sampling rates (22000 32000 48000)
   this results in "44.1" samples for 44100 Hz.
-- Finally hacked a native ALSA backend. It definitley needs some more polish
-  though.
+- Finally hacked a native ALSA backend. It's in "Works For Me" TM state.
 - Added "Remove Binding" button
 - MIDI now uses a GIOCallback so the effect of MIDI controllers is visible
   even without the audio engine turned on.
@@ -73,7 +72,7 @@ changed.
 - I have not backported the new code to the old gtk+ 1.2 - so this release no
   longer builds with gtk+ 1.2 - you have to upgrade to gtk+ Version 2 to be
   able to build terminatorX.
-- fixed a gcc 3.2 compilation bug - thanks to 
+- fixed a nasty gcc 3.2 compilation bug - thanks to 
   Adam Duck <duck@informatik.uni-frankfurt.de> and other reporters
 
 [v3.73]
