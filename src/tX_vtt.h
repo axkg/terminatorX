@@ -110,6 +110,9 @@ class vtt_class
 	int want_stop;
 	int sense_cycles;
 	
+	bool control_hidden;
+	bool audio_hidden;
+	
 	/* builtin fx */
 	vtt_fx* lp_fx;
 	vtt_fx* ec_fx;
@@ -300,11 +303,13 @@ class vtt_class
 	int load_11(FILE *);
 	int load_12(FILE *);
 	int load_13(FILE *);
+	int load_14(FILE *);
 	
 	static int load_all_10(FILE *, char *fname); /* fname is for display only*/
 	static int load_all_11(FILE *, char *fname); /* fname is for display only*/
 	static int load_all_12(FILE *, char *fname); /* fname is for display only*/
 	static int load_all_13(FILE *, char *fname); /* fname is for display only*/
+	static int load_all_14(FILE *, char *fname); /* fname is for display only*/
 	static int save_all(FILE *);
 	int load_file(char *name);	
 
@@ -315,6 +320,9 @@ class vtt_class
 	void effect_up(vtt_fx *effect);
 	void effect_down(vtt_fx *effect);
 	void effect_remove(vtt_fx_ladspa *effect);
+	
+	void hide_audio(bool);
+	void hide_control(bool);
 	
 	void set_mix_mute(int newstate);
 	void set_mix_solo(int newstate);
