@@ -1,0 +1,69 @@
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define to `unsigned' if <sys/types.h> doesn't define.  */
+#undef size_t
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define if your processor stores words with the most significant
+   byte first (like Motorola and SPARC, unlike Intel and VAX).  */
+#undef WORDS_BIGENDIAN
+
+/* Define if the X Window System is missing or not being used.  */
+#undef X_DISPLAY_MISSING
+
+/* Define if you want keep device open */
+#undef KEEP_DEV_OPEN
+
+/* Define if you want to use sox as input converter */
+#undef USE_SOX_INPUT
+
+/* Define if you want UGLY mp3-input "support" - requires sox as well*/
+#undef USE_MPG123_INPUT
+
+/* Define if you want realtime scheduling when tX is run with root privileges*/
+#undef USE_SCHEDULER
+
+/* Define for debug messages */
+#undef ENABLE_DEBUG_OUTPUT
+
+/* Define if you have the <fcntl.h> header file.  */
+#undef HAVE_FCNTL_H
+
+/* Define if you have the <limits.h> header file.  */
+#undef HAVE_LIMITS_H
+
+/* Define if you have the <malloc.h> header file.  */
+#undef HAVE_MALLOC_H
+
+/* Define if you have the <sys/ioctl.h> header file.  */
+#undef HAVE_SYS_IOCTL_H
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H
+
+/* Define if you have the X11 library (-lX11).  */
+#undef HAVE_LIBX11
+
+/* Define if you have the Xext library (-lXext).  */
+#undef HAVE_LIBXEXT
+
+/* Define if you have the Xi library (-lXi).  */
+#undef HAVE_LIBXI
+
+/* Define if you have the Xxf86dga library (-lXxf86dga).  */
+#undef HAVE_LIBXXF86DGA
+
+/* Define if you have the m library (-lm).  */
+#undef HAVE_LIBM
+
+/* Define if you have the pthread library (-lpthread).  */
+#undef HAVE_LIBPTHREAD
+
+/* Name of package */
+#undef PACKAGE
+
+/* Version number of package */
+#undef VERSION
+
