@@ -360,8 +360,6 @@ void vtt_class :: set_controls (int x, int y)
 	y_control=y;
 }
 
-#define calc_mute() res_mute=((mute) || (mix_mute && (!mix_solo)) || ((solo_ctr>0)&&(!mix_solo)))
-
 void vtt_class :: set_mute(int newstate)
 {
 	mute=newstate;
@@ -389,6 +387,14 @@ void vtt_class :: set_mix_solo(int newstate)
 		solo_ctr++;
 	}
 	calc_mute();
+
+	/* locking ? */
+	list <vtt_class *> :: iterator vtt;
+	
+	for (vtt=main_list.begin(); vtt!=main_list.end() ; vtt++)
+	{
+		(*vtt)->calc_mute();
+	}
 }
 
 void vtt_class :: lp_set_enable (int newstate)
