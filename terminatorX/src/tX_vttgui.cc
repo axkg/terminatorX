@@ -670,6 +670,26 @@ void fx_button_pressed(GtkWidget *wid, vtt_class *vtt)
 	gtk_signal_emit_by_name(GTK_OBJECT(wid), "released", vtt);
 }
 
+void gui_set_name(vtt_class *vtt, char *newname)
+{
+	char bold_name[128];
+	strcpy(bold_name, "<b>");
+	strcat(bold_name, newname);
+	strcat(bold_name, "</b>");
+	
+	gtk_label_set_markup(GTK_LABEL(vtt->gui.audio_label), bold_name);
+	gtk_label_set_markup(GTK_LABEL(vtt->gui.control_label), bold_name);
+	gtk_entry_set_text(GTK_ENTRY(vtt->gui.name), newname);
+	
+	if (vtt->gui.audio_minimized_panel_bar_button!=NULL) {
+		gtk_label_set_text(GTK_LABEL(vtt->gui.audio_minimized_panel_bar_label), newname);
+	}
+
+	if (vtt->gui.control_minimized_panel_bar_button!=NULL) {
+		gtk_label_set_text(GTK_LABEL(vtt->gui.control_minimized_panel_bar_label), newname);
+	}
+}
+
 #define connect_entry(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "activate", (GtkSignalFunc) func, (void *) vtt);
 #define connect_adj(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "value_changed", (GtkSignalFunc) func, (void *) vtt);
 #define connect_button(wid, func); gtk_signal_connect(GTK_OBJECT(g->wid), "clicked", (GtkSignalFunc) func, (void *) vtt);
@@ -906,6 +926,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
 
 	dummy=gtk_button_new_with_label("FX");
+	gtk_container_foreach(GTK_CONTAINER(dummy), (GtkCallback) tX_panel_make_label_bold, NULL);
 	gtk_widget_show(dummy);
 	g->fx_button=dummy;
 	gui_set_tooltip(g->fx_button, "Click here to load a LADSPA plugin. You will get a menu from which you can choose which plugin to load.");
@@ -1011,7 +1032,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_box_pack_start(GTK_BOX(tempbox3), g->solo, WID_FIX);
 	gtk_signal_connect(GTK_OBJECT(g->solo),"clicked", (GtkSignalFunc) solo_vtt, vtt);
 	gtk_widget_show(g->solo);
-	gui_set_tooltip(g->mute, "Allow only this and other solo-switched turntabels' signal to be routed to the mixer.");
+	gui_set_tooltip(g->solo, "Allow only this and other solo-switched turntabels' signal to be routed to the mixer.");
 
 	gtk_box_pack_start(GTK_BOX(tempbox2), tempbox3, WID_FIX);
 
@@ -1041,6 +1062,8 @@ void build_vtt_gui(vtt_class *vtt)
 	g->mouse_mapping_menu=NULL;
 	g->mouse_mapping_menu_x=NULL;
 	g->mouse_mapping_menu_y=NULL;
+	
+	gui_set_name(vtt, vtt->name);
 }
 
 void fx_up(GtkWidget *wid, vtt_fx *effect)
@@ -1175,21 +1198,6 @@ void vg_create_fx_gui(vtt_class *vtt, vtt_fx_ladspa *effect, LADSPA_Plugin *plug
 	effect->set_panel(p);
 
 	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
-}
-
-void gui_set_name(vtt_class *vtt, char *newname)
-{
-	gtk_label_set_text(GTK_LABEL(vtt->gui.audio_label), newname);
-	gtk_label_set_text(GTK_LABEL(vtt->gui.control_label), newname);
-	gtk_entry_set_text(GTK_ENTRY(vtt->gui.name), newname);
-	
-	if (vtt->gui.audio_minimized_panel_bar_button!=NULL) {
-		gtk_label_set_text(GTK_LABEL(vtt->gui.audio_minimized_panel_bar_label), newname);
-	}
-
-	if (vtt->gui.control_minimized_panel_bar_button!=NULL) {
-		gtk_label_set_text(GTK_LABEL(vtt->gui.control_minimized_panel_bar_label), newname);
-	}
 }
 
 void gui_set_filename (vtt_class *vtt, char *newname)
