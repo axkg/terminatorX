@@ -8,7 +8,7 @@ Version: %{version}
 Release: %{release}
 Group: Applications/Multimedia
 Copyright: GPL2
-URL: http://www.terminatorX.cx
+URL: http://www.terminatorX.org
 Source: %{name}-%{version}.tar.gz
 Buildroot: %{_tmppath}/%{name}-%{version}-root
 Requires: gtk2, libvorbis, audiofile, libxml2, zlib, scrollkeeper, yelp, sox, vorbis-tools, libcap

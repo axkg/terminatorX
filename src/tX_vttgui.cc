@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2004  Alexander König
+    Copyright (C) 1999-2005  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -1461,10 +1461,16 @@ void update_all_vtts()
 		if ((*vtt)->is_playing) {
 			gtk_tx_update_pos_display(GTK_TX((*vtt)->gui.display), (*vtt)->pos_i, (*vtt)->mute);
 			temp=(*vtt)->max_value*(*vtt)->res_volume*vtt_class::vol_channel_adjust;
-			(*vtt)->max_value=0;
 			temp2=(*vtt)->max_value2*(*vtt)->res_volume*vtt_class::vol_channel_adjust;
-			(*vtt)->max_value2=0;
+//			tX_msg("Setting value: %f, %f -> %f; %f, %f -> %f (%f)\n",
+//				(*vtt)->max_value, (*vtt)->res_volume, temp,
+//				(*vtt)->max_value2, (*vtt)->res_volume, temp2,
+//				vtt_class::vol_channel_adjust
+//			);
 			gtk_tx_flash_set_level((*vtt)->gui.flash, temp, temp2);
+			
+			(*vtt)->max_value=0;
+			(*vtt)->max_value2=0;
 		}
 		
 		if ((*vtt)->needs_cleaning_up()) {
