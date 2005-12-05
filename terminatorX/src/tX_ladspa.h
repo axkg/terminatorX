@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2004  Alexander König
+    Copyright (C) 1999-2005  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@ class LADSPA_Plugin
 	static LADSPA_Plugin * getPluginByIndex(int i);
 	static LADSPA_Plugin * getPluginByUniqueID(long ID);
 	const LADSPA_Descriptor *getDescriptor() { return ladspa_descriptor; }
+	virtual ~LADSPA_Plugin() {};
 };
 
 class LADSPA_Stereo_Plugin : public LADSPA_Plugin

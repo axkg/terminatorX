@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2004  Alexander König
+    Copyright (C) 1999-2005  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -163,8 +163,9 @@ static void gtk_tx_flash_init (GtkTxFlash *tx_flash)
 GtkWidget* gtk_tx_flash_new ()
 {
 	GtkTxFlash *tx_flash;
-	
 	tx_flash = (GtkTxFlash *)g_object_new(gtk_tx_flash_get_type (), NULL);	
+	
+	// tX_msg("creating a new flash: %08x\n", tx_flash);
 	return GTK_WIDGET (tx_flash);
 }
 
@@ -357,6 +358,8 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 	int red=0;
 	
 	new_level=(int) (new_value/tx_flash->level_value);
+	
+	// tX_msg("setting level: %5d for widget %08x channel %08x\n", new_level, tx_flash, channel);
 	
 	if (new_level>tx_flash->levels) 
 		new_level=tx_flash->levels;

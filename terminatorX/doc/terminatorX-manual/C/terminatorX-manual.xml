@@ -101,9 +101,9 @@
       an easy-to-use gtk+ GUI.</para>
 
       <para>This is software may have 
-      <ulink url="http://terminatorX.cx/bugs.html">bugs</ulink> please 
+      <ulink url="http://terminatorX.org/bugs.html">bugs</ulink> please 
       help fixing them. See <xref linkend="CONTACT"/>. Please read this 
-      manual and visit the <ulink url="http://www.terminatorX.cx">
+      manual and visit the <ulink url="http://www.terminatorX.org">
       homepage</ulink>.</para>
 
     </sect2>
@@ -824,11 +824,11 @@
 
           <listitem>
 
-            <para><emphasis>Visit terminatorX.cx</emphasis></para>
+            <para><emphasis>Visit terminatorX.org</emphasis></para>
 
             <para>Will try to spawn a browser process to load the URL 
-            <ulink url="http://terminatorX.cx">
-            http://terminatorX.cx</ulink> - for easy update checking or 
+            <ulink url="http://terminatorX.org">
+            http://terminatorX.org</ulink> - for easy update checking or 
             just unecessary bloat.</para>
 
           </listitem>
@@ -2074,7 +2074,7 @@
       <para>If you want to use your joystick to control terminatorX - I 
       wrote a tiny tool to create MIDI events from joystick motion 
       called <emphasis>aseqjoy</emphasis>. It's available from the 
-      <ulink url="http://terminatorX.cx/aseqjoy.html">terminatorX 
+      <ulink url="http://terminatorX.org/aseqjoy.html">terminatorX 
       website</ulink>, too.</para>
 
     </sect2>
@@ -2269,7 +2269,7 @@
     <title>Contact / Download</title>
 
     <para>Find out more about terminatorX at it's 
-    <ulink url="http://www.terminatorX.cx">homepage</ulink>.</para>
+    <ulink url="http://www.terminatorX.org">homepage</ulink>.</para>
 
     <para>Send me comments, bug-reports, patches or scratches (see 
     scratches section on the terminatorX homepage) at: 

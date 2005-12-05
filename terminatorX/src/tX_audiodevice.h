@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2004  Alexander König
+    Copyright (C) 1999-2005  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -69,6 +69,7 @@ class tX_audiodevice
 	bool get_is_open() { return is_open; }
 	virtual void start();	
 	virtual void play(int16_t*)=0; /* play blocked */
+	virtual ~tX_audiodevice() {}
 };
 
 
