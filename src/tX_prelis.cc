@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2004  Alexander König
+    Copyright (C) 1999-2005  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -88,7 +88,7 @@ void prelis_start(char *name) {
 			usempg123=1;
 			else
 #endif
-#ifdef USE_SOX_INPUT			
+#if defined(USE_SOX_INPUT) && defined(USE_MPG123_INPUT)
 			usempg123=0;
 #else
 			return;
