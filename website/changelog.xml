@@ -2,6 +2,21 @@
 <!DOCTYPE section SYSTEM "./tX.dtd">
 <section name="changelog">
  <changelog>
+  <version name="3.83">
+	<listitem>
+		<para class="screen">moved to terminatorX.org</para>
+	</listitem>
+	<listitem>
+		<para class="screen">fixed misc gcc 4.0 warnings.</para>
+	</listitem>
+	<listitem>
+		<para class="screen">removed fastabs() implementation - it failed with
+		gcc &gt; 4.0. </para>
+	</listitem>
+	<listitem>
+		<para class="screen">fixed a compilation issue TODO: who sent a patch?.</para>
+	</listitem>
+  </version>
   <version name="3.82">
 	<listitem>
 		<para class="screen">the position of the audio control scrollbars
