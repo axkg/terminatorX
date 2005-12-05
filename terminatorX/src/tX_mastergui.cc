@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2004  Alexander König
+    Copyright (C) 1999-2005  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -1395,7 +1395,7 @@ void create_master_menu()
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	gtk_widget_set_sensitive (menu_item, FALSE);
 
-	menu_item = gtk_menu_item_new_with_mnemonic ("_Visit terminatorX.cx");
+	menu_item = gtk_menu_item_new_with_mnemonic ("_Visit terminatorX.org");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) display_browser, NULL);
@@ -1690,7 +1690,7 @@ void note_destroy(GtkWidget *widget, GtkWidget *mbox)
 
 void tx_note(const char *message, bool isError, GtkWindow *window)
 {
-	if (!window) window==GTK_WINDOW(main_window);
+	if (!window) window=GTK_WINDOW(main_window);
 	
 	GtkWidget *dialog=gtk_message_dialog_new(window,
 		GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -1867,7 +1867,7 @@ int browser_checker()
 		}
 	} else {
 		/* We are still here and the child exited - that could mean trouble. */
-		tx_note("Failed to run a suitable web browser - if there's one installed on this system, please run it and forward yourself to:\nhttp://terminatorX.cx", true);		
+		tx_note("Failed to run a suitable web browser - if there's one installed on this system, please run it and forward yourself to:\nhttp://terminatorX.org", true);		
 		
 		gtk_idle_remove(browser_tag);
 		browser_tag=-1;
@@ -1889,10 +1889,10 @@ void display_browser()
 	
 	if (browser_child==0) {
 		// child
-		execlp("mozilla","mozilla","http://terminatorX.cx", NULL);
-		execlp("netscape","netscape","http://terminatorX.cx", NULL);
-		execlp("galeon","galeon","http://terminatorX.cx", NULL);
-		execlp("konqueror","konqueror","http://terminatorX.cx", NULL);		
+		execlp("mozilla","mozilla","http://terminatorX.org", NULL);
+		execlp("netscape","netscape","http://terminatorX.org", NULL);
+		execlp("galeon","galeon","http://terminatorX.org", NULL);
+		execlp("konqueror","konqueror","http://terminatorX.org", NULL);		
 		_exit(-1);
 	} else if (browser_child==-1) {
 		tx_note("System error: couldn't fork() to run the browser process.", true);

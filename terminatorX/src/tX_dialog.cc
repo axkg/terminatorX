@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2004  Alexander König
+    Copyright (C) 1999-2005  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -451,7 +451,7 @@ void init_tx_options(GtkWidget *dialog) {
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "update_delay")), globals.update_delay);
 	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "update_delay"), "How often to update the slow widgets.", NULL);	
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "update_idle")), globals.update_idle);
-	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "update_idle"), "The update thread will idle for the selcted amount of milliseconds. If you want to have a more responsive display update increase this value - if you have performance problems reduce this value.", NULL);	
+	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "update_idle"), "The update thread will idle for the selcted amount of milliseconds. If you want to have a more responsive display update reduce this value - if you have performance problems increase this value.", NULL);	
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "vumeter_decay")), globals.flash_response);
 	gtk_tooltips_set_tip(tooltips, lookup_widget(dialog, "vumeter_decay"), "Defines how fast the maximum values of the VU meters should be decayed.", NULL);	
 
@@ -567,7 +567,7 @@ void show_about(int nag)
 		gtk_misc_set_alignment(GTK_MISC(label), 0.1, 0.5);
 		gtk_widget_show(label);
 
-		label=gtk_label_new("Copyright (C) 1999-2004 by Alexander K\xC3\xB6nig");
+		label=gtk_label_new("Copyright (C) 1999-2005 by Alexander K\xC3\xB6nig");
 		gtk_box_pack_start(GTK_BOX(box2), label, WID_DYN);
 		gtk_misc_set_alignment(GTK_MISC(label), 0.9, 0.5);
 		gtk_widget_show(label);
@@ -585,8 +585,8 @@ void show_about(int nag)
 		sep=gtk_hseparator_new();
 		add_about_wid_fix(sep);
 		
-		label=gtk_label_new("This is "PACKAGE" release "VERSION" - Copyright (C) 1999-2004 by Alexander K\xC3\xB6nig"
-		"\nSend comments, patches and scratches to: alex@lisas.de\nterminatorX-homepage: http://www.terminatorX.cx");
+		label=gtk_label_new("This is "PACKAGE" release "VERSION" - Copyright (C) 1999-2005 by Alexander K\xC3\xB6nig"
+		"\nSend comments, patches and scratches to: alex@lisas.de\nterminatorX-homepage: http://www.terminatorX.org");
 
 		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
 		add_about_wid_fix(label);

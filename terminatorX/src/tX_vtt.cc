@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2004  Alexander König
+    Copyright (C) 1999-2005  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -498,20 +498,6 @@ void vtt_class :: ec_clear_buffer()
 	ec_ptr=ec_buffer; 
 }
 
-#ifdef BIG_ENDIAN_MACHINE
-#define fastabs(x) fabs(x)
-#else
-// found this on musicdsp.org
-// posted by <tobybear@web.de>
-// proabably wont work on bigendian so we
-// use fabs() instead.
-inline float fastabs(float f)
-{
-	int i=((*(int*)&f)&0x7fffffff);
-	return (*(float*)&i);
-}
-#endif
-
 void vtt_class :: render()
 {
 	list <vtt_fx *> :: iterator effect;
@@ -560,8 +546,8 @@ void vtt_class :: render()
 	
 	// find max signal for vu meters...
 	for (int sample=0; sample<samples_in_outputbuffer; sample++) {
-		f_prec lmax=fastabs(output_buffer[sample]);
-		f_prec rmax=fastabs(output_buffer2[sample]);
+		f_prec lmax=fabs(output_buffer[sample]);
+		f_prec rmax=fabs(output_buffer2[sample]);
 		
 		if (lmax>max_value) max_value=lmax;
 		if (rmax>max_value2) max_value2=rmax;
@@ -923,7 +909,7 @@ int16_t * vtt_class :: render_all_turntables()
 #endif					
 			mix_out_buffer[sample]=(int16_t) temp;
 			
-			temp=fastabs(temp);
+			temp=fabs(temp);
 			if (right) {
 				if (temp>mix_max_r) mix_max_r=temp;
 			} else {
