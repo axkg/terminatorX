@@ -384,7 +384,7 @@
   <xsl:template match="changelog">
     <span style="font-family: monospace;">
     <p><font size="+2">terminatorX ChangeLog</font></p>
-	<p>Copyright (C) 1999-2004 Alexander KMAKE_THIS_MYOUMLnig</p>
+	<p>Copyright (C) 1999-2005 Alexander KMAKE_THIS_MYOUMLnig</p>
       <xsl:apply-templates/>
 	  </span>
   </xsl:template>

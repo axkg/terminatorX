@@ -296,7 +296,7 @@
         <table width="100%">
           <tr>
             <td align="left" valign="top" width="100%">
-              <font size="-1">Copyright (C) 1999-2004 by <A HREF="mailto:alex@lisas.de">Alexander KMAKE_THIS_MYOUMLnig</A>
+              <font size="-1">Copyright (C) 1999-2005 by <A HREF="mailto:alex@lisas.de">Alexander KMAKE_THIS_MYOUMLnig</A>
               </font>
             </td>
             <td>
