@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2005  Alexander Kï¿½nig
+    Copyright (C) 1999-2006  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -740,6 +740,8 @@ static gint stereo_fx_button_pressed(GtkWidget *wid, GdkEventButton *event, vtt_
 	return TRUE;
 }
 
+#define TOOLTIP_LENGTH 2048
+
 void gui_set_name(vtt_class *vtt, char *newname)
 {
 	char bold_name[128];
@@ -750,13 +752,18 @@ void gui_set_name(vtt_class *vtt, char *newname)
 	gtk_label_set_markup(GTK_LABEL(vtt->gui.audio_label), bold_name);
 	gtk_label_set_markup(GTK_LABEL(vtt->gui.control_label), bold_name);
 	gtk_entry_set_text(GTK_ENTRY(vtt->gui.name), newname);
+	char tooltip[2048];
 	
 	if (vtt->gui.audio_minimized_panel_bar_button!=NULL) {
 		gtk_label_set_text(GTK_LABEL(vtt->gui.audio_minimized_panel_bar_label), newname);
+		snprintf(tooltip, TOOLTIP_LENGTH, "Show \"%s\" audio panel.", newname);
+		gui_set_tooltip(vtt->gui.audio_minimized_panel_bar_button, tooltip);
 	}
 
 	if (vtt->gui.control_minimized_panel_bar_button!=NULL) {
 		gtk_label_set_text(GTK_LABEL(vtt->gui.control_minimized_panel_bar_label), newname);
+		snprintf(tooltip, TOOLTIP_LENGTH, "Show \"%s\" control panel.", newname);
+		gui_set_tooltip(vtt->gui.control_minimized_panel_bar_button, tooltip);
 	}
 }
 
@@ -1385,11 +1392,15 @@ void gui_update_display(vtt_class *vtt)
 }
 
 void gui_hide_control_panel(vtt_class *vtt, bool hide) {
+	char tooltip[2048];
+
 	if (hide) {
 		gtk_widget_hide(vtt->gui.control_box);
 		vtt->gui.control_minimized_panel_bar_button=tx_xpm_button_new(MIN_CONTROL, vtt->name, 0, &vtt->gui.control_minimized_panel_bar_label);
 		g_signal_connect(G_OBJECT(vtt->gui.control_minimized_panel_bar_button), "clicked", (GtkSignalFunc) unminimize_control_panel, vtt);
 		gtk_widget_show(vtt->gui.control_minimized_panel_bar_button);
+		snprintf(tooltip, TOOLTIP_LENGTH, "Show \"%s\" control panel.", vtt->name);
+		gui_set_tooltip(vtt->gui.control_minimized_panel_bar_button, tooltip);
 		add_to_panel_bar(vtt->gui.control_minimized_panel_bar_button);
 	} else {
 		gtk_widget_show(vtt->gui.control_box);
@@ -1400,11 +1411,15 @@ void gui_hide_control_panel(vtt_class *vtt, bool hide) {
 }
 
 void gui_hide_audio_panel(vtt_class *vtt, bool hide) {
+	char tooltip[2048];
+
 	if (hide) {
 		gtk_widget_hide(vtt->gui.audio_box);
 		vtt->gui.audio_minimized_panel_bar_button=tx_xpm_button_new(MIN_AUDIO, vtt->name, 0, &vtt->gui.audio_minimized_panel_bar_label);
 		g_signal_connect(G_OBJECT(vtt->gui.audio_minimized_panel_bar_button), "clicked", (GtkSignalFunc) unminimize_audio_panel, vtt);		
 		gtk_widget_show(vtt->gui.audio_minimized_panel_bar_button);
+		snprintf(tooltip, TOOLTIP_LENGTH, "Show \"%s\" audio panel.", vtt->name);
+		gui_set_tooltip(vtt->gui.audio_minimized_panel_bar_button, tooltip);
 		add_to_panel_bar(vtt->gui.audio_minimized_panel_bar_button);
 	} else {
 		gtk_widget_show(vtt->gui.audio_box);
