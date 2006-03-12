@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2006  Alexander König
+    Copyright (C) 1999-2006  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -439,7 +439,7 @@ char *decode_xml(char *dest, const char *src) {
 	int inlen=strlen(src);
 	int outlen=4096;
 	
-	int res=UTF8Toisolat1(dest, &outlen, src, &inlen);
+	int res=UTF8Toisolat1((unsigned char *) dest, &outlen, (const unsigned char *) src, &inlen);
 	dest[outlen]=0;
 	
 	if (res<0) {
