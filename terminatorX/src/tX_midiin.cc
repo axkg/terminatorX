@@ -450,78 +450,86 @@ void tX_midiin::store_connections(FILE *rc, char *indent)
 	gzFile *rz=NULL;
 	
 	tX_store("%s<midi_connections>\n", indent);
-	strcat(indent, "\t");
 
-	snd_seq_addr_t my_addr;
-	my_addr.client=snd_seq_client_id(ALSASeqHandle);
-	my_addr.port=portid;
+	if (ALSASeqHandle != NULL) {
+		strcat(indent, "\t");
+		snd_seq_addr_t my_addr;
+		my_addr.client=snd_seq_client_id(ALSASeqHandle);
+		my_addr.port=portid;
 
-	snd_seq_query_subscribe_t *subs;
-	snd_seq_query_subscribe_alloca(&subs);
-	snd_seq_query_subscribe_set_root(subs, &my_addr);
-	snd_seq_query_subscribe_set_type(subs, SND_SEQ_QUERY_SUBS_WRITE);
-	snd_seq_query_subscribe_set_index(subs, 0);
+		snd_seq_query_subscribe_t *subs;
+		snd_seq_query_subscribe_alloca(&subs);
+		snd_seq_query_subscribe_set_root(subs, &my_addr);
+		snd_seq_query_subscribe_set_type(subs, SND_SEQ_QUERY_SUBS_WRITE);
+		snd_seq_query_subscribe_set_index(subs, 0);
 	
-	while (snd_seq_query_port_subscribers(ALSASeqHandle, subs) >= 0) {
-		const snd_seq_addr_t *addr;
-		addr = snd_seq_query_subscribe_get_addr(subs);
+		while (snd_seq_query_port_subscribers(ALSASeqHandle, subs) >= 0) {
+			const snd_seq_addr_t *addr;
+			addr = snd_seq_query_subscribe_get_addr(subs);
 		
-		tX_store("%s<link client=\"%i\" port=\"%i\"/>\n", indent, addr->client, addr->port);
-		snd_seq_query_subscribe_set_index(subs, snd_seq_query_subscribe_get_index(subs) + 1);
-	}	
+			tX_store("%s<link client=\"%i\" port=\"%i\"/>\n", indent, addr->client, addr->port);
+			snd_seq_query_subscribe_set_index(subs, snd_seq_query_subscribe_get_index(subs) + 1);
+		}	
 		
-	indent[strlen(indent)-1]=0;
+		indent[strlen(indent)-1]=0;
+	}
+
 	tX_store("%s</midi_connections>\n", indent);	
 }
 
 void tX_midiin::restore_connections(xmlNodePtr node)
 {
 	snd_seq_addr_t my_addr;
-	my_addr.client=snd_seq_client_id(ALSASeqHandle);
-	my_addr.port=portid;
 	
-	if (xmlStrcmp(node->name, (xmlChar *) "midi_connections")==0) {
-		for (xmlNodePtr cur=node->xmlChildrenNode; cur != NULL; cur = cur->next) {
-			if (cur->type == XML_ELEMENT_NODE) {
-				if (xmlStrcmp(cur->name, (xmlChar *) "link")==0) {
-					char *buffer;
-					int client=-1;
-					int port=-1;
-					
-					buffer=(char *) xmlGetProp(cur, (xmlChar *) "client");
-					if (buffer) {
-						sscanf(buffer, "%i", &client);
-					}
-					
-					buffer=(char *) xmlGetProp(cur, (xmlChar *) "port");
-					if (buffer) {
-						sscanf(buffer, "%i", &port);
-					}
-					
-					if ((port>=0) && (client>=0)) {
-						snd_seq_addr_t sender_addr;
-						sender_addr.client=client;
-						sender_addr.port=port;
+	if (ALSASeqHandle != NULL) {
+		my_addr.client=snd_seq_client_id(ALSASeqHandle);
+		my_addr.port=portid;
+		
+		if (xmlStrcmp(node->name, (xmlChar *) "midi_connections")==0) {
+			for (xmlNodePtr cur=node->xmlChildrenNode; cur != NULL; cur = cur->next) {
+				if (cur->type == XML_ELEMENT_NODE) {
+					if (xmlStrcmp(cur->name, (xmlChar *) "link")==0) {
+						char *buffer;
+						int client=-1;
+						int port=-1;
 						
-						snd_seq_port_subscribe_t *subs;
-						snd_seq_port_subscribe_alloca(&subs);
-						snd_seq_port_subscribe_set_sender(subs, &sender_addr);
-						snd_seq_port_subscribe_set_dest(subs, &my_addr);
-
-						if (snd_seq_subscribe_port(ALSASeqHandle, subs) < 0) {
-							tX_error("tX_midiin::restore_connections() -> failed to connect to: %d:%d.", port, client);
+						buffer=(char *) xmlGetProp(cur, (xmlChar *) "client");
+						if (buffer) {
+							sscanf(buffer, "%i", &client);
 						}
+						
+						buffer=(char *) xmlGetProp(cur, (xmlChar *) "port");
+						if (buffer) {
+							sscanf(buffer, "%i", &port);
+						}
+						
+						if ((port>=0) && (client>=0)) {
+							snd_seq_addr_t sender_addr;
+							sender_addr.client=client;
+							sender_addr.port=port;
+							
+							snd_seq_port_subscribe_t *subs;
+							snd_seq_port_subscribe_alloca(&subs);
+							snd_seq_port_subscribe_set_sender(subs, &sender_addr);
+							snd_seq_port_subscribe_set_dest(subs, &my_addr);
+	
+							if (snd_seq_subscribe_port(ALSASeqHandle, subs) < 0) {
+								tX_error("tX_midiin::restore_connections() -> failed to connect to: %d:%d.", port, client);
+							}
+						} else {
+							tX_error("tX_midiin::restore_connections() -> invalid port: %d:%d.", port, client);
+						}
+						
 					} else {
-						tX_error("tX_midiin::restore_connections() -> invalid port: %d:%d.", port, client);
+						tX_error("tX_midiin::restore_connections() -> invalid element: %s.", cur->name);
 					}
-					
-				} else {
-					tX_error("tX_midiin::restore_connections() -> invalid element: %s.", cur->name);
 				}
 			}
+		} else {
+			tX_error("tX_midiin::restore_connections() -> invalid XML element.");
 		}
 	} else {
-		tX_error("tX_midiin::restore_connections() -> invalid XML element.");
+		tX_error("tX_midiin::restore_connections() -> Couldn't get ALSA sequencer handle - snd-seq module not loaded?.");
 	}
 }
 
