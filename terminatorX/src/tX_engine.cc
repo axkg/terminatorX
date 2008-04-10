@@ -188,9 +188,24 @@ void *engine_thread_entry(void *engine_void) {
 		parm.sched_priority=sched_get_priority_max(SCHED_FIFO);
 					
 		if (pthread_setschedparam(pthread_self(), SCHED_FIFO, &parm)) {
-			tX_warning("engine_thread_entry(): failed to set realtime priority.");
+			// we failed to get max prio, let see whether we can get a little less
+			bool success = false;
+			for (int i = parm.__sched_priority; i >= 0; i--) {
+				parm.__sched_priority = i;
+				
+				if (!pthread_setschedparam(pthread_self(), SCHED_FIFO, &parm)) {
+					success = true;
+					break;
+				}
+			}
+			
+			if (success) {
+				tX_msg("engine_thread_entry(): set SCHED_FIFO with priority %i.", parm.__sched_priority);
+			} else {
+				tX_warning("engine_thread_entry(): failed to set realtime priority.");
+			}
 		} else {
-			tX_debug("engine_thread_entry(): set SCHED_FIFO via capabilities.");
+			tX_debug("engine_thread_entry(): set SCHED_FIFO with maximum priority.");
 		}
 	}
 #endif //USE_SCHEDULER
