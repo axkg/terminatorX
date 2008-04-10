@@ -190,7 +190,8 @@ void *engine_thread_entry(void *engine_void) {
 		if (pthread_setschedparam(pthread_self(), SCHED_FIFO, &parm)) {
 			// we failed to get max prio, let see whether we can get a little less
 			bool success = false;
-			for (int i = parm.__sched_priority; i >= 0; i--) {
+			
+			for (int i = parm.__sched_priority; i >= sched_get_priority_min(SCHED_FIFO); i--) {
 				parm.__sched_priority = i;
 				
 				if (!pthread_setschedparam(pthread_self(), SCHED_FIFO, &parm)) {
