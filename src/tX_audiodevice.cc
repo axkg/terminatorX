@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2011  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -369,7 +369,7 @@ tX_jack_client::tX_jack_client():device(NULL),jack_shutdown(false)
 {
 	jack_set_error_function(tX_jack_client::error);
 	
-	if ((client=jack_client_new("terminatorX"))==0) {
+	if ((client=jack_client_open("terminatorX", (jack_options_t) NULL, NULL))==0) {
 		tX_error("tX_jack_client() -> failed to connect to jackd.");
 		instance=NULL;
 	} else {

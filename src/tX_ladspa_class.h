@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2011  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ class LADSPA_Class { // Yeah, I know "class" name for C++ class - but it just se
 	static vtt_class *current_vtt;
 	static bool liblrdf_error;
 	
-	char *label;
+	const char *label;
 	bool accept_all;
 	std::list <LADSPA_Class *> subclasses;
 	std::list <long> registered_ids;
@@ -63,7 +63,7 @@ class LADSPA_Class { // Yeah, I know "class" name for C++ class - but it just se
 	GtkWidget *get_menu(LADSPA_Plugin_Type);
 	
 	public:
-	LADSPA_Class(char *uri);
+	LADSPA_Class(const char *uri);
 	LADSPA_Class(); // For the unclassified class;	
 	
 	static bool add_plugin(LADSPA_Plugin *plugin);

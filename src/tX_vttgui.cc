@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2011  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -277,7 +277,7 @@ void drop_file(GtkWidget *widget, GdkDragContext *context,
 GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 {	
 #ifdef USE_FILECHOOSER
-	char *extensions[]={ "mp3", "wav", "ogg", "iff", "aiff", "voc", "au", NULL };
+	const char *extensions[]={ "mp3", "wav", "ogg", "iff", "aiff", "voc", "au", NULL };
 	char name_buf[512];
 	sprintf(name_buf, "Select Audio File for %s", vtt->name);
 	
@@ -369,7 +369,7 @@ void edit_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 		tx_note("No audiofile loaded - so there's nothing to edit.", true);
 	} else if (strlen(globals.file_editor)>0) {
 		sprintf(command, "%s \"%s\" &", globals.file_editor, vtt->filename);
-		system(command); /*) tx_note("Failed to run the soundfile editor."); */
+		int res = system(command); /*) tx_note("Failed to run the soundfile editor."); */
 	} else {
 		tx_note("No soundfile editor has been configured - to do so enter the soundfile editor of your choice in the options dialog.", true);
 	}
@@ -777,9 +777,12 @@ void gui_set_name(vtt_class *vtt, char *newname)
 
 GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel);
 
+gchar dnd_uri[128];
+
 void gui_connect_signals(vtt_class *vtt)
 {
 	vtt_gui *g=&vtt->gui;
+	strncpy(dnd_uri, "text/uri-list", 128);
 
 	connect_entry(name, name_changed);
 	connect_adj(volume, volume_changed);
@@ -819,7 +822,7 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_button(audio_minimize, minimize_audio_panel);
 
 	static GtkTargetEntry drop_types [] = {
-		{ "text/uri-list", 0, 0}
+		{ dnd_uri, 0, 0}
 	};
 	static gint n_drop_types = sizeof (drop_types) / sizeof(drop_types[0]);
 	
