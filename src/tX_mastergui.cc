@@ -137,7 +137,7 @@ GtkWidget *delete_all_vtt_item=NULL;
 
 GtkTooltips *gui_tooltips=NULL;
 
-void gui_set_tooltip(GtkWidget *wid, char *tip)
+void gui_set_tooltip(GtkWidget *wid, const char *tip)
 {
 	gtk_tooltips_set_tip(gui_tooltips, wid, tip, NULL);
 }
@@ -220,7 +220,7 @@ void mg_update_status()
 	procfs=fopen(filename, "r");
 	if (procfs) {
 		while((!feof(procfs)) && !found) {
-			fgets(buffer, 256, procfs);
+			char *res = fgets(buffer, 256, procfs);
 			
 			if (strncmp("VmSize:", buffer, 7)==0) {
 				found=1;
@@ -1401,8 +1401,8 @@ void create_master_menu()
 	g_signal_connect(menu_item, "activate", (GCallback) display_browser, NULL);
 }
 
-void cursormove() {
-	printf("MOVe!\n");
+void motion_notify(GtkWidget *widget, GdkEventMotion *eventMotion) {
+	printf("Move: %lf, %lf\n", eventMotion->x, eventMotion->y);
 }
 
 void create_mastergui(int x, int y)
@@ -1429,7 +1429,7 @@ void create_mastergui(int x, int y)
 
 	gtk_widget_realize(main_window);
 	
-//	g_signal_connect (G_OBJECT (main_window), "motion_notify_event", G_CALLBACK (cursormove), NULL);
+//	g_signal_connect(G_OBJECT(main_window), "motion_notify_event", G_CALLBACK(motion_notify), NULL);
 
 	wrapbox=gtk_vbox_new(FALSE, 5);
 	gtk_container_add(GTK_CONTAINER(main_window), wrapbox);

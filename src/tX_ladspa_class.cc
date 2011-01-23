@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2011  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -164,7 +164,7 @@ void LADSPA_Class::insert_class(LADSPA_Class *cls) {
 	subclasses.push_back(cls);
 }
 
-LADSPA_Class :: LADSPA_Class (char *uri) : label(NULL), accept_all(false) {
+LADSPA_Class :: LADSPA_Class (const char *uri) : label(NULL), accept_all(false) {
 #ifdef USE_LRDF	
 	lrdf_uris *ulist;
 	char *urilabel;

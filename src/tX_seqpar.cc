@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999, 2000 Alexander König
+    Copyright (C) 1999, 2000 Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -234,7 +234,7 @@ void tX_seqpar :: materialize_forward_values()
 	gdk_flush();
 }
 
-char * tX_seqpar :: get_vtt_name()
+const char * tX_seqpar :: get_vtt_name()
 {       
         if (vtt) return tt->name;
         else return "Master Track";
@@ -304,7 +304,7 @@ void tX_seqpar :: store_meta(FILE *rc, gzFile rz) {
 	char buffer2[256];
 	
 	if (bound_midi_event.type!=tX_midievent::NONE) {
-		char *type;
+		const char *type;
 		
 		switch (bound_midi_event.type) {
 			case tX_midievent::NOTE: type="note"; break;
@@ -330,7 +330,7 @@ void tX_seqpar :: store_meta(FILE *rc, gzFile rz) {
 		strcat(buffer, buffer2);
 	}
 	
-	tX_store(buffer);
+	tX_store("%s", buffer);
 }
 
 

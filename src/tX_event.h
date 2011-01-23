@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2011  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ class tX_event
 	float get_value() { return value; }
 	void set_value(float val) { value=val; }
 
-	char *get_vtt_name() { return sp->get_vtt_name(); }
+	const char *get_vtt_name() { return sp->get_vtt_name(); }
 	const char *get_seqpar_name() { return sp->get_name(); }
 
 	void playback() {
