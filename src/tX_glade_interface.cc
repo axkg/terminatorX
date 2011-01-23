@@ -69,7 +69,7 @@ create_tx_adjust (void)
   gtk_box_pack_start (GTK_BOX (vbox1), table7, TRUE, TRUE, 0);
   gtk_table_set_col_spacings (GTK_TABLE (table7), 3);
 
-  master_cycles_adj = gtk_adjustment_new (1, 1, 100, 1, 10, 10);
+  master_cycles_adj = gtk_adjustment_new (1, 1, 100, 1, 10, 0);
   master_cycles = gtk_spin_button_new (GTK_ADJUSTMENT (master_cycles_adj), 1, 0);
   gtk_widget_show (master_cycles);
   gtk_table_attach (GTK_TABLE (table7), master_cycles, 1, 2, 1, 2,
@@ -89,7 +89,7 @@ create_tx_adjust (void)
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
 
-  cycles_adj = gtk_adjustment_new (1, 1, 100, 1, 10, 10);
+  cycles_adj = gtk_adjustment_new (1, 1, 100, 1, 10, 0);
   cycles = gtk_spin_button_new (GTK_ADJUSTMENT (cycles_adj), 1, 0);
   gtk_widget_show (cycles);
   gtk_table_attach (GTK_TABLE (table7), cycles, 1, 2, 0, 1,
@@ -378,7 +378,7 @@ create_tx_options (void)
   gtk_widget_show (combo_entry2);
   gtk_tooltips_set_tip (tooltips, combo_entry2, "Select the audiodevice you want terminatorX to send its output to.", NULL);
 
-  oss_buffers_adj = gtk_adjustment_new (2, 2, 5, 1, 10, 10);
+  oss_buffers_adj = gtk_adjustment_new (2, 2, 5, 1, 10, 0);
   oss_buffers = gtk_spin_button_new (GTK_ADJUSTMENT (oss_buffers_adj), 1, 0);
   gtk_widget_show (oss_buffers);
   gtk_table_attach (GTK_TABLE (table5), oss_buffers, 1, 2, 1, 2,
@@ -704,7 +704,7 @@ create_tx_options (void)
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (label38), 0, 0.5);
 
-  filename_length_adj = gtk_adjustment_new (8, 3, 255, 1, 10, 10);
+  filename_length_adj = gtk_adjustment_new (8, 3, 255, 1, 10, 0);
   filename_length = gtk_spin_button_new (GTK_ADJUSTMENT (filename_length_adj), 1, 0);
   gtk_widget_show (filename_length);
   gtk_table_attach (GTK_TABLE (table2), filename_length, 1, 2, 6, 7,

@@ -974,11 +974,10 @@ GtkSignalFunc tX_seqpar_vttfx_float :: gtk_callback(GtkWidget* w, tX_seqpar_vttf
 
 void tX_seqpar_vttfx_int :: create_widget()
 {
-	float tmp=max_value - min_value/1000;
 	GtkWidget *tmpwid;
 
 	*fx_value=min_value;
-	myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value, max_value, 1, 10, tmp));
+	myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value, max_value, 1, 10, 0));
 	GtkWidget *box=gtk_vbox_new(FALSE, 2);
 	
 	tmpwid=gtk_spin_button_new(myadj,1.0,0);
