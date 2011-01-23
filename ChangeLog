@@ -1,13 +1,14 @@
 
    terminatorX ChangeLog
 
-   Copyright (C) 1999-2008 Alexander König
+   Copyright (C) 1999-2008 Alexander Koenig
 
    Version 3.83
      * moved to terminatorX.org
      * fixed misc gcc 4.0 warnings.
      * removed fastabs() implementation - it failed with gcc > 4.0.
      * fixed a compilation issue TODO: who sent a patch?.
+     * fixed main window menu bar layout issue.
 
    Version 3.82
      * the position of the audio control scrollbars is now saved within
@@ -647,7 +648,7 @@
    Version 2.4 (unreleased) 
      * implemented a time counter
      * licmak now finally is what it should be: a perl script (licmak.pl)
-       it was contributed by Adam Sjøgren <asjo@diku.dk> . Thanks!
+       it was contributed by Adam Sjï¿½gren <asjo@diku.dk> . Thanks!
 
    Version 2.3
      * wavfile overreading fixed by Andrew C. Bul+hac?k <acb@zikzak.net>
