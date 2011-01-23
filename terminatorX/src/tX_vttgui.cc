@@ -1015,7 +1015,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->sync_client), vtt->is_sync_client);
 	g_signal_connect(G_OBJECT(g->sync_client), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_sync_client);	
 	
-	g->cycles=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->sync_cycles, 0, 10.0, 1,1,1));
+	g->cycles=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->sync_cycles, 0, 10.0, 1,1,0));
 	dummy=gtk_spin_button_new(g->cycles, 1.0, 0);
 	p->add_client_widget(dummy);
 	gui_set_tooltip(dummy, "Determines how often a sync-client turntable gets triggered. 0 -> this turntable will be triggered with every trigger of the sync-master table, 1 -> the table will be triggered every 2nd master trigger and so on.");
