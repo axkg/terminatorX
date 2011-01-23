@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2011  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 #include <sys/wait.h>
 #include <X11/Xlib.h>
-#include <X11/extensions/xf86dga.h>
+#include <X11/extensions/Xxf86dga.h>
 
 #include "tX_mouse.h"
 #include "tX_mastergui.h"

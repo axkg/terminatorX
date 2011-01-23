@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011 Alexander König
+    Copyright (C) 1999-2011 Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -116,7 +116,7 @@ class tX_seqpar
 	static void materialize_forward_values();
 
 	/* info functions for the editor */
-	char *get_vtt_name();
+	const char *get_vtt_name();
 	virtual const char *get_name(); 
 	
 	/* For Mouse and MIDI Mapping */
