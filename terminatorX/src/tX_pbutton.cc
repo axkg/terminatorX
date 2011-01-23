@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2011  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ GtkWidget *tx_pixmap_widget(tX_icon id)
     return widget;
 }
 
-GtkWidget *tx_xpm_label_box(tX_icon id, gchar *label_text, GtkWidget **labelwidget)
+GtkWidget *tx_xpm_label_box(tX_icon id, const gchar *label_text, GtkWidget **labelwidget)
 {
 	GtkWidget *box1;
 	GtkWidget *label;
@@ -98,7 +98,7 @@ GtkWidget *tx_xpm_label_box(tX_icon id, gchar *label_text, GtkWidget **labelwidg
 	}    
 }
 
-extern GtkWidget *tx_xpm_button_new(tX_icon id, char *label, int toggle, GtkWidget **labelwidget)
+extern GtkWidget *tx_xpm_button_new(tX_icon id, const char *label, int toggle, GtkWidget **labelwidget)
 {
 	GtkWidget *box;
 	GtkWidget *button;

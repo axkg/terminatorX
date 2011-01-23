@@ -93,10 +93,11 @@
 
 	/* wav header is 44 bytes long */
 FILE* open_wav(char *header, char file_name[], int *mode){
+	int res;
 	FILE* handle;
 	handle = fopen(file_name, "r");
 	if(handle)
-	fread((char *) header, 1, 44, handle);
+	res = fread((char *) header, 1, 44, handle); // TODO: What about res?
 	return(handle);
 }
 

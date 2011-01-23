@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2011  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #include <list>
 #include "tX_seqpar.h"
 
-typedef struct vtt_gui
+struct vtt_gui
 {
 	GtkWidget *control_box;
 	GtkWidget *audio_box;
