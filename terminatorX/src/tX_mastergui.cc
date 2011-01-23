@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2008  Alexander König
+    Copyright (C) 1999-2011  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -1401,6 +1401,10 @@ void create_master_menu()
 	g_signal_connect(menu_item, "activate", (GCallback) display_browser, NULL);
 }
 
+void cursormove() {
+	printf("MOVe!\n");
+}
+
 void create_mastergui(int x, int y)
 {
 	GtkWidget *mother_of_all_boxen;
@@ -1413,6 +1417,7 @@ void create_mastergui(int x, int y)
 	GtkWidget *dummy;
 	GtkWidget *master_vol_box;
 	GtkWidget *status_box;
+	GtkWidget *wrapbox;
 	
 	gui_tooltips=gtk_tooltips_new();
 
@@ -1421,19 +1426,23 @@ void create_mastergui(int x, int y)
 	gtk_window_set_wmclass(GTK_WINDOW(main_window), "terminatorX", "tX_mastergui");
 
 	gtk_window_set_title(GTK_WINDOW(main_window), "terminatorX");
-	
-	gtk_container_set_border_width(GTK_CONTAINER(main_window), 5);
 
 	gtk_widget_realize(main_window);
 	
-	mother_of_all_boxen=gtk_vbox_new(FALSE, 5);
-	gtk_container_add(GTK_CONTAINER(main_window), mother_of_all_boxen);
-	gtk_widget_show(mother_of_all_boxen);	
-	
+//	g_signal_connect (G_OBJECT (main_window), "motion_notify_event", G_CALLBACK (cursormove), NULL);
+
+	wrapbox=gtk_vbox_new(FALSE, 5);
+	gtk_container_add(GTK_CONTAINER(main_window), wrapbox);
+	gtk_widget_show(wrapbox);
+
 	main_menubar=gtk_menu_bar_new();
-	gtk_box_pack_start(GTK_BOX(mother_of_all_boxen), main_menubar, WID_FIX);
-	gtk_widget_show(main_menubar);	
-	
+	gtk_box_pack_start(GTK_BOX(wrapbox), main_menubar, WID_FIX);
+	gtk_widget_show(main_menubar);
+
+	mother_of_all_boxen=gtk_vbox_new(FALSE, 5);
+	gtk_container_add(GTK_CONTAINER(wrapbox), mother_of_all_boxen);
+	gtk_widget_show(mother_of_all_boxen);	
+
 	create_master_menu();
 	
 	main_vbox=gtk_hbox_new(FALSE, 5);
