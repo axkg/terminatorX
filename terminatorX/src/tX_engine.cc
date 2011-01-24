@@ -66,42 +66,7 @@ tX_engine *tX_engine::get_instance() {
 	return engine;
 }
 
-void tX_engine::set_grab_request() {
-	grab_request=true;
-}
-
 int16_t* tX_engine::render_cycle() {
-	/* Checking whether to grab or not  */
-	if (grab_request!=grab_active) {
-		if (grab_request) {
-			/* Activating grab... */
-			int result=mouse->grab(); 
-			if (result!=0) {
-				tX_error("tX_engine::render_cycle(): failed to grab mouse - error %i", result);
-				grab_active=false;
-				/* Reseting grab_request, too - doesn't help keeping it, does it ? ;) */
-				grab_request=false;
-				mouse->ungrab();
-				grab_off();
-			} else {
-				grab_active=true;
-			}
-		} else {
-			/* Deactivating grab... */
-			mouse->ungrab();
-			grab_active=false;
-			grab_off();
-		}
-	}
-
-	/* Handling input events... */
-	if (grab_active) {
-		if (mouse->check_event()) {
-			/* If we're here the user pressed ESC */
-			grab_request=false;
-		}
-	}
-
 	/* Forward the sequencer... */
 	sequencer.step();
 
@@ -161,11 +126,11 @@ void tX_engine::loop() {
 
 		// in case we got kicked out by jack we might have
 		// to kill the mouse grab
-		if (grab_active) {
+/*		if (grab_active) {
 			mouse->ungrab();
 			grab_active=false;
 			grab_off();
-		}
+		} */
 		
 		if (!stop_flag) {
 			runtime_error=true;
@@ -235,7 +200,6 @@ tX_engine :: tX_engine() {
 		exit(1);
 	}
 	
-	mouse=new tx_mouse();
 #ifdef USE_ALSA_MIDI_IN	
 	midi=new tX_midiin();
 #endif	
@@ -245,8 +209,6 @@ tX_engine :: tX_engine() {
 	recording=false;
 	recording_request=false;
 	loop_is_active=false;
-	grab_request=false;
-	grab_active=false;
 }
 
 void tX_engine :: set_recording_request (bool recording) {
@@ -362,7 +324,6 @@ tX_engine :: ~tX_engine() {
 	tX_debug("~tX_engine() - Waiting for engine thread to terminate.");
 	pthread_join(thread, &dummy);	
 	
-	delete mouse;
 #ifdef USE_ALSA_MIDI_IN		
 	delete midi;
 #endif	

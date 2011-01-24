@@ -47,6 +47,7 @@ class tx_mouse
 	XKeyEvent *xkey;
 	XButtonEvent *xbut;
 	bool warp_override;
+	GdkEventMask savedEventMask;
 
 #ifdef USE_DGA2	
 	XEvent xev_copy;
@@ -73,6 +74,18 @@ class tx_mouse
 	void ungrab();
 	tx_mouse();
 	
+	void motion_notify(GtkWidget *widget, GdkEventMotion *eventMotion);
+	void button_press(GtkWidget *widget, GdkEventButton *eventButton);
+	void button_release(GtkWidget *widget, GdkEventButton *eventButton);
+	void key_press(GtkWidget *widget, GdkEventKey *eventKey);
+	void key_release(GtkWidget *widget, GdkEventKey *eventKey);
+
+	static void motion_notify_wrap(GtkWidget *widget, GdkEventMotion *eventMotion, void *data);
+	static void button_press_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data);
+	static void button_release_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data);
+	static void key_press_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data);
+	static void key_release_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data);
+
 	private:
 	void set_x_pointer(char*);
 };
