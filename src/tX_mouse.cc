@@ -36,6 +36,7 @@
 #endif
 
 #include <gdk/gdkx.h>
+#include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
 #include "tX_mouse.h"
@@ -95,7 +96,7 @@ int tx_mouse :: grab()
 #endif	
 
 	savedEventMask = gdk_window_get_events(top_window);
-	GdkEventMask newEventMask = GdkEventMask (GDK_POINTER_MOTION_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_BUTTON_RELEASE_MASK | GDK_BUTTON_RELEASE_MASK);
+	GdkEventMask newEventMask = GdkEventMask ( (int) savedEventMask |  GDK_POINTER_MOTION_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_BUTTON_RELEASE_MASK | GDK_BUTTON_RELEASE_MASK);
 	gdk_window_set_events(top_window, newEventMask);
 	gtk_window_present(GTK_WINDOW(main_window));
 
@@ -133,15 +134,17 @@ int tx_mouse :: grab()
 #ifdef USE_DGA2
 	if (!XDGASetMode(dpy, DefaultScreen(dpy), 1)) {
 #else	
-//	if (!XF86DGADirectVideo(dpy,DefaultScreen(dpy),XF86DGADirectMouse)) {
+	if (!XF86DGADirectVideo(dpy,DefaultScreen(dpy),XF86DGADirectMouse)) {
 #endif
-//		XUngrabKeyboard(dpy, CurrentTime);
-//		XUngrabPointer (dpy, CurrentTime);
+		GdkDisplay* display = gdk_display_get_default();
+		gdk_display_pointer_ungrab(display, GDK_CURRENT_TIME);
+		gdk_display_keyboard_ungrab(display, GDK_CURRENT_TIME);
+
 //		reset_xinput();
 //		XCloseDisplay(dpy);
 //		fputs("GrabMode Error: Failed to enable XF86DGA.", stderr);
 //		return(ENG_ERR_DGA);
-//	}
+	}
 
 #ifdef USE_DGA2
 	XDGASelectInput(dpy, DefaultScreen(dpy), mask);
@@ -178,7 +181,7 @@ void tx_mouse :: ungrab()
 #ifdef USE_DGA2	
 	XDGASetMode(dpy, DefaultScreen(dpy), 0);
 #else
-//	XF86DGADirectVideo(dpy,DefaultScreen(dpy),0);
+	XF86DGADirectVideo(dpy,DefaultScreen(dpy),0);
 #endif	
 
 	GdkDisplay *gdk_dpy = gdk_display_get_default();
@@ -292,7 +295,6 @@ void tx_mouse :: reset_xinput()
 
 
 void tx_mouse::motion_notify(GtkWidget *widget, GdkEventMotion *eventMotion) {
-	//eventMotion->x_root, eventMotion->y_root
 	if (vtt) {
 		if (warp_override) {
 			f_prec value=(abs(eventMotion->x_root)>abs(eventMotion->y_root)) ? eventMotion->x_root : eventMotion->y_root;
@@ -304,6 +306,8 @@ void tx_mouse::motion_notify(GtkWidget *widget, GdkEventMotion *eventMotion) {
 }
 
 void tx_mouse::button_press(GtkWidget *widget, GdkEventButton *eventButton) {
+
+	printf("button: %i\n", eventButton->button);
 	if (vtt) {
 		switch(eventButton->button) {
 			case 1: if (vtt->is_playing)
@@ -328,156 +332,126 @@ void tx_mouse::button_release(GtkWidget *widget, GdkEventButton *eventButton) {
 
 void tx_mouse::key_press(GtkWidget *widget, GdkEventKey *eventKey) {
 	if (vtt) {
-	}
+		switch(eventKey->keyval) {
+			case GDK_KEY_space: vtt->set_scratch(1); break;
+			case GDK_KEY_Escape: ungrab();
 
+			case GDK_KEY_Return: vtt->sp_trigger.receive_input_value(1); break;
+			case GDK_KEY_BackSpace : vtt->sp_trigger.receive_input_value(0); break;
+
+			case GDK_KEY_Tab: vtt_class::focus_next(); break;
+
+			case GDK_KEY_s: vtt->sp_sync_client.receive_input_value(!vtt->is_sync_client); break;
+
+			case GDK_KEY_m:
+			case GDK_KEY_Control_L:
+			case GDK_KEY_Control_R:
+			vtt->sp_mute.receive_input_value(1);
+			break;
+
+			case GDK_KEY_Alt_L:
+			case GDK_KEY_Alt_R:
+			vtt->sp_mute.receive_input_value(0);
+			break;
+
+			case GDK_KEY_w:
+			vtt->sp_mute.receive_input_value(1);
+			case GDK_KEY_f:
+			warp_override=true;
+			warp=((float) vtt->samples_in_buffer)/TX_MOUSE_SPEED_WARP;
+			vtt->set_scratch(1);
+			break;
+
+			case GDK_KEY_F1: vtt_class::focus_no(0); break;
+			case GDK_KEY_F2: vtt_class::focus_no(1); break;
+			case GDK_KEY_F3: vtt_class::focus_no(2); break;
+			case GDK_KEY_F4: vtt_class::focus_no(3); break;
+			case GDK_KEY_F5: vtt_class::focus_no(4); break;
+			case GDK_KEY_F6: vtt_class::focus_no(5); break;
+			case GDK_KEY_F7: vtt_class::focus_no(6); break;
+			case GDK_KEY_F8: vtt_class::focus_no(7); break;
+			case GDK_KEY_F9: vtt_class::focus_no(8); break;
+			case GDK_KEY_F10: vtt_class::focus_no(9); break;
+			case GDK_KEY_F11: vtt_class::focus_no(10); break;
+			case GDK_KEY_F12: vtt_class::focus_no(11); break;
+		}
+	}
 }
 
 void tx_mouse::key_release(GtkWidget *widget, GdkEventKey *eventKey) {
 	if (vtt) {
+		switch(eventKey->keyval) {
+			case GDK_KEY_space: vtt->set_scratch(0); break;
 
-	}
+			case GDK_KEY_m:
+			case GDK_KEY_Control_L:
+			case GDK_KEY_Control_R:
+			vtt->sp_mute.receive_input_value(0);
+			break;
 
-}
+			case GDK_KEY_Alt_L:
+			case GDK_KEY_Alt_R:
+			vtt->sp_mute.receive_input_value(1);
+			break;
 
-void tx_mouse::motion_notify_wrap(GtkWidget *widget, GdkEventMotion *eventMotion, void *data) {
-	tx_mouse* mouse = (tx_mouse *) data;
-	mouse->motion_notify(widget, eventMotion);
-}
-
-void tx_mouse::button_press_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data) {
-	tx_mouse* mouse = (tx_mouse *) data;
-	mouse->button_press(widget, eventButton);
-}
-
-void tx_mouse::button_release_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data) {
-	tx_mouse* mouse = (tx_mouse *) data;
-	mouse->button_release(widget, eventButton);
-}
-
-void tx_mouse::key_press_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data) {
-	tx_mouse* mouse = (tx_mouse *) data;
-	mouse->key_press(widget, eventKey);
-}
-
-void tx_mouse::key_release_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data) {
-	tx_mouse* mouse = (tx_mouse *) data;
-	mouse->key_release(widget, eventKey);
-}
-
-int tx_mouse :: check_event()
-{
-	if (XCheckWindowEvent(dpy, x_window, mask, &xev) && vtt) {
-#ifdef USE_DGA2
-		puts("Got an event");
-#endif		
-		switch(xev.type) {
-			case MotionNotify:
-				
-				if (warp_override) {
-					f_prec value=(abs(xmot->x_root)>abs(xmot->y_root)) ? xmot->x_root : xmot->y_root;
-					vtt->sp_speed.handle_mouse_input(value*globals.mouse_speed*warp);
-				} else {
-					vtt->xy_input((f_prec) xmot->x_root*warp, (f_prec) xmot->y_root*warp);
-				}
-				break;
-			
-			case ButtonPress:
-				switch(xbut->button) {
-					case 1: if (vtt->is_playing)
-							vtt->set_scratch(1); 
-						else
-							vtt->sp_trigger.receive_input_value(1);
-						break;
-					case 2: vtt->sp_mute.receive_input_value(1); break;
-					case 3: vtt_class::focus_next(); break;
-				}
-				break;
-			
-			case ButtonRelease:
-				switch (xbut->button) {	
-					case 1: vtt->set_scratch(0); break;
-					case 2: vtt->sp_mute.receive_input_value(0); break;
-				}
-				break;
-
-			case KeyPress:
-#ifdef USE_DGA2
-				puts("Yeah its a key");
-				XDGAKeyEventToXKeyEvent(xdgakey, (XKeyEvent *) &xev_copy);
-				memcpy(&xev, &xev_copy, sizeof(XEvent));
-#endif			
-				key=XKeycodeToKeysym(dpy, xkey->keycode, 0);
-				
-				switch(key) {
-					case XK_space: vtt->set_scratch(1); break;
-					case XK_Escape: return(1);
-					
-					case XK_Return: vtt->sp_trigger.receive_input_value(1); break;
-					case XK_BackSpace : vtt->sp_trigger.receive_input_value(0); break;
-					
-					case XK_Tab: vtt_class::focus_next(); break;
-					
-					case XK_s: vtt->sp_sync_client.receive_input_value(!vtt->is_sync_client); break;
-					
-					case XK_m:
-					case XK_Control_L:
-					case XK_Control_R:						
-					vtt->sp_mute.receive_input_value(1);
-					break;
-						
-					case XK_Alt_L:
-					case XK_Alt_R:
-					vtt->sp_mute.receive_input_value(0);
-					break;
-					
-					case XK_w:
-					vtt->sp_mute.receive_input_value(1);
-					case XK_f: 
-					warp_override=true;
-					warp=((float) vtt->samples_in_buffer)/TX_MOUSE_SPEED_WARP;	
-					vtt->set_scratch(1);
-					break;
-						
-					case XK_F1: vtt_class::focus_no(0); break;
-					case XK_F2: vtt_class::focus_no(1); break;
-					case XK_F3: vtt_class::focus_no(2); break;
-					case XK_F4: vtt_class::focus_no(3); break;
-					case XK_F5: vtt_class::focus_no(4); break;
-					case XK_F6: vtt_class::focus_no(5); break;
-					case XK_F7: vtt_class::focus_no(6); break;
-					case XK_F8: vtt_class::focus_no(7); break;
-					case XK_F9: vtt_class::focus_no(8); break;
-					case XK_F10: vtt_class::focus_no(9); break;
-					case XK_F11: vtt_class::focus_no(10); break;
-					case XK_F12: vtt_class::focus_no(11); break;
-				}
-				break;
-			
-			case KeyRelease:
-				key=XKeycodeToKeysym (dpy, xkey->keycode, 0);
-				
-				switch(key) {
-					case XK_space: vtt->set_scratch(0); break;
-					
-					case XK_m:
-					case XK_Control_L:
-					case XK_Control_R:						
-					vtt->sp_mute.receive_input_value(0);
-					break;
-						
-					case XK_Alt_L:
-					case XK_Alt_R:
-					vtt->sp_mute.receive_input_value(1);
-					break;
-					
-					case XK_w:
-					vtt->sp_mute.receive_input_value(0);
-					case XK_f: warp=TX_MOUSE_SPEED_NORMAL;
-					warp_override=false;
-					vtt->set_scratch(0);
-					break;					
-				}
+			case GDK_KEY_w:
+			vtt->sp_mute.receive_input_value(0);
+			case GDK_KEY_f: warp=TX_MOUSE_SPEED_NORMAL;
+			warp_override=false;
+			vtt->set_scratch(0);
+			break;
 		}
 	}
-	return 0;
+}
+
+gboolean tx_mouse::motion_notify_wrap(GtkWidget *widget, GdkEventMotion *eventMotion, void *data) {
+	tx_mouse* mouse = (tx_mouse *) data;
+	if (mouse->grabbed) {
+		mouse->motion_notify(widget, eventMotion);
+		return TRUE;
+	} else {
+		return FALSE;
+	}
+}
+
+gboolean tx_mouse::button_press_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data) {
+	tx_mouse* mouse = (tx_mouse *) data;
+	if (mouse->grabbed) {
+		mouse->button_press(widget, eventButton);
+		return TRUE;
+	} else {
+		return FALSE;
+	}
+}
+
+gboolean tx_mouse::button_release_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data) {
+	tx_mouse* mouse = (tx_mouse *) data;
+	if (mouse->grabbed) {
+		mouse->button_release(widget, eventButton);
+		return TRUE;
+	} else {
+		return FALSE;
+	}
+}
+
+gboolean tx_mouse::key_press_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data) {
+	tx_mouse* mouse = (tx_mouse *) data;
+	if (mouse->grabbed) {
+		printf("key!\n");
+		mouse->key_press(widget, eventKey);
+		return TRUE;
+	} else {
+		return FALSE;
+	}
+}
+
+gboolean tx_mouse::key_release_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data) {
+	tx_mouse* mouse = (tx_mouse *) data;
+	if (mouse->grabbed) {
+		printf("key release!\n");
+		mouse->key_release(widget, eventKey);
+		return TRUE;
+	} else {
+		return FALSE;
+	}
 }
