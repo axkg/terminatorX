@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2011  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -80,11 +80,11 @@ class tx_mouse
 	void key_press(GtkWidget *widget, GdkEventKey *eventKey);
 	void key_release(GtkWidget *widget, GdkEventKey *eventKey);
 
-	static void motion_notify_wrap(GtkWidget *widget, GdkEventMotion *eventMotion, void *data);
-	static void button_press_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data);
-	static void button_release_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data);
-	static void key_press_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data);
-	static void key_release_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data);
+	static gboolean motion_notify_wrap(GtkWidget *widget, GdkEventMotion *eventMotion, void *data);
+	static gboolean button_press_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data);
+	static gboolean button_release_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data);
+	static gboolean key_press_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data);
+	static gboolean key_release_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data);
 
 	private:
 	void set_x_pointer(char*);
