@@ -30,7 +30,9 @@
 #include "tX_seqpar.h"
 
 extern int audioon;
-extern Window xwindow;
+extern Window x_window;
+extern GdkWindow* top_window;
+
 extern GtkWidget *main_window;
 
 extern GtkAdjustment *volume_adj;
