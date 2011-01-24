@@ -25,7 +25,6 @@
 #define _TX_ENGINE_H_
 
 #include "tX_tape.h"
-#include "tX_mouse.h"
 #include "tX_audiodevice.h"
 #include "tX_midiin.h"
 #include <sys/types.h>
@@ -41,8 +40,8 @@
 #define ENG_ERR_DGA 6
 #define ENG_ERR_SOUND 7
 #define ENG_ERR_THREAD 8
-#define ENG_ERR_GRABMOUSE 9
-#define ENG_ERR_GRABKEY 10
+/* #define ENG_ERR_GRABMOUSE 9
+   #define ENG_ERR_GRABKEY 10 */
 #define ENG_ERR_BUSY 11
 
 #include <pthread.h>
@@ -65,15 +64,14 @@ class tX_engine {
 	pthread_t thread;
 	pthread_mutex_t start;
 	bool thread_terminate;
-	tx_mouse *mouse;
 	tX_audiodevice *device;
 	tx_tapedeck *tape;
 	bool recording;
 	bool recording_request;
 	bool stop_flag;
 	bool loop_is_active;
-	bool grab_request;
-	bool grab_active;
+/*	bool grab_request;
+	bool grab_active; */
 	bool runtime_error;
 	bool overload_error;
 	int cycles_ctr;
@@ -102,7 +100,7 @@ class tX_engine {
 	bool is_recording() { return recording; }
 	int16_t* render_cycle();
 	
-	void set_grab_request();
+/*	void set_grab_request(); */
 	bool is_stopped() { return stop_flag; }
 };
 #endif

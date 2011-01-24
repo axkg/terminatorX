@@ -24,7 +24,19 @@
 
 #include <sys/wait.h>
 #include <X11/Xlib.h>
+
+#include <config.h>
+
+#ifdef HAVE_X11_EXTENSIONS_XXF86DGA_H
 #include <X11/extensions/Xxf86dga.h>
+#endif
+
+#ifdef HAVE_X11_EXTENSIONS_XF86DGA_H
+#include <X11/extensions/xf86dga.h>
+#endif
+
+#include <gdk/gdkx.h>
+#include <gtk/gtk.h>
 
 #include "tX_mouse.h"
 #include "tX_mastergui.h"
@@ -60,12 +72,13 @@ int tx_mouse :: grab()
 	XDGAMode *mode;
 #endif	
 
-	if (grabbed) return(0);
+	if (grabbed) return 0;
 
 	warp_override=false;
-	
-	dpy=XOpenDisplay(NULL);
-	if (!dpy) {
+	dpy = gdk_x11_get_default_xdisplay();
+//	GdkDisplay* gdk_dpy = gdk_display_get_default();
+
+	if (!dpy/* && !gdk_dpy*/) {
 		fputs("GrabMode Error: couldn't connect to XDisplay.", stderr);
 		return(ENG_ERR_XOPEN);
 	}
@@ -80,47 +93,55 @@ int tx_mouse :: grab()
 	}
 	XFree(mode);
 #endif	
-				
-	XSelectInput(dpy, xwindow, mask);	
 
-	XSetInputFocus(dpy, xwindow, None, CurrentTime);
+	savedEventMask = gdk_window_get_events(top_window);
+	GdkEventMask newEventMask = GdkEventMask (GDK_POINTER_MOTION_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_BUTTON_RELEASE_MASK | GDK_BUTTON_RELEASE_MASK);
+	gdk_window_set_events(top_window, newEventMask);
+	gtk_window_present(GTK_WINDOW(main_window));
 
-	if (globals.xinput_enable) {
-		if (set_xinput()) {
-			XCloseDisplay(dpy);
-			fputs("GrabMode Error: failed to setup XInput.", stderr);
-			return(ENG_ERR_XINPUT);
-		}
-	}
+//	if (globals.xinput_enable) {
+//		if (set_xinput()) {
+//			XCloseDisplay(dpy);
+//			fputs("GrabMode Error: failed to setup XInput.", stderr);
+//			return(ENG_ERR_XINPUT);
+//		}
+//	}
 
-	if (GrabSuccess != XGrabPointer(dpy, xwindow, False, ButtonPressMask|ButtonReleaseMask|PointerMotionMask, GrabModeAsync,GrabModeAsync,None,None,CurrentTime)) {
-		reset_xinput();
-		XCloseDisplay(dpy);
-		fputs("GrabMode Error: XGrabPointer failed.", stderr);
-		return(ENG_ERR_GRABMOUSE);
+
+	GdkGrabStatus grab_status =gdk_pointer_grab(top_window, FALSE, GdkEventMask (GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK | GDK_BUTTON_RELEASE_MASK), NULL, NULL, GDK_CURRENT_TIME);
+
+	if (grab_status != GDK_GRAB_SUCCESS) {
+		//reset_xinput();
+		//XCloseDisplay(dpy);
+		//fputs("GrabMode Error: XGrabPointer failed.", stderr);
+		return(-1);
 	}	
 	
-	if (GrabSuccess != XGrabKeyboard(dpy, xwindow, False, GrabModeAsync,GrabModeAsync,CurrentTime)) {
-		XUngrabPointer (dpy, CurrentTime);
-		reset_xinput();		
-		XCloseDisplay(dpy);
-		fputs("GrabMode Error: XGrabKeyboard failed.", stderr);
-		return(ENG_ERR_GRABKEY);
+	grab_status = gdk_keyboard_grab(top_window, FALSE, GDK_CURRENT_TIME);
+
+	if (grab_status != GDK_GRAB_SUCCESS) {
+		GdkDisplay* display = gdk_display_get_default();
+		gdk_display_pointer_ungrab(display, GDK_CURRENT_TIME);
+		//XUngrabPointer (dpy, CurrentTime);
+		//reset_xinput();
+		//XCloseDisplay(dpy);
+		//fputs("GrabMode Error: XGrabKeyboard failed.", stderr);
+		return(-2);
 	}
 	
 
 #ifdef USE_DGA2
 	if (!XDGASetMode(dpy, DefaultScreen(dpy), 1)) {
 #else	
-	if (!XF86DGADirectVideo(dpy,DefaultScreen(dpy),XF86DGADirectMouse)) {
+//	if (!XF86DGADirectVideo(dpy,DefaultScreen(dpy),XF86DGADirectMouse)) {
 #endif
-		XUngrabKeyboard(dpy, CurrentTime);				
-		XUngrabPointer (dpy, CurrentTime);
-		reset_xinput();		
-		XCloseDisplay(dpy);
-		fputs("GrabMode Error: Failed to enable XF86DGA.", stderr);		
-		return(ENG_ERR_DGA);
-	}
+//		XUngrabKeyboard(dpy, CurrentTime);
+//		XUngrabPointer (dpy, CurrentTime);
+//		reset_xinput();
+//		XCloseDisplay(dpy);
+//		fputs("GrabMode Error: Failed to enable XF86DGA.", stderr);
+//		return(ENG_ERR_DGA);
+//	}
 
 #ifdef USE_DGA2
 	XDGASelectInput(dpy, DefaultScreen(dpy), mask);
@@ -157,15 +178,15 @@ void tx_mouse :: ungrab()
 #ifdef USE_DGA2	
 	XDGASetMode(dpy, DefaultScreen(dpy), 0);
 #else
-	XF86DGADirectVideo(dpy,DefaultScreen(dpy),0);
+//	XF86DGADirectVideo(dpy,DefaultScreen(dpy),0);
 #endif	
 
-	XUngrabKeyboard(dpy, CurrentTime);		
-	XUngrabPointer (dpy, CurrentTime);
+	GdkDisplay *gdk_dpy = gdk_display_get_default();
+	gdk_display_keyboard_ungrab(gdk_dpy, GDK_CURRENT_TIME);
+	gdk_display_pointer_ungrab(gdk_dpy, GDK_CURRENT_TIME);
+
 	XAutoRepeatOn(dpy);
 	
-	XCloseDisplay(dpy);
-
 	if (globals.xinput_enable) {
 		reset_xinput();	
 	}
@@ -269,9 +290,83 @@ void tx_mouse :: reset_xinput()
 
 #define vtt vtt_class::focused_vtt
 
+
+void tx_mouse::motion_notify(GtkWidget *widget, GdkEventMotion *eventMotion) {
+	//eventMotion->x_root, eventMotion->y_root
+	if (vtt) {
+		if (warp_override) {
+			f_prec value=(abs(eventMotion->x_root)>abs(eventMotion->y_root)) ? eventMotion->x_root : eventMotion->y_root;
+			vtt->sp_speed.handle_mouse_input(value*globals.mouse_speed*warp);
+		} else {
+			vtt->xy_input((f_prec) eventMotion->x_root*warp, (f_prec) eventMotion->y_root*warp);
+		}
+	}
+}
+
+void tx_mouse::button_press(GtkWidget *widget, GdkEventButton *eventButton) {
+	if (vtt) {
+		switch(eventButton->button) {
+			case 1: if (vtt->is_playing)
+					vtt->set_scratch(1);
+				else
+					vtt->sp_trigger.receive_input_value(1);
+				break;
+			case 2: vtt->sp_mute.receive_input_value(1); break;
+			case 3: vtt_class::focus_next(); break;
+		}
+	}
+}
+
+void tx_mouse::button_release(GtkWidget *widget, GdkEventButton *eventButton) {
+	if (vtt) {
+		switch (eventButton->button) {
+			case 1: vtt->set_scratch(0); break;
+			case 2: vtt->sp_mute.receive_input_value(0); break;
+		}
+	}
+}
+
+void tx_mouse::key_press(GtkWidget *widget, GdkEventKey *eventKey) {
+	if (vtt) {
+	}
+
+}
+
+void tx_mouse::key_release(GtkWidget *widget, GdkEventKey *eventKey) {
+	if (vtt) {
+
+	}
+
+}
+
+void tx_mouse::motion_notify_wrap(GtkWidget *widget, GdkEventMotion *eventMotion, void *data) {
+	tx_mouse* mouse = (tx_mouse *) data;
+	mouse->motion_notify(widget, eventMotion);
+}
+
+void tx_mouse::button_press_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data) {
+	tx_mouse* mouse = (tx_mouse *) data;
+	mouse->button_press(widget, eventButton);
+}
+
+void tx_mouse::button_release_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data) {
+	tx_mouse* mouse = (tx_mouse *) data;
+	mouse->button_release(widget, eventButton);
+}
+
+void tx_mouse::key_press_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data) {
+	tx_mouse* mouse = (tx_mouse *) data;
+	mouse->key_press(widget, eventKey);
+}
+
+void tx_mouse::key_release_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data) {
+	tx_mouse* mouse = (tx_mouse *) data;
+	mouse->key_release(widget, eventKey);
+}
+
 int tx_mouse :: check_event()
 {
-	if (XCheckWindowEvent(dpy, xwindow, mask, &xev) && vtt) {
+	if (XCheckWindowEvent(dpy, x_window, mask, &xev) && vtt) {
 #ifdef USE_DGA2
 		puts("Got an event");
 #endif		

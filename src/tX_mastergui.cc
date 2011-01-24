@@ -47,6 +47,7 @@
 #include <sys/time.h>
 #include <sys/wait.h>
 #include "tX_midiin.h"
+#include "tX_mouse.h"
 
 #ifdef USE_SCHEDULER
 #include <sys/resource.h>
@@ -62,6 +63,7 @@ int audioon=0;
 int sequencer_ready=1;
 
 bool tX_shutdown=false;
+tx_mouse mouse;
 
 GtkWidget *tt_parent;
 GtkWidget *control_parent;
@@ -103,7 +105,8 @@ gint update_tag;
 #define connect_adj(wid, func, ptr); g_signal_connect(G_OBJECT(wid), "value_changed", (GtkSignalFunc) func, (void *) ptr);
 #define connect_button(wid, func, ptr); g_signal_connect(G_OBJECT(wid), "clicked", (GtkSignalFunc) func, (void *) ptr);
 
-Window xwindow;
+Window x_window;
+GdkWindow* top_window;
 #define WID_DYN TRUE, TRUE, 0
 #define WID_FIX FALSE, FALSE, 0
 extern void add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn);
@@ -868,7 +871,10 @@ GtkSignalFunc tape_on(GtkWidget *w, void *d)
 void grab_on(GtkWidget *w, void *d)
 {
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
-		tX_engine::get_instance()->set_grab_request();
+		if (mouse.grab() != 0) {
+			//tX_engine::get_instance()->set_grab_request();
+			// TODO: handle error
+		}
 	}
 	grab_status=1;
 }
@@ -1401,10 +1407,6 @@ void create_master_menu()
 	g_signal_connect(menu_item, "activate", (GCallback) display_browser, NULL);
 }
 
-void motion_notify(GtkWidget *widget, GdkEventMotion *eventMotion) {
-	printf("Move: %lf, %lf\n", eventMotion->x, eventMotion->y);
-}
-
 void create_mastergui(int x, int y)
 {
 	GtkWidget *mother_of_all_boxen;
@@ -1429,7 +1431,12 @@ void create_mastergui(int x, int y)
 
 	gtk_widget_realize(main_window);
 	
-//	g_signal_connect(G_OBJECT(main_window), "motion_notify_event", G_CALLBACK(motion_notify), NULL);
+	g_signal_connect(G_OBJECT(main_window), "motion_notify_event", G_CALLBACK(tx_mouse::motion_notify_wrap), &mouse);
+	g_signal_connect(G_OBJECT(main_window), "button_press_event", G_CALLBACK(tx_mouse::button_press_wrap), &mouse);
+	g_signal_connect(G_OBJECT(main_window), "button_release_event", G_CALLBACK(tx_mouse::button_release_wrap), &mouse);
+	g_signal_connect(G_OBJECT(main_window), "key_press_event", G_CALLBACK(tx_mouse::key_press_wrap), &mouse);
+	g_signal_connect(G_OBJECT(main_window), "key_release_event", G_CALLBACK(tx_mouse::key_release_wrap), &mouse);
+
 
 	wrapbox=gtk_vbox_new(FALSE, 5);
 	gtk_container_add(GTK_CONTAINER(main_window), wrapbox);
@@ -1792,7 +1799,8 @@ void display_mastergui()
 	gtk_widget_show(main_window);
 	fullscreen_setup();	
 	top=gtk_widget_get_toplevel(main_window);
-	xwindow=GDK_WINDOW_XWINDOW(top->window);
+	top_window=GDK_WINDOW(top->window);
+	x_window=GDK_WINDOW_XWINDOW(top->window);
 }
 
 pid_t help_child=0;

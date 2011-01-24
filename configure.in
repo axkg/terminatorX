@@ -219,6 +219,16 @@ if test "$enable_mad" != "no"; then
 	fi
 fi
 
+AC_CHECK_HEADERS(X11/extensions/Xxf86dga.h,newDgaHeader=yes,newDgaHeader=no, [#include <X11/Xlib.h>])
+
+if test "$newDgaHeader" = "no"; then
+	AC_CHECK_HEADERS(X11/extensions/xf86dga.h,oldDgaHeader=yes,oldDgaHeader=no, [#include <X11/Xlib.h>])
+	
+	if test "$oldDgaHeader" = "no"; then
+		AC_MSG_ERROR([** couldn't find xf86dga.h header - Install X11 headers first. **])
+	fi
+fi
+
 if test "$enable_vorbis" != "no"; then
 	AC_CHECK_HEADERS(vorbis/codec.h vorbis/vorbisfile.h,vorbis_headers=yes,vorbis_headers="no")
 	if test "$vorbis_headers" = "yes"; then
