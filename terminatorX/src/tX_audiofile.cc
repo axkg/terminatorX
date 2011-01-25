@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2011  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -43,6 +43,10 @@
 #include "wav_file.h"
 #include "tX_loaddlg.h"
 #include "tX_endian.h"
+
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+#include <stdint.h>
 
 #ifdef USE_MAD_INPUT
 #	include <mad.h>
@@ -528,7 +532,7 @@ int tx_audiofile::mad_decode(unsigned char const *start, unsigned long length) {
 	buffer.sample_rate=0;
 	buffer.lost_sync_counter=0;
 
-	tX_debug("tx_audiofile::mad_decode() - start %08x, length %i", (int) buffer.start, buffer.size);
+	tX_debug("tx_audiofile::mad_decode() - start %016" PRIxPTR ", length %i", (uintptr_t) buffer.start, buffer.size);
 	/* configure input, output, and error functions */
 
 	mad_decoder_init(&decoder, &buffer, tX_mad_input, NULL, NULL, tX_mad_output, tX_mad_error, NULL);
