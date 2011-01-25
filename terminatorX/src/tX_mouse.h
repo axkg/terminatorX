@@ -35,6 +35,88 @@
 #include <X11/keysym.h>
 #include <glib.h>
 #include <gdk/gdk.h>
+#include <gdk/gdkkeysyms.h>
+
+/* Use old gdk keys if the new ones are not yet defined */
+
+#ifndef GDK_KEY_Alt_L
+#define GDK_KEY_Alt_L GDK_Alt_L
+#endif
+#ifndef GDK_KEY_Alt_R
+#define GDK_KEY_Alt_R GDK_Alt_R
+#endif
+#ifndef GDK_KEY_BackSpace
+#define GDK_KEY_BackSpace GDK_BackSpace
+#endif
+#ifndef GDK_KEY_Control_L
+#define GDK_KEY_Control_L GDK_Control_L
+#endif
+#ifndef GDK_KEY_Control_R
+#define GDK_KEY_Control_R GDK_Control_R
+#endif
+#ifndef GDK_KEY_Escape
+#define GDK_KEY_Escape GDK_Escape
+#endif
+#ifndef GDK_KEY_f
+#define GDK_KEY_f GDK_f
+#endif
+#ifndef GDK_KEY_F1
+#define GDK_KEY_F1 GDK_F1
+#endif
+#ifndef GDK_KEY_F10
+#define GDK_KEY_F10 GDK_F10
+#endif
+#ifndef GDK_KEY_F11
+#define GDK_KEY_F11 GDK_F11
+#endif
+#ifndef GDK_KEY_F12
+#define GDK_KEY_F12 GDK_F12
+#endif
+#ifndef GDK_KEY_F2
+#define GDK_KEY_F2 GDK_F2
+#endif
+#ifndef GDK_KEY_F3
+#define GDK_KEY_F3 GDK_F3
+#endif
+#ifndef GDK_KEY_F4
+#define GDK_KEY_F4 GDK_F4
+#endif
+#ifndef GDK_KEY_F5
+#define GDK_KEY_F5 GDK_F5
+#endif
+#ifndef GDK_KEY_F6
+#define GDK_KEY_F6 GDK_F6
+#endif
+#ifndef GDK_KEY_F7
+#define GDK_KEY_F7 GDK_F7
+#endif
+#ifndef GDK_KEY_F8
+#define GDK_KEY_F8 GDK_F8
+#endif
+#ifndef GDK_KEY_F9
+#define GDK_KEY_F9 GDK_F9
+#endif
+#ifndef GDK_KEY_m
+#define GDK_KEY_m GDK_m
+#endif
+#ifndef GDK_KEY_Return
+#define GDK_KEY_Return GDK_Return
+#endif
+#ifndef GDK_KEY_s
+#define GDK_KEY_s GDK_s
+#endif
+#ifndef GDK_KEY_space
+#define GDK_KEY_space GDK_space
+#endif
+#ifndef GDK_KEY_Tab
+#define GDK_KEY_Tab GDK_Tab
+#endif
+#ifndef GDK_KEY_w
+#define GDK_KEY_w GDK_w
+#endif
+#ifndef GDK_KEY_space
+#define GDK_KEY_space GDK_space
+#endif
 
 class tx_mouse
 {
