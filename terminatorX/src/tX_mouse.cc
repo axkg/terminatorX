@@ -36,7 +36,6 @@
 #endif
 
 #include <gdk/gdkx.h>
-#include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
 #include "tX_mouse.h"
@@ -95,10 +94,11 @@ int tx_mouse :: grab()
 	XFree(mode);
 #endif	
 
-	savedEventMask = gdk_window_get_events(top_window);
-	GdkEventMask newEventMask = GdkEventMask ( (int) savedEventMask |  GDK_POINTER_MOTION_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_BUTTON_RELEASE_MASK | GDK_BUTTON_RELEASE_MASK);
-	gdk_window_set_events(top_window, newEventMask);
 	gtk_window_present(GTK_WINDOW(main_window));
+
+	savedEventMask = gdk_window_get_events(top_window);
+	GdkEventMask newEventMask = GdkEventMask ((int) savedEventMask |  GDK_POINTER_MOTION_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_BUTTON_RELEASE_MASK | GDK_BUTTON_RELEASE_MASK);
+	gdk_window_set_events(top_window, newEventMask);
 
 //	if (globals.xinput_enable) {
 //		if (set_xinput()) {
@@ -121,9 +121,7 @@ int tx_mouse :: grab()
 	grab_status = gdk_keyboard_grab(top_window, FALSE, GDK_CURRENT_TIME);
 
 	if (grab_status != GDK_GRAB_SUCCESS) {
-		GdkDisplay* display = gdk_display_get_default();
-		gdk_display_pointer_ungrab(display, GDK_CURRENT_TIME);
-		//XUngrabPointer (dpy, CurrentTime);
+		gdk_pointer_ungrab(GDK_CURRENT_TIME);
 		//reset_xinput();
 		//XCloseDisplay(dpy);
 		//fputs("GrabMode Error: XGrabKeyboard failed.", stderr);
@@ -137,13 +135,13 @@ int tx_mouse :: grab()
 	if (!XF86DGADirectVideo(dpy,DefaultScreen(dpy),XF86DGADirectMouse)) {
 #endif
 		GdkDisplay* display = gdk_display_get_default();
-		gdk_display_pointer_ungrab(display, GDK_CURRENT_TIME);
-		gdk_display_keyboard_ungrab(display, GDK_CURRENT_TIME);
+		gdk_pointer_ungrab(GDK_CURRENT_TIME);
+		gdk_keyboard_ungrab(GDK_CURRENT_TIME);
 
 //		reset_xinput();
 //		XCloseDisplay(dpy);
 //		fputs("GrabMode Error: Failed to enable XF86DGA.", stderr);
-//		return(ENG_ERR_DGA);
+		return(ENG_ERR_DGA);
 	}
 
 #ifdef USE_DGA2
@@ -184,9 +182,8 @@ void tx_mouse :: ungrab()
 	XF86DGADirectVideo(dpy,DefaultScreen(dpy),0);
 #endif	
 
-	GdkDisplay *gdk_dpy = gdk_display_get_default();
-	gdk_display_keyboard_ungrab(gdk_dpy, GDK_CURRENT_TIME);
-	gdk_display_pointer_ungrab(gdk_dpy, GDK_CURRENT_TIME);
+	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
+	gdk_pointer_ungrab(GDK_CURRENT_TIME);
 
 	XAutoRepeatOn(dpy);
 	
