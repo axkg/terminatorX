@@ -25,6 +25,10 @@
 #include <sys/wait.h>
 #include <X11/Xlib.h>
 
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+#include <stdint.h>
+
 #include <config.h>
 
 #ifdef HAVE_X11_EXTENSIONS_XXF86DGA_H
@@ -97,7 +101,7 @@ int tx_mouse :: grab()
 	gtk_window_present(GTK_WINDOW(main_window));
 
 	savedEventMask = gdk_window_get_events(top_window);
-	GdkEventMask newEventMask = GdkEventMask ((int) savedEventMask |  GDK_POINTER_MOTION_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_BUTTON_RELEASE_MASK | GDK_BUTTON_RELEASE_MASK);
+	GdkEventMask newEventMask = GdkEventMask ((int) savedEventMask |  GDK_POINTER_MOTION_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
 	gdk_window_set_events(top_window, newEventMask);
 
 //	if (globals.xinput_enable) {
@@ -109,7 +113,7 @@ int tx_mouse :: grab()
 //	}
 
 
-	GdkGrabStatus grab_status =gdk_pointer_grab(top_window, FALSE, GdkEventMask (GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK | GDK_BUTTON_RELEASE_MASK), NULL, NULL, GDK_CURRENT_TIME);
+	GdkGrabStatus grab_status =gdk_pointer_grab(top_window, FALSE, GdkEventMask (GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, NULL, GDK_CURRENT_TIME);
 
 	if (grab_status != GDK_GRAB_SUCCESS) {
 		//reset_xinput();
@@ -174,7 +178,7 @@ void tx_mouse :: ungrab()
 {
 	if (!grabbed) return;
 
-	tX_debug("tX_mouse::ungrab(): this: %08x, dpy: %08x", (int) this, (int) dpy);
+	tX_debug("tX_mouse::ungrab(): this: %016" PRIxPTR ", dpy: %016" PRIxPTR, (uintptr_t) this, (uintptr_t) dpy);
 	
 #ifdef USE_DGA2	
 	XDGASetMode(dpy, DefaultScreen(dpy), 0);
@@ -188,10 +192,12 @@ void tx_mouse :: ungrab()
 	XAutoRepeatOn(dpy);
 	
 	if (globals.xinput_enable) {
-		reset_xinput();	
+	//	reset_xinput();
 	}
 
 	vtt_class::unfocus();
+
+	gdk_window_set_events(top_window, savedEventMask);
 
 	tX_debug("tX_mouse::ungrab(): done");
 	
@@ -303,8 +309,6 @@ void tx_mouse::motion_notify(GtkWidget *widget, GdkEventMotion *eventMotion) {
 }
 
 void tx_mouse::button_press(GtkWidget *widget, GdkEventButton *eventButton) {
-
-	printf("button: %i\n", eventButton->button);
 	if (vtt) {
 		switch(eventButton->button) {
 			case 1: if (vtt->is_playing)
@@ -331,7 +335,7 @@ void tx_mouse::key_press(GtkWidget *widget, GdkEventKey *eventKey) {
 	if (vtt) {
 		switch(eventKey->keyval) {
 			case GDK_KEY_space: vtt->set_scratch(1); break;
-			case GDK_KEY_Escape: ungrab();
+			case GDK_KEY_Escape: ungrab(); break;
 
 			case GDK_KEY_Return: vtt->sp_trigger.receive_input_value(1); break;
 			case GDK_KEY_BackSpace : vtt->sp_trigger.receive_input_value(0); break;
@@ -414,6 +418,7 @@ gboolean tx_mouse::motion_notify_wrap(GtkWidget *widget, GdkEventMotion *eventMo
 gboolean tx_mouse::button_press_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data) {
 	tx_mouse* mouse = (tx_mouse *) data;
 	if (mouse->grabbed) {
+		tX_debug("tX_mouse::button-press-event (%u)", eventButton->button);
 		mouse->button_press(widget, eventButton);
 		return TRUE;
 	} else {
@@ -424,6 +429,7 @@ gboolean tx_mouse::button_press_wrap(GtkWidget *widget, GdkEventButton *eventBut
 gboolean tx_mouse::button_release_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data) {
 	tx_mouse* mouse = (tx_mouse *) data;
 	if (mouse->grabbed) {
+		tX_debug("tX_mouse::button-release-event (%u)", eventButton->button);
 		mouse->button_release(widget, eventButton);
 		return TRUE;
 	} else {
@@ -434,7 +440,7 @@ gboolean tx_mouse::button_release_wrap(GtkWidget *widget, GdkEventButton *eventB
 gboolean tx_mouse::key_press_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data) {
 	tx_mouse* mouse = (tx_mouse *) data;
 	if (mouse->grabbed) {
-		printf("key!\n");
+		tX_debug("tX_mouse::key-press-event (%u)", eventKey->keyval);
 		mouse->key_press(widget, eventKey);
 		return TRUE;
 	} else {
@@ -445,7 +451,7 @@ gboolean tx_mouse::key_press_wrap(GtkWidget *widget, GdkEventKey *eventKey, void
 gboolean tx_mouse::key_release_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data) {
 	tx_mouse* mouse = (tx_mouse *) data;
 	if (mouse->grabbed) {
-		printf("key release!\n");
+		tX_debug("tX_mouse::key-release-event (%u)", eventKey->keyval);
 		mouse->key_release(widget, eventKey);
 		return TRUE;
 	} else {
