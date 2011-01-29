@@ -95,7 +95,7 @@ class tX_seqpar
 	virtual void do_exec(const float value)=0;
 	virtual void exec_value(const float value)=0;	
 	virtual void do_update_graphics()=0;
-	void update_graphics();
+	void update_graphics(bool gtk_flush = false);
 	static void update_all_graphics();
 	static void init_all_graphics();
 	
