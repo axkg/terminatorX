@@ -209,6 +209,8 @@ gint pos_update(gpointer data)
 	}
 }
 
+#define TX_MEMTAG "VmData:"
+
 void mg_update_status()
 {
 	FILE *procfs;
@@ -225,10 +227,10 @@ void mg_update_status()
 		while((!feof(procfs)) && !found) {
 			char *res = fgets(buffer, 256, procfs);
 			
-			if (strncmp("VmSize:", buffer, 7)==0) {
+			if (strncmp(TX_MEMTAG, buffer, sizeof(TX_MEMTAG)-1)==0) {
 				found=1;
-				sscanf(buffer, "VmSize: %i kB", &mem);
-				sprintf(buffer, "%i", mem);
+				sscanf(buffer, TX_MEMTAG" %i kB", &mem);
+				sprintf(buffer, "%.1lf M", ((double) mem)/1024.0);
 				gtk_label_set_text(GTK_LABEL(used_mem), buffer);
 			}
 		}
@@ -1447,6 +1449,7 @@ void create_mastergui(int x, int y)
 	gtk_widget_show(main_menubar);
 
 	mother_of_all_boxen=gtk_vbox_new(FALSE, 5);
+	gtk_container_set_border_width(GTK_CONTAINER(mother_of_all_boxen), 5);
 	gtk_container_add(GTK_CONTAINER(wrapbox), mother_of_all_boxen);
 	gtk_widget_show(mother_of_all_boxen);	
 
@@ -1646,10 +1649,10 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
-	dummy=gtk_label_new("Mem/kB:");
-	gtk_misc_set_alignment(GTK_MISC(dummy), 0, 0.5);
-	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
-	gtk_widget_show(dummy);
+//	dummy=gtk_label_new("Mem/MB:");
+//	gtk_misc_set_alignment(GTK_MISC(dummy), 0, 0.5);
+//	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
+//	gtk_widget_show(dummy);
 	
 	/*add_sep2();
 
@@ -1666,7 +1669,7 @@ void create_mastergui(int x, int y)
 
 	add_sep2();
 
-	dummy=gtk_label_new("Rel. "VERSION);
+	dummy=gtk_label_new("v"VERSION);
 	gtk_misc_set_alignment(GTK_MISC(dummy), 1, 0.5);
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
