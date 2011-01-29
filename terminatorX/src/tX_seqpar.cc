@@ -39,6 +39,9 @@ pthread_mutex_t tX_seqpar :: update_lock = PTHREAD_MUTEX_INITIALIZER;
 
 #define tt ((vtt_class *) vtt)
 
+#define seqpar_mutex_lock(lock) { tX_debug("lock: %i", __LINE__); pthread_mutex_lock(lock); }
+#define seqpar_mutex_unlock(lock) { tX_debug("unlock: %i", __LINE__); pthread_mutex_unlock(lock); }
+
 tX_seqpar :: tX_seqpar () : bound_midi_event()
 {
 	touched=0;
@@ -138,9 +141,9 @@ void tX_seqpar :: set_vtt (void *mytt)
 
 tX_seqpar :: ~tX_seqpar()
 {
-	pthread_mutex_lock(&update_lock);
+	seqpar_mutex_lock(&update_lock);
 	update.remove(this);
-	pthread_mutex_unlock(&update_lock);
+	seqpar_mutex_unlock(&update_lock);
 	sequencer.delete_all_events_for_sp(this, tX_sequencer::DELETE_ALL);
 	all.remove(this);
 }
@@ -345,11 +348,13 @@ float tX_seqpar :: get_value()
 	return 0.0;	
 }
 
-void tX_seqpar :: update_graphics()
+void tX_seqpar :: update_graphics(bool gtk_flush)
 {
 	gui_active=0;
 	do_update_graphics();
-	while (gtk_events_pending()) gtk_main_iteration();	/* gtk_flush */
+	if (gtk_flush) {
+		while (gtk_events_pending()) gtk_main_iteration();	/* gtk_flush */
+	}
 	gui_active=1;
 }
 
@@ -357,41 +362,47 @@ void tX_seqpar :: update_all_graphics()
 {
 	list <tX_seqpar *> :: iterator sp;
 
-	pthread_mutex_lock(&update_lock);
+	seqpar_mutex_lock(&update_lock);
 
 	if (!update.size()) {
-		pthread_mutex_unlock(&update_lock);
+		seqpar_mutex_unlock(&update_lock);
 		return;	
 	}
-	
-	while (gtk_events_pending()) gtk_main_iteration();	
+//	/* Events may trigger lock, too so we unlock temporarily. */
+//	seqpar_mutex_unlock(&update_lock);
+//
+//	while (gtk_events_pending()) gtk_main_iteration();
+//
+//	seqpar_mutex_lock(&update_lock);
 	for (sp=update.begin(); sp!=update.end(); sp++) {
-		(*sp)->update_graphics();
+		(*sp)->update_graphics(false);
 	}
 	update.erase(update.begin(), update.end());
-	pthread_mutex_unlock(&update_lock);
+	seqpar_mutex_unlock(&update_lock);
+
+	while (gtk_events_pending()) gtk_main_iteration();
 }
 
 void tX_seqpar :: init_all_graphics()
 {
 	list <tX_seqpar *> :: iterator sp;
 
-	pthread_mutex_lock(&update_lock);
+	seqpar_mutex_lock(&update_lock);
 	
 	for (sp=all.begin(); sp!=all.end(); sp++) {
 		(*sp)->update_graphics();
 	}
 	while (gtk_events_pending()) gtk_main_iteration();	
 
-	pthread_mutex_unlock(&update_lock);
+	seqpar_mutex_unlock(&update_lock);
 }
 
 void tX_seqpar_update :: exec_value(const float value)
 {
 	do_exec(value);
-	pthread_mutex_lock(&update_lock);
+	seqpar_mutex_lock(&update_lock);
 	update.push_front(this);
-	pthread_mutex_unlock(&update_lock);
+	seqpar_mutex_unlock(&update_lock);
 }
 
 void tX_seqpar_no_update :: exec_value(const float value)
