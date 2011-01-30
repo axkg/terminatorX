@@ -67,6 +67,10 @@ tx_mouse :: tx_mouse()
 	
 	grabbed=0;
 	warp=TX_MOUSE_SPEED_NORMAL;
+	enable_auto_mnemonics = FALSE;
+
+	last_button_press = 0;
+	last_button_release = 0;
 }
 
 
@@ -112,6 +116,16 @@ int tx_mouse :: grab()
 //		}
 //	}
 
+//	GdkModifierType modifiers = (GdkModifierType)NULL;
+//	gtk_window_set_mnemonic_modifier(GTK_WINDOW(main_window), modifiers);
+//	gtk_window_set_mnemonics_visible(GTK_WINDOW(main_window), false);
+
+	g_object_get (gtk_widget_get_settings (main_window), "gtk-auto-mnemonics", &enable_auto_mnemonics, NULL);
+
+	if (enable_auto_mnemonics) {
+		gboolean off = FALSE;
+		g_object_set (gtk_widget_get_settings (main_window), "gtk-auto-mnemonics", off, NULL);
+	}
 
 	GdkGrabStatus grab_status =gdk_pointer_grab(top_window, FALSE, GdkEventMask (GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, NULL, GDK_CURRENT_TIME);
 
@@ -198,6 +212,10 @@ void tx_mouse :: ungrab()
 	vtt_class::unfocus();
 
 	gdk_window_set_events(top_window, savedEventMask);
+
+	if (enable_auto_mnemonics) {
+		g_object_set (gtk_widget_get_settings (main_window), "gtk-auto-mnemonics", enable_auto_mnemonics, NULL);
+	}
 
 	tX_debug("tX_mouse::ungrab(): done");
 	
@@ -418,23 +436,36 @@ gboolean tx_mouse::motion_notify_wrap(GtkWidget *widget, GdkEventMotion *eventMo
 gboolean tx_mouse::button_press_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data) {
 	tx_mouse* mouse = (tx_mouse *) data;
 	if (mouse->grabbed) {
-		tX_debug("tX_mouse::button-press-event (%u)", eventButton->button);
-		mouse->button_press(widget, eventButton);
+		if (mouse->last_button_press != eventButton->time) {
+			mouse->last_button_press = eventButton->time;
+
+			tX_debug("tX_mouse::button-press-event (%u)", eventButton->button);
+			mouse->button_press(widget, eventButton);
+		} else {
+			tX_debug("tX_mouse::button-press-event (%u) identical event skipped", eventButton->button);
+		}
 		return TRUE;
-	} else {
-		return FALSE;
 	}
+
+	return FALSE;
 }
 
 gboolean tx_mouse::button_release_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data) {
 	tx_mouse* mouse = (tx_mouse *) data;
 	if (mouse->grabbed) {
-		tX_debug("tX_mouse::button-release-event (%u)", eventButton->button);
-		mouse->button_release(widget, eventButton);
+		if (mouse->last_button_release != eventButton->time) {
+			mouse->last_button_release = eventButton->time;
+
+			tX_debug("tX_mouse::button-release-event (%u)", eventButton->button);
+			mouse->button_release(widget, eventButton);
+		} else {
+			tX_debug("tX_mouse::button-release-event (%u) identical event skipped", eventButton->button);
+		}
+
 		return TRUE;
-	} else {
-		return FALSE;
 	}
+
+	return FALSE;
 }
 
 gboolean tx_mouse::key_press_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data) {

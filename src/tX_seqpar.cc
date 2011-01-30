@@ -39,8 +39,13 @@ pthread_mutex_t tX_seqpar :: update_lock = PTHREAD_MUTEX_INITIALIZER;
 
 #define tt ((vtt_class *) vtt)
 
+#ifdef DEBUG_SEQPAR_LOCK
 #define seqpar_mutex_lock(lock) { tX_debug("lock: %i", __LINE__); pthread_mutex_lock(lock); }
 #define seqpar_mutex_unlock(lock) { tX_debug("unlock: %i", __LINE__); pthread_mutex_unlock(lock); }
+#else
+#define seqpar_mutex_lock(lock) pthread_mutex_lock(lock)
+#define seqpar_mutex_unlock(lock) pthread_mutex_unlock(lock)
+#endif
 
 tX_seqpar :: tX_seqpar () : bound_midi_event()
 {
@@ -368,13 +373,8 @@ void tX_seqpar :: update_all_graphics()
 		seqpar_mutex_unlock(&update_lock);
 		return;	
 	}
-//	/* Events may trigger lock, too so we unlock temporarily. */
-//	seqpar_mutex_unlock(&update_lock);
-//
-//	while (gtk_events_pending()) gtk_main_iteration();
-//
-//	seqpar_mutex_lock(&update_lock);
-	for (sp=update.begin(); sp!=update.end(); sp++) {
+
+ 	for (sp=update.begin(); sp!=update.end(); sp++) {
 		(*sp)->update_graphics(false);
 	}
 	update.erase(update.begin(), update.end());
@@ -392,9 +392,9 @@ void tX_seqpar :: init_all_graphics()
 	for (sp=all.begin(); sp!=all.end(); sp++) {
 		(*sp)->update_graphics();
 	}
-	while (gtk_events_pending()) gtk_main_iteration();	
-
 	seqpar_mutex_unlock(&update_lock);
+
+	while (gtk_events_pending()) gtk_main_iteration();	
 }
 
 void tX_seqpar_update :: exec_value(const float value)

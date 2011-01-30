@@ -181,6 +181,9 @@ gint pos_update(gpointer data)
 			old_focus=vtt_class::focused_vtt;
 			if (old_focus) gui_show_frame(old_focus, 1);			
 		}
+
+		grab_status = mouse.is_grabbed();
+
 		if (grab_status!=last_grab_status) {
 			last_grab_status=grab_status;
 			if (!grab_status) {
@@ -1432,13 +1435,6 @@ void create_mastergui(int x, int y)
 	gtk_window_set_title(GTK_WINDOW(main_window), "terminatorX");
 
 	gtk_widget_realize(main_window);
-	
-	g_signal_connect(G_OBJECT(main_window), "motion_notify_event", G_CALLBACK(tx_mouse::motion_notify_wrap), &mouse);
-	g_signal_connect(G_OBJECT(main_window), "button_press_event", G_CALLBACK(tx_mouse::button_press_wrap), &mouse);
-	g_signal_connect(G_OBJECT(main_window), "button_release_event", G_CALLBACK(tx_mouse::button_release_wrap), &mouse);
-	g_signal_connect(G_OBJECT(main_window), "key_press_event", G_CALLBACK(tx_mouse::key_press_wrap), &mouse);
-	g_signal_connect(G_OBJECT(main_window), "key_release_event", G_CALLBACK(tx_mouse::key_release_wrap), &mouse);
-
 
 	wrapbox=gtk_vbox_new(FALSE, 5);
 	gtk_container_add(GTK_CONTAINER(main_window), wrapbox);
@@ -1454,6 +1450,12 @@ void create_mastergui(int x, int y)
 	gtk_widget_show(mother_of_all_boxen);	
 
 	create_master_menu();
+
+	g_signal_connect(G_OBJECT(main_window), "motion_notify_event", G_CALLBACK(tx_mouse::motion_notify_wrap), &mouse);
+	g_signal_connect(G_OBJECT(main_window), "button_press_event", G_CALLBACK(tx_mouse::button_press_wrap), &mouse);
+	g_signal_connect(G_OBJECT(main_window), "button_release_event", G_CALLBACK(tx_mouse::button_release_wrap), &mouse);
+	g_signal_connect(G_OBJECT(main_window), "key_press_event", G_CALLBACK(tx_mouse::key_press_wrap), &mouse);
+	g_signal_connect(G_OBJECT(main_window), "key_release_event", G_CALLBACK(tx_mouse::key_release_wrap), &mouse);
 	
 	main_vbox=gtk_hbox_new(FALSE, 5);
 	gtk_box_pack_start(GTK_BOX(mother_of_all_boxen), main_vbox, WID_DYN);
