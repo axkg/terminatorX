@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2011  Alexander KÃ¶nig
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -187,7 +187,7 @@ void checkenv(const char *name)
 
 int main(int argc, char **argv)
 {
-	fprintf(stderr, "%s - Copyright (C) 1999-2011 by Alexander König\n", VERSIONSTRING);
+	fprintf(stderr, "%s - Copyright (C) 1999-2011 by Alexander KÃ¶nig\n", VERSIONSTRING);
 	fprintf(stderr, "terminatorX comes with ABSOLUTELY NO WARRANTY - for details read the license.\n");
 
 #ifdef USE_CAPABILITIES	

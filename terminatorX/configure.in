@@ -183,6 +183,15 @@ if test "$have_ladspa" = "no"; then
 	AC_MSG_ERROR([** couldn't find ladspa.h - Install the LADSPA SDK from http://www.ladspa.org first. **])
 fi
 
+ac_save_CFLAGS=$CFLAGS
+CFLAGS="$CFLAGS -finput-charset=utf-8"
+AC_TRY_COMPILE([#include <stdio.h>],, have_utf8=yes, have_utf8=no)
+CFLAGS=$ac_save_CFLAGS
+
+if test "$have_utf8" = "yes"; then
+	CFLAGS="$CFLAGS -finput-charset=utf-8"
+fi
+
 AC_CHECK_HEADERS(zlib.h,, AC_MSG_ERROR([** couldn't find zlib.h **]))
 AC_CHECK_LIB(z,gzprintf, LIBS="$LIBS -lz", AC_MSG_ERROR([** couldn't find libz library **]))
 
