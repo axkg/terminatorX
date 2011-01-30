@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander K�nig
+    Copyright (C) 1999-2011  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -567,7 +567,7 @@ void show_about(int nag)
 		gtk_misc_set_alignment(GTK_MISC(label), 0.1, 0.5);
 		gtk_widget_show(label);
 
-		label=gtk_label_new("Copyright (C) 1999-2011 by Alexander K\xC3\xB6nig");
+		label=gtk_label_new("Copyright (C) 1999-2011 by Alexander König");
 		gtk_box_pack_start(GTK_BOX(box2), label, WID_DYN);
 		gtk_misc_set_alignment(GTK_MISC(label), 0.9, 0.5);
 		gtk_widget_show(label);
@@ -585,7 +585,7 @@ void show_about(int nag)
 		sep=gtk_hseparator_new();
 		add_about_wid_fix(sep);
 		
-		label=gtk_label_new("This is "PACKAGE" release "VERSION" - Copyright (C) 1999-2011 by Alexander K\xC3\xB6nig"
+		label=gtk_label_new("This is "PACKAGE" release "VERSION" - Copyright (C) 1999-2011 by Alexander König"
 		"\nSend comments, patches and scratches to: alex@lisas.de\nterminatorX-homepage: http://www.terminatorX.org");
 
 		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
