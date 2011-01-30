@@ -131,6 +131,10 @@ class tx_mouse
 	bool warp_override;
 	GdkEventMask savedEventMask;
 
+	gboolean enable_auto_mnemonics;
+	guint last_button_press;
+	guint last_button_release;
+
 #ifdef USE_DGA2	
 	XEvent xev_copy;
 	XDGAButtonEvent *xdgabut;
@@ -144,12 +148,12 @@ class tx_mouse
 	KeySym key;
 	float warp;
 	
-	public:
-	
 	int grabbed;
 
+	public:
 	int set_xinput();
 	void reset_xinput();
+	bool is_grabbed() { return grabbed != 0; }
 		
 	int grab();
 	int check_event();
