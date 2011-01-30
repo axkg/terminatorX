@@ -891,7 +891,7 @@ void build_vtt_gui(vtt_class *vtt)
 
 	g->mouse_mapping=gtk_button_new_with_label("Mouse");
 	gtk_widget_show(g->mouse_mapping);
-	gui_set_tooltip(g->mouse_mapping, "Determines what parameters should be affected on mouse moition in mouse grab mode.");
+	gui_set_tooltip(g->mouse_mapping, "Determines what parameters should be affected on mouse motion in mouse grab mode.");
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->mouse_mapping, WID_FIX);
 
 #ifdef USE_ALSA_MIDI_IN

@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2011  Alexander Kï¿½nig
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -76,16 +76,6 @@ int16_t* tX_engine::render_cycle() {
 	/* Record the audio if necessary... */
 	if (is_recording()) tape->eat(data);
 	
-	/* check for GUI thread starvation */
-//	if (cycles_ctr++ > 100) {
-//		tX_error("engine detected overload condition.");
-//		overload_error=true;
-//		stop_flag=true;
-		// give the audio thread some air to breathe
-		// so it can acquire the mutex
-//		usleep(500);
-//	}
-	
 	return  data;
 }
 
@@ -131,7 +121,7 @@ void tX_engine::loop() {
 			grab_active=false;
 			grab_off();
 		} */
-		
+
 		if (!stop_flag) {
 			runtime_error=true;
 			usleep(100);
