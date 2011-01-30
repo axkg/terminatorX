@@ -1,14 +1,18 @@
 
    terminatorX ChangeLog
 
-   Copyright (C) 1999-2008 Alexander Koenig
+   Copyright (C) 1999-2011 Alexander Koenig
 
    Version 3.83
      * moved to terminatorX.org
-     * fixed misc gcc 4.0 warnings.
-     * removed fastabs() implementation - it failed with gcc > 4.0.
-     * fixed a compilation issue TODO: who sent a patch?.
-     * fixed main window menu bar layout issue.
+     * fixed misc gcc 4.0 warnings
+     * removed fastabs() implementation - it failed with gcc > 4.0
+     * fixed a compilation issue (Thanks, cyril!)
+     * fixed main window menu bar layout issue
+     * fixed broken mouse grab (Ubuntu bug #469365), grab events are now
+       handled by gui thread
+     * work-around gtk+ auto mnemonics
+     * fix deprecated gtk+, jack and Xorg API     
 
    Version 3.82
      * the position of the audio control scrollbars is now saved within
