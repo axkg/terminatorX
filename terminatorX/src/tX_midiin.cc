@@ -20,7 +20,7 @@
  
   Description: Implements MIDI input to control turntable parameters.
   
-	Changes (Alexander König <alex@lisas.de>:
+	Changes (Alexander KÃ¶nig <alex@lisas.de>:
 	- Using a glib GIOCallback instead of polling events
 	- Updating the treeview immedialtey after bind/unbind_clicked
 	- Adding "remove binding" option

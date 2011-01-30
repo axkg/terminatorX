@@ -20,7 +20,7 @@
  
     Description: Header to tX_midiin.cc
 	
-	Changes (Alexander König <alex@lisas.de>:
+	Changes (Alexander KÃ¶nig <alex@lisas.de>:
 	- Default Constructor for tX_midievents
 	- new handlers for destroy and remove binding events
 */    
