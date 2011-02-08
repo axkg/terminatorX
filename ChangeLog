@@ -1,7 +1,6 @@
-
    terminatorX ChangeLog
 
-   Copyright (C) 1999-2011 Alexander Koenig
+   Copyright (C) 1999-2011 Alexander König
 
    Version 3.83
      * moved to terminatorX.org
@@ -12,38 +11,35 @@
      * fixed broken mouse grab (Ubuntu bug #469365), grab events are now
        handled by gui thread
      * work-around gtk+ auto mnemonics
-     * fix deprecated gtk+, jack and Xorg API     
+     * fixed deprecated gtk+, jack and Xorg API
 
    Version 3.82
      * the position of the audio control scrollbars is now saved within
        set files and restored upon loading.
-     * fixed a liblrdf related issue resulting in use of previously
-       free'd memory.
+     * fixed a liblrdf related issue resulting in use of previously free'd
+       memory.
      * rendered a new knob with the wonderful povray - all images are now
-       distrbuted in gdk-pixbuf-csource'd form in the src/icons
-       directory.
+       distrbuted in gdk-pixbuf-csource'd form in the src/icons directory.
      * added an extra "File/Load Audio File" menu item as new users would
        always try to load an audio file via "File/Open".
      * fixed compilation issues with g++ >= 3.4.
-     * added reverse mapping of MIDI parameters which can be turned
-       on/off via the parameter menu. This allows setting up a MIDI
-       controller as a crossfader.
+     * added reverse mapping of MIDI parameters which can be turned on/off
+       via the parameter menu. This allows setting up a MIDI controller as
+       a crossfader.
      * in order to have a SPAM protected online version of the ChangeLog
        this document is now generated from XML sources.
-     * merged a patch from Martin Habets
-       <errandir_news@mph.eclipse.co.uk> that fixes big endian audio
-       playback with ALSA.
+     * merged a patch from Martin Habets <errandir_news@mph.eclipse.co.uk>
+       that fixes big endian audio playback with ALSA.
      * applied a fix from Juha Erkkila <erkkila@cc.jyu.fi> that makes tX
        work on systems that don't have procfs mounted.
      * added an optional Dry/Wet control for all LADSPA plugins. Simply
        click on the plugin's label to add or remove the additional
        control.
-     * added an additional stereo effects queue that allows loading
-       stereo LADPSA plugins. The stereo effects are located below the
-       mono effects - to add a new instance press the "Stereo FX" button
-       and select the plugin of your choice.
-     * fixed the plugin menu - empty categories no longer get a menu
-       entry
+     * added an additional stereo effects queue that allows loading stereo
+       LADPSA plugins. The stereo effects are located below the mono
+       effects - to add a new instance press the "Stereo FX" button and
+       select the plugin of your choice.
+     * fixed the plugin menu - empty categories no longer get a menu entry
      * plugins that do not qualify as realtime capable will now be
        disabled.
      * I'm fed up with terminatorX related security postings, so the old
@@ -52,25 +48,25 @@
           + a) run terminatorX as root (obviously dangerous and not
             recommended)
           + b) build terminatorX with capabilities enabled and install it
-            suid-root. Due to the use of PR_SET_KEEPCAPS this will work
-            on Linux _only_
+            suid-root. Due to the use of PR_SET_KEEPCAPS this will work on
+            Linux _only_
           + c) use the JACK backend with "POSIX draft capabilities" (see
             jackd manpage)
      * loading sets with missing LADPSA plugins no longer crash tX.
      * fixed a bug that made reading error messages impossible with the
        load dialog open.
-     * the engine now handles audiodevices that break down when already
-       in playback mode more gracefully. This really necessary when jack
+     * the engine now handles audiodevices that break down when already in
+       playback mode more gracefully. This really necessary when jack
        decides to kick us out.
      * all vu meters are stereo now. Having a mono widget for a stereo
        thing just didn't make any sense anymore.
-     * modified the render loop to comply with LADSPA V1.1: 0 db is now
-       at 1.0f. This makes a lot of plugins work with terminatorX that
+     * modified the render loop to comply with LADSPA V1.1: 0 db is now at
+       1.0f. This makes a lot of plugins work with terminatorX that
        haven't worked with previous releases.
      * data send to the JACK backend no goes through the
        "Anti-Clip-Device", too. Unless you #define TX_DO_CLIP of course.
-     * I've drawn some new icons with the cool inkscape. They're now
-       being built into terminatorX as gdk-pixbuf c-source code, so they
+     * I've drawn some new icons with the cool inkscape. They're now being
+       built into terminatorX as gdk-pixbuf c-source code, so they
        actually do alpha blending.
      * wrote support for gtk+'s new FileChooser widget - will be enabled
        automatically when configure finds a gtk+ >= 2.4.0
@@ -102,29 +98,29 @@
      * when compiled with rt-scheduling suppport terminatorX will now
        display the resulting scheduling policy in the "About" dialog.
      * if terminatorX was setup to use realtime priority for the audio
-       engine thread but you dont want it - disable realtime scheduling
-       in the Preferences dialog. This works with capabilities _ONLY_.
-     * if you don't want to confirm program termination every time you
-       can now disable "Ask for Quit confirmation" in the Preferences.
+       engine thread but you dont want it - disable realtime scheduling in
+       the Preferences dialog. This works with capabilities _ONLY_.
+     * if you don't want to confirm program termination every time you can
+       now disable "Ask for Quit confirmation" in the Preferences.
      * added support for Linux' POSIX capabilities. This allows a
-       suid-root installed terminatorX binary to drop root privileges
-       much earlier than with the old approach (so it should be more
-       secure). Requires the libcap library.
+       suid-root installed terminatorX binary to drop root privileges much
+       earlier than with the old approach (so it should be more secure).
+       Requires the libcap library.
      * obligatory documentation updates - clicking on the sub-sections
        should now work.
-     * removed gtk+ 1.2 cruft - terminatorX now compiles with gtk+ 2.2
-       and *_DISABLE_DEPRECATED macros enabled. To verfiy that you can
-       run configure with --disable-deprecated.
+     * removed gtk+ 1.2 cruft - terminatorX now compiles with gtk+ 2.2 and
+       *_DISABLE_DEPRECATED macros enabled. To verfiy that you can run
+       configure with --disable-deprecated.
      * terminatorX now has a JACK backend. Currently it works like this:
        on startup tX will connect to the JACK daemon - if the daemon is
        not available on startup JACK output is not available. When the
-       audio engine is turned off, tX emits silence via the JACK ports,
-       so you can leave the ports connected.
-     * sick of green - you can now configure the colors terminatorX
-       should use for the audio display as well as the vu meters in the
+       audio engine is turned off, tX emits silence via the JACK ports, so
+       you can leave the ports connected.
+     * sick of green - you can now configure the colors terminatorX should
+       use for the audio display as well as the vu meters in the
        Preferences dialog.
-     * hopefully fixed wrong setting of the master volume when loading
-       set files.
+     * hopefully fixed wrong setting of the master volume when loading set
+       files.
      * some ALSA installations seem to core on snd_pcm_hw_params_free()
        after sound device init. So freeing the hw_params can now be
        explicitly disabled in the Preferences - if terminatorX crashes
@@ -134,8 +130,8 @@
        I even enabled the leak by default now.
      * fixed a bug that caused turntable 1 to get the focus on entering
        Mouse Grab mode even when it's audio panel was minimized.
-     * MIDI mappings can now have "bounds", meaning that the incoming
-       MIDI signals can modify the parameter within the given range only.
+     * MIDI mappings can now have "bounds", meaning that the incoming MIDI
+       signals can modify the parameter within the given range only.
      * introduced a new way of assigning MIDI controllers to parameters:
        simply right-click on a parameter's control: a menu with "MIDI
        Learn" and "Remove MIDI Binding" will pop up - select "MIDI Learn"
@@ -144,12 +140,11 @@
        <daham2@student.monash.edu>
      * running suid root (the old way) was reported exploitable by Andrew
        Griffiths <andrewg@felinemenace.org> - the described environment
-       variable based exploit was fixed - however there are possibly
-       other ways to exploit it. So the old method of running suid root
-       has been disabled by default. On Linux systems you really should
-       use the capabilities based approach (see above). If really want to
-       use the old suid-root solution run configure with
-       --enable-suidroot.
+       variable based exploit was fixed - however there are possibly other
+       ways to exploit it. So the old method of running suid root has been
+       disabled by default. On Linux systems you really should use the
+       capabilities based approach (see above). If really want to use the
+       old suid-root solution run configure with --enable-suidroot.
      * often, you record events and mess things up - in this case I'd
        often prefer dropping the complete take instead of recording a bad
        perfomance - which is why you now can activate "Confirm Recorded
@@ -157,8 +152,8 @@
        ask whether to actually record or drop the events created for the
        last take. The setting for this flag is stored in your
        ~/.terminatorXrc.
-     * introduced a new "Sequencer" menu that allows to delete events of
-       a specific type (all, all for certain turntable, all for a certain
+     * introduced a new "Sequencer" menu that allows to delete events of a
+       specific type (all, all for certain turntable, all for a certain
        parameter) from the sequencer. Events can be deleted for the
        complete song, upto the current song position or from the current
        song position. Yeah, I know, termintorX is lacking a proper
@@ -173,8 +168,8 @@
    Version 3.80
      * I've invested quite some time in valgrinding this release, among
        other things a major mem leak showed up - the sample memory wasn't
-       being free'd correctly which is now corrected along with many
-       other things. valgrind is a very helpful tool indeed.
+       being free'd correctly which is now corrected along with many other
+       things. valgrind is a very helpful tool indeed.
      * Added a new Pitch Calculator that allows adjusting a turntable's
        pitch to that of the master turntable. This makes synchronizing
        finely cut loop samples really easy
@@ -198,51 +193,51 @@
        allows to playback set files with events recorded on machines with
        small buffer sizes on slow machines with large buffer sizes. The
        buffersize of the audiodevice has no effect on the "operating"
-       blocksize anymore. Note that the samlping rate has a - very small
-       - effect though. Depending on the sampling rate terminatorX will
-       try to find a blocksize that fits exactly 1 ms - while this is
-       easy for "straight" sampling rates (22000 32000 48000) this
-       results in "44.1" samples for 44100 Hz.
+       blocksize anymore. Note that the samlping rate has a - very small -
+       effect though. Depending on the sampling rate terminatorX will try
+       to find a blocksize that fits exactly 1 ms - while this is easy for
+       "straight" sampling rates (22000 32000 48000) this results in
+       "44.1" samples for 44100 Hz.
      * Finally hacked a native ALSA backend. It's in "Works For Me" TM
        state.
      * Added "Remove Binding" button
      * MIDI now uses a GIOCallback so the effect of MIDI controllers is
        visible even without the audio engine turned on.
      * Reworked the mastergui for better usabilty and less space
-       consumption, yes, terminatorX now features a boring menubar -
-       which helps using it on small displays quite a bit, and should be
-       easier to handle for first-time users.
+       consumption, yes, terminatorX now features a boring menubar - which
+       helps using it on small displays quite a bit, and should be easier
+       to handle for first-time users.
      * Implemented a suggestion from Darrick Servis
-       <darrick@dcn.davis.ca.us> that stops clipping in the mixer
-       routine. The outgoing signal is now limited as it should be, which
-       improves the output quality for signals too loud significantly.
+       <darrick@dcn.davis.ca.us> that stops clipping in the mixer routine.
+       The outgoing signal is now limited as it should be, which improves
+       the output quality for signals too loud significantly.
      * MIDI mappings are now stored within the (new) tX set files.
      * Applied a patch from Arthur Peters <amp@singingwizard.org> which
        brings preliminary MIDI support to terminatorX. This is realized
-       via the ALSA sequencer interface, so in order for it to compile
-       you have to have the ALSA devel packages installed. ./configure
-       will autodetect them.
+       via the ALSA sequencer interface, so in order for it to compile you
+       have to have the ALSA devel packages installed. ./configure will
+       autodetect them.
      * Fixed a bug in XML serialization that dropped strings' contents.
      * You can now hit "F11" to turn fullscreen mode on/off - this will
        help using terminatorX on small DJ laptops. Note that the key will
-       have no effect in scratch mode - hit it before you enter grab
-       mode. This feature requires a NETWM compliant window manager.
+       have no effect in scratch mode - hit it before you enter grab mode.
+       This feature requires a NETWM compliant window manager.
      * terminatorX now stores set files as XML documents, too - so
-       terminatorX has become terminatorXML finally. Note: for sets with
-       a large number of events recorded into the sequencer - the XML
-       based set files can grow significally larger than the old ones
-       (see "compression" above)
-     * The old code to support the obsolete binary tX file formats has
-       now been scheduled for deletion. It's been moved into the
-       tX_legacy* source files and it will be built only when
-       "--enable-legacy" was used on configuring terminatorX (which is
-       the default). Expect this to become disabled and then totally
-       removed from the sources in future.
+       terminatorX has become terminatorXML finally. Note: for sets with a
+       large number of events recorded into the sequencer - the XML based
+       set files can grow significally larger than the old ones (see
+       "compression" above)
+     * The old code to support the obsolete binary tX file formats has now
+       been scheduled for deletion. It's been moved into the tX_legacy*
+       source files and it will be built only when "--enable-legacy" was
+       used on configuring terminatorX (which is the default). Expect this
+       to become disabled and then totally removed from the sources in
+       future.
      * Enhanced audio data display - you can now zoom into the audio
-       signal, which should allow much more precise scratching with
-       larger audio files (ie complete tracks). On playback terminatorX
-       will scroll the displayed area to ensure you always see the area
-       of the sample in which you're currently scratching on.
+       signal, which should allow much more precise scratching with larger
+       audio files (ie complete tracks). On playback terminatorX will
+       scroll the displayed area to ensure you always see the area of the
+       sample in which you're currently scratching on.
      * I have not backported the new code to the old gtk+ 1.2 - so this
        release no longer builds with gtk+ 1.2 - you have to upgrade to
        gtk+ Version 2 to be able to build terminatorX.
@@ -256,11 +251,11 @@
      * Finally traced down and fixed a long outstanding bug in the dial
        widget, the background of the dials is now drawn correctly.
      * Ported terminatorX to gtk+ Version 2. The code for gtk2 will be
-       enabled when gtk2 is detected by configure. To force terminatorX
-       to use the good old gtk 1.2.x (x>=5) run configure with the
+       enabled when gtk2 is detected by configure. To force terminatorX to
+       use the good old gtk 1.2.x (x>=5) run configure with the
        '--disable-gtk2' switch. WARNING: gdkxft-users: gtk2 applications
-       segfault when preloading libgdk_xft.so! So unset LD_PRELOAD and
-       set GDK_USE_XFT=1 instead.
+       segfault when preloading libgdk_xft.so! So unset LD_PRELOAD and set
+       GDK_USE_XFT=1 instead.
      * Applied a patch from Adrian that brings lots of new stuff:
           + Debian package support (removed - Mike Furr now maintains an
             official Debain package for terminatorX)
@@ -272,9 +267,9 @@
        reliably and it should detect ladspa.h when located in
        /usr/local/include without /usr/local/include being contained in
        the include path.
-     * This release should compile and run on FreeBSD systems and
-       possibly OpenBSD, too. Thanks for help and testing this goes to
-       Tilman Linneweh <tilman@arved.de> .
+     * This release should compile and run on FreeBSD systems and possibly
+       OpenBSD, too. Thanks for help and testing this goes to Tilman
+       Linneweh <tilman@arved.de> .
      * Sequencer now refuses to play when no events available - and
        displays a dialog that suggests running the audio engine.
      * De-uglified the terminatorX note dialog.
@@ -287,11 +282,11 @@
      * Rewrote the engine thread completely - unlike before the engine
        thread is created on startup and kept alive until termination.
      * terminatorX can now be run suid root - and it might even be safe.
-       After creating the engine thread both terminatorX threads drop
-       root privileges before evaluating any parameters or
-       reading/writing files, etc. The problem is the pthread "manager
-       thread" is out of control of terminatorX code - so I cannot tell
-       that thread to drop privileges.
+       After creating the engine thread both terminatorX threads drop root
+       privileges before evaluating any parameters or reading/writing
+       files, etc. The problem is the pthread "manager thread" is out of
+       control of terminatorX code - so I cannot tell that thread to drop
+       privileges.
      * Fixed Drag'n'Drop for GNOME 2
      * To enhance the loading of audiofiles terminatorX now contains code
        to use mad (MPEG Audio Decoder), libvorbis and libaudiofile
@@ -330,9 +325,9 @@
        releases
      * Well, I am allowed to change my mind, aren't I? Anyway, 3DNow! is
        back. Nevertheless newer gcc releases seem to have a bug in
-       handling movq and the current 3DNow! stereo implementation does
-       not seem to be very efficient. So use --enable-3dnow only if you
-       want to help me improve perfomance.
+       handling movq and the current 3DNow! stereo implementation does not
+       seem to be very efficient. So use --enable-3dnow only if you want
+       to help me improve perfomance.
      * Modified the mpg123 loader in order to make it work with mpg321,
        too. mpg321 lacks support for mpg123's -m switch ("singlemix")
        therefor mpg?2?'s output is now piped into sox to convert the
@@ -348,11 +343,11 @@
           + compile fixes for the newer gcc releases
           + enhancements to the commandline switches (try --help for more
             details)
-     * the bigNewThang (TM) is STEREO output. The Pan-Buttons now
-       actually do what you'd expect them to. Therefore your soundcard
-       must have stereo support of course but I guess in 2001 this really
-       shouldn't be a problem, right? The recorded wavfiles will now be
-       stereo wavfiles of course. Note that stereo output means double
+     * the bigNewThang (TM) is STEREO output. The Pan-Buttons now actually
+       do what you'd expect them to. Therefore your soundcard must have
+       stereo support of course but I guess in 2001 this really shouldn't
+       be a problem, right? The recorded wavfiles will now be stereo
+       wavfiles of course. Note that stereo output means double
        audio-bandwith, so if you tuned your old terminatorX setup to
        smallest latency you might get clicks now. You can easily fix this
        by increasing the buffer size in the options dialog by one - this
@@ -360,10 +355,10 @@
      * The echo effect has undergone some enhancements to profit from the
        new stereo output. It's signal will now be mixed seperately so you
        can choose a different stereo panorama position for the echo
-       signal. So the new echo effect now features it's own PAN-knob.
-       This does have some sideeffects though, for more details on this
-       check the manual. Additionally the echo effect now has it's own
-       volume setting to influence the dry/wet ratio of this effect.
+       signal. So the new echo effect now features it's own PAN-knob. This
+       does have some sideeffects though, for more details on this check
+       the manual. Additionally the echo effect now has it's own volume
+       setting to influence the dry/wet ratio of this effect.
      * Some LADSPA effects tend to create NAN (Not A Number) float values
        under certain conditions. This is bad as all following operations
        will result in NANs, so there will be no audio output no more. Now
@@ -371,17 +366,15 @@
        CPU-power, producing NANs is IMHO a faulty behaviour for LADSPA
        plugins and it should be fixed in there. Now a problem with the
        previous release was that the echo and lowpass effects "ate" those
-       NANs resulting in NANs in those effects' buffers. So once a NAN
-       got in there these effects caused the whole audio output to mute
+       NANs resulting in NANs in those effects' buffers. So once a NAN got
+       in there these effects caused the whole audio output to mute
        (forever). Which is why I now introduced some code to clear the
        buffers in echo and lowpass whenever you dis- and reenable them.
      * The GUI does have two master vu-meters now. The turntable's still
-       have one vu-meter only. Note that the echo-signal is *not*
-       included in the turntable's vu-meter now, as it's mixed
-       seperately.
-     * The 3DNow!-Optimizations are gone. And they'll proabably never
-       come back as I don't have time to maintain the same algorithm
-       twice.
+       have one vu-meter only. Note that the echo-signal is *not* included
+       in the turntable's vu-meter now, as it's mixed seperately.
+     * The 3DNow!-Optimizations are gone. And they'll proabably never come
+       back as I don't have time to maintain the same algorithm twice.
      * The documentation has been updated to meet the new features. A lot
        of typos have been fixed as well.
 
@@ -389,9 +382,9 @@
      * this list may be incomplete
      * This release brings support for LADSPA plugins. These plugins can
        be inserted into any turntable's effect chain at any position. You
-       can edit the the effect sequence with the two tiny blue arrows.
-       The builtin effects reside in the same effect chain as LADSPA
-       plugins, but unlike LADSPA plugins they cannot be removed (nor
+       can edit the the effect sequence with the two tiny blue arrows. The
+       builtin effects reside in the same effect chain as LADSPA plugins,
+       but unlike LADSPA plugins they cannot be removed (nor
        multi-instanciated). The LADSPA plugins have to "fit" into the
        effect chain, which is why terminatorX supports *mono* plugins
        (plugins that have one audio-in and one audio-out port) only. For
@@ -403,15 +396,15 @@
        LADSPA-plugins are "sequencable parameters", so you can record
        parameter-change events for the plugin's knobs just as for the
        standard parameters.
-     * GUI re-design to support dynamic plugin GUIs. The
-       audiofile-display is now seperated from the turntable's controls.
-       The groups are split in to panels which can be minimized if not
-       required (orange arrow). The panels' minimized-status will be
-       saved within the set files. To add a plugin effect into the
-       turntables effect chain click on the "FX"- button and choose the
-       plugin of your choice. To get more info on the plugin effects
-       click on their panel's label. NOTE: The panning-control is not
-       working yet. It'll work as soon as stereo is done.
+     * GUI re-design to support dynamic plugin GUIs. The audiofile-display
+       is now seperated from the turntable's controls. The groups are
+       split in to panels which can be minimized if not required (orange
+       arrow). The panels' minimized-status will be saved within the set
+       files. To add a plugin effect into the turntables effect chain
+       click on the "FX"- button and choose the plugin of your choice. To
+       get more info on the plugin effects click on their panel's label.
+       NOTE: The panning-control is not working yet. It'll work as soon as
+       stereo is done.
      * As always when introducing something new, the set-file file-format
        has changed.
      * The parameter-to-mouse-axis mapping has been moved from hardcoded
@@ -427,37 +420,36 @@
      * I know write the "manual" in SGML with the DocBook DTD. The
        distribution contains the HTML and the postscript version. These
        transformation have been created using James Clark's jade
-       (DSSSL-processor) and Norman Walsh's DSSSL stylesheets for
-       DocBook.
+       (DSSSL-processor) and Norman Walsh's DSSSL stylesheets for DocBook.
      * Removed obsolete "number of vtts"-option from the options dialog.
      * Applied a patch from Josh that fixes running the soundfile editor
        for files including a blank in their filename.
      * New tooltips for the complete GUI.
 
-   Version 3.61 (unreleased) 
+   Version 3.61 (unreleased)
      * applied a tiny patch from Atsushi Yamagata
        <yamagata@plathome.co.jp> to set locale on startup.
 
    Version 3.60
      * terminatorX has a sequencer now. Warning: with the current design
        the sequencer will correctly play back recorded events only when
-       the buffer size (of the audio device) is set to the same size as
-       it was when recording the events. I know this is annoying and I
-       will try to find a solution to this. Please take a look at the
-       README to find out how the sequencer works.
+       the buffer size (of the audio device) is set to the same size as it
+       was when recording the events. I know this is annoying and I will
+       try to find a solution to this. Please take a look at the README to
+       find out how the sequencer works.
      * fixed a bug causing the lowpass filter produce a constant signal
      * fixed the load file / drag'n'drop segfault bug
      * fixed the prelisten zombie processes bug
      * fixed the segfault on termination bug (with the audio engine
        running)
      * hacked the mixer code to use 3DNow! too. This improves 3DNow!
-       performance gain from previously ~6% to more than 20% (depending
-       on compiler optimizations)
+       performance gain from previously ~6% to more than 20% (depending on
+       compiler optimizations)
      * extended the set-file-format to allow storing of sequencer events.
        This release allows loading old tX-sets too.
-     * some gui icons. Choose Text/Icon / Icon only / Text only display
-       of these icons in the Options dialog. You'll have to restart tX to
-       see the changes though.
+     * some gui icons. Choose Text/Icon / Icon only / Text only display of
+       these icons in the Options dialog. You'll have to restart tX to see
+       the changes though.
      * "soundfile-editor support": Enter the soundfile-editor of your
        choice in the tX-Options dialog (Still looking for an editor?
        Checkout Dave's Linux Sound and MIDI Pages:
@@ -481,17 +473,17 @@
      * more minor fixes
 
    Version 3.55
-     * implemented "sequenceable parameters" (see tX_seqpar.*). This
-       means the groundwork for the sequencer is done. Although this
-       release does not yet feature a sequencer - there's still a profit:
-       you can now see the GUI (e.g. the lowpass-freq slider) update
-       while you change that value with your mouse in dga grab mode (e.g.
-       up/down with the default X/Y-Control settings).
+     * implemented "sequenceable parameters" (see tX_seqpar.*). This means
+       the groundwork for the sequencer is done. Although this release
+       does not yet feature a sequencer - there's still a profit: you can
+       now see the GUI (e.g. the lowpass-freq slider) update while you
+       change that value with your mouse in dga grab mode (e.g. up/down
+       with the default X/Y-Control settings).
      * fixed (libmmx) mmx.h to work with gcc 2.95 and above
      * fixed compilation problems for big endian machines. still runtime
        probs reported though.
-     * fixed configure-script as the new bash complains about == in
-       string compares
+     * fixed configure-script as the new bash complains about == in string
+       compares
      * fixed some gui segfaults
      * added an ugly GNOME-mimetype installer. This installs the
        ".tX"-mime type, an terminatorX-application icon and a ".tX"-icon.
@@ -499,15 +491,15 @@
        instead of an extra script. (see README.GNOME)
      * added Drag'n Drop support. Works with the great gmc. Drop an audio
        file over the filename-button or the wavdisplay of a turntable to
-       load it into that table. Drop an audiofile over the "Add
-       Turntable" Button to create a new turntable and load that file
-       into that turntable. Drop a tX-set file over the "Load Set" button
-       to load the set.
+       load it into that table. Drop an audiofile over the "Add Turntable"
+       Button to create a new turntable and load that file into that
+       turntable. Drop a tX-set file over the "Load Set" button to load
+       the set.
 
    Version 3.51
-     * fixes the load_piped() compilation error if you use neither sox
-       nor mpg123. Note that you have no "pre-listening" without mpg123
-       for mp3s and no "pre-listening" for any other file without sox.
+     * fixes the load_piped() compilation error if you use neither sox nor
+       mpg123. Note that you have no "pre-listening" without mpg123 for
+       mp3s and no "pre-listening" for any other file without sox.
 
    Version 3.5
      * Yet another redesign ;) Oh well this project moved from
@@ -540,23 +532,22 @@
        somebody wants to code set files with integrated audio data... ;)
      * The way audiofiles are loaded has been redesigned too: the builtin
        wav routines, the sox support and mpg123 are no longer connected.
-       This means you can use mpg123 support without sox support and
-       still have the builtin wav routines enabled. If you have the
-       builtin wav reader and sox enabled, tX will try try to use the
-       builtin routines first, and if they fail sox will be used as a
-       fallback which is of course slower as you know... There's some
-       support for Benno Senoner's brilliant 3.2-mmap() patch but the
-       patch still needs to be ported.
+       This means you can use mpg123 support without sox support and still
+       have the builtin wav routines enabled. If you have the builtin wav
+       reader and sox enabled, tX will try try to use the builtin routines
+       first, and if they fail sox will be used as a fallback which is of
+       course slower as you know... There's some support for Benno
+       Senoner's brilliant 3.2-mmap() patch but the patch still needs to
+       be ported.
      * You can now select which parameter to map to a mouse axis.
      * experimental 3DNow! support (works with gcc < 2.95 only)
      * tX-windows now have an icon, thanks Michael!
 
    Version 3.2
-     * implemented 2D-Scratching ;) You can now use the other axis of
-       your mouse two modify the cutoff frequency of the lowpass filter
-       (if enabled). The resonance factor can be set via the slider
-       underneath "LP Filter". Seems to eat quite some CPU power
-       though...
+     * implemented 2D-Scratching ;) You can now use the other axis of your
+       mouse two modify the cutoff frequency of the lowpass filter (if
+       enabled). The resonance factor can be set via the slider underneath
+       "LP Filter". Seems to eat quite some CPU power though...
      * Updated THANKS, AUTHORS
      * as most people seem to use sox/mpg123 anyway and as I still get "I
        want mp3" emails I changed the configure script slightly: It now
@@ -585,27 +576,25 @@
        highest priority. This might enable some machines to use smaller
        buffsizes. It requries root privileges though - either run
        terminatorX as root - or make terminatorX suid root WHICH IS A BAD
-       IDEA FOR MULTI-USER SYSTEMS IF OTHER USERS CAN ACCESS THE BINARY
-       ;) You only have to think about this when you experience buffer
+       IDEA FOR MULTI-USER SYSTEMS IF OTHER USERS CAN ACCESS THE BINARY ;)
+       You only have to think about this when you experience buffer
        underruns with your desired latency. And it might not even help...
      * Rehacked the de-clicking (fading) code. The old one tried to be
-       much more intelligent - and failed fading out the signal
-       sometimes. The new code is much simpler (faster) and is much more
-       reliable.
-     * added common sense to the warp feature (f-key in scratch mode).
-       The warping speed is still connected to the mouse speed but it's
-       now adjusted to the sample size as well: you can warp through any
+       much more intelligent - and failed fading out the signal sometimes.
+       The new code is much simpler (faster) and is much more reliable.
+     * added common sense to the warp feature (f-key in scratch mode). The
+       warping speed is still connected to the mouse speed but it's now
+       adjusted to the sample size as well: you can warp through any
        sample completely with the same mouse distance.
-     * added debug configure switch. Enables (very few) debug messages
-       for now. I decided not to enable the old V2.X messages as they are
-       sent to stdout, which would sound pretty strange to people who use
-       the stdout-option.
+     * added debug configure switch. Enables (very few) debug messages for
+       now. I decided not to enable the old V2.X messages as they are sent
+       to stdout, which would sound pretty strange to people who use the
+       stdout-option.
 
    Version 3.02
      * Fixed Adrian's name in the THANKS file. Sorry, Adrian.
-     * Corrected Makefile.am for license.c that did not build correctly
-       on some systems - Thanks to Michael Pruett
-       <mikep@ugcs.caltech.edu>
+     * Corrected Makefile.am for license.c that did not build correctly on
+       some systems - Thanks to Michael Pruett <mikep@ugcs.caltech.edu>
 
    Version 3.01
      * fixed a bug that caused terminatorX to crash without --enable-sox
@@ -620,15 +609,15 @@
      * implemented "initalizing"-support for XInput devices.
      * new (alpha) "pre-listening" feature in scratch/loop dialogs
      * hacked vtt for click-free audio. Might be problematic with big
-       kernel level buffersizes but scratching with big buffsize is no
-       fun anyway.
+       kernel level buffersizes but scratching with big buffsize is no fun
+       anyway.
      * options are now stored in ~/.terminatorXrc.bin automatically (on
        exit) as well as windowsize and the last used filenames
      * terminatorX now comes with a configure script - no more Makefile
        hacking required (nor a good idea ;) )
      * new wavdisplay-widget update frequency is now configureable
-     * new position-display is much more visible which allows more
-       precise scratching
+     * new position-display is much more visible which allows more precise
+       scratching
      * new mute-feature allows you to silence the scratch-playback
        completely while the loop keeps playing (press either <m>-key or
        right mouse-button.
@@ -641,18 +630,18 @@
        feature (as it is still alpha) needs to be enabled via
        configure-switches see INSTALL
      * licmak now is an awk script. Thanks Christian! I was also received
-       two perl scripts (Thanks, guys!) but I now use the awk script as
-       it is the smallest.
+       two perl scripts (Thanks, guys!) but I now use the awk script as it
+       is the smallest.
      * introduced <F>-key to "warp" through scratch-sample (just check it
        out)
      * dropped commandline arguments
      * dropped old X-Code + Mouse warping madness
      * bug fixes (less than bug introduces though ;) )
 
-   Version 2.4 (unreleased) 
+   Version 2.4 (unreleased)
      * implemented a time counter
      * licmak now finally is what it should be: a perl script (licmak.pl)
-       it was contributed by Adam Sj�gren <asjo@diku.dk> . Thanks!
+       it was contributed by Adam Sjøgren <asjo@diku.dk> . Thanks!
 
    Version 2.3
      * wavfile overreading fixed by Andrew C. Bul+hac?k <acb@zikzak.net>
@@ -662,20 +651,20 @@
        Makefile to compile without <sys/types.h>
      * Slight change in audiodevice-handling that fixes improper buffsize
        settings on some soundcards (e.g. GUS)
-     * Implemented "keep device open"-feature. Needs to be enabled via
-       the -DKEEP_DEV_OPEN switch in Makefile
+     * Implemented "keep device open"-feature. Needs to be enabled via the
+       -DKEEP_DEV_OPEN switch in Makefile
      * Added some comments to the Makefile for easier editing
      * Added Big Endian support. Use -DBIG_ENDIAN_MACHINE for big endian
        hosts like ultrapenguin suns or linux ppc. There's also
-       -DBIG_ENDIAN_AUDIO for big endian audio hardware (rare?)
-       available, although proabably nobody will need this.
+       -DBIG_ENDIAN_AUDIO for big endian audio hardware (rare?) available,
+       although proabably nobody will need this.
      * Changed mix behaviour: Mix is now automatically turned on on
        startup if the user has specified a proper loop file. (with the
        --loop or -l switch)
      * New mixing routine. You can now set the loop to scratch volume
        ratio with the cursor keys (left/right). If you modify the volumes
-       while recording these action's will not be recorded. Saving
-       happens with the currently set level.
+       while recording these action's will not be recorded. Saving happens
+       with the currently set level.
      * Fixed README-Bug said <m> instead of <x>
 
    Version 2.2
@@ -686,27 +675,26 @@
      * added commandline options and help (on usage and keys)
      * added raw/mixed save scratch feature
      * added licmak to include license into binary
-     * new handling of XAutoRepeat, only turned off now when SPACE
-       pressed
+     * new handling of XAutoRepeat, only turned off now when SPACE pressed
      * modified wave display (faster + nicer + incorrect (who cares
        anyway))
      * Makefile fixed by Adrian Reber <adrian@lisas.de>
      * bug fixes
 
-   Version 2.1 (unreleased) 
+   Version 2.1 (unreleased)
      * added recording, playback of recording functionality
 
-   Version 2.0 (unreleased) 
+   Version 2.0 (unreleased)
      * moved from multithreaded to singlethreaded
      * position feedback
      * bug fixes
 
-   Version 1.0 (unreleased) 
+   Version 1.0 (unreleased)
      * mouse support
      * no more position display due to pthread/X probs
      * bug fixes
 
-   Version 0.5 (unreleased) 
+   Version 0.5 (unreleased)
      * first version
      * no mouse handling
      * accelerating vtt via sinus
