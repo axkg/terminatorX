@@ -1138,7 +1138,7 @@ GCallback create_table_sequencer_menu(GtkWidget *widget, void *param)
 		gtk_container_add(GTK_CONTAINER (seqpar_menu), sep);
 		gtk_widget_set_sensitive (sep, FALSE);
 		
-		for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
+		for (sp=tX_seqpar::all->begin(); sp!=tX_seqpar::all->end(); sp++) {
 			if ((*sp)->vtt==(*vtt)) {
 				sprintf(label, "Delete '%s' Events", (*sp)->get_name());
 				GtkWidget *menu_item=gtk_menu_item_new_with_label(label);
