@@ -43,13 +43,13 @@ using namespace std;
 class tX_seqpar
 {	
 	public:
-	static list <tX_seqpar *> all;
+	static list <tX_seqpar *> *all;
 	void *vtt; /* have to make this void as tX_vtt.h includes this */
 
 	tX_midievent bound_midi_event;
 
 	protected:
-	static list <tX_seqpar *> update;
+	static list <tX_seqpar *> *update;
 	static pthread_mutex_t update_lock;
 		
 	int touched;

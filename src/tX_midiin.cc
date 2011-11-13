@@ -189,7 +189,7 @@ int tX_midiin::check_event()
 				
 				list <tX_seqpar *> :: iterator sp;			
 				
-				for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
+				for (sp=tX_seqpar::all->begin(); sp!=tX_seqpar::all->end(); sp++) {
 					if ( (*sp)->bound_midi_event.type_matches (event) ) {
 						(*sp)->handle_midi_input (event);
 					}
@@ -212,7 +212,7 @@ void tX_midiin::configure_bindings( vtt_class* vtt )
 	GtkTreeIter iter;
 	char tempstr[128];
 	
-	for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
+	for (sp=tX_seqpar::all->begin(); sp!=tX_seqpar::all->end(); sp++) {
 		if (((*sp)->is_mappable) && ((*sp)->vtt) == (void*) vtt) {
 			
 			snprintf( tempstr, sizeof(tempstr), "Type: %d, Number: %d, Channel: %d",
@@ -637,7 +637,7 @@ void tX_midiin::clear_midi_mappings(GtkWidget *widget, gpointer dummy)
 		}		
 	}
 	
-	for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
+	for (sp=tX_seqpar::all->begin(); sp!=tX_seqpar::all->end(); sp++) {
 		(*sp)->bound_midi_event.type=tX_midievent::NONE;
 		(*sp)->bound_midi_event.channel=0;
 		(*sp)->bound_midi_event.number=0;

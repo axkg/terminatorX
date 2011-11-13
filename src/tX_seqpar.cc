@@ -33,8 +33,8 @@
 
 #define TX_SEQPAR_DEFAULT_SCALE 0.05
 
-list <tX_seqpar *> tX_seqpar :: all;
-list <tX_seqpar *> tX_seqpar :: update;
+list <tX_seqpar *> *tX_seqpar :: all = NULL;
+list <tX_seqpar *> *tX_seqpar :: update = NULL;
 pthread_mutex_t tX_seqpar :: update_lock = PTHREAD_MUTEX_INITIALIZER;
 
 #define tt ((vtt_class *) vtt)
@@ -57,9 +57,13 @@ tX_seqpar :: tX_seqpar () : bound_midi_event()
 	scale_value=0;
 	is_boolean=false;
 	is_mappable=1;
-	all.push_back(this);
+	if (!all) {
+		all = new list <tX_seqpar *>();
+		update = new list <tX_seqpar *>();
+	}
+	all->push_back(this);
 	last_event_recorded=NULL;
-	
+
 	midi_lower_bound_set=false;
 	midi_upper_bound_set=false;
 	reverse_midi=false;
@@ -147,10 +151,10 @@ void tX_seqpar :: set_vtt (void *mytt)
 tX_seqpar :: ~tX_seqpar()
 {
 	seqpar_mutex_lock(&update_lock);
-	update.remove(this);
+	update->remove(this);
 	seqpar_mutex_unlock(&update_lock);
 	sequencer.delete_all_events_for_sp(this, tX_sequencer::DELETE_ALL);
-	all.remove(this);
+	all->remove(this);
 }
 
 void tX_seqpar :: do_touch()
@@ -166,7 +170,7 @@ void tX_seqpar :: untouch_all()
 {
 	list <tX_seqpar *> :: iterator sp;
 	
-	for (sp=all.begin(); sp!=all.end(); sp++) {
+	for (sp=all->begin(); sp!=all->end(); sp++) {
 		(*sp)->untouch();
 	}
 }
@@ -176,7 +180,7 @@ void tX_seqpar :: create_persistence_ids()
 	list <tX_seqpar *> :: iterator sp;
 	int pid=0;
 	
-	for (sp=all.begin(); sp!=all.end(); sp++) {
+	for (sp=all->begin(); sp!=all->end(); sp++) {
 		pid++;
 		(*sp)->set_persistence_id(pid);
 	}
@@ -186,7 +190,7 @@ tX_seqpar* tX_seqpar :: get_sp_by_persistence_id(unsigned int pid)
 {
 	list <tX_seqpar *> :: iterator sp;
 	
-	for (sp=all.begin(); sp!=all.end(); sp++) {
+	for (sp=all->begin(); sp!=all->end(); sp++) {
 		if ((*sp)->get_persistence_id()==pid) return ((*sp));
 	}
 	
@@ -236,7 +240,7 @@ void tX_seqpar :: materialize_forward_values()
 {
 	list <tX_seqpar *> :: iterator sp;
 	
-	for (sp=all.begin(); sp!=all.end(); sp++) {
+	for (sp=all->begin(); sp!=all->end(); sp++) {
 		(*sp)->exec_value((*sp)->fwd_value);
 	}	
 	gdk_flush();
@@ -369,15 +373,15 @@ void tX_seqpar :: update_all_graphics()
 
 	seqpar_mutex_lock(&update_lock);
 
-	if (!update.size()) {
+	if (!update->size()) {
 		seqpar_mutex_unlock(&update_lock);
 		return;	
 	}
 
- 	for (sp=update.begin(); sp!=update.end(); sp++) {
+ 	for (sp=update->begin(); sp!=update->end(); sp++) {
 		(*sp)->update_graphics(false);
 	}
-	update.erase(update.begin(), update.end());
+	update->erase(update->begin(), update->end());
 	seqpar_mutex_unlock(&update_lock);
 
 	while (gtk_events_pending()) gtk_main_iteration();
@@ -389,7 +393,7 @@ void tX_seqpar :: init_all_graphics()
 
 	seqpar_mutex_lock(&update_lock);
 	
-	for (sp=all.begin(); sp!=all.end(); sp++) {
+	for (sp=all->begin(); sp!=all->end(); sp++) {
 		(*sp)->update_graphics();
 	}
 	seqpar_mutex_unlock(&update_lock);
@@ -401,7 +405,7 @@ void tX_seqpar_update :: exec_value(const float value)
 {
 	do_exec(value);
 	seqpar_mutex_lock(&update_lock);
-	update.push_front(this);
+	update->push_front(this);
 	seqpar_mutex_unlock(&update_lock);
 }
 

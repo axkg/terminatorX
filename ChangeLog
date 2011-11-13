@@ -2,6 +2,9 @@
 
    Copyright (C) 1999-2011 Alexander König
 
+   Version 3.84
+     * introduced a workaround for terminatorX bug #29
+
    Version 3.83
      * moved to terminatorX.org
      * fixed misc gcc 4.0 warnings

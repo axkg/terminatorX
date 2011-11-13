@@ -628,7 +628,7 @@ static gint vg_mouse_mapping_pressed(GtkWidget *wid, GdkEventButton *event, vtt_
 
 	list <tX_seqpar *> :: iterator sp;
 
-	for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
+	for (sp=tX_seqpar::all->begin(); sp!=tX_seqpar::all->end(); sp++) {
 		if (((*sp)->is_mappable) && ((*sp)->vtt) == (void*) vtt) {
 			item=gtk_check_menu_item_new_with_label((*sp)->get_name());
 			gtk_menu_shell_append(GTK_MENU_SHELL(vtt->gui.mouse_mapping_menu_x), item);
@@ -650,7 +650,7 @@ static gint vg_mouse_mapping_pressed(GtkWidget *wid, GdkEventButton *event, vtt_
 	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(vg_ycontrol_dis), vtt);
 	if (vtt->y_par==NULL) item_to_activate=item;
 
-	for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
+	for (sp=tX_seqpar::all->begin(); sp!=tX_seqpar::all->end(); sp++) {
 		if (((*sp)->is_mappable) && ((*sp)->vtt) == (void*) vtt) {
 			item=gtk_check_menu_item_new_with_label((*sp)->get_name());
 			gtk_menu_shell_append(GTK_MENU_SHELL(vtt->gui.mouse_mapping_menu_y), item);

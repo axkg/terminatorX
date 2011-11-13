@@ -230,7 +230,7 @@ void tX_sequencer :: delete_all_events_for_vtt(vtt_class *vtt, del_mode mode)
 {
 	list <tX_seqpar *> :: iterator sp;
 	
-	for (sp=tX_seqpar::all.begin(); sp!=tX_seqpar::all.end(); sp++) {
+	for (sp=tX_seqpar::all->begin(); sp!=tX_seqpar::all->end(); sp++) {
 		if ((*sp)->vtt==vtt) {
 			delete_all_events_for_sp((*sp), mode);
 		}

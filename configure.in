@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/tX_global.h)
-AM_INIT_AUTOMAKE(terminatorX, 3.83)
+AM_INIT_AUTOMAKE(terminatorX, 3.84)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(sox,		[  --enable-sox            use sox as input converter. (default=auto) ])
