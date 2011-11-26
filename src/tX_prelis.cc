@@ -118,7 +118,7 @@ void prelis_start(char *name) {
 		else
 #endif
 #ifdef USE_SOX_INPUT		
-			execlp("sox", "sox", nm, "-t", "ossdsp", "-w", "-s", dev, NULL);
+			execlp("sox", "sox", nm, "-t", "ossdsp", "-2", "-s", dev, NULL);
 #else
 			exit(0);
 #endif			

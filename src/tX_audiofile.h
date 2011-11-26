@@ -33,7 +33,7 @@
 #include <tX_endian.h>
 
 #ifdef USE_SOX_INPUT
-#define SOX_STR "sox \"%s\" -t raw -c 1 -r 44100 -s -w -"
+#define SOX_STR "sox \"%s\" -t raw -c 1 -r 44100 -s -2 -"
 #endif
 
 #ifdef USE_MPG123_INPUT
@@ -44,14 +44,14 @@ but mpg321 doesn't support -m yet.
 
 #ifdef BIG_ENDIAN_MACHINE
 /* This works with mpg321 only... */
-#define MPG123_STR "mpg123 -qs \"%s\" | sox -x -t raw -s -w -r 44100 -c 2 - -t raw -c 1 -r 44100 -s -w -"
+#define MPG123_STR "mpg123 -qs \"%s\" | sox -x -t raw -s -2 -r 44100 -c 2 - -t raw -c 1 -r 44100 -s -2 -"
 #else
-#define MPG123_STR "mpg123 -qs \"%s\" | sox -t raw -s -w -r 44100 -c 2 - -t raw -c 1 -r 44100 -s -w -"
+#define MPG123_STR "mpg123 -qs \"%s\" | sox -t raw -s -2 -r 44100 -c 2 - -t raw -c 1 -r 44100 -s -2 -"
 #endif
 #endif
 
 #ifdef USE_OGG123_INPUT
-#define OGG123_STR "ogg123 -q -d wav -f - \"%s\" | sox -t wav - -t raw -c 1 -r 44100 -s -w -"
+#define OGG123_STR "ogg123 -q -d wav -f - \"%s\" | sox -t wav - -t raw -c 1 -r 44100 -s -2 -"
 /* -o file:/dev/stdout because ogg123 doesn't interpret - as stdout */
 /* 20010907: i take that back, it seems that newer versions don't
  * have that problem */
