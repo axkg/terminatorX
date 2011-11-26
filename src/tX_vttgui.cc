@@ -277,7 +277,7 @@ void drop_file(GtkWidget *widget, GdkDragContext *context,
 GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
 {	
 #ifdef USE_FILECHOOSER
-	const char *extensions[]={ "mp3", "wav", "ogg", "iff", "aiff", "voc", "au", NULL };
+	const char *extensions[]={ "mp3", "wav", "ogg", "flac", "iff", "aiff", "voc", "au", "spx", NULL };
 	char name_buf[512];
 	sprintf(name_buf, "Select Audio File for %s", vtt->name);
 	
