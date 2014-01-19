@@ -959,7 +959,7 @@ void tX_seqpar_vttfx_float :: create_widget()
 	//myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value+tmp/10, max_value-tmp/10, tmp, tmp, tmp));
 	myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value, max_value, tmp, tmp, tmp));
 	mydial=new tX_extdial(label_name, myadj, this);
-	g_signal_connect(G_OBJECT(myadj), "value_changed", (GtkSignalFunc) tX_seqpar_vttfx_float :: gtk_callback, this);
+	g_signal_connect(G_OBJECT(myadj), "value_changed", (GCallback) tX_seqpar_vttfx_float :: gtk_callback, this);
 	widget = mydial->get_widget();	
 }
 
@@ -978,7 +978,7 @@ void tX_seqpar_vttfx_float :: do_update_graphics()
 	gtk_adjustment_set_value(myadj, *fx_value);
 }
 
-GtkSignalFunc tX_seqpar_vttfx_float :: gtk_callback(GtkWidget* w, tX_seqpar_vttfx_float *sp)
+GCallback tX_seqpar_vttfx_float :: gtk_callback(GtkWidget* w, tX_seqpar_vttfx_float *sp)
 {
 	sp->receive_gui_value(sp->myadj->value);	
 	return NULL;	
@@ -998,9 +998,9 @@ void tX_seqpar_vttfx_int :: create_widget()
 	tmpwid=gtk_spin_button_new(myadj,1.0,0);
 	gtk_widget_show(tmpwid);
 	gtk_box_pack_start(GTK_BOX(box), tmpwid, WID_DYN);
-	g_signal_connect(G_OBJECT(tmpwid), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, this);
+	g_signal_connect(G_OBJECT(tmpwid), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, this);
 	
-	g_signal_connect(G_OBJECT(myadj), "value_changed", (GtkSignalFunc) tX_seqpar_vttfx_int :: gtk_callback, this);
+	g_signal_connect(G_OBJECT(myadj), "value_changed", (GCallback) tX_seqpar_vttfx_int :: gtk_callback, this);
 
     tmpwid=gtk_label_new(label_name);
 	gtk_widget_show(tmpwid);
@@ -1009,7 +1009,7 @@ void tX_seqpar_vttfx_int :: create_widget()
 	gtk_widget_show(box);
 	
 	widget=gtk_event_box_new();
-	g_signal_connect(G_OBJECT(widget), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, this);
+	g_signal_connect(G_OBJECT(widget), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, this);
 	
 	gtk_container_add(GTK_CONTAINER(widget), box);
 }
@@ -1029,7 +1029,7 @@ void tX_seqpar_vttfx_int :: do_update_graphics()
 	gtk_adjustment_set_value(myadj, *fx_value);
 }
 
-GtkSignalFunc tX_seqpar_vttfx_int :: gtk_callback(GtkWidget* w, tX_seqpar_vttfx_int *sp)
+GCallback tX_seqpar_vttfx_int :: gtk_callback(GtkWidget* w, tX_seqpar_vttfx_int *sp)
 {
 	sp->receive_gui_value(sp->myadj->value);	
 	return NULL;
@@ -1040,8 +1040,8 @@ void tX_seqpar_vttfx_bool :: create_widget()
 	*fx_value=min_value;
 	widget=gtk_check_button_new_with_label(label_name);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), 0);
-	g_signal_connect(G_OBJECT(widget), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, this);
-	g_signal_connect(G_OBJECT(widget), "clicked", (GtkSignalFunc) tX_seqpar_vttfx_bool :: gtk_callback, this);
+	g_signal_connect(G_OBJECT(widget), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, this);
+	g_signal_connect(G_OBJECT(widget), "clicked", (GCallback) tX_seqpar_vttfx_bool :: gtk_callback, this);
 }
 
 tX_seqpar_vttfx_bool :: ~tX_seqpar_vttfx_bool()
@@ -1054,7 +1054,7 @@ void tX_seqpar_vttfx_bool :: do_exec(const float value)
 	*fx_value=value;
 }
 
-GtkSignalFunc tX_seqpar_vttfx_bool :: gtk_callback(GtkWidget* w, tX_seqpar_vttfx_bool *sp)
+GCallback tX_seqpar_vttfx_bool :: gtk_callback(GtkWidget* w, tX_seqpar_vttfx_bool *sp)
 {
 	sp->receive_gui_value(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sp->widget)));	
 	return NULL;

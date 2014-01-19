@@ -448,7 +448,7 @@ class tX_seqpar_vttfx_float : public tX_seqpar_vttfx
 	public:
 	virtual ~tX_seqpar_vttfx_float();
 	
-	static GtkSignalFunc gtk_callback(GtkWidget*, tX_seqpar_vttfx_float *);
+	static GCallback gtk_callback(GtkWidget*, tX_seqpar_vttfx_float *);
 };
 
 class tX_seqpar_vttfx_bool : public tX_seqpar_vttfx
@@ -458,7 +458,7 @@ class tX_seqpar_vttfx_bool : public tX_seqpar_vttfx
 	virtual void do_exec(const float value);
 	virtual void do_update_graphics();	
 
-	static GtkSignalFunc gtk_callback(GtkWidget*, tX_seqpar_vttfx_bool *);
+	static GCallback gtk_callback(GtkWidget*, tX_seqpar_vttfx_bool *);
 
 	public:
 	virtual ~tX_seqpar_vttfx_bool();
@@ -477,7 +477,7 @@ class tX_seqpar_vttfx_int : public tX_seqpar_vttfx
 	public:
 	virtual ~tX_seqpar_vttfx_int();
 
-	static GtkSignalFunc gtk_callback(GtkWidget*, tX_seqpar_vttfx_int *);
+	static GCallback gtk_callback(GtkWidget*, tX_seqpar_vttfx_int *);
 };
 
 #endif

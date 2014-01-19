@@ -25,7 +25,7 @@
 #define WID_DYN TRUE, TRUE, 0
 #define WID_FIX FALSE, FALSE, 0
 
-GtkSignalFunc tX_extdial :: f_entry(GtkWidget *w, tX_extdial *ed)
+GCallback tX_extdial :: f_entry(GtkWidget *w, tX_extdial *ed)
 {
 	strcpy(ed->sval, gtk_entry_get_text(GTK_ENTRY(ed->entry)));
 	ed->s2f();
@@ -33,7 +33,7 @@ GtkSignalFunc tX_extdial :: f_entry(GtkWidget *w, tX_extdial *ed)
 	return NULL;
 }
 
-GtkSignalFunc tX_extdial :: f_adjustment(GtkWidget *w, tX_extdial *ed)
+GCallback tX_extdial :: f_adjustment(GtkWidget *w, tX_extdial *ed)
 {
 	ed->fval=ed->adj->value;
 	ed->f2s();

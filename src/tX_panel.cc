@@ -103,7 +103,7 @@ tX_panel :: tX_panel (const char *name, GtkWidget *par)
 	gtk_widget_show(clientframe);	
 	gtk_widget_show(mainbox);
 	
-	g_signal_connect(G_OBJECT(minbutton), "clicked", (GtkSignalFunc) tX_panel::minimize, (void *) this);
+	g_signal_connect(G_OBJECT(minbutton), "clicked", (GCallback) tX_panel::minimize, (void *) this);
 }
 
 void tX_panel :: add_client_widget(GtkWidget *w)
