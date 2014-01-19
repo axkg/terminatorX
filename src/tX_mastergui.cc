@@ -101,9 +101,9 @@ GtkWidget *fullscreen_item;
 int rec_dont_care=0;
 gint update_tag;
 
-#define connect_entry(wid, func, ptr); g_signal_connect(G_OBJECT(wid), "activate", (GtkSignalFunc) func, (void *) ptr);
-#define connect_adj(wid, func, ptr); g_signal_connect(G_OBJECT(wid), "value_changed", (GtkSignalFunc) func, (void *) ptr);
-#define connect_button(wid, func, ptr); g_signal_connect(G_OBJECT(wid), "clicked", (GtkSignalFunc) func, (void *) ptr);
+#define connect_entry(wid, func, ptr); g_signal_connect(G_OBJECT(wid), "activate", (GCallback) func, (void *) ptr);
+#define connect_adj(wid, func, ptr); g_signal_connect(G_OBJECT(wid), "value_changed", (GCallback) func, (void *) ptr);
+#define connect_button(wid, func, ptr); g_signal_connect(G_OBJECT(wid), "clicked", (GCallback) func, (void *) ptr);
 
 Window x_window;
 GdkWindow* top_window;
@@ -138,11 +138,9 @@ int last_grab_status=0;
 GtkWidget *delete_all_item=NULL;
 GtkWidget *delete_all_vtt_item=NULL;
 
-GtkTooltips *gui_tooltips=NULL;
-
 void gui_set_tooltip(GtkWidget *wid, const char *tip)
 {
-	gtk_tooltips_set_tip(gui_tooltips, wid, tip, NULL);
+	gtk_widget_set_tooltip_text(wid, tip);
 }
 
 void turn_audio_off(void)
@@ -246,7 +244,7 @@ void mg_update_status()
 	gtk_label_set_text(GTK_LABEL(no_of_vtts), buffer);*/
 }
 
-GtkSignalFunc new_table(GtkWidget *, char *fn)
+GCallback new_table(GtkWidget *, char *fn)
 {
 	//turn_audio_off();
 		
@@ -270,7 +268,7 @@ GtkSignalFunc new_table(GtkWidget *, char *fn)
 bool tx_mg_have_setname=false;
 char tx_mg_current_setname[PATH_MAX]="";
 
-GtkSignalFunc new_tables() {
+GCallback new_tables() {
 	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(main_window), 
 		GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
 		"Are you sure you want to lose all turntables and events?");
@@ -296,7 +294,7 @@ GtkSignalFunc new_tables() {
 
 /* Loading saved setups */
 #ifndef USE_FILECHOOSER
-GtkSignalFunc cancel_load_tables(GtkWidget *wid)
+GCallback cancel_load_tables(GtkWidget *wid)
 {
 	gtk_widget_destroy(load_dialog);
 	load_dialog=NULL;
@@ -397,7 +395,7 @@ void do_load_tables(GtkWidget *wid)
 }
 #endif
 
-GtkSignalFunc load_tables()
+GCallback load_tables()
 {
 #ifdef USE_FILECHOOSER	
 	GtkWidget * dialog = gtk_file_chooser_dialog_new ("Open Set File",
@@ -513,7 +511,7 @@ vtt_class* choose_vtt() {
 }
 
 
-GtkSignalFunc load_audio() {
+GCallback load_audio() {
 	vtt_class *vtt = NULL;
 	
 	pthread_mutex_lock(&vtt_class::render_lock);
@@ -531,7 +529,7 @@ GtkSignalFunc load_audio() {
 	return NULL;
 }
 
-GtkSignalFunc drop_set(GtkWidget *widget, GdkDragContext *context,
+GCallback drop_set(GtkWidget *widget, GdkDragContext *context,
 		gint x, gint y, GtkSelectionData *selection_data,
 		guint info, guint time, vtt_class *vtt)
 {
@@ -556,7 +554,7 @@ GtkSignalFunc drop_set(GtkWidget *widget, GdkDragContext *context,
 /* save tables */
 
 #ifndef USE_FILECHOOSER
-GtkSignalFunc cancel_save_tables(GtkWidget *wid)
+GCallback cancel_save_tables(GtkWidget *wid)
 {
 	gtk_widget_destroy(save_dialog);
 	save_dialog=NULL;
@@ -627,7 +625,7 @@ void do_save_tables(char *buffer)
 	}
 }
 
-GtkSignalFunc save_tables_as()
+GCallback save_tables_as()
 {
 #ifdef USE_FILECHOOSER
 	GtkWidget * dialog = gtk_file_chooser_dialog_new ("Save Set",
@@ -672,7 +670,7 @@ GtkSignalFunc save_tables_as()
 	return NULL;
 }
 
-GtkSignalFunc save_tables()
+GCallback save_tables()
 {
 	if (!tx_mg_have_setname) {
 		save_tables_as();
@@ -683,13 +681,13 @@ GtkSignalFunc save_tables()
 	return NULL;
 }
 
-GtkSignalFunc master_volume_changed (GtkWidget *wid, void *d)
+GCallback master_volume_changed (GtkWidget *wid, void *d)
 {
 	sp_master_volume.receive_gui_value((float) GTK_ADJUSTMENT(wid)->value);
 	return NULL;	
 }
 
-GtkSignalFunc master_pitch_changed(GtkWidget *wid, void *d)
+GCallback master_pitch_changed(GtkWidget *wid, void *d)
 {
 	sp_master_pitch.receive_gui_value((float) GTK_ADJUSTMENT(wid)->value);	
 	return NULL;	
@@ -708,11 +706,11 @@ void mg_enable_critical_buttons(int enable)
 	vg_enable_critical_buttons(enable);
 }
 
-GtkSignalFunc seq_stop(GtkWidget *w, void *);
+GCallback seq_stop(GtkWidget *w, void *);
 
 static bool stop_override=false;
 
-GtkSignalFunc audio_on(GtkWidget *w, void *d)
+GCallback audio_on(GtkWidget *w, void *d)
 {
 	tX_engine_error res;
 	
@@ -777,7 +775,7 @@ GtkSignalFunc audio_on(GtkWidget *w, void *d)
 	return NULL;
 }
 
-GtkSignalFunc cancel_rec(GtkWidget *wid)
+GCallback cancel_rec(GtkWidget *wid)
 {
 	gtk_widget_destroy(rec_dialog);
 	rec_dialog=NULL;
@@ -806,7 +804,7 @@ void do_rec(GtkWidget *wid)
 	rec_dialog_win=NULL;
 }
 
-GtkSignalFunc select_rec_file()
+GCallback select_rec_file()
 {
 #ifdef USE_FILECHOOSER
 	GtkWidget * dialog = gtk_file_chooser_dialog_new ("Record To Disk",
@@ -858,7 +856,7 @@ GtkSignalFunc select_rec_file()
 	return NULL;
 }
 
-GtkSignalFunc tape_on(GtkWidget *w, void *d)
+GCallback tape_on(GtkWidget *w, void *d)
 {
 	if (rec_dont_care) return 0;
 
@@ -925,7 +923,7 @@ void mplcfitx()
 	show_about(0);
 }
 
-GtkSignalFunc seq_play(GtkWidget *w, void *)
+GCallback seq_play(GtkWidget *w, void *)
 {
 	if ((sequencer.is_empty()) && 	(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(seq_rec_btn)))) {
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
@@ -946,7 +944,7 @@ GtkSignalFunc seq_play(GtkWidget *w, void *)
 	return NULL;
 }
 
-GtkSignalFunc seq_stop(GtkWidget *w, void *)
+GCallback seq_stop(GtkWidget *w, void *)
 {
 	if (!sequencer_ready) return NULL;
 	sequencer.trig_stop();
@@ -964,7 +962,7 @@ GtkSignalFunc seq_stop(GtkWidget *w, void *)
 	return NULL;
 }
 
-GtkSignalFunc seq_rec(GtkWidget *w, void *)
+GCallback seq_rec(GtkWidget *w, void *)
 {
 	seq_adj_care=0;
 	gtk_widget_set_sensitive(seq_slider, 0);
@@ -1543,7 +1541,7 @@ void create_mastergui(int x, int y)
 	dummy=gtk_hscale_new(dumadj);
 	gtk_widget_set_size_request(dummy, 65, 20);
 	seq_slider=dummy;
-	g_signal_connect(G_OBJECT(seq_slider), "button-release-event", (GtkSignalFunc) seq_slider_released, NULL);
+	g_signal_connect(G_OBJECT(seq_slider), "button-release-event", (GCallback) seq_slider_released, NULL);
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), FALSE);
 	
 	gui_set_tooltip(dummy, "Select the start position for the sequencer in song-time.");
@@ -1621,7 +1619,7 @@ void create_mastergui(int x, int y)
 	dummy=gtk_vscale_new(dumadj);
 	gtk_range_set_inverted(GTK_RANGE(dummy), TRUE);
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), False);
-	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &sp_master_volume);	
+	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &sp_master_volume);	
 	
 	gtk_box_pack_end(GTK_BOX(master_vol_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);	
@@ -1696,7 +1694,7 @@ void create_mastergui(int x, int y)
 
 	new_table(NULL, NULL); // to give the user something to start with ;)
 
-	g_signal_connect (G_OBJECT(main_window), "delete-event", (GtkSignalFunc) quit, NULL);
+	g_signal_connect (G_OBJECT(main_window), "delete-event", (GCallback) quit, NULL);
 	
 	if (globals.tooltips) gtk_tooltips_enable(gui_tooltips);
 	else gtk_tooltips_disable(gui_tooltips);

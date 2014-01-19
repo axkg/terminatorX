@@ -302,10 +302,10 @@ tX_midiin::midi_binding_gui::midi_binding_gui ( GtkTreeModel* _model, tX_midiin*
 	gtk_widget_show (close_button);
 	gtk_box_pack_start (GTK_BOX (vbox1), close_button, FALSE, FALSE, 0);
 	
-	g_signal_connect(G_OBJECT(bind_button), "clicked", (GtkSignalFunc) bind_clicked, (void *) this);
-	g_signal_connect(G_OBJECT(unbind_button), "clicked", (GtkSignalFunc) unbind_clicked, (void *) this);	
-	g_signal_connect(G_OBJECT(close_button), "clicked", (GtkSignalFunc) close_clicked, (void *) this);
-	g_signal_connect(G_OBJECT(window), "destroy", (GtkSignalFunc) close_clicked, (void *) this);
+	g_signal_connect(G_OBJECT(bind_button), "clicked", (GCallback) bind_clicked, (void *) this);
+	g_signal_connect(G_OBJECT(unbind_button), "clicked", (GCallback) unbind_clicked, (void *) this);	
+	g_signal_connect(G_OBJECT(close_button), "clicked", (GCallback) close_clicked, (void *) this);
+	g_signal_connect(G_OBJECT(window), "destroy", (GCallback) close_clicked, (void *) this);
 	
 	timer_tag = gtk_timeout_add( 100, (GtkFunction) timer, (void *) this);
 	

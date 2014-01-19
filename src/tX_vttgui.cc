@@ -110,7 +110,7 @@ void pitch_changed(GtkWidget *wid, vtt_class *vtt)
 }
 
 #ifdef USE_FILECHOOSER
-GtkSignalFunc chooser_prelis(GtkWidget *w)
+GCallback chooser_prelis(GtkWidget *w)
 {
 	GtkFileChooser *fc=GTK_FILE_CHOOSER(gtk_widget_get_toplevel(w));
 	char *filename=gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(fc));
@@ -124,7 +124,7 @@ GtkSignalFunc chooser_prelis(GtkWidget *w)
 	return NULL;
 }
 #else
-GtkSignalFunc trigger_prelis(GtkWidget *w)
+GCallback trigger_prelis(GtkWidget *w)
 {
 	GtkFileSelection *fs;
 
@@ -274,7 +274,7 @@ void drop_file(GtkWidget *widget, GdkDragContext *context,
 	if (host) g_free(host);
 }
 
-GtkSignalFunc load_file(GtkWidget *wid, vtt_class *vtt)
+GCallback load_file(GtkWidget *wid, vtt_class *vtt)
 {	
 #ifdef USE_FILECHOOSER
 	const char *extensions[]={ "mp3", "wav", "ogg", "flac", "iff", "aiff", "voc", "au", "spx", NULL };
@@ -990,8 +990,8 @@ void build_vtt_gui(vtt_class *vtt)
 	g->stop=gtk_button_new_with_label("Stop.");
 	gui_set_tooltip(g->stop, "Stop this turntable's playback.");
 	p->add_client_widget(g->stop);
-	g_signal_connect(G_OBJECT(g->trigger), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_trigger);		
-	g_signal_connect(G_OBJECT(g->stop), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_trigger);		
+	g_signal_connect(G_OBJECT(g->trigger), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_trigger);		
+	g_signal_connect(G_OBJECT(g->stop), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_trigger);		
 	
 	g->autotrigger=gtk_check_button_new_with_label("Auto");
 	p->add_client_widget(g->autotrigger);
@@ -1002,7 +1002,7 @@ void build_vtt_gui(vtt_class *vtt)
 	p->add_client_widget(g->loop);
 	gui_set_tooltip(g->loop, "Enable this option to make the turntable loop the audio data.");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->loop), vtt->loop);
-	g_signal_connect(G_OBJECT(g->loop), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_loop);		
+	g_signal_connect(G_OBJECT(g->loop), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_loop);		
 	
 	g->sync_master=gtk_check_button_new_with_label("Master");
 	p->add_client_widget(g->sync_master);
@@ -1013,13 +1013,13 @@ void build_vtt_gui(vtt_class *vtt)
 	p->add_client_widget(g->sync_client);
 	gui_set_tooltip(g->sync_client, "If enabled this turntable will be (re-)triggerd in relation to the sync-master turntable.");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->sync_client), vtt->is_sync_client);
-	g_signal_connect(G_OBJECT(g->sync_client), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_sync_client);	
+	g_signal_connect(G_OBJECT(g->sync_client), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_sync_client);	
 	
 	g->cycles=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->sync_cycles, 0, 10.0, 1,1,0));
 	dummy=gtk_spin_button_new(g->cycles, 1.0, 0);
 	p->add_client_widget(dummy);
 	gui_set_tooltip(dummy, "Determines how often a sync-client turntable gets triggered. 0 -> this turntable will be triggered with every trigger of the sync-master table, 1 -> the table will be triggered every 2nd master trigger and so on.");
-	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_sync_cycles);	
+	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_sync_cycles);	
 
 	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
 	
@@ -1044,7 +1044,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gui_set_tooltip(g->lp_enable, "Click here to enable the built-in lowpass effect.");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->lp_enable), vtt->lp_enable);
 	p->add_client_widget(vg_create_fx_bar(vtt, vtt->lp_fx, 0));
-	g_signal_connect(G_OBJECT(g->lp_enable), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_lp_enable);	
+	g_signal_connect(G_OBJECT(g->lp_enable), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_lp_enable);	
 
 	p->add_client_widget(g->lp_enable);
 
@@ -1078,7 +1078,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->ec_enable), vtt->ec_enable);
 	p->add_client_widget(g->ec_enable);
 	gui_set_tooltip(g->ec_enable, "Enable the built-in echo effect.");
-	g_signal_connect(G_OBJECT(g->ec_enable), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_ec_enable);	
+	g_signal_connect(G_OBJECT(g->ec_enable), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_ec_enable);	
 
 	g->ec_length=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->ec_length, 0, 1, 0.1, 0.01, 0.001));
 	g->ec_feedback=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->ec_feedback, 0, 1, 0.1, 0.01, 0.001));
@@ -1141,13 +1141,13 @@ void build_vtt_gui(vtt_class *vtt)
 
 	g->mute=gtk_check_button_new_with_label("M");
 	gtk_box_pack_start(GTK_BOX(tempbox3), g->mute, WID_FIX);
-	g_signal_connect(G_OBJECT(g->mute),"clicked", (GtkSignalFunc) mute_volume, vtt);
+	g_signal_connect(G_OBJECT(g->mute),"clicked", (GCallback) mute_volume, vtt);
 	gtk_widget_show(g->mute);
 	gui_set_tooltip(g->mute, "Mute this turntable's mixer output.");
 
 	g->solo=gtk_check_button_new_with_label("S");
 	gtk_box_pack_start(GTK_BOX(tempbox3), g->solo, WID_FIX);
-	g_signal_connect(G_OBJECT(g->solo),"clicked", (GtkSignalFunc) solo_vtt, vtt);
+	g_signal_connect(G_OBJECT(g->solo),"clicked", (GCallback) solo_vtt, vtt);
 	gtk_widget_show(g->solo);
 	gui_set_tooltip(g->solo, "Allow only this and other solo-switched turntabels' signal to be routed to the mixer.");
 
@@ -1161,7 +1161,7 @@ void build_vtt_gui(vtt_class *vtt)
 	dummy=gtk_vscale_new(GTK_ADJUSTMENT(g->volume)); 
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), False);
 	gui_set_tooltip(dummy, "Adjust this turntable's volume.");
-	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GtkSignalFunc) tX_seqpar::tX_seqpar_press, &vtt->sp_volume);	
+	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_volume);	
 
 	gtk_box_pack_start(GTK_BOX(tempbox2), dummy, WID_FIX);
 	gtk_widget_show(dummy);
@@ -1226,7 +1226,7 @@ GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel)
 		gtk_box_pack_end(GTK_BOX(box), button, WID_FIX);
 		gtk_widget_show(pixmap);
 		gtk_widget_show(button);
-		g_signal_connect(G_OBJECT(button), "clicked", (GtkSignalFunc) fx_kill, (void *) effect);
+		g_signal_connect(G_OBJECT(button), "clicked", (GCallback) fx_kill, (void *) effect);
 	}
 
 	button=gtk_button_new();
@@ -1235,7 +1235,7 @@ GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel)
 	gtk_box_pack_end(GTK_BOX(box), button, WID_FIX);
 	gtk_widget_show(pixmap);
 	gtk_widget_show(button);
-	g_signal_connect(G_OBJECT(button), "clicked", (GtkSignalFunc) fx_down, (void *) effect);
+	g_signal_connect(G_OBJECT(button), "clicked", (GCallback) fx_down, (void *) effect);
 
 	button=gtk_button_new();
 	pixmap=tx_pixmap_widget(FX_UP);
@@ -1243,7 +1243,7 @@ GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel)
 	gtk_box_pack_end(GTK_BOX(box), button, WID_FIX);
 	gtk_widget_show(pixmap);
 	gtk_widget_show(button);
-	g_signal_connect(G_OBJECT(button), "clicked", (GtkSignalFunc) fx_up, (void *) effect);
+	g_signal_connect(G_OBJECT(button), "clicked", (GCallback) fx_up, (void *) effect);
 	
 	gtk_widget_show(box);
 	
@@ -1374,7 +1374,7 @@ void vg_create_fx_gui(vtt_class *vtt, vtt_fx_ladspa *effect, LADSPA_Plugin *plug
 			p->add_client_widget((*sp)->get_widget());
 	}
 
-	g_signal_connect(G_OBJECT(p->get_labelbutton()), "button_press_event", (GtkSignalFunc) vg_show_fx_menu, (void *) effect);
+	g_signal_connect(G_OBJECT(p->get_labelbutton()), "button_press_event", (GCallback) vg_show_fx_menu, (void *) effect);
 	gui_set_tooltip(p->get_labelbutton(), "Right-click to access menu.");
 	effect->set_panel_widget(p->get_widget());
 	effect->set_panel(p);
@@ -1400,7 +1400,7 @@ void gui_hide_control_panel(vtt_class *vtt, bool hide) {
 	if (hide) {
 		gtk_widget_hide(vtt->gui.control_box);
 		vtt->gui.control_minimized_panel_bar_button=tx_xpm_button_new(MIN_CONTROL, vtt->name, 0, &vtt->gui.control_minimized_panel_bar_label);
-		g_signal_connect(G_OBJECT(vtt->gui.control_minimized_panel_bar_button), "clicked", (GtkSignalFunc) unminimize_control_panel, vtt);
+		g_signal_connect(G_OBJECT(vtt->gui.control_minimized_panel_bar_button), "clicked", (GCallback) unminimize_control_panel, vtt);
 		gtk_widget_show(vtt->gui.control_minimized_panel_bar_button);
 		snprintf(tooltip, TOOLTIP_LENGTH, "Show \"%s\" control panel.", vtt->name);
 		gui_set_tooltip(vtt->gui.control_minimized_panel_bar_button, tooltip);
@@ -1419,7 +1419,7 @@ void gui_hide_audio_panel(vtt_class *vtt, bool hide) {
 	if (hide) {
 		gtk_widget_hide(vtt->gui.audio_box);
 		vtt->gui.audio_minimized_panel_bar_button=tx_xpm_button_new(MIN_AUDIO, vtt->name, 0, &vtt->gui.audio_minimized_panel_bar_label);
-		g_signal_connect(G_OBJECT(vtt->gui.audio_minimized_panel_bar_button), "clicked", (GtkSignalFunc) unminimize_audio_panel, vtt);		
+		g_signal_connect(G_OBJECT(vtt->gui.audio_minimized_panel_bar_button), "clicked", (GCallback) unminimize_audio_panel, vtt);		
 		gtk_widget_show(vtt->gui.audio_minimized_panel_bar_button);
 		snprintf(tooltip, TOOLTIP_LENGTH, "Show \"%s\" audio panel.", vtt->name);
 		gui_set_tooltip(vtt->gui.audio_minimized_panel_bar_button, tooltip);
