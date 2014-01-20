@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2014  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -226,9 +226,7 @@ void mg_update_status()
 	procfs=fopen(filename, "r");
 	if (procfs) {
 		while((!feof(procfs)) && !found) {
-			char *res = fgets(buffer, 256, procfs);
-			
-			if (strncmp(TX_MEMTAG, buffer, sizeof(TX_MEMTAG)-1)==0) {
+			if (fgets(buffer, 256, procfs) && (strncmp(TX_MEMTAG, buffer, sizeof(TX_MEMTAG)-1)==0)) {
 				found=1;
 				sscanf(buffer, TX_MEMTAG" %i kB", &mem);
 				sprintf(buffer, "%.1lf M", ((double) mem)/1024.0);
@@ -463,8 +461,9 @@ vtt_class* choose_vtt() {
 
 	GtkWidget *label = gtk_label_new ("Select turntable to load audio file to:");
 	gtk_widget_show(label);
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), label);
-	gtk_container_set_border_width(GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), 10);
+
+	gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area(GTK_DIALOG(dialog))), label);
+	gtk_container_set_border_width(GTK_CONTAINER (gtk_dialog_get_content_area(GTK_DIALOG(dialog))), 10);
 	
 	list <GtkWidget *> radio_buttons;
 	list <vtt_class *> :: iterator iter;
@@ -482,7 +481,7 @@ vtt_class* choose_vtt() {
 			radio = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio), (*iter)->name);
 		}
 		g_object_set_data(G_OBJECT(radio), "tX_vtt", (*iter));
-		gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), radio);
+		gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area(GTK_DIALOG(dialog))), radio);
 		gtk_widget_show(radio);
 		radio_buttons.push_back(radio);
 	}	
@@ -536,14 +535,14 @@ GCallback drop_set(GtkWidget *widget, GdkDragContext *context,
 	char filename[PATH_MAX];
 	char *fn;
 	
-	strncpy(filename, (char *) selection_data->data, (size_t) selection_data->length);
-	filename[selection_data->length]=0;
+	strncpy(filename, (char *) gtk_selection_data_get_data(selection_data), (size_t) gtk_selection_data_get_length(selection_data));
+	filename[gtk_selection_data_get_length(selection_data)]=0;
 
 	fn = strchr (filename, '\r');
 	*fn=0;	
 	
 	fn = strchr (filename, ':');
-	if (fn) fn++; else fn=(char *) selection_data->data;
+	if (fn) fn++; else fn=(char *) gtk_selection_data_get_data(selection_data);
 	
 	load_tt_part(fn);
 
@@ -683,13 +682,13 @@ GCallback save_tables()
 
 GCallback master_volume_changed (GtkWidget *wid, void *d)
 {
-	sp_master_volume.receive_gui_value((float) GTK_ADJUSTMENT(wid)->value);
+	sp_master_volume.receive_gui_value((float) gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 	return NULL;	
 }
 
 GCallback master_pitch_changed(GtkWidget *wid, void *d)
 {
-	sp_master_pitch.receive_gui_value((float) GTK_ADJUSTMENT(wid)->value);	
+	sp_master_pitch.receive_gui_value((float) gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));	
 	return NULL;	
 }
 
@@ -745,7 +744,7 @@ GCallback audio_on(GtkWidget *w, void *d)
 		stop_update=0;
 		audioon=1;
 		update_delay=globals.update_delay;
-		update_tag=gtk_timeout_add(globals.update_idle, (GtkFunction) pos_update, NULL);
+		update_tag=g_timeout_add(globals.update_idle, (GSourceFunc) pos_update, NULL);
 		gtk_widget_set_sensitive(grab_button, 1);
 	} else {	
 		if (stop_override) return NULL;
@@ -788,7 +787,7 @@ void do_rec(GtkWidget *wid)
 {
 	char buffer[PATH_MAX];
 	
-	strcpy(buffer, gtk_file_selection_get_filename(GTK_FILE_SELECTION(rec_dialog)));
+	strcpy(buffer, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(rec_dialog)));
 
 	if (strlen(buffer)) {
 		strcpy(globals.record_filename, buffer);		
@@ -907,10 +906,13 @@ gboolean quit()
 	turn_audio_off();
 	vtt_class::delete_all();
 
-	if (update_tag)
-	gtk_timeout_remove(update_tag);
-	globals.width=main_window->allocation.width;
-	globals.height=main_window->allocation.height;
+	if (update_tag) {
+		g_source_remove(update_tag);
+	}
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(GTK_WIDGET(main_window), &allocation);
+	globals.width=allocation.width;
+	globals.height=allocation.height;
 
 	gtk_main_quit();
 	
@@ -1023,7 +1025,7 @@ void sequencer_move(GtkWidget *wid, void *d)
 	guint32 pos;
 	
 	if (seq_adj_care) {
-		pos=sequencer.set_start_timestamp((float) GTK_ADJUSTMENT(wid)->value);
+		pos=sequencer.set_start_timestamp((float) gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 		seq_update_entry(pos);	
 	}
 }
@@ -1424,8 +1426,6 @@ void create_mastergui(int x, int y)
 	GtkWidget *status_box;
 	GtkWidget *wrapbox;
 	
-	gui_tooltips=gtk_tooltips_new();
-
 	main_window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
 	gtk_window_set_wmclass(GTK_WINDOW(main_window), "terminatorX", "tX_mastergui");
@@ -1696,8 +1696,9 @@ void create_mastergui(int x, int y)
 
 	g_signal_connect (G_OBJECT(main_window), "delete-event", (GCallback) quit, NULL);
 	
-	if (globals.tooltips) gtk_tooltips_enable(gui_tooltips);
-	else gtk_tooltips_disable(gui_tooltips);
+//	if (globals.tooltips) gtk_tooltips_enable(gui_tooltips);
+//	else gtk_tooltips_disable(gui_tooltips);
+//  TODO: Check for global enable/disable of tooltips
 }
 
 gfloat old_percent=-1;
@@ -1753,8 +1754,8 @@ void remove_from_panel_bar(GtkWidget *button)
 
 void fullscreen_toggle(GtkCheckMenuItem *item, gpointer data) {
 	XEvent xev;
-	Window win=GDK_WINDOW_XID(main_window->window);
-	Display *disp=GDK_WINDOW_XDISPLAY(main_window->window);
+	Window win = GDK_WINDOW_XID(gtk_widget_get_window(main_window));
+	Display *disp=GDK_WINDOW_XDISPLAY(gtk_widget_get_window(main_window));
 	
 	globals.fullscreen_enabled=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(fullscreen_item));
 	
@@ -1782,7 +1783,7 @@ void fullscreen_toggle(GtkCheckMenuItem *item, gpointer data) {
 	xev.xclient.data.l[0] = globals.fullscreen_enabled ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
 	xev.xclient.data.l[1] = gdk_x11_atom_to_xatom (gdk_atom_intern ("_NET_WM_STATE_FULLSCREEN", TRUE));
 	xev.xclient.data.l[2] = gdk_x11_atom_to_xatom (GDK_NONE);
-	XSendEvent(gdk_display, GDK_WINDOW_XID (gdk_get_default_root_window ()),
+	XSendEvent(gdk_x11_get_default_xdisplay(), GDK_WINDOW_XID (gdk_get_default_root_window ()),
 		False, SubstructureRedirectMask | SubstructureNotifyMask,
 		&xev);	
 }
@@ -1802,15 +1803,15 @@ void display_mastergui()
 	gtk_widget_show(main_window);
 	fullscreen_setup();	
 	top=gtk_widget_get_toplevel(main_window);
-	top_window=GDK_WINDOW(top->window);
-	x_window=GDK_WINDOW_XWINDOW(top->window);
+	top_window=GDK_WINDOW(gtk_widget_get_window(top));
+	x_window=GDK_WINDOW_XWINDOW(gtk_widget_get_window(top));
 }
 
 pid_t help_child=0;
 GTimer *help_timer=NULL;
 int help_tag=-1;
 
-int help_checker()
+gboolean help_checker()
 {
 	gdouble time;
 	gulong ms;
@@ -1822,14 +1823,14 @@ int help_checker()
 		if (time > 5) {
 			/* 5 seconds and it's still running - so we assume everything's OK. */
 			tX_debug("No longer waiting for gnome-help..");
-			gtk_idle_remove(help_tag);
+			g_source_remove(help_tag);
 			help_tag=-1;
 		}
 	} else {
 		/* We are still here and the child exited - that could mean trouble. */
 		tx_note("Couldn't run the gnome-help command (alias \"yelp\") to display the terminatorX manual. Please ensure that \"yelp\" is installed.", true);		
 		
-		gtk_idle_remove(help_tag);
+		g_source_remove(help_tag);
 		help_tag=-1;
 	}
 	return TRUE;	
@@ -1844,7 +1845,7 @@ void display_help()
 	help_child=fork();
 
 	if (help_tag!=-1) {
-		gtk_idle_remove(help_tag);
+		g_source_remove(help_tag);
 		if (help_timer) g_timer_destroy(help_timer);
 		help_child=0;
 		help_tag=-1;
@@ -1862,7 +1863,7 @@ void display_help()
 		help_timer=g_timer_new();
 		g_timer_start(help_timer);
 	
-		help_tag=gtk_idle_add((GtkFunction) help_checker, NULL);
+		help_tag=g_idle_add((GSourceFunc) help_checker, NULL);
 	}
 }
 
@@ -1870,7 +1871,7 @@ pid_t browser_child=0;
 GTimer *browser_timer=NULL;
 int browser_tag=-1;
 
-int browser_checker()
+gboolean browser_checker()
 {
 	gdouble time;
 	gulong ms;
@@ -1882,14 +1883,14 @@ int browser_checker()
 		if (time > 5) {
 			/* 5 seconds and it's still running - so we assume everything's OK. */
 			tX_debug("No longer waiting for a browser..");
-			gtk_idle_remove(browser_tag);
+			g_source_remove(browser_tag);
 			browser_tag=-1;
 		}
 	} else {
 		/* We are still here and the child exited - that could mean trouble. */
 		tx_note("Failed to run a suitable web browser - if there's one installed on this system, please run it and forward yourself to:\nhttp://terminatorX.org", true);		
 		
-		gtk_idle_remove(browser_tag);
+		g_source_remove(browser_tag);
 		browser_tag=-1;
 	}
 	return TRUE;	
@@ -1900,7 +1901,7 @@ void display_browser()
 	browser_child=fork();
 
 	if (browser_tag!=-1) {
-		gtk_idle_remove(browser_tag);
+		g_source_remove(browser_tag);
 		if (browser_timer) g_timer_destroy(browser_timer);
 		browser_child=0;
 		browser_tag=-1;
@@ -1920,7 +1921,7 @@ void display_browser()
 		browser_timer=g_timer_new();
 		g_timer_start(browser_timer);
 	
-		browser_tag=gtk_idle_add((GtkFunction) browser_checker, NULL);
+		browser_tag=g_idle_add((GSourceFunc) browser_checker, NULL);
 	}
 }
 
@@ -1953,7 +1954,7 @@ void tX_cursor::set_cursor(cursor_shape shape)
 	/* Still here? Ok... */
 	current_shape=shape;
 	
-	gdk_window_set_cursor(main_window->window, cursors[shape]);
+	gdk_window_set_cursor(gtk_widget_get_window(main_window), cursors[shape]);
 }
 
 GdkCursor *tX_cursor::get_cursor()
@@ -1964,5 +1965,5 @@ GdkCursor *tX_cursor::get_cursor()
 void tX_cursor::reset_cursor()
 {
 	current_shape=DEFAULT_CURSOR;
-	gdk_window_set_cursor(main_window->window, cursors[current_shape]);
+	gdk_window_set_cursor(gtk_widget_get_window(main_window), cursors[current_shape]);
 }

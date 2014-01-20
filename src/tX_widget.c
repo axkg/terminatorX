@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2014  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ static void gtk_tx_class_init(GtkTxClass * gclass) {
 	object_class = (GtkObjectClass *) gclass;
 	widget_class = (GtkWidgetClass *) gclass;
 	
-	parent_class = gtk_type_class(gtk_widget_get_type());
+	parent_class = (GtkWidgetClass *) g_type_class_peek(gtk_widget_get_type());
 	
 	object_class->destroy = gtk_tx_destroy;
 	
@@ -205,20 +205,20 @@ void gtk_tx_set_data(GtkTx * tx, int16_t * wavdata, int wavsamples) {
 }
 
 static void gtk_tx_realize(GtkWidget * widget) {
-	GtkTx *tx;
 	GdkWindowAttr attributes;
 	gint attributes_mask;
 
 	g_return_if_fail(widget != NULL);
 	g_return_if_fail(GTK_IS_TX(widget));
 
-	GTK_WIDGET_SET_FLAGS(widget, GTK_REALIZED);
-	tx = GTK_TX(widget);
+	gtk_widget_set_realized(widget, TRUE);
 
-	attributes.x = widget->allocation.x;
-	attributes.y = widget->allocation.y;
-	attributes.width = widget->allocation.width;
-	attributes.height = widget->allocation.height;
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(widget, &allocation);
+	attributes.x = allocation.x;
+	attributes.y = allocation.y;
+	attributes.width = allocation.width;
+	attributes.height = allocation.height;
 	attributes.wclass = GDK_INPUT_OUTPUT;
 	attributes.window_type = GDK_WINDOW_CHILD;
 	attributes.event_mask = gtk_widget_get_events(widget) | GDK_EXPOSURE_MASK;
@@ -226,12 +226,12 @@ static void gtk_tx_realize(GtkWidget * widget) {
 	attributes.colormap = gtk_widget_get_colormap(widget);
 	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
 
-	widget->window = gdk_window_new(widget->parent->window, &attributes, attributes_mask);
-	widget->style = gtk_style_attach(widget->style, widget->window);
+	gtk_widget_set_window(widget, gdk_window_new(gtk_widget_get_parent_window(widget), &attributes, attributes_mask));
+	gtk_widget_set_style(widget, gtk_style_attach(gtk_widget_get_style(widget), gtk_widget_get_window(widget)));
 
-	gdk_window_set_user_data(widget->window, widget);
+	gdk_window_set_user_data(gtk_widget_get_window(widget), widget);
 
-	gtk_style_set_background(widget->style, widget->window, GTK_STATE_NORMAL);
+	gtk_style_set_background(gtk_widget_get_style(widget), gtk_widget_get_window(widget), GTK_STATE_NORMAL);
 }
 
 static void gtk_tx_size_request(GtkWidget * widget, GtkRequisition * requisition) {
@@ -251,12 +251,14 @@ static void gtk_tx_prepare(GtkWidget * widget) {
 
 	tx = GTK_TX(widget);
 	
-	tx->yc = widget->allocation.height / 2;
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(widget, &allocation);
+	tx->yc = allocation.height / 2;
 
 	if (tx->disp_data) { free(tx->disp_data); tx->disp_data=NULL; }
 
 	if (tx->data) {
-		int max_spp=tx->samples/widget->allocation.width;
+		int max_spp=tx->samples/allocation.width;
 		int min_spp=tx->samples/MAX_ZOOM_WIDTH;
 		gdouble diff;
 		
@@ -323,22 +325,20 @@ static void gtk_tx_prepare(GtkWidget * widget) {
 }
 
 static void gtk_tx_size_allocate(GtkWidget * widget, GtkAllocation * allocation) {
-	GtkTx *tx;
-
 	g_return_if_fail(widget != NULL);
 	g_return_if_fail(GTK_IS_TX(widget));
 	g_return_if_fail(allocation != NULL);
 
-	widget->allocation = *allocation;
+	gtk_widget_set_allocation(widget, allocation);
 
 	gtk_tx_prepare(widget);
 
-	if (GTK_WIDGET_REALIZED(widget)) {
-	    tx = GTK_TX(widget);
+	if (gtk_widget_get_realized(widget)) {
 #ifdef USE_DISPLAY_NORMALIZE		
+	    GtkTx *tx = GTK_TX(widget);
 		tx->max_value=-1;
 #endif		
-	    gdk_window_move_resize(widget->window, allocation->x, allocation->y, allocation->width, allocation->height);
+	    gdk_window_move_resize(gtk_widget_get_window(widget), allocation->x, allocation->y, allocation->width, allocation->height);
 	}
 }
 
@@ -363,27 +363,29 @@ static gint gtk_tx_expose(GtkWidget * widget, GdkEventExpose * event) {
 
 	tx = GTK_TX(widget);
 
-	gdk_gc_set_foreground(widget->style->fg_gc[widget->state], tx->current_bg);
+	gdk_gc_set_foreground(gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], tx->current_bg);
 
-	gdk_draw_rectangle(widget->window,
-		widget->style->fg_gc[widget->state], 1, 
+	gdk_draw_rectangle(gtk_widget_get_window(widget),
+		gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], 1, 
 		area->x, area->y,
 		area->width, area->height);
 
-	gdk_gc_set_foreground(widget->style->fg_gc[widget->state], tx->current_fg);
+	gdk_gc_set_foreground(gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], tx->current_fg);
 
 	if (tx->disp_data) {
 		int max_x=area->x+area->width;
 
 	    for (x =area->x; x < max_x; x++) {
-			gdk_draw_line(widget->window,
-				widget->style->fg_gc[widget->state], x,
+			gdk_draw_line(gtk_widget_get_window(widget),
+				gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], x,
 				tx->yc - tx->disp_data[tx->display_x_offset+x], x,
 				tx->yc + tx->disp_data[tx->display_x_offset+x]);
 	    }
 	} else {
-	    gdk_draw_line(widget->window, widget->style->fg_gc[widget->state],
-			 0, tx->yc, widget->allocation.width, tx->yc);
+		GtkAllocation allocation;
+		gtk_widget_get_allocation(widget, &allocation);
+	    gdk_draw_line(gtk_widget_get_window(widget), gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)],
+			 0, tx->yc, allocation.width, tx->yc);
 	}
 
 	return FALSE;
@@ -425,11 +427,13 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	/* speedup + easyness */
 
 	widget = GTK_WIDGET(tx);
-	window = widget->window;
+	window = gtk_widget_get_window(widget);
 
-	gc = widget->style->fg_gc[widget->state];
+	gc = gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)];
 	yc = tx->yc;
-	ymax = widget->allocation.height-1;
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(widget, &allocation);
+	ymax = allocation.height-1;
 
 	/* clean up last pos */
 	
@@ -449,13 +453,13 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 		current_pos_x=current_pos;
 		x_offset=0;		
 	} else {		
-		tmp=widget->allocation.width/2+1;
+		tmp=allocation.width/2+1;
 		
 		if (current_pos>tmp) {
 			x_offset=current_pos-tmp;
 			
-			if (x_offset+widget->allocation.width>=tx->display_width) {
-				x_offset=tx->display_width-widget->allocation.width;
+			if (x_offset+allocation.width>=tx->display_width) {
+				x_offset=tx->display_width-allocation.width;
 			}
 			
 			current_pos_x=current_pos-x_offset;
@@ -467,7 +471,7 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 		if (x_offset!=tx->display_x_offset) {
 			int x_move=tx->display_x_offset-x_offset;
 			
-			if (abs(x_move)<widget->allocation.width) {
+			if (abs(x_move)<allocation.width) {
 				gdk_window_scroll(window, x_move, 0);
 			} else {
 				/* we've moved so far that there's nothing to keep from our current display */
@@ -492,21 +496,16 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	gdk_draw_line(window, gc, x, 0, x, ymax);
 	
 	if (force_draw) {
-		gtk_widget_queue_draw_area(widget, 0, 0, widget->allocation.width, widget->allocation.height);
+		gtk_widget_queue_draw_area(widget, 0, 0, allocation.width, allocation.height);
 	}
 }
 
 void gtk_tx_cleanup_pos_display(GtkTx * tx) {
 	GtkWidget *widget;
-	GdkWindow *window;
-	GdkGC *gc;
-	int ymax, yc;
+	GtkAllocation allocation;
 
 	widget = GTK_WIDGET(tx);
-	window = widget->window;
-	gc = widget->style->fg_gc[widget->state];
-	yc = tx->yc;
-	ymax = widget->allocation.height - 1;
+	gtk_widget_get_allocation(widget, &allocation);
 
 	tx->display_x_offset=0;
 	tx->cursor_pos=-1;

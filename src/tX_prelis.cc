@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2014  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -118,7 +118,7 @@ void prelis_start(char *name) {
 		else
 #endif
 #ifdef USE_SOX_INPUT		
-			execlp("sox", "sox", nm, "-t", "ossdsp", "-2", "-s", dev, NULL);
+			execlp("sox", "sox", nm, "-t", "oss", "-b", "16", "-e", "signed-integer", dev, NULL);
 #else
 			exit(0);
 #endif			

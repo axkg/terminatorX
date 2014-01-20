@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2014  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,8 +29,7 @@
 
 #include <math.h>
 #include <stdio.h>
-#include <gtk/gtkmain.h>
-#include <gtk/gtksignal.h>
+#include <gtk/gtk.h>
 #include "tX_knobloader.h"
 
 #include "tX_dial.h"
@@ -93,7 +92,7 @@ static void gtk_tx_dial_class_init (GtkTxDialClass *class)
 	object_class = (GtkObjectClass*) class;
 	widget_class = (GtkWidgetClass*) class;
 
-	parent_class = gtk_type_class (gtk_widget_get_type ());
+	parent_class = (GtkWidgetClass*) g_type_class_peek (gtk_widget_get_type ());
 
 	object_class->destroy = gtk_tx_dial_destroy;
 
@@ -190,38 +189,38 @@ void gtk_tx_dial_set_adjustment (GtkTxDial *tx_dial, GtkAdjustment *adjustment)
 	g_object_ref (G_OBJECT (tx_dial->adjustment));
 
 	g_signal_connect (G_OBJECT (adjustment), "changed",
-			  (GtkSignalFunc) gtk_tx_dial_adjustment_changed,
+			  (GCallback) gtk_tx_dial_adjustment_changed,
 			  (gpointer) tx_dial);
 	g_signal_connect (G_OBJECT (adjustment), "value_changed",
-			  (GtkSignalFunc) gtk_tx_dial_adjustment_value_changed,
+			  (GCallback) gtk_tx_dial_adjustment_value_changed,
 			  (gpointer) tx_dial);
 
-	tx_dial->old_value = adjustment->value;
-	tx_dial->old_lower = adjustment->lower;
-	tx_dial->old_upper = adjustment->upper;
-	tx_dial->old_range = adjustment->upper - adjustment->lower;
+	tx_dial->old_value = gtk_adjustment_get_value(adjustment);
+	tx_dial->old_lower = gtk_adjustment_get_lower(adjustment);
+	tx_dial->old_upper = gtk_adjustment_get_upper(adjustment);
+	tx_dial->old_range = gtk_adjustment_get_upper(adjustment) - gtk_adjustment_get_lower(adjustment);
 
-	calc_image(adjustment->value,tx_dial->old_image);
+	calc_image(gtk_adjustment_get_value(adjustment),tx_dial->old_image);
 
 	gtk_tx_dial_update (tx_dial);
 }
 
 static void gtk_tx_dial_realize (GtkWidget *widget)
 {
-	GtkTxDial *tx_dial;
 	GdkWindowAttr attributes;
 	gint attributes_mask;
 	
 	g_return_if_fail (widget != NULL);
 	g_return_if_fail (GTK_IS_TX_DIAL (widget));
 	
-	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
-	tx_dial = GTK_TX_DIAL (widget);
+	gtk_widget_set_realized(widget, TRUE);
 	
-	attributes.x = widget->allocation.x;
-	attributes.y = widget->allocation.y;
-	attributes.width = widget->allocation.width;
-	attributes.height = widget->allocation.height;
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(widget, &allocation);
+	attributes.x = allocation.x;
+	attributes.y = allocation.y;
+	attributes.width = allocation.width;
+	attributes.height = allocation.height;
 	attributes.wclass = GDK_INPUT_OUTPUT;
 	attributes.window_type = GDK_WINDOW_CHILD;
 	attributes.event_mask = gtk_widget_get_events (widget) | 
@@ -232,11 +231,11 @@ static void gtk_tx_dial_realize (GtkWidget *widget)
 	attributes.colormap = gtk_widget_get_colormap (widget);
 	
 	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
-	widget->window = gdk_window_new (widget->parent->window, &attributes, attributes_mask);
+	gtk_widget_set_window(widget, gdk_window_new(gtk_widget_get_parent_window(widget), &attributes, attributes_mask));
 	
-	gdk_window_set_user_data (widget->window, widget);
-	widget->style = gtk_style_attach (widget->style, widget->window);
-	gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
+	gdk_window_set_user_data (gtk_widget_get_window(widget), widget);
+	gtk_widget_set_style(widget, gtk_style_attach (gtk_widget_get_style(widget), gtk_widget_get_window(widget)));
+	gtk_style_set_background (gtk_widget_get_style(widget), gtk_widget_get_window(widget), GTK_STATE_NORMAL);
 }
 
 static void gtk_tx_dial_size_request(GtkWidget *widget, GtkRequisition *requisition)
@@ -253,11 +252,11 @@ static void gtk_tx_dial_size_allocate (GtkWidget *widget, GtkAllocation *allocat
 	g_return_if_fail (GTK_IS_TX_DIAL (widget));
 	g_return_if_fail (allocation != NULL);
 	
-	widget->allocation = *allocation;
+	gtk_widget_set_allocation(widget, allocation);
 	tx_dial = GTK_TX_DIAL (widget);
 	
-	if (GTK_WIDGET_REALIZED (widget)) {
-		gdk_window_move_resize (widget->window,
+	if (gtk_widget_get_realized (widget)) {
+		gdk_window_move_resize (gtk_widget_get_window(widget),
 				  allocation->x, allocation->y,
 				  allocation->width, allocation->height);
 		
@@ -268,11 +267,13 @@ static void gtk_tx_dial_size_allocate (GtkWidget *widget, GtkAllocation *allocat
 
 inline void gtk_tx_dial_draw (GtkTxDial *tx_dial, GtkWidget *widget)
 {
-	if (GTK_WIDGET_DRAWABLE (widget)) {
-		gdk_pixbuf_render_to_drawable(knob_pixmaps[tx_dial->old_image], 
-				widget->window,  widget->style->bg_gc[GTK_WIDGET_STATE(widget)],
-				0, 0, tx_dial->xofs, tx_dial->yofs,
-				KNOB_SIZE, KNOB_SIZE, GDK_RGB_DITHER_NORMAL, 0, 0);
+	if (gtk_widget_is_drawable (widget)) {
+//		gdk_draw_pixbuf(gtk_widget_is_drawable (widget), 
+//		                //gtk_widget_get_stlye(widget)->bg_gc[GTK_WIDGET_STATE(widget)],
+//		                NULL, //TODO: this needs to be ported to cairo!
+//		                knob_pixmaps[tx_dial->old_image],
+//		                0, 0, tx_dial->xofs, tx_dial->yofs,
+//						KNOB_SIZE, KNOB_SIZE, GDK_RGB_DITHER_NORMAL, 0, 0);
 	}		 
 }
 
@@ -330,10 +331,10 @@ static gint gtk_tx_dial_button_release (GtkWidget *widget, GdkEventButton *event
 		tx_dial->button = 0;
 		
 		if (tx_dial->policy == GTK_UPDATE_DELAYED)
-			gtk_timeout_remove (tx_dial->timer);
+			g_source_remove (tx_dial->timer);
 		
 		if ((tx_dial->policy != GTK_UPDATE_CONTINUOUS) &&
-			(tx_dial->old_value != tx_dial->adjustment->value))
+			(tx_dial->old_value != gtk_adjustment_get_value(tx_dial->adjustment)))
 			g_signal_emit_by_name (G_OBJECT (tx_dial->adjustment),
 			"value_changed");
 	}
@@ -357,8 +358,8 @@ static gint gtk_tx_dial_motion_notify (GtkWidget *widget, GdkEventMotion *event)
 		x = event->x;
 		y = event->y;
 		
-		if (event->is_hint || (event->window != widget->window))
-			gdk_window_get_pointer (widget->window, &x, &y, &mods);
+		if (event->is_hint || (event->window != gtk_widget_get_window(widget)))
+			gdk_window_get_pointer (gtk_widget_get_window(widget), &x, &y, &mods);
 		
 		switch (tx_dial->button) {
 			case 1:
@@ -410,7 +411,7 @@ static void gtk_tx_dial_update_mouse (GtkTxDial *tx_dial, gint x, gint y)
 	d=dx+dy;
 	d/=200.0;
 	
-	old_value=tx_dial->adjustment->value;    
+	old_value=gtk_adjustment_get_value(tx_dial->adjustment);    
 	new_value=old_value + d*tx_dial->old_range;
 	
 	if (new_value>tx_dial->old_upper) 
@@ -418,14 +419,14 @@ static void gtk_tx_dial_update_mouse (GtkTxDial *tx_dial, gint x, gint y)
 	else if (new_value<tx_dial->old_lower) 
 		new_value=tx_dial->old_lower;
 	
-	tx_dial->adjustment->value=new_value;
+	gtk_adjustment_set_value(tx_dial->adjustment, new_value);
 	
-	if (tx_dial->adjustment->value != old_value) {
+	if (gtk_adjustment_get_value(tx_dial->adjustment) != old_value) {
 		if (tx_dial->policy == GTK_UPDATE_CONTINUOUS)	{
 			g_signal_emit_by_name (G_OBJECT (tx_dial->adjustment),
 				   "value_changed");
 		} else {
-			calc_image(tx_dial->adjustment->value, image);
+			calc_image(gtk_adjustment_get_value(tx_dial->adjustment), image);
 		
 			if (image!=tx_dial->old_image) {
 		 		tx_dial->old_image=image;
@@ -434,10 +435,10 @@ static void gtk_tx_dial_update_mouse (GtkTxDial *tx_dial, gint x, gint y)
 		
 			if (tx_dial->policy == GTK_UPDATE_DELAYED) {
 		  		if (tx_dial->timer)
-					gtk_timeout_remove (tx_dial->timer);
+					g_source_remove (tx_dial->timer);
 		
-					tx_dial->timer = gtk_timeout_add (SCROLL_DELAY_LENGTH,
-						 (GtkFunction) gtk_tx_dial_timer,
+					tx_dial->timer = g_timeout_add (SCROLL_DELAY_LENGTH,
+						 (GSourceFunc) gtk_tx_dial_timer,
 						 (gpointer) tx_dial);
 			}
 		}
@@ -452,16 +453,16 @@ static void gtk_tx_dial_update (GtkTxDial *tx_dial)
 	g_return_if_fail (tx_dial != NULL);
 	g_return_if_fail (GTK_IS_TX_DIAL (tx_dial));
 	
-	new_value = tx_dial->adjustment->value;
+	new_value = gtk_adjustment_get_value(tx_dial->adjustment);
 	
-	if (new_value < tx_dial->adjustment->lower)
-		new_value = tx_dial->adjustment->lower;
+	if (new_value < gtk_adjustment_get_lower(tx_dial->adjustment))
+		new_value = gtk_adjustment_get_lower(tx_dial->adjustment);
 	
-	if (new_value > tx_dial->adjustment->upper)
-		new_value = tx_dial->adjustment->upper;
+	if (new_value > gtk_adjustment_get_upper(tx_dial->adjustment))
+		new_value = gtk_adjustment_get_upper(tx_dial->adjustment);
 	
-	if (new_value != tx_dial->adjustment->value) {
-		tx_dial->adjustment->value = new_value;
+	if (new_value != gtk_adjustment_get_value(tx_dial->adjustment)) {
+		gtk_adjustment_set_value(tx_dial->adjustment, new_value);
 		g_signal_emit_by_name (G_OBJECT (tx_dial->adjustment), "value_changed");
 	}
 	
@@ -483,13 +484,13 @@ static void gtk_tx_dial_adjustment_changed (GtkAdjustment *adjustment,
 	
 	tx_dial = GTK_TX_DIAL (data);
 	
-	if ((tx_dial->old_value != adjustment->value) ||
-		(tx_dial->old_lower != adjustment->lower) ||
-		(tx_dial->old_upper != adjustment->upper)) {
-		tx_dial->old_value = adjustment->value;
-		tx_dial->old_lower = adjustment->lower;
-		tx_dial->old_upper = adjustment->upper;
-		tx_dial->old_range = adjustment->upper-adjustment->lower;
+	if ((tx_dial->old_value != gtk_adjustment_get_value(adjustment)) ||
+		(tx_dial->old_lower != gtk_adjustment_get_lower(adjustment)) ||
+		(tx_dial->old_upper != gtk_adjustment_get_upper(adjustment))) {
+		tx_dial->old_value = gtk_adjustment_get_value(adjustment);
+		tx_dial->old_lower = gtk_adjustment_get_lower(adjustment);
+		tx_dial->old_upper = gtk_adjustment_get_upper(adjustment);
+		tx_dial->old_range = gtk_adjustment_get_upper(adjustment)-gtk_adjustment_get_lower(adjustment);
 		
 		gtk_tx_dial_update (tx_dial);
 	}
@@ -504,8 +505,8 @@ static void gtk_tx_dial_adjustment_value_changed (GtkAdjustment *adjustment, gpo
 	
 	tx_dial = GTK_TX_DIAL (data);
 	
-	if (tx_dial->old_value != adjustment->value) {
+	if (tx_dial->old_value != gtk_adjustment_get_value(adjustment)) {
 		gtk_tx_dial_update (tx_dial);
-		tx_dial->old_value = adjustment->value;
+		tx_dial->old_value = gtk_adjustment_get_value(adjustment);
 	}
 }

@@ -307,7 +307,7 @@ tX_midiin::midi_binding_gui::midi_binding_gui ( GtkTreeModel* _model, tX_midiin*
 	g_signal_connect(G_OBJECT(close_button), "clicked", (GCallback) close_clicked, (void *) this);
 	g_signal_connect(G_OBJECT(window), "destroy", (GCallback) close_clicked, (void *) this);
 	
-	timer_tag = gtk_timeout_add( 100, (GtkFunction) timer, (void *) this);
+	timer_tag = g_timeout_add( 100, (GSourceFunc) timer, (void *) this);
 	
 	gtk_widget_show_all( GTK_WIDGET( window ) );
 }
@@ -397,7 +397,7 @@ gint tX_midiin::midi_binding_gui::timer( gpointer _this )
 
 tX_midiin::midi_binding_gui::~midi_binding_gui ()
 {
-	gtk_timeout_remove( timer_tag );
+	g_source_remove( timer_tag );
 }
 
 void tX_midiin::set_midi_learn_sp(tX_seqpar *sp)
@@ -447,7 +447,7 @@ gboolean tX_midiin::midi_learn_destroy(GtkWidget *widget, tX_midiin *midi)
 
 void tX_midiin::store_connections(FILE *rc, char *indent) 
 {
-	gzFile *rz=NULL;
+	gzFile rz=NULL;
 	
 	tX_store("%s<midi_connections>\n", indent);
 

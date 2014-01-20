@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2014  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -96,17 +96,17 @@ void name_changed(GtkWidget *wid, vtt_class *vtt)
 
 void volume_changed(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->sp_volume.receive_gui_value(2.0-GTK_ADJUSTMENT(wid)->value);
+	vtt->sp_volume.receive_gui_value(2.0-gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 }
 
 void pan_changed(GtkWidget *wid, vtt_class *vtt)
 {
-      vtt->sp_pan.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
+      vtt->sp_pan.receive_gui_value(gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 }
 
 void pitch_changed(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->sp_pitch.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
+	vtt->sp_pitch.receive_gui_value(gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 }
 
 #ifdef USE_FILECHOOSER
@@ -250,9 +250,9 @@ void drop_file(GtkWidget *widget, GdkDragContext *context,
 	char filename[PATH_MAX];
 	char *fn;
 	
-	strncpy(filename, (char *) selection_data->data, (size_t) selection_data->length);
+	strncpy(filename, (char *) gtk_selection_data_get_data(selection_data), (size_t) gtk_selection_data_get_length(selection_data));
 	gtk_drag_finish(context, TRUE, FALSE, time);
-	filename[selection_data->length]=0;
+	filename[gtk_selection_data_get_length(selection_data)]=0;
 
 	fn = strchr (filename, '\r');
 	*fn=0;	
@@ -265,7 +265,7 @@ void drop_file(GtkWidget *widget, GdkDragContext *context,
 		fn=realfn;
 	} else {
 		fn = strchr (filename, ':');
-		if (fn) fn++; else fn=(char *) selection_data->data;
+		if (fn) fn++; else fn=(char *) gtk_selection_data_get_data(selection_data);
 	}
 
 	load_part(fn, vtt);
@@ -405,37 +405,37 @@ void stop_vtt(GtkWidget *wid, vtt_class *vtt)
 
 void autotrigger_toggled(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->set_autotrigger(GTK_TOGGLE_BUTTON(wid)->active);
+	vtt->set_autotrigger(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(wid)));
 }
 
 void loop_toggled(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->sp_loop.receive_gui_value(GTK_TOGGLE_BUTTON(wid)->active);
+	vtt->sp_loop.receive_gui_value(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(wid)));
 }
 
 void lp_enabled(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->sp_lp_enable.receive_gui_value(GTK_TOGGLE_BUTTON(wid)->active);
+	vtt->sp_lp_enable.receive_gui_value(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(wid)));
 }
 
 void lp_gain_changed(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->sp_lp_gain.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
+	vtt->sp_lp_gain.receive_gui_value(gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 }
 
 void lp_reso_changed(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->sp_lp_reso.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
+	vtt->sp_lp_reso.receive_gui_value(gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 }
 
 void lp_freq_changed(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->sp_lp_freq.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
+	vtt->sp_lp_freq.receive_gui_value(gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 }
 
 void ec_enabled(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->sp_ec_enable.receive_gui_value(GTK_TOGGLE_BUTTON(wid)->active);
+	vtt->sp_ec_enable.receive_gui_value(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(wid)));
 }
 
 #ifdef USE_ALSA_MIDI_IN
@@ -447,27 +447,27 @@ void midi_mapping_clicked(GtkWidget *wid, vtt_class *vtt)
 
 void ec_length_changed(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->sp_ec_length.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
+	vtt->sp_ec_length.receive_gui_value(gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 }
 
 void ec_feedback_changed(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->sp_ec_feedback.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
+	vtt->sp_ec_feedback.receive_gui_value(gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 }
 
 void ec_pan_changed(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->sp_ec_pan.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
+	vtt->sp_ec_pan.receive_gui_value(gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 }
 
 void ec_volume_changed(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->sp_ec_volume.receive_gui_value(GTK_ADJUSTMENT(wid)->value);
+	vtt->sp_ec_volume.receive_gui_value(gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 }
 
 void master_setup(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->set_sync_master(GTK_TOGGLE_BUTTON(wid)->active);
+	vtt->set_sync_master(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(wid)));
 }
 
 void client_setup(GtkWidget *wid, vtt_class *vtt)
@@ -482,7 +482,7 @@ void client_setup_number(GtkWidget *wid, vtt_class *vtt)
 {
 	int cycles;
 	
-	cycles=(int) GTK_ADJUSTMENT(vtt->gui.cycles)->value;	
+	cycles=(int) gtk_adjustment_get_value(GTK_ADJUSTMENT(vtt->gui.cycles));
 	
 	vtt->sp_sync_cycles.receive_gui_value(cycles);
 }
@@ -705,7 +705,7 @@ static gint vg_file_button_pressed(GtkWidget *wid, GdkEventButton *event, vtt_cl
 
 void vg_adjust_zoom(GtkWidget *wid, vtt_class *vtt) {	
 	GtkAdjustment *adj=gtk_range_get_adjustment(GTK_RANGE(vtt->gui.zoom));
-	gtk_tx_set_zoom(GTK_TX(vtt->gui.display), adj->value/100.0);
+	gtk_tx_set_zoom(GTK_TX(vtt->gui.display), gtk_adjustment_get_value(adj)/100.0);
 }
 
 static gint fx_button_pressed(GtkWidget *wid, GdkEventButton *event, vtt_class *vtt)
@@ -1255,12 +1255,11 @@ int gtk_box_get_widget_pos(GtkBox *box, GtkWidget *child)
 	int i=0;
 	GList *list;
  
-	list = box->children;
+	list = gtk_container_get_children(GTK_CONTAINER(box));
 	while (list)
 	{
-		GtkBoxChild *child_info;
-		child_info = (GtkBoxChild *) list->data;
-		if (child_info->widget == child)
+		GtkWidget *child_widget = (GtkWidget *) list->data;
+		if (child_widget == child)
 		break;
 		list = list->next; i++;
     	}

@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2014  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #ifndef __GTK_TX_FLASH_H__
 #define __GTK_TX_FLASH_H__
 #include <gdk/gdk.h>
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 
 #include "tX_types.h"
 
@@ -34,9 +34,9 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-#define GTK_TX_FLASH(obj) GTK_CHECK_CAST (obj, gtk_tx_flash_get_type(), GtkTxFlash)
+#define GTK_TX_FLASH(obj) G_TYPE_CHECK_INSTANCE_CAST (obj, gtk_tx_flash_get_type(), GtkTxFlash)
 #define GTK_TX_FLASH_CLASS(klass) GTK_CHECK_CLASS_CAST (klass, gtk_tx_flash_get_type(), GtkTxFlashClass)
-#define GTK_IS_TX_FLASH(obj) GTK_CHECK_TYPE (obj, gtk_tx_flash_get_type())
+#define GTK_IS_TX_FLASH(obj) G_TYPE_CHECK_INSTANCE_TYPE (obj, gtk_tx_flash_get_type())
 
 typedef struct _GtkTxFlash GtkTxFlash;
 typedef struct _GtkTxFlashClass GtkTxFlashClass;
