@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2014  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -34,9 +34,9 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-#define GTK_TX(obj)          GTK_CHECK_CAST (obj, gtk_tx_get_type (), GtkTx)
+#define GTK_TX(obj)          G_TYPE_CHECK_INSTANCE_CAST (obj, gtk_tx_get_type (), GtkTx)
 #define GTK_TX_CLASS(klass)  GTK_CHECK_CLASS_CAST (klass, gtk_tx_get_type (), GtkTxClass)
-#define GTK_IS_TX(obj)       GTK_CHECK_TYPE (obj, gtk_tx_get_type ())
+#define GTK_IS_TX(obj)       G_TYPE_CHECK_INSTANCE_TYPE (obj, gtk_tx_get_type ())
 
 typedef struct _GtkTx        GtkTx;
 typedef struct _GtkTxClass   GtkTxClass;

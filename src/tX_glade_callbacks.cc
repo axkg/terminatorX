@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2014  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -72,7 +72,8 @@ on_alsa_buffer_time_value_changed      (GtkRange        *range,
 	GtkAdjustment *buffer_time=gtk_range_get_adjustment(GTK_RANGE(user_data));
 	GtkAdjustment *period_time=gtk_range_get_adjustment(GTK_RANGE(range));
 
-	period_time->upper=buffer_time->value;
+
+	gtk_adjustment_set_upper(period_time, gtk_adjustment_get_value(buffer_time));
 	gtk_adjustment_changed(period_time);
 }
 
@@ -80,7 +81,7 @@ void
 on_pref_reset_clicked                  (GtkButton       *button,
                                         gpointer         user_data)
 {
-	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(opt_dialog->window), 
+	GtkWidget *dialog=gtk_message_dialog_new(GTK_WINDOW(gtk_widget_get_toplevel(opt_dialog)), 
 		GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
 		"Loose all your settings and set default values?");
 	

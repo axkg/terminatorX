@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2014  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -152,7 +152,6 @@ int tx_mouse :: grab()
 #else	
 	if (!XF86DGADirectVideo(dpy,DefaultScreen(dpy),XF86DGADirectMouse)) {
 #endif
-		GdkDisplay* display = gdk_display_get_default();
 		gdk_pointer_ungrab(GDK_CURRENT_TIME);
 		gdk_keyboard_ungrab(GDK_CURRENT_TIME);
 

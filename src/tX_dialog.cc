@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2014  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -67,7 +67,6 @@ GtkWidget *opt_dialog;
 int opt_hidden=0;
 
 static GtkWidget *last_alsa_device_widget=NULL;
-static GtkWidget *alsa_device_entry=NULL;
 
 void apply_options(GtkWidget *dialog) {
 	/* Audio */
@@ -210,9 +209,10 @@ void apply_options(GtkWidget *dialog) {
 	add_widget_dyn(label);
 
 #ifdef USE_ALSA
-void append_alsa_device_list(GtkComboBoxText *combo) {
+void append_alsa_device_list(GtkComboBoxText *combo, char *current) {
 	FILE *file;
 	char buffer[PATH_MAX+1];
+	int ctr = 0;
 	
 	if ((file = fopen("/proc/asound/pcm", "r"))) {
 		while(fgets(buffer, PATH_MAX, file)) {
@@ -229,6 +229,12 @@ void append_alsa_device_list(GtkComboBoxText *combo) {
 				sprintf(tmp, "hw:%i,%i# %s", card, device, foo);
 				
 				gtk_combo_box_text_append_text(combo, strdup(tmp));
+				
+				if (strcmp(tmp, current) == 0) {
+					gtk_combo_box_set_active(GTK_COMBO_BOX(combo), ctr);
+				}
+				ctr++;
+					
 			}
 		}
 		fclose(file);
@@ -245,7 +251,7 @@ int oss_select_dsp_only(const struct dirent *entry){
 	return (strstr(entry->d_name, "dsp")!=0);
 }
 
-void append_oss_device_list(GtkComboBoxText *combo) {
+void append_oss_device_list(GtkComboBoxText *combo, char *current) {
     struct dirent **namelist;
     int n,i;
     n = scandir("/dev", &namelist, oss_select_dsp_only, alphasort);
@@ -256,45 +262,51 @@ void append_oss_device_list(GtkComboBoxText *combo) {
             sprintf(buffer, "/dev/%s", namelist[i]->d_name);
             free(namelist[i]);
             gtk_combo_box_text_append_text(combo, strdup(buffer));
+            
+            if (strcmp(buffer, current)==0) {
+				gtk_combo_box_set_active(GTK_COMBO_BOX(combo), i);
+			}
 		}
 	}
 }
 #endif
 
-static GList *sampling_rates=NULL;
+void append_sampling_rates_list(GtkComboBoxText *combo, int current) {
 
-GList *get_sampling_rates_list() {
-	if (sampling_rates) {
-		return sampling_rates;
+	gtk_combo_box_text_append_text(combo,  "22000");
+	gtk_combo_box_text_append_text(combo,  "32000");
+	gtk_combo_box_text_append_text(combo,  "44100");
+	gtk_combo_box_text_append_text(combo,  "48000");
+	switch (current) {
+		case 22000:
+			gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
+			break;
+		case 32000:
+			gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 1);
+			break;
+		case 44100:
+			gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 2);
+			break;
+		case 48000:
+		default:
+			gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 3);
 	}
-
-	sampling_rates=g_list_append(sampling_rates, (void *) "22000");
-	sampling_rates=g_list_append(sampling_rates, (void *) "32000");
-	sampling_rates=g_list_append(sampling_rates, (void *) "44100");
-	sampling_rates=g_list_append(sampling_rates, (void *) "48000");
-
-	return sampling_rates;	
 }
 
-static GList *xinput_devices=NULL;
-
-GList *get_xinput_devices_list() {
-	if (xinput_devices) {
-		return xinput_devices;
-	}
-	
+void append_xinput_devices_list(GtkComboBoxText *combo, char *current) {
 	int devmax;
 	Display *dpy=XOpenDisplay(NULL);
 	XDeviceInfo *xdev=XListInputDevices(dpy, &devmax);
 	XCloseDisplay(dpy);
 
-	for (int i=0; i<devmax; i++) {
-		xinput_devices=g_list_append(xinput_devices, strdup(xdev[i].name));
+	for (int i=0; i<devmax; i++) {		
+		gtk_combo_box_text_append_text(combo, strdup(xdev[i].name));
+		if (strcmp(xdev[i].name, current) == 0) {
+			gtk_combo_box_set_active(GTK_COMBO_BOX(combo), i);
+		}
 	}
 	
 	XFreeDeviceList(xdev);
-	
-	return xinput_devices;
 }
 
 #define MAX_COLORS 10
@@ -309,6 +321,8 @@ char *colors[MAX_COLORS]={ NULL };
 
 
 void init_tx_options(GtkWidget *dialog) {
+	char tmp[256];
+	
 	if (colors[0]==NULL) {
 		for (int i=0; i<MAX_COLORS; i++) {
 			colors[i]=new char[8];
@@ -355,43 +369,32 @@ void init_tx_options(GtkWidget *dialog) {
 #endif	
 	
 	/* Audio: OSS */
-	append_oss_device_list(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "oss_audio_device")));
-	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO_BOX(lookup_widget(dialog, "oss_audio_device"))->entry), globals.oss_device);
+	append_oss_device_list(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "oss_audio_device")), globals.oss_device);
 
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget(dialog, "oss_buffers")), globals.oss_buff_no);
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "oss_buffersize")), globals.oss_buff_size);
 	gtk_widget_set_tooltip_text(lookup_widget(dialog, "oss_buffersize"), "Set the size of the kernel level audio buffers. On slower systems you might have to increase this value (if you hear \"clicks\" or drop-outs). Lower values mean lower latency though.");	
-	gtk_combo_set_popdown_strings(GTK_COMBO_BOX(lookup_widget(dialog, "oss_samplerate")), get_sampling_rates_list());
-	char tmp[64];
-	sprintf(tmp, "%i", globals.oss_samplerate);
-	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO_BOX(lookup_widget(dialog, "oss_samplerate"))->entry), tmp);
-	
+	append_sampling_rates_list(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "oss_samplerate")), globals.oss_samplerate);
 	
 	/* Audio: ALSA */
-	GtkCombo *combo=GTK_COMBO_BOX(lookup_widget(dialog, "alsa_audio_device"));
-	GList *alsa_list=get_alsa_device_list();
+	GtkComboBoxText *combo=GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "alsa_audio_device"));
 	last_alsa_device_widget=NULL;
-	alsa_device_entry=combo->entry;
 	
-	append_alsa_device_list(GTK_COMBOBOX_TEXT(combo));
-	gtk_entry_set_text(GTK_ENTRY(combo->entry), globals.alsa_device_id);
+	append_alsa_device_list(GTK_COMBO_BOX_TEXT(combo), globals.alsa_device_id);
 
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "alsa_buffer_time")), globals.alsa_buffer_time/1000);
 	gtk_widget_set_tooltip_text(lookup_widget(dialog, "alsa_buffer_time"), "Sets the size of the ALSA ring buffer. On slower systems you might have to increase this value (if you hear \"clicks\" or drop-outs). Lower values mean lower latency though.");	
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "alsa_period_time")), globals.alsa_period_time/1000);
 	gtk_widget_set_tooltip_text(lookup_widget(dialog, "alsa_period_time"), "The ALSA period time determines how much audio data will be written to the device at once. It is recommended to set this value to a half or a third of the ALSA buffer time.");	
 
-	gtk_combo_set_popdown_strings(GTK_COMBO_BOX(lookup_widget(dialog, "alsa_samplerate")), get_sampling_rates_list());
-	sprintf(tmp, "%i", globals.alsa_samplerate);
-	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO_BOX(lookup_widget(dialog, "alsa_samplerate"))->entry), tmp);
+	append_sampling_rates_list(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "alsa_samplerate")), globals.alsa_samplerate);
 	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "alsa_free_hwstats")), globals.alsa_free_hwstats);
 	
 	/* Input */
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "xinput_enable")), globals.xinput_enable);
 	
-	gtk_combo_set_popdown_strings(GTK_COMBO_BOX(lookup_widget(dialog, "xinput_device")), get_xinput_devices_list());
-	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO_BOX(lookup_widget(dialog, "xinput_device"))->entry), globals.xinput_device);
+	append_xinput_devices_list(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "xinput_device")), globals.xinput_device);
 
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "mouse_speed")), globals.mouse_speed);
 	gtk_widget_set_tooltip_text(lookup_widget(dialog, "mouse_speed"), "The speed of your mouse in scratch mode. Use negative values to invert motion.");
@@ -468,7 +471,7 @@ void create_options()
 void display_options()
 {
 	if (opt_dialog) {
-		gdk_window_raise(opt_dialog->window);	
+		gdk_window_raise(gtk_widget_get_window(opt_dialog));	
 	} else {
 		create_options();
 	}
@@ -478,7 +481,7 @@ GtkWidget *about=NULL;
 
 void raise_about()
 {
-	if (about) gdk_window_raise(about->window);
+	if (about) gdk_window_raise(gtk_widget_get_window(about));
 }
 
 
@@ -512,7 +515,7 @@ void show_about(int nag)
 	
 	/* Only raise the window if it's already open... */
 	if (about)  {
-		gdk_window_raise(about->window);
+		gdk_window_raise(gtk_widget_get_window(about));
 		return;
 	}
 	
@@ -541,7 +544,7 @@ void show_about(int nag)
 		gtk_misc_set_alignment(GTK_MISC(label), 0.1, 0.5);
 		gtk_widget_show(label);
 
-		label=gtk_label_new("Copyright (C) 1999-2011 by Alexander König");
+		label=gtk_label_new("Copyright (C) 1999-2014 by Alexander König");
 		gtk_box_pack_start(GTK_BOX(box2), label, WID_DYN);
 		gtk_misc_set_alignment(GTK_MISC(label), 0.9, 0.5);
 		gtk_widget_show(label);
@@ -559,7 +562,7 @@ void show_about(int nag)
 		sep=gtk_hseparator_new();
 		add_about_wid_fix(sep);
 		
-		label=gtk_label_new("This is "PACKAGE" release "VERSION" - Copyright (C) 1999-2011 by Alexander König"
+		label=gtk_label_new("This is "PACKAGE" release "VERSION" - Copyright (C) 1999-2014 by Alexander König"
 		"\nSend comments, patches and scratches to: alex@lisas.de\nterminatorX-homepage: http://www.terminatorX.org");
 
 		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);

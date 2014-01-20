@@ -1,6 +1,6 @@
 /*
     terminatorX - realtime audio scratching software
-    Copyright (C) 1999-2011  Alexander König
+    Copyright (C) 1999-2014  Alexander König
  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ GCallback tX_extdial :: f_entry(GtkWidget *w, tX_extdial *ed)
 
 GCallback tX_extdial :: f_adjustment(GtkWidget *w, tX_extdial *ed)
 {
-	ed->fval=ed->adj->value;
+	ed->fval=gtk_adjustment_get_value(ed->adj);
 	ed->f2s();
 	gtk_entry_set_text(GTK_ENTRY(ed->entry), ed->sval);
 	return NULL;	
@@ -44,7 +44,7 @@ GCallback tX_extdial :: f_adjustment(GtkWidget *w, tX_extdial *ed)
 tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, tX_seqpar * sp, bool text_below, bool hide_entry)
 {
 	adj=a;
-	fval=adj->value;
+	fval=gtk_adjustment_get_value(adj);
 	f2s();
 	if (l) {
 		label=gtk_label_new(NULL);

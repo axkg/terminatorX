@@ -980,7 +980,7 @@ void tX_seqpar_vttfx_float :: do_update_graphics()
 
 GCallback tX_seqpar_vttfx_float :: gtk_callback(GtkWidget* w, tX_seqpar_vttfx_float *sp)
 {
-	sp->receive_gui_value(sp->myadj->value);	
+	sp->receive_gui_value(gtk_adjustment_get_value(sp->myadj));	
 	return NULL;	
 }
 
@@ -1031,7 +1031,7 @@ void tX_seqpar_vttfx_int :: do_update_graphics()
 
 GCallback tX_seqpar_vttfx_int :: gtk_callback(GtkWidget* w, tX_seqpar_vttfx_int *sp)
 {
-	sp->receive_gui_value(sp->myadj->value);	
+	sp->receive_gui_value(gtk_adjustment_get_value(sp->myadj));	
 	return NULL;
 }
 

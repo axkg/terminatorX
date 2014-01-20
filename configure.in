@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/tX_global.h)
-AM_INIT_AUTOMAKE(terminatorX, 3.84)
+AM_INIT_AUTOMAKE(terminatorX, 3.89)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(sox,		[  --enable-sox            use sox as input converter. (default=auto) ])
@@ -117,6 +117,9 @@ dnl If we still haven't found pthreads, we panic...
 if test "$tX_threads" = "no"; then
 	AC_MSG_ERROR([** failed to detect pthreads implementation **])
 fi
+
+
+AC_SEARCH_LIBS([dlclose], [dl])
 
 dnl GTK+ search. Enable FileChooser for gtk+>=2.4
 
