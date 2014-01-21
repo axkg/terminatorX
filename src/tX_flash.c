@@ -153,6 +153,7 @@ static void gtk_tx_flash_init (GtkTxFlash *tx_flash)
 {
 	GdkColormap *priv;
 	
+	tx_flash->surface = NULL;
 	tx_flash->colors_allocated=0;
 	priv=gdk_colormap_new(gtk_widget_get_visual(GTK_WIDGET(tx_flash)), 6);
 
@@ -180,12 +181,15 @@ static void gtk_tx_flash_destroy (GtkObject *object)
 
 static void gtk_tx_flash_realize (GtkWidget *widget)
 {
+	GtkTxFlash *tx_flash;
 	GdkWindowAttr attributes;
 	gint attributes_mask;
 	
 	g_return_if_fail (widget != NULL);
 	g_return_if_fail (GTK_IS_TX_FLASH (widget));
 	
+	tx_flash=GTK_TX_FLASH(widget);
+
 	gtk_widget_set_realized(widget, TRUE);
 	GtkAllocation allocation;
 	gtk_widget_get_allocation(widget, &allocation);
@@ -207,6 +211,12 @@ static void gtk_tx_flash_realize (GtkWidget *widget)
 	
 	gdk_window_set_user_data (gtk_widget_get_window(widget), widget);
 	gtk_style_set_background (gtk_widget_get_style(widget), gtk_widget_get_window(widget), GTK_STATE_NORMAL);
+	
+		if (tx_flash->surface) {
+		cairo_surface_destroy (tx_flash->surface);
+	}
+	
+	tx_flash->surface = gdk_window_create_similar_surface (gtk_widget_get_window(widget), CAIRO_CONTENT_COLOR, allocation.width, allocation.height);
 }
 
 static void gtk_tx_flash_size_request(GtkWidget *widget, GtkRequisition *requisition)
@@ -236,16 +246,16 @@ static void gtk_tx_flash_prepare(GtkWidget *widget)
 	tx_flash->red_level=(RED_BORDER/tx_flash->level_value);
 	
 	tx_flash->channel[0].x1=DMINIX+S_MINIX+2;
-	tx_flash->channel[1].x2=allocation.width-tx_flash->channel[0].x1-1;
+	tx_flash->channel[1].x2=allocation.width-tx_flash->channel[0].x1;
 		
 	if (allocation.width%2>0) {
 		// odd
 		tx_flash->center_expand=0;
-		tx_flash->channel[0].x2=allocation.width/2-2;
+		tx_flash->channel[0].x2=allocation.width/2-1;
 	} else {
 		// even
 		tx_flash->center_expand=1;
-		tx_flash->channel[0].x2=allocation.width/2-3;
+		tx_flash->channel[0].x2=allocation.width/2-2;
 	}
 	tx_flash->channel[1].x1=allocation.width/2+2;
 	
@@ -273,6 +283,7 @@ static void gtk_tx_flash_paint_yourself(GtkWidget *widget)
 {
 	GtkTxFlash *tx_flash;
 	GtkAllocation allocation;
+	cairo_t *cr;
 	
 	gint i, x11, x12,x21, x22, y, middle;
 	int long_level;
@@ -280,11 +291,19 @@ static void gtk_tx_flash_paint_yourself(GtkWidget *widget)
 	tx_flash = GTK_TX_FLASH (widget);
 	gtk_widget_get_allocation(widget, &allocation);
 	
-	gdk_gc_set_foreground(gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], &tx_flash->colors[COL_BG]);
+	cr = gdk_cairo_create (gtk_widget_get_window(widget));
+	cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
+	cairo_set_source_surface (cr, tx_flash->surface, 0, 0);
+
+	gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_BG]);
+
+	//printf("%i, %i, %i, %i\n", area->x, area->y, area->width, area->height);
+
+	cairo_rectangle(cr, 0, 0, allocation.width, allocation.height);
+	cairo_fill(cr);
 	
-	gdk_draw_rectangle(gtk_widget_get_window(widget), gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], 1, 0, 0, allocation.width, allocation.height); 
-	
-	gdk_gc_set_foreground(gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], &tx_flash->colors[COL_NORM_HALF]);
+	cairo_set_line_width(cr,1);
+	gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_NORM_HALF]);	
 	
 	x12=DMINIX+S_MINIX;
 	x21=allocation.width-1-x12;
@@ -297,7 +316,7 @@ static void gtk_tx_flash_paint_yourself(GtkWidget *widget)
 			long_level=1;
 		} else if (i==tx_flash->red_level) {
 			long_level=1;
-			gdk_gc_set_foreground(gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], &tx_flash->colors[COL_LOUD_HALF]);
+			gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_LOUD_HALF]);	
 		} else if (i==tx_flash->levels) {
 			long_level=1;
 		} else long_level=0;
@@ -310,15 +329,23 @@ static void gtk_tx_flash_paint_yourself(GtkWidget *widget)
 			x22=x21+S_MINIX;		
 		}
 		
-		gdk_draw_line(gtk_widget_get_window(widget), gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], x11, y, x12, y);
-		gdk_draw_line(gtk_widget_get_window(widget), gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], x21, y, x22, y);
+		cairo_move_to (cr, x11, y);
+		cairo_line_to (cr, x12+1, y);
 		
+		cairo_move_to (cr, x21, y);
+		cairo_line_to (cr, x22+1, y);
+
 		if (tx_flash->center_expand) {
-			gdk_draw_line(gtk_widget_get_window(widget), gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], middle-1, y, middle, y);			
+			cairo_move_to (cr, middle-1, y);
+			cairo_line_to (cr, middle+1, y);
 		} else {
-			gdk_draw_point(gtk_widget_get_window(widget), gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], middle, y);
+			cairo_move_to (cr, middle, y);
+			cairo_line_to (cr, middle+1, y);
 		}
+		cairo_stroke (cr);
 	}
+	
+	cairo_destroy (cr);
 }
 
 static gint gtk_tx_flash_expose (GtkWidget *widget, GdkEventExpose *event)
@@ -356,6 +383,7 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 {
 	GtkWidget *widget=GTK_WIDGET(tx_flash);
 	GtkAllocation allocation;
+	cairo_t *cr;
 	gint i, y;
 	int new_level;
 	int red=0;
@@ -363,6 +391,12 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 	new_level=(int) (new_value/tx_flash->level_value);
 	gtk_widget_get_allocation(widget, &allocation);
 	
+	cr = gdk_cairo_create (gtk_widget_get_window(widget));
+	cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
+	cairo_set_source_surface (cr, tx_flash->surface, 0, 0);
+
+	gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_BG]);
+
 	// tX_msg("setting level: %5d for widget %08x channel %08x\n", new_level, tx_flash, channel);
 	
 	if (new_level>tx_flash->levels) 
@@ -377,19 +411,23 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 	
 	if (tx_flash->max_cycles <= 0) {
 		y=allocation.height-(DY+(channel->max)*DLEVEL);
-		gdk_gc_set_foreground(gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], &tx_flash->colors[COL_BG]);
-		gdk_draw_line(gtk_widget_get_window(widget), gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], channel->x1, y, channel->x2, y);
+		gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_BG]);
+		cairo_move_to (cr, channel->x1, y);
+		cairo_line_to (cr, channel->x2, y);
+		cairo_stroke (cr);
 		
 		if (channel->max>0) {
 			channel->max--;
 			y+=DLEVEL;
 			if (channel->max>tx_flash->red_level) {
-				gdk_gc_set_foreground(gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], &tx_flash->colors[COL_LOUD]);
+				gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_LOUD]);
 			} else {
-				gdk_gc_set_foreground(gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], &tx_flash->colors[COL_NORM]);
+				gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_NORM]);
 			}
 			
-			gdk_draw_line(gtk_widget_get_window(widget), gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], channel->x1, y, channel->x2, y);
+			cairo_move_to (cr, channel->x1, y);
+			cairo_line_to (cr, channel->x2, y);
+			cairo_stroke (cr);
 		}
 	}
 	
@@ -401,19 +439,21 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 	}
 	
 	if (new_level>channel->last_level) {
-		gdk_gc_set_foreground(gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], &tx_flash->colors[COL_NORM]);
+		gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_NORM]);
 		
 		for (i=channel->last_level, y=allocation.height-(DY+channel->last_level*DLEVEL); i<=new_level; y-=DLEVEL, i++) {
 			if (!red) {
 				if (i>=tx_flash->red_level) {
-					gdk_gc_set_foreground(gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], &tx_flash->colors[COL_LOUD]);
+					gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_LOUD]);
 					red=1;
 				}
 			}
-			gdk_draw_line(gtk_widget_get_window(widget), gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], channel->x1, y, channel->x2, y);
+			cairo_move_to (cr, channel->x1, y);
+			cairo_line_to (cr, channel->x2, y);
+			cairo_stroke (cr);
 		}
 	} else {
-		gdk_gc_set_foreground(gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], &tx_flash->colors[COL_BG]);
+		gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_BG]);
 		
 		if (channel->last_level==channel->max) {
 			i=channel->last_level-1;
@@ -422,10 +462,14 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 		}
 		
 		for (y=allocation.height-(DY+i*DLEVEL); i>new_level; y+=DLEVEL, i--) {
-			gdk_draw_line(gtk_widget_get_window(widget), gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], channel->x1, y, channel->x2, y);
+			cairo_move_to (cr, channel->x1, y);
+			cairo_line_to (cr, channel->x2, y);
+			cairo_stroke (cr);
 		}
 	}
 	channel->last_level=new_level;
+	
+	cairo_destroy(cr);
 }
 
 void

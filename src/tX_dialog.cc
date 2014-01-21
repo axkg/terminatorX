@@ -80,13 +80,19 @@ void apply_options(GtkWidget *dialog) {
 	globals.use_realtime=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "use_realtime")));
 	
 	/* Audio: OSS */
-	strcpy(globals.oss_device, gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "oss_audio_device"))));
+	char *oss_device = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "oss_audio_device")));
+	if (oss_device) {
+		strcpy(globals.oss_device, oss_device);
+	}
 	globals.oss_buff_no=(int) gtk_spin_button_get_value(GTK_SPIN_BUTTON(lookup_widget(dialog, "oss_buffers")));
 	globals.oss_buff_size=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "oss_buffersize")));
 	globals.oss_samplerate=atoi(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "oss_samplerate"))));
 	
 	/* Audio: ALSA */
-	strcpy(globals.alsa_device_id, gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "alsa_audio_device"))));
+	char *alsa_device = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "alsa_audio_device")));
+	if (alsa_device) {
+		strcpy(globals.alsa_device_id, alsa_device);
+	}
 	globals.alsa_buffer_time=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "alsa_buffer_time")));
 	globals.alsa_buffer_time*=1000;
 	globals.alsa_period_time=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "alsa_period_time")));
@@ -99,7 +105,10 @@ void apply_options(GtkWidget *dialog) {
 	
 	/* Input */
 	globals.xinput_enable=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "xinput_enable")))==TRUE);
-	strcpy(globals.xinput_device, gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "xinput_device"))));
+	char *xinput_device = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "xinput_device")));
+	if (xinput_device) {
+		strcpy(globals.xinput_device, xinput_device);
+	}
 	globals.mouse_speed=gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "mouse_speed")));
 	globals.sense_cycles=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "stop_sense_cycles")));
 	globals.vtt_inertia=gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "vtt_inertia")));

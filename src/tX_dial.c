@@ -274,6 +274,11 @@ inline void gtk_tx_dial_draw (GtkTxDial *tx_dial, GtkWidget *widget)
 //		                knob_pixmaps[tx_dial->old_image],
 //		                0, 0, tx_dial->xofs, tx_dial->yofs,
 //						KNOB_SIZE, KNOB_SIZE, GDK_RGB_DITHER_NORMAL, 0, 0);
+
+		cairo_t *cr = gdk_cairo_create (gtk_widget_get_window(widget));
+		gdk_cairo_set_source_pixbuf (cr, knob_pixmaps[tx_dial->old_image], 0, 0);
+		cairo_paint (cr);
+		cairo_destroy (cr);
 	}		 
 }
 

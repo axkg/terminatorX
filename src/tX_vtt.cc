@@ -1388,18 +1388,13 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 				
 				for (xmlNodePtr cur=fx->xmlChildrenNode; cur != NULL; cur = cur->next) {
 					if (cur->type == XML_ELEMENT_NODE) {
-						int elementFound=0;
-						
 						if ((xmlStrcmp(cur->name, (xmlChar *) "cutoff")==0) && !stereo) {
 							for (unsigned int t=0; t<fx_list.size(); t++) effect_down(lp_fx);
-							elementFound=1;
 						} else if ((xmlStrcmp(cur->name, (xmlChar *) "lowpass")==0) && !stereo) {
 							for (unsigned int t=0; t<fx_list.size(); t++) effect_down(ec_fx);
-							elementFound=1;								
 						} else if (xmlStrcmp(cur->name, (xmlChar *) "ladspa_plugin")==0) {
 							xmlNodePtr pluginNode=cur;
 							int ladspa_id=-1;
-							elementFound=1;
 							
 							for (xmlNodePtr cur=pluginNode->xmlChildrenNode; cur!=NULL; cur = cur->next) {
 								int elementFound;

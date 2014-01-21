@@ -369,7 +369,9 @@ void edit_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 		tx_note("No audiofile loaded - so there's nothing to edit.", true);
 	} else if (strlen(globals.file_editor)>0) {
 		sprintf(command, "%s \"%s\" &", globals.file_editor, vtt->filename);
-		int res = system(command); /*) tx_note("Failed to run the soundfile editor."); */
+		if (system(command) < 0) {
+			tx_note("Error running the soundfile editor.");
+		}
 	} else {
 		tx_note("No soundfile editor has been configured - to do so enter the soundfile editor of your choice in the options dialog.", true);
 	}
