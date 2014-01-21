@@ -100,7 +100,6 @@ create_tx_adjust (void)
 
   dialog_action_area2 = gtk_dialog_get_action_area(GTK_DIALOG (tx_adjust));
   gtk_widget_show (dialog_action_area2);
-  gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area2), GTK_BUTTONBOX_END);
 
   cancel = gtk_button_new_from_stock ("gtk-cancel");
   gtk_widget_show (cancel);
@@ -975,7 +974,6 @@ create_tx_options (void)
 
   dialog_action_area3 = gtk_dialog_get_content_area(GTK_DIALOG (tx_options));
   gtk_widget_show (dialog_action_area3);
-  gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area3), GTK_BUTTONBOX_END);
 
   pref_reset = gtk_button_new_from_stock ("gtk-revert-to-saved");
   gtk_widget_show (pref_reset);
@@ -1220,7 +1218,6 @@ create_tx_del_mode (void)
 
   dialog_action_area4 = gtk_dialog_get_action_area(GTK_DIALOG (tx_del_mode));
   gtk_widget_show (dialog_action_area4);
-  gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area4), GTK_BUTTONBOX_END);
 
   cancelbutton1 = gtk_button_new_from_stock ("gtk-cancel");
   gtk_widget_show (cancelbutton1);
@@ -1283,7 +1280,6 @@ create_tX_midilearn (void)
 
   dialog_action_area5 = gtk_dialog_get_action_area(GTK_DIALOG (tX_midilearn));
   gtk_widget_show (dialog_action_area5);
-  gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area5), GTK_BUTTONBOX_END);
 
   cancel = gtk_button_new_from_stock ("gtk-cancel");
   gtk_widget_show (cancel);
@@ -1309,19 +1305,24 @@ create_tX_color_selection (void)
   GtkWidget *cancel_button1;
   GtkWidget *help_button1;
   GtkWidget *color_selection;
+  GValue value = { 0, };
+  g_value_init(&value, GTK_TYPE_WIDGET);
 
   tX_color_selection = gtk_color_selection_dialog_new ("Select Color");
   gtk_window_set_resizable (GTK_WINDOW (tX_color_selection), FALSE);
 
-  g_object_get_property(G_OBJECT(tX_color_selection), "ok-button", (GValue *) &ok_button1);
+  g_object_get_property(G_OBJECT(tX_color_selection), "ok-button", &value);
+  ok_button1 = GTK_WIDGET(g_value_get_object(&value));
   gtk_widget_show (ok_button1);
   gtk_widget_set_can_default(ok_button1, TRUE);
 
-  g_object_get_property(G_OBJECT(tX_color_selection), "cancel-button", (GValue *) &cancel_button1);
+  g_object_get_property(G_OBJECT(tX_color_selection), "cancel-button", &value);
+  cancel_button1 = GTK_WIDGET(g_value_get_object(&value));
   gtk_widget_show (cancel_button1);
   gtk_widget_set_can_default(cancel_button1, TRUE);
 
-  g_object_get_property(G_OBJECT(tX_color_selection), "help-button", (GValue *) &help_button1);
+  g_object_get_property(G_OBJECT(tX_color_selection), "help-button", &value);
+  help_button1 = GTK_WIDGET(g_value_get_object(&value));
   gtk_widget_show (help_button1);
   gtk_widget_set_can_default(help_button1, TRUE);
 

@@ -58,6 +58,7 @@ struct _GtkTxFlash {
 	int max_cycles;
 	int center_expand;
 	struct flash_channel channel[2];
+	cairo_surface_t* surface;
 };
 
 struct _GtkTxFlashClass {

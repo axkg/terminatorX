@@ -159,6 +159,8 @@ static void gtk_tx_init(GtkTx * tx) {
 	tx->zoom=0;
 	tx->cursor_pos=0;
 	tx->cursor_x_pos=0;
+	
+	tx->surface = NULL;
 }
 
 GtkWidget *gtk_tx_new(int16_t * wavdata, int wavsamples) {
@@ -207,10 +209,12 @@ void gtk_tx_set_data(GtkTx * tx, int16_t * wavdata, int wavsamples) {
 static void gtk_tx_realize(GtkWidget * widget) {
 	GdkWindowAttr attributes;
 	gint attributes_mask;
-
+	GtkTx *tx;
+	
 	g_return_if_fail(widget != NULL);
 	g_return_if_fail(GTK_IS_TX(widget));
 
+	tx = GTK_TX(widget);
 	gtk_widget_set_realized(widget, TRUE);
 
 	GtkAllocation allocation;
@@ -232,6 +236,12 @@ static void gtk_tx_realize(GtkWidget * widget) {
 	gdk_window_set_user_data(gtk_widget_get_window(widget), widget);
 
 	gtk_style_set_background(gtk_widget_get_style(widget), gtk_widget_get_window(widget), GTK_STATE_NORMAL);
+	
+	if (tx->surface) {
+		cairo_surface_destroy (tx->surface);
+	}
+	
+	tx->surface = gdk_window_create_similar_surface (gtk_widget_get_window(widget), CAIRO_CONTENT_COLOR, allocation.width, allocation.height);
 }
 
 static void gtk_tx_size_request(GtkWidget * widget, GtkRequisition * requisition) {
@@ -245,7 +255,7 @@ static void gtk_tx_prepare(GtkWidget * widget) {
 	f_prec value;
 	GtkTx *tx;
 	int avg_pos;
-	
+
 	g_return_if_fail(widget != NULL);
 	g_return_if_fail(GTK_IS_TX(widget));
 
@@ -349,6 +359,7 @@ static gint gtk_tx_expose(GtkWidget * widget, GdkEventExpose * event) {
 	GtkTx *tx;
 	gint x;
 	GdkRectangle *area;
+	cairo_t *cr;
 	
 	g_return_val_if_fail(widget != NULL, FALSE);
 	g_return_val_if_fail(GTK_IS_TX(widget), FALSE);
@@ -362,31 +373,36 @@ static gint gtk_tx_expose(GtkWidget * widget, GdkEventExpose * event) {
 	area=&event->area;
 
 	tx = GTK_TX(widget);
+	cr = gdk_cairo_create (gtk_widget_get_window(widget));
+	cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
+	cairo_set_source_surface (cr, tx->surface, 0, 0);
 
-	gdk_gc_set_foreground(gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], tx->current_bg);
+	gdk_cairo_set_source_color (cr, tx->current_bg);
 
-	gdk_draw_rectangle(gtk_widget_get_window(widget),
-		gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], 1, 
-		area->x, area->y,
-		area->width, area->height);
+	//printf("%i, %i, %i, %i\n", area->x, area->y, area->width, area->height);
 
-	gdk_gc_set_foreground(gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], tx->current_fg);
+	cairo_rectangle(cr, area->x, area->y, area->width, area->height);
+	cairo_fill(cr);
+	
+	cairo_set_line_width(cr,1);
+	
+	gdk_cairo_set_source_color (cr, tx->current_fg);
 
 	if (tx->disp_data) {
 		int max_x=area->x+area->width;
 
 	    for (x =area->x; x < max_x; x++) {
-			gdk_draw_line(gtk_widget_get_window(widget),
-				gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)], x,
-				tx->yc - tx->disp_data[tx->display_x_offset+x], x,
-				tx->yc + tx->disp_data[tx->display_x_offset+x]);
+			cairo_move_to (cr, x, tx->yc - tx->disp_data[tx->display_x_offset+x]);
+			cairo_line_to (cr, x, tx->yc + tx->disp_data[tx->display_x_offset+x]+1);
 	    }
 	} else {
 		GtkAllocation allocation;
 		gtk_widget_get_allocation(widget, &allocation);
-	    gdk_draw_line(gtk_widget_get_window(widget), gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)],
-			 0, tx->yc, allocation.width, tx->yc);
+		cairo_move_to (cr, 0, tx->yc);
+		cairo_line_to (cr, allocation.width, tx->yc);
 	}
+	cairo_stroke (cr);
+	cairo_destroy (cr);
 
 	return FALSE;
 }
@@ -409,8 +425,8 @@ static void gtk_tx_update(GtkTx * tx) {
 void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	GtkWidget *widget;
 	GdkWindow *window;
-	GdkGC *gc;
-
+	cairo_t *cr;
+	
 	int x, y, yc, ymax, tmp;
 	int current_pos, current_pos_x, x_offset;
 	int force_draw=0;
@@ -429,7 +445,7 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	widget = GTK_WIDGET(tx);
 	window = gtk_widget_get_window(widget);
 
-	gc = gtk_widget_get_style(widget)->fg_gc[gtk_widget_get_state(widget)];
+
 	yc = tx->yc;
 	GtkAllocation allocation;
 	gtk_widget_get_allocation(widget, &allocation);
@@ -439,13 +455,23 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	
 	x = tx->cursor_x_pos;
 	
+	cr = gdk_cairo_create (gtk_widget_get_window(widget));
+	cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
+	cairo_set_source_surface (cr, tx->surface, 0, 0);
+	
 	if (x >= 0) {
-	    gdk_gc_set_foreground(gc, tx->current_bg);
-	    gdk_draw_line(window, gc, x, 0, x, ymax);
-
-	    gdk_gc_set_foreground(gc, tx->current_fg);
+		gdk_cairo_set_source_color (cr, tx->current_bg);
+		
+		cairo_move_to (cr, x, 0);
+		cairo_line_to (cr, x, ymax);
+		cairo_stroke (cr);
+		
+		gdk_cairo_set_source_color (cr, tx->current_fg);
+		
 	    y = tx->disp_data[x+tx->display_x_offset];
-	    gdk_draw_line(window, gc, x, yc + y, x, yc - y);
+		cairo_move_to (cr, x, yc + y);
+		cairo_line_to (cr, x, yc - y+1);
+		cairo_stroke (cr);
 	}
 	
 	/* compute new position */
@@ -490,11 +516,15 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 
 	x = current_pos_x;
 
-	if (mute) gdk_gc_set_foreground(gc, &tx->colors[COL_CURSOR_MUTE]);
-	else gdk_gc_set_foreground(gc, &tx->colors[COL_CURSOR]);
+	if (mute) gdk_cairo_set_source_color(cr, &tx->colors[COL_CURSOR_MUTE]);
+	else gdk_cairo_set_source_color(cr, &tx->colors[COL_CURSOR]);
 
-	gdk_draw_line(window, gc, x, 0, x, ymax);
+	cairo_move_to (cr, x, 0);
+	cairo_line_to (cr, x, ymax);
+	cairo_stroke (cr);
 	
+	cairo_destroy(cr);
+		
 	if (force_draw) {
 		gtk_widget_queue_draw_area(widget, 0, 0, allocation.width, allocation.height);
 	}

@@ -80,6 +80,8 @@ struct _GtkTx {
 #ifdef USE_DISPLAY_NORMALIZE
 	f_prec max_value;
 #endif	
+
+	cairo_surface_t* surface;
 };
 
 struct _GtkTxClass {

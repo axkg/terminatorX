@@ -118,11 +118,11 @@ void set_global_defaults() {
 	strcpy(globals.record_filename, "tX_record.wav");
 	strcpy(globals.file_editor, "");
 		
-#ifdef USE_OSS
-	globals.audiodevice_type=OSS;		
-#else
 #ifdef USE_ALSA
 	globals.audiodevice_type=ALSA;
+#else
+#ifdef USE_OSS
+	globals.audiodevice_type=OSS;
 #endif	
 #endif		
 	globals.use_stdout_cmdline=0;
