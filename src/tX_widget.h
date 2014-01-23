@@ -59,6 +59,9 @@ struct _GtkTx {
 	GdkColor *current_fg;
 	GdkColor *current_bg;
 	
+	GdkColor *audio_colors_focus;
+	GdkColor *audio_colors_nofocus;
+	
 	int spp;
 	int yc;
 	
@@ -102,3 +105,4 @@ f_prec gtk_tx_get_zoom(GtkTx *tx);
 }
 #endif /* __cplusplus */
 #endif
+

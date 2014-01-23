@@ -132,23 +132,24 @@ class tX_audiodevice_jack : public tX_audiodevice
 class tX_jack_client
 {
 	public:
-	static void init();
-	static tX_jack_client *get_instance() { return instance; };
+	static tX_jack_client *get_instance() { return &instance; };
+	bool init();
 	~tX_jack_client();
 	
 	private:
 	tX_jack_client();	
-	static tX_jack_client *instance;
+	static tX_jack_client instance;
 	static void error(const char *desc);
 	static int srate(jack_nframes_t nframes, void *arg);
 	static void shutdown(void *arg);
 	static int process(jack_nframes_t nframes, void *arg);
 	
-	jack_client_t *client;
+	jack_client_t *client;	
 	tX_audiodevice_jack *device;
 	jack_port_t *left_port;
 	jack_port_t *right_port;
 	bool jack_shutdown;
+	bool client_initialized;
 	int play(jack_nframes_t nframes);
 	
 	public:

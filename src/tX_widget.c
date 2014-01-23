@@ -151,8 +151,11 @@ static void gtk_tx_init(GtkTx * tx) {
 	
 	gtk_tx_update_colors(tx);
 	
-	tx->current_fg=&tx->colors[COL_FG_NO_FOCUS];
+	tx->current_fg=tx->audio_colors_focus;
 	tx->current_bg=&tx->colors[COL_BG_NO_FOCUS];
+	
+	tx->audio_colors_focus = NULL;
+	tx->audio_colors_nofocus = NULL;
 	
 	tx->spp=1;
 	tx->lastmute=-1;
@@ -254,7 +257,8 @@ static void gtk_tx_prepare(GtkWidget * widget) {
 	int16_t *ptr;
 	f_prec value;
 	GtkTx *tx;
-	int avg_pos;
+	int avg_pos, color;
+	gboolean *success;
 
 	g_return_if_fail(widget != NULL);
 	g_return_if_fail(GTK_IS_TX(widget));
@@ -262,8 +266,73 @@ static void gtk_tx_prepare(GtkWidget * widget) {
 	tx = GTK_TX(widget);
 	
 	GtkAllocation allocation;
+	GdkColor midColor;
+	gboolean fg = (tx->current_fg == tx->audio_colors_focus);
+	
+	if (tx->audio_colors_focus) { 
+		// deallocate colors with old tx->yc value
+		gdk_colormap_free_colors(gtk_widget_get_colormap(GTK_WIDGET(tx)), tx->audio_colors_focus, tx->yc);
+		gdk_colormap_free_colors(gtk_widget_get_colormap(GTK_WIDGET(tx)), tx->audio_colors_nofocus, tx->yc);
+		
+		free(tx->audio_colors_focus); 
+		free(tx->audio_colors_nofocus); 
+		
+		tx->audio_colors_focus = NULL; 
+		tx->audio_colors_nofocus = NULL; 
+	} else {
+		fg = FALSE;
+	}
+	
+	// update tx->yc
+	
 	gtk_widget_get_allocation(widget, &allocation);
 	tx->yc = allocation.height / 2;
+	
+	// allocate colors
+	
+	tx->audio_colors_focus = (GdkColor *) malloc(tx->yc * sizeof(GdkColor));
+	tx->audio_colors_nofocus = (GdkColor *) malloc(tx->yc * sizeof(GdkColor));
+	
+	success = (gboolean *) malloc(tx->yc * sizeof(gboolean));
+
+	// no focus colors
+
+	midColor.red = tx->colors[COL_BG_NO_FOCUS].red + (tx->colors[COL_FG_NO_FOCUS].red - tx->colors[COL_BG_NO_FOCUS].red) / 4;
+	midColor.green = tx->colors[COL_BG_NO_FOCUS].green + (tx->colors[COL_FG_NO_FOCUS].green - tx->colors[COL_BG_NO_FOCUS].green) / 4;
+	midColor.blue = tx->colors[COL_BG_NO_FOCUS].blue + (tx->colors[COL_FG_NO_FOCUS].blue - tx->colors[COL_BG_NO_FOCUS].blue) / 4;
+	
+	for (color=0 ; color < tx->yc; color++) {
+		float dist = (float) color / (float) tx->yc;
+		
+		tx->audio_colors_nofocus[color].red = midColor.red + dist*(tx->colors[COL_FG_NO_FOCUS].red - midColor.red);
+		tx->audio_colors_nofocus[color].green = midColor.green + dist*(tx->colors[COL_FG_NO_FOCUS].green - midColor.green);
+		tx->audio_colors_nofocus[color].blue = midColor.blue + dist*(tx->colors[COL_FG_NO_FOCUS].blue - midColor.blue);		
+	}
+	gdk_colormap_alloc_colors(gtk_widget_get_colormap(GTK_WIDGET(tx)), tx->audio_colors_nofocus, tx->yc, 0, 1, success);
+	
+	// focus colors
+
+	midColor.red = tx->colors[COL_BG_FOCUS].red + (tx->colors[COL_FG_FOCUS].red - tx->colors[COL_BG_FOCUS].red) / 4;
+	midColor.green = tx->colors[COL_BG_FOCUS].green + (tx->colors[COL_FG_FOCUS].green - tx->colors[COL_BG_FOCUS].green) / 4;
+	midColor.blue = tx->colors[COL_BG_FOCUS].blue + (tx->colors[COL_FG_FOCUS].blue - tx->colors[COL_BG_FOCUS].blue) / 4;
+	
+	for (color=0 ; color < tx->yc; color++) {
+		float dist = (float) color / (float) tx->yc;
+		
+		tx->audio_colors_focus[color].red = midColor.red + dist*(tx->colors[COL_FG_FOCUS].red - midColor.red);
+		tx->audio_colors_focus[color].green = midColor.green + dist*(tx->colors[COL_FG_FOCUS].green - midColor.green);
+		tx->audio_colors_focus[color].blue = midColor.blue + dist*(tx->colors[COL_FG_FOCUS].blue - midColor.blue);		
+	}
+	gdk_colormap_alloc_colors(gtk_widget_get_colormap(GTK_WIDGET(tx)), tx->audio_colors_focus, tx->yc, 0, 1, success);
+	
+	if (fg) {
+		tx->current_fg = tx->audio_colors_focus;
+	} else {
+		tx->current_fg = tx->audio_colors_nofocus;
+	}
+	
+	// give up success
+	free(success);
 
 	if (tx->disp_data) { free(tx->disp_data); tx->disp_data=NULL; }
 
@@ -376,6 +445,7 @@ static gint gtk_tx_expose(GtkWidget * widget, GdkEventExpose * event) {
 	cr = gdk_cairo_create (gtk_widget_get_window(widget));
 	cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 	cairo_set_source_surface (cr, tx->surface, 0, 0);
+	cairo_set_line_width(cr,1);
 
 	gdk_cairo_set_source_color (cr, tx->current_bg);
 
@@ -383,25 +453,27 @@ static gint gtk_tx_expose(GtkWidget * widget, GdkEventExpose * event) {
 
 	cairo_rectangle(cr, area->x, area->y, area->width, area->height);
 	cairo_fill(cr);
-	
-	cairo_set_line_width(cr,1);
-	
-	gdk_cairo_set_source_color (cr, tx->current_fg);
 
 	if (tx->disp_data) {
-		int max_x=area->x+area->width;
+		int max_x=area->x+area->width+1;
 
 	    for (x =area->x; x < max_x; x++) {
-			cairo_move_to (cr, x, tx->yc - tx->disp_data[tx->display_x_offset+x]);
-			cairo_line_to (cr, x, tx->yc + tx->disp_data[tx->display_x_offset+x]+1);
+			int dy = tx->disp_data[tx->display_x_offset+x];
+			gdk_cairo_set_source_color (cr, &tx->current_fg[dy]);
+			cairo_move_to (cr, x, tx->yc - dy);
+			cairo_line_to (cr, x, tx->yc + dy+1);
+			cairo_stroke (cr);
 	    }
 	} else {
 		GtkAllocation allocation;
 		gtk_widget_get_allocation(widget, &allocation);
+		
+		gdk_cairo_set_source_color (cr, tx->current_fg);
 		cairo_move_to (cr, 0, tx->yc);
 		cairo_line_to (cr, allocation.width, tx->yc);
+		cairo_stroke (cr);
 	}
-	cairo_stroke (cr);
+	
 	cairo_destroy (cr);
 
 	return FALSE;
@@ -445,7 +517,6 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	widget = GTK_WIDGET(tx);
 	window = gtk_widget_get_window(widget);
 
-
 	yc = tx->yc;
 	GtkAllocation allocation;
 	gtk_widget_get_allocation(widget, &allocation);
@@ -458,6 +529,7 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	cr = gdk_cairo_create (gtk_widget_get_window(widget));
 	cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 	cairo_set_source_surface (cr, tx->surface, 0, 0);
+	cairo_set_line_width(cr,1);
 	
 	if (x >= 0) {
 		gdk_cairo_set_source_color (cr, tx->current_bg);
@@ -466,9 +538,9 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 		cairo_line_to (cr, x, ymax);
 		cairo_stroke (cr);
 		
-		gdk_cairo_set_source_color (cr, tx->current_fg);
-		
 	    y = tx->disp_data[x+tx->display_x_offset];
+	    gdk_cairo_set_source_color (cr, &tx->current_fg[y]);
+	    
 		cairo_move_to (cr, x, yc + y);
 		cairo_line_to (cr, x, yc - y+1);
 		cairo_stroke (cr);
@@ -548,10 +620,10 @@ void gtk_tx_cleanup_pos_display(GtkTx * tx) {
 
 void gtk_tx_show_frame(GtkTx *tx, int show) {
 	if (show) {
-		tx->current_fg=&tx->colors[COL_FG_FOCUS];
+		tx->current_fg=tx->audio_colors_focus;
 		tx->current_bg=&tx->colors[COL_BG_FOCUS];
 	} else {
-		tx->current_fg=&tx->colors[COL_FG_NO_FOCUS];
+		tx->current_fg=tx->audio_colors_nofocus;
 		tx->current_bg=&tx->colors[COL_BG_NO_FOCUS];
 	}
 	
