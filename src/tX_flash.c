@@ -393,6 +393,7 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 	
 	cr = gdk_cairo_create (gtk_widget_get_window(widget));
 	cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
+	cairo_set_line_width(cr,1);
 	cairo_set_source_surface (cr, tx_flash->surface, 0, 0);
 
 	gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_BG]);

@@ -354,58 +354,54 @@ void tX_audiodevice_alsa :: play(int16_t *buffer)
 
 #ifdef USE_JACK
 
-tX_jack_client* tX_jack_client::instance=NULL;
+tX_jack_client tX_jack_client::instance;
 
-void tX_jack_client::init()
+bool tX_jack_client::init()
 {
-		tX_jack_client *test=new tX_jack_client();
+	if (!client_initialized) {
+		if ((client=jack_client_open("terminatorX", (jack_options_t) NULL, NULL))==0) {
+			tX_error("tX_jack_client() -> failed to connect to jackd.");
+		} else {
+			client_initialized = true;
+			const char **ports;
+			
+			/* Setting up jack callbacks... */		
+			jack_set_process_callback(client, tX_jack_client::process, NULL);
+			jack_set_sample_rate_callback(client, tX_jack_client::srate, NULL);		
+			jack_on_shutdown (client, tX_jack_client::shutdown, NULL);
+			
+			/* Creating the port... */
+			left_port = jack_port_register (client, "output_1", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+			right_port = jack_port_register (client, "output_2", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
 		
-		if (!instance) {
-			delete test;
-		}	
-}
-
-tX_jack_client::tX_jack_client():device(NULL),jack_shutdown(false)
-{
-	jack_set_error_function(tX_jack_client::error);
-	
-	if ((client=jack_client_open("terminatorX", (jack_options_t) NULL, NULL))==0) {
-		tX_error("tX_jack_client() -> failed to connect to jackd.");
-		instance=NULL;
-	} else {
-		instance=this;
-		const char **ports;
-		
-		/* Setting up jack callbacks... */		
-		jack_set_process_callback(client, tX_jack_client::process, NULL);
-		jack_set_sample_rate_callback(client, tX_jack_client::srate, NULL);		
-		jack_on_shutdown (client, tX_jack_client::shutdown, NULL);
-		
-		/* Creating the port... */
-		left_port = jack_port_register (client, "output_1", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-		right_port = jack_port_register (client, "output_2", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-	
-		/* Action... */
-		jack_activate(client);
-		
-		/* Connect some ports... */
-		if ((ports = jack_get_ports (client, NULL, NULL, JackPortIsPhysical|JackPortIsInput)) == NULL) {
-			tX_error("tX_jack_client() no ports to connect to found. Connect manually.");
-		} else if (ports[0] && ports[1]) {
-			if (jack_connect (client, jack_port_name(left_port), ports[0])) {
-				tX_error("tX_jack_client() failed to connect left port.");
+			/* Action... */
+			jack_activate(client);
+			
+			/* Connect some ports... */
+			if ((ports = jack_get_ports (client, NULL, NULL, JackPortIsPhysical|JackPortIsInput)) == NULL) {
+				tX_error("tX_jack_client() no ports to connect to found. Connect manually.");
+			} else if (ports[0] && ports[1]) {
+				if (jack_connect (client, jack_port_name(left_port), ports[0])) {
+					tX_error("tX_jack_client() failed to connect left port.");
+				}
+				if (jack_connect (client, jack_port_name(right_port), ports[1])) {
+					tX_error("tX_jack_client() failed to connect right port.");
+				}
+				free (ports);
 			}
-			if (jack_connect (client, jack_port_name(right_port), ports[1])) {
-				tX_error("tX_jack_client() failed to connect right port.");
-			}
-			free (ports);
 		}
 	}
+	
+	return client_initialized;
+}
+
+tX_jack_client::tX_jack_client():device(NULL),jack_shutdown(false),client_initialized(false)
+{
+	jack_set_error_function(tX_jack_client::error);
 }
 
 tX_jack_client::~tX_jack_client()
 {
-	instance=NULL;
 	if (client) jack_client_close(client);
 }
 
@@ -423,14 +419,12 @@ int tX_jack_client::srate(jack_nframes_t nframes, void *arg)
 void tX_jack_client::shutdown(void *arg)
 {
 	tX_error("tX_jack_client::shutdown() jack daemon has shut down. Bad!");
-	if (instance) instance->jack_shutdown=true;
+	instance.jack_shutdown=true;
 }
 
 int tX_jack_client::process(jack_nframes_t nframes, void *arg)
 {
-	if (instance) {
-		return instance->play(nframes);
-	}
+	return instance.play(nframes);
 	
 	/* Hmm, what to do in such a case? */
 	return 0;
@@ -468,11 +462,13 @@ int tX_audiodevice_jack::open()
 	tX_jack_client *jack_client=tX_jack_client::get_instance();
 	
 	if (jack_client) {
-		sample_rate=jack_client->get_sample_rate();
-		client=jack_client;
-		is_open=true;
-		
-		return 0;
+		if (jack_client->init()) {
+			sample_rate=jack_client->get_sample_rate();
+			client=jack_client;
+			is_open=true;
+			
+			return 0;
+		}
 	}
 	
 	return 1;

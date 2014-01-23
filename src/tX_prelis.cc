@@ -118,7 +118,7 @@ void prelis_start(char *name) {
 		else
 #endif
 #ifdef USE_SOX_INPUT		
-			execlp("sox", "sox", nm, "-t", "oss", "-b", "16", "-e", "signed-integer", dev, NULL);
+			execlp("play", "play", "-q", nm, NULL);
 #else
 			exit(0);
 #endif			

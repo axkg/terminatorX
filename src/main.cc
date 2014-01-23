@@ -239,7 +239,11 @@ int main(int argc, char **argv)
 	LADSPA_Plugin::init();
 
 #ifdef USE_JACK	
-	tX_jack_client::init();
+	if (globals.audiodevice_type == JACK) {
+		// only init jack interface when chosen via configuration
+		// to allow wiring of jack in-/outputs
+		tX_jack_client::get_instance()->init();
+	}
 #endif	
 
 #ifdef USE_SCHEDULER
@@ -283,11 +287,6 @@ int main(int argc, char **argv)
 	store_globals();
 
 	delete engine;
-#ifdef USE_JACK	
-	if (tX_jack_client::get_instance()) {
-		delete tX_jack_client::get_instance();
-	}
-#endif // USE_JACK
 	
 	fprintf(stderr, "Have a nice life.\n");
 #else // CREATE_BENCHMARK
