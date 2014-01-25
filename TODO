@@ -3,14 +3,13 @@ terminatorX TODO:
 DISCLAIMER: I might implement some of these features in random order. You can 
 accelerate development of a certain feature by sending me a patch ;)
 
-- Now, that stereo LADSPA plugins are done, I'd really like to:
-  Find a replacement for DGA mouse grabbing as that has some problems and 
-  might be gone sometime from now.
+- GTK3 port
+
+- Find DGA replacement as X11 is about to vanish
+
+- Stereo turntables
   
 - Drop audio loaders use gstreamer-based streaming instead.
 
 - Implement a sequencer editor GUI to delete, copy & paste, edit event etc.
 
-- Support other languages.
-
-- Support multiple audio devices in parallel maybe?

@@ -4,7 +4,6 @@ There are several things you can do to improve terminatorX performance:
 2. Install suid root
 3. Compile an optimized binary
 4. Optimize your terminatorX setup
-5. Optimize your kernel
 
 In Detail:
 
@@ -46,12 +45,3 @@ The default settings for the GUI updates provide good realtime feedback. This
 may cause problems on slower machines or evil gtk+-themes. If the GUI-thread
 causes dropouts in the audio-engine you should increase the Update-Delay value 
 in the options dialog.
-
-5. Optimize your kernel
------------------------
-
-2.6 Kernels have much lower latency than previous versions - if you prefer 2.4
-Kernels however, I recommend patching the 2.4 Series with Con Kolivas' "ck" 
-patches. They improve terminatorX performace signifcantly - if you dont forget 
-to renice your X to '0' (see Con Kolivas' FAQ at 
-http://members.optusnet.com.au/ckolivas/kernel/).
