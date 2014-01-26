@@ -42,8 +42,8 @@
 #include "tX_sequencer.h"
 #include "tX_mastergui.h"
 #include "tX_knobloader.h"
-#include "tX_glade_interface.h"
-#include "tX_glade_support.h"
+#include "tX_ui_interface.h"
+#include "tX_ui_support.h"
 #include <sys/time.h>
 #include <sys/wait.h>
 #include "tX_midiin.h"

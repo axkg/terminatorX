@@ -35,8 +35,8 @@
 #include <string.h>
 #include <gdk/gdk.h>
 #include "tX_icon.h"
-#include "tX_glade_interface.h"
-#include "tX_glade_support.h"
+#include "tX_ui_interface.h"
+#include "tX_ui_support.h"
 
 #include "tX_widget.h"
 #include "tX_flash.h"

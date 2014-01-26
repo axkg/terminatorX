@@ -49,8 +49,8 @@
 #include "tX_ladspa.h"
 #include "tX_ladspa_class.h"
 #include "tX_engine.h"
-#include "tX_glade_interface.h"
-#include "tX_glade_support.h"
+#include "tX_ui_interface.h"
+#include "tX_ui_support.h"
 #include "tX_dialog.h"
 
 #ifdef USE_DIAL

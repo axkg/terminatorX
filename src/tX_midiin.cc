@@ -34,8 +34,8 @@
 
 #include "tX_midiin.h"
 #include "tX_vtt.h"
-#include "tX_glade_interface.h"
-#include "tX_glade_support.h"
+#include "tX_ui_interface.h"
+#include "tX_ui_support.h"
 #include "tX_dialog.h"
 #include "tX_mastergui.h"
 

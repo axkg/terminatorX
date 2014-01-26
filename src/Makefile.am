@@ -34,8 +34,8 @@ terminatorX_SOURCES =	tX_endian.c tX_dialog.cc tX_widget.c wav_write.c \
 			tX_extdial.h tX_extdial.cc tX_panel.h tX_panel.cc \
 			tX_ladspa.h tX_ladspa.cc tX_vttfx.h tX_vttfx.cc \
 			tX_legacy_vtt.cc tX_legacy_global.c \
-			tX_midiin.h tX_midiin.cc tX_glade_interface.cc \
-			tX_glade_interface.h tX_glade_callbacks.cc \
-			tX_glade_callbacks.h tX_glade_support.cc \
-			tX_glade_support.h tX_ladspa_class.h tX_ladspa_class.cc \
+			tX_midiin.h tX_midiin.cc tX_ui_interface.cc \
+			tX_ui_interface.h tX_ui_callbacks.cc \
+			tX_ui_callbacks.h tX_ui_support.cc \
+			tX_ui_support.h tX_ladspa_class.h tX_ladspa_class.cc \
 			tX_capabilities.h tX_capabilities.cc
