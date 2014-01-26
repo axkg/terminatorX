@@ -24,9 +24,9 @@
 
 #include <gtk/gtk.h>
 
-#include "tX_glade_callbacks.h"
-#include "tX_glade_interface.h"
-#include "tX_glade_support.h"
+#include "tX_ui_callbacks.h"
+#include "tX_ui_interface.h"
+#include "tX_ui_support.h"
 #include "tX_dialog.h"
 #include "tX_global.h"
 #include "tX_mastergui.h"
