@@ -1242,9 +1242,9 @@ int  vtt_class :: save(FILE *rc, gzFile rz, char *indent) {
 	store_float_sp("echo_pan", ec_pan, sp_ec_pan);
 	store_float_sp("echo_volume", ec_volume, sp_ec_volume);
 	
-	store_id("speed", sp_speed.get_persistence_id());
-	store_id("trigger", sp_trigger.get_persistence_id());
-	store_id("spin", sp_spin.get_persistence_id());
+	store_id_sp("speed", sp_speed);
+	store_id_sp("trigger", sp_trigger);
+	store_id_sp("spin", sp_spin);
 	
 	if (x_par) {
 		store_int("x_axis_mapping", x_par->get_persistence_id());
@@ -1360,9 +1360,9 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 			restore_float_id("echo_pan", ec_pan, sp_ec_pan, ec_set_pan(ec_pan));
 			restore_float_id("echo_volume", ec_volume, sp_ec_volume, ec_set_volume(ec_volume));		
 		
-			restore_id("speed", sp_speed);	
-			restore_id("trigger", sp_trigger);
-			restore_id("spin", sp_spin);
+			restore_sp_id("speed", sp_speed);	
+			restore_sp_id("trigger", sp_trigger);
+			restore_sp_id("spin", sp_spin);
 	
 			restore_int("x_axis_mapping", xpar_id);
 			restore_int("y_axis_mapping", ypar_id);

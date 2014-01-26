@@ -223,10 +223,12 @@ extern int _store_compress_xml;
 #define store_float_id(s, i, id); tX_store((sizeof(i)>4) ? "%s<%s id=\"%i\">%lf</%s>\n" : "%s<%s id=\"%i\">%f</%s>\n", indent, s, id, i, s);
 #define store_bool_id(s, i, id); tX_store("%s<%s id=\"%i\">%s</%s>\n", indent, s, id, i ? "true" : "false", s);
 
+#define store_id_sp(name, sp); { tX_store("%s<%s ", indent, name); sp.store_meta(rc, rz); tX_store("/>\n"); }
 #define store_int_sp(name, i, sp); { tX_store("%s<%s ", indent, name); sp.store_meta(rc, rz); tX_store(">%i</%s>\n", (int) i, name); }
 #define store_float_sp(name, i, sp); { tX_store("%s<%s ", indent, name); sp.store_meta(rc, rz); tX_store((sizeof(i)>4) ? ">%lf</%s>\n" : ">%f</%s>\n" , i, name); }
 #define store_bool_sp(name, i, sp); { tX_store("%s<%s ", indent, name); sp.store_meta(rc, rz); tX_store(">%s</%s>\n", i ? "true" : "false", name); }
 
+#define restore_sp_id(s, sp); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; sp.restore_meta(cur); }
 #define restore_int_id(s, i, sp, init); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) { sscanf((char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%i", &i);  init; } sp.restore_meta(cur); }
 #define restore_float_id(s, i, sp, init); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if  (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {sscanf((char *) xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), "%lf", &dvalue); i=dvalue; init; } sp.restore_meta(cur);}
 #define restore_bool_id(s, i, sp, init); if ((!elementFound) && (!xmlStrcmp(cur->name, (const xmlChar *) s))) { elementFound=1; if (xmlNodeListGetString(doc, cur->xmlChildrenNode, 1)) {if (xmlStrcmp(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1),  (const xmlChar *) "true")==0) i=true; else i=false; init; } sp.restore_meta(cur);}
