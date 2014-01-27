@@ -22,16 +22,6 @@
     		 class implemented in tX_vtt.cc. This code is not in tX_vtt.cc
 		 for mainly to keep the GUI code divided from the audio-rendering
 		 code and as gtk+ callback to C++ method call wrapper.
-		 
-    Changes:
-    
-    before 11-26-2001: too many changes.
-    
-    11-26-2001: applied Adrian's solo/mute patch - Alex
-    
-    11-27-2001: modified solo/mute to use the set_mix_mute/solo function
-    		of the vtts. The previous approach messed up the sequencer
-		and more. Removed some old unnecessary code, too.
 */    
 
 #include <gdk/gdk.h>

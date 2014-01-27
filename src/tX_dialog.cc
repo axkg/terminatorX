@@ -21,10 +21,6 @@
     Description: Contains the implementation of the Options and About
     		 Dialogs. (And some really ugly "WE WANT TO 
 		 TYPE LESS" macros)
-		 
-    Changes:
-    
-    28 Jul 1999: Now display compiletime settings in the about dialog.
 */    
 
 #include "config.h"

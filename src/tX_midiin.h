@@ -19,10 +19,6 @@
     File: tX_midiin.h
  
     Description: Header to tX_midiin.cc
-	
-	Changes (Alexander König <alex@lisas.de>:
-	- Default Constructor for tX_midievents
-	- new handlers for destroy and remove binding events
 */    
 
 #ifndef _tx_midiin_h

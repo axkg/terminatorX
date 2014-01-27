@@ -15,20 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-    
-    Changes:
-    
-    11 Mar 1999: added license hint
-    
-    20 Mar 1999: using types in sys/types for interplatform
-                 compability.
-		 
-    20 Mar 1999: support for big endian machines
-    
-    07 Apr 1999: had to change the macros ... i wish I hadn't switched to C ..
-    
-    29 Apr 1999: hacked to work with FILE* instead of file descriptors
-    	         and support for sox and mpg123
 */
 
 /* operations for verifying and reading wav files. */

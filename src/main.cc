@@ -20,17 +20,6 @@
     
     Description: This contains the main() function. All the initializing
 	         happens here.
-    
-    Changes:
-    
-    19 Mar 1999: Applied a patch by Andrew C. Bul+hac?k (eMail: acb@zikzak.net)
-                 that fixes wavfile reading routine for the overreading bug.
-		 
-    20 Mar 1999: Big endian support.
-    
-    23 Mar 1999: display of new keys (<-, ->)
-    
-    4 October 1999: Rewrite ;) - back to C++
 */
 
 #define TX_GTKRC "/usr/share/themes/terminatorX/gtk/gtkrc"

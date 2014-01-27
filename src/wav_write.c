@@ -15,19 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-    
-    Changes:
-    
-    11 Mar 1999: -added license hint
-                 -added return statement in rewrite_head
-		 
-    20 Mar 1999: -using sys/types.h for type sizes for interplatform
-		 compatibility
-
-    22 Mar 1999: removed some wav-tools bugs (handling 8-Bit
-                 values as 16Bit integers) 
-		 
-    29 Apr 1999: hacked to use FILE* instead of file descriptors
 */
 
 #include <stdio.h>
