@@ -1325,8 +1325,6 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 	int xpar_id=-1;
 	int ypar_id=-1;
 	int elementFound;
-	char *pid_attr;
-	int pid;
 	double dvalue;
 	double tmp;
 	char tmp_xml_buffer[4096];
