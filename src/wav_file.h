@@ -15,18 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-    
-    Changes:
-    
-    11 Mar 1999: -added license hint
-                 -slight changes for use with terminatorX
-
-    20 Mar 1999: now includes sys/types.h and uses types
-                 defined there for interplatform compability. 
-		
-    28 Apr 1999: switch from filedescriptors to FILE*
-    
-    29 Apr 1999: added sox and mpg123 support
 */
 
 #ifdef __cplusplus

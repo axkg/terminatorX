@@ -21,17 +21,6 @@
     Description: Contains the code that does the real "Scratching
     		 business": XInput, DGA, Mouse and Keyboardgrabbing
 		 etc.
-
-    02 Jun 1999: Implemented high-priority/rt-FIFO-Scheduling use for
-                 engine-thread.
-		 
-    04 Jun 1999: Changed warp-feature behaviour: still connected to
-                 mouse-speed (should be changed to maybe) but now
-		 depends on sample size -> you can warp through all
-		 samples with the same mouse-distance.
-		 
-    12 Aug 2002: Complete rewrite - tX_engine is now a class and the thread
-	is created on startup and kept alive until termination
 */    
 
 #include <config.h>

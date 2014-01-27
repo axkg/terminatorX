@@ -19,17 +19,6 @@
   File: tX_midiin.cc
  
   Description: Implements MIDI input to control turntable parameters.
-  
-	Changes (Alexander König <alex@lisas.de>:
-	- Using a glib GIOCallback instead of polling events
-	- Updating the treeview immedialtey after bind/unbind_clicked
-	- Adding "remove binding" option
-	- Adding destroy handler for the GUI
-	- moving printf to tX_* macros
-	- removing some debug code
-	for 3.81
-	- re-connect to MIDI devices
-	- auto MIDI mappings
 */    
 
 #include "tX_midiin.h"

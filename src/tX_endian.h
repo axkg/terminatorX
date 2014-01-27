@@ -19,13 +19,6 @@
     File: tX_endian.h
  
     Description: header to tX_endian.c
-    
-    27 apr 1999: include config.h to automatically recognize 
-    		 big endian machines via configure.
-		 
-    7 mar 2000:  moved from endian.{cc,h} to tX_endian.{cc,h} as
-                 the glibc includes used my endian.h when they should
-		 include <bits/endian.h>
 */    
 
 #ifndef _H_TX_ENDIAN_

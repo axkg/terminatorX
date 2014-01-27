@@ -20,10 +20,6 @@
  
     Description: Header to tX_global.c / defines the heavily used
     		 tX_global struct.
-		 
-    Changes:
-    
-    21 Jul 1999: Introduced the lowpass globals.
 */    
 
 #ifndef _TX_GLOBAL_H

@@ -18,9 +18,9 @@
  
     File: tX_loaddlg.h
  
-    Description: Header to tX_loaddlg.cc
-		 
-*/    
+    Description: Header to tX_loaddlg.cc		 
+*/
+
 #ifndef _h_tX_loaddlg
 #define _h_tX_loaddlg 1
 #define TX_LOADDLG_MODE_SINGLE 0

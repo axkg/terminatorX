@@ -21,12 +21,6 @@
     Description:  This file contains the routines for handling the
     		  "globals" block. Intializing, reading setup from
 		  disk and storing it.
-		  
-    Changes:
-    
-    21 Jul 1999: introduced the lowpass globals.
-	There were some changes in between...
-	14 Jul 2002: switched to libxml instead of binary saving.
 */    
 
 #include <config.h>

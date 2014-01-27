@@ -25,14 +25,6 @@
 		 the same time. (e.g. tx can now try to load a wavfile
 		 with the builtin routines and if that fails it'll try
 		 to load the file through sox (if available)).
-		 
-    Changes:
-	
-	13 Sept 2002 -	Wrote a seperate loading routine to be used with
-				libmad, which is significantly better then piping mpg?1?.
-				Rewrote load_piped to use realloc() instead - much easier,
-				faster and uses less memory - wish I'd known about realloc()
-				when coding load_piped() for the first time ;)
 */   
 
 
