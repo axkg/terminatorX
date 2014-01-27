@@ -516,6 +516,7 @@ void show_about(int nag)
 	GtkWidget *text;
 	GtkWidget *scroll;
 	GtkWidget *iwid;
+	GtkWidget *expander;
 	
 	/* Only raise the window if it's already open... */
 	if (about)  {
@@ -566,121 +567,72 @@ void show_about(int nag)
 		sep=gtk_hseparator_new();
 		add_about_wid_fix(sep);
 		
-		label=gtk_label_new("This is "PACKAGE" release "VERSION" - Copyright (C) 1999-2014 by Alexander König"
-		"\nSend comments, patches and scratches to: alex@lisas.de\nterminatorX-homepage: http://www.terminatorX.org");
+		label=gtk_label_new("This is "PACKAGE" release "VERSION".\nCopyright (C) 1999-2014 by Alexander König <alex@lisas.de>");
 
 		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
 		add_about_wid_fix(label);
 
 		sep=gtk_hseparator_new();
 		add_about_wid_fix(sep);
-		
-		label=gtk_label_new(
-		"Compilation flags: "
-		"sox: "
+
+		expander = gtk_expander_new("Build info");
+		GtkWidget *exbox=gtk_vbox_new(FALSE, 2);
+		gtk_container_add(GTK_CONTAINER(expander), exbox);
+		gtk_widget_show(exbox);
+
+		label=gtk_label_new("Compilation flags: "
 #ifdef USE_SOX_INPUT
-		"ON"
-#else
-	 	"OFF"
-#endif		
-		" - mpg123: "
+		" [sox]"
+#endif
 #ifdef USE_MPG123_INPUT
-		"ON"
-#else
-		"OFF"
+		" [mpg123]"
 #endif
-		" - ogg123: "
 #ifdef USE_OGG123_INPUT
-		"ON"
-#else
-		"OFF"
+		" [ogg123]"
 #endif
-		" - libmad: "
 #ifdef USE_MAD_INPUT
-		"ON"
-#else
-		"OFF"
+		" [mad]"
 #endif
-
-		" - libvorbis: "
 #ifdef USE_VORBIS_INPUT
-		"ON"
-#else
-		"OFF"
+		" [vorbis]"
 #endif
-
-		" - libaudiofile: "
 #ifdef USE_AUDIOFILE_INPUT
-		"ON"
-#else
-		"OFF"
+		" [audiofile]"
 #endif
-
-		" - MIDI: "
 #ifdef USE_ALSA_MIDI_IN
-		"ON"
-#else
-		"OFF"
+		" [midi]"
 #endif
-
-		" - OSS: "
 #ifdef USE_OSS
-		"ON"
-#else
-		"OFF"
+		" [oss]"
 #endif
-
-		" - ALSA: "
 #ifdef USE_ALSA
-		"ON"
-#else
-		"OFF"
+		" [alsa]"
 #endif
-
-		" - JACK: "
 #ifdef USE_JACK
-		"ON"
-#else
-		"OFF"
+		" [jack]"
 #endif
-
-		" - liblrdf: "
 #ifdef USE_LRDF
-		"ON"
-#else
-		"OFF"
+		" [lrdf]"
 #endif
-
-		" - rt scheduling: "
 #ifdef USE_SCHEDULER
-		"ON"
-#else
-		"OFF"
+		" [rt]"
 #endif
-
-		" - capabilities: "
 #ifdef USE_CAPABILITIES
-		"ON"
-#else
-		"OFF"
+		" [cap]"
 #endif
-
-		" - "
-#ifdef WORDS_BIGENDIAN
-		"big"
-#else
-		"little"
-#endif
-		" endian.");
+		"");
 	
 		gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
 		gtk_widget_set_size_request(label, 640, -1);
 		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
-		add_about_wid_fix(label);
+		gtk_container_add(GTK_CONTAINER(exbox), label);
+		gtk_widget_show(label);
+		add_about_wid_fix(expander);
 
 #ifdef 	USE_SCHEDULER
 		sep=gtk_hseparator_new();
-		add_about_wid_fix(sep);
+		gtk_widget_show(sep);
+		gtk_container_add(GTK_CONTAINER(exbox), sep);
 
 		char buffer[4096];
 		
@@ -689,6 +641,7 @@ void show_about(int nag)
 		
 		pthread_getschedparam(tX_engine::get_instance()->get_thread_id(), &policy, &parm);
 		char prio_str[32]="";
+		bool s_enabled = false;
 		
 		switch (policy) {
 			case SCHED_OTHER:
@@ -701,28 +654,28 @@ void show_about(int nag)
 			
 			case SCHED_FIFO:
 				strcpy(prio_str, "SCHED_FIFO");
+				s_enabled = true;
 				break;
 			
 			default:
 				sprintf(prio_str, "UNKOWN (%i)", policy);
 		}
 		
-		sprintf(buffer, "Audio engine scheduling policy: %s.\n(Note: SCHED_FIFO equals realtime scheduling.)", prio_str);
+		sprintf(buffer, "Audio engine scheduling policy: %s.\nScheduling with realtime priority is %s.", prio_str, s_enabled ? "enabled" : "disabled");
 
 		label=gtk_label_new(buffer);
 
 		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
-		add_about_wid_fix(label);
+		gtk_widget_show(label);
+		gtk_container_add(GTK_CONTAINER(exbox), label);
 #endif
 
 		sep=gtk_hseparator_new();
 		add_about_wid_fix(sep);
 
-		label=gtk_label_new("License (GPL V2):");
-		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
-		add_about_wid_fix(label);
+		expander = gtk_expander_new("License (GPL V2):");
 
-		hbox=gtk_hbox_new(FALSE, 5);		
+		add_about_wid_fix(expander);
 
 		GtkTextIter iter;
 		GtkTextBuffer *tbuffer;
@@ -744,11 +697,9 @@ void show_about(int nag)
 		gtk_widget_set_size_request(GTK_WIDGET(text), 640, 200);
 		gtk_widget_show(text);		
 		
-		gtk_box_pack_start(GTK_BOX(hbox), scroll, WID_DYN);
+		gtk_container_add(GTK_CONTAINER(expander), scroll);
 		gtk_widget_show(scroll);		
 		
-		add_about_wid(hbox);
-
 		sep=gtk_hseparator_new();
 		add_about_wid_fix(sep);
 
