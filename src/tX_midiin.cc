@@ -318,18 +318,22 @@ void tX_midiin::midi_binding_gui::unbind_clicked( GtkButton *button, gpointer _t
 	tX_seqpar* param;
 
 	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(this_->parameter_treeview) );
-	gtk_tree_selection_get_selected( selection, &model, &iter );
-	gtk_tree_model_get( model, &iter, 2, &param, -1 );
 	
-	param->bound_midi_event.type=tX_midievent::NONE;
-	param->bound_midi_event.number=0;
-	param->bound_midi_event.channel=0;
-	
-	snprintf( tmpstr, sizeof(tmpstr), "Type: %d, Number: %d, Channel: %d",
-				param->bound_midi_event.type, param->bound_midi_event.number,
-				param->bound_midi_event.channel );
+	if (gtk_tree_selection_get_selected( selection, &model, &iter)) {
+		gtk_tree_model_get( model, &iter, 2, &param, -1 );
+		
+		param->bound_midi_event.type=tX_midievent::NONE;
+		param->bound_midi_event.number=0;
+		param->bound_midi_event.channel=0;
+		
+		snprintf( tmpstr, sizeof(tmpstr), "Type: %d, Number: %d, Channel: %d",
+					param->bound_midi_event.type, param->bound_midi_event.number,
+					param->bound_midi_event.channel );
 
-	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, param->get_name(), 1, tmpstr, 2, param, -1 );	
+		gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, param->get_name(), 1, tmpstr, 2, param, -1 );
+	} else {
+		tx_note("Please select a parameter to unbind first.", true, GTK_WINDOW(this_->window));
+	}
 }
 
 
@@ -343,16 +347,22 @@ void tX_midiin::midi_binding_gui::bind_clicked( GtkButton *button, gpointer _thi
 	tX_seqpar* param;
 
 	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(this_->parameter_treeview) );
-	gtk_tree_selection_get_selected( selection, &model, &iter );
-	gtk_tree_model_get( model, &iter, 2, &param, -1 );
 	
-	param->bound_midi_event = this_->last_event;
-	
-	snprintf( tmpstr, sizeof(tmpstr), "Type: %d, Number: %d, Channel: %d",
-				param->bound_midi_event.type, param->bound_midi_event.number,
-				param->bound_midi_event.channel );
-
-	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, param->get_name(), 1, tmpstr, 2, param, -1 );	
+	if (gtk_tree_selection_get_selected( selection, &model, &iter )) {
+		gtk_tree_model_get( model, &iter, 2, &param, -1 );
+		if (this_->last_event.type != tX_midievent::NONE) {
+			param->bound_midi_event = this_->last_event;
+			snprintf( tmpstr, sizeof(tmpstr), "Type: %d, Number: %d, Channel: %d",
+					param->bound_midi_event.type, param->bound_midi_event.number,
+					param->bound_midi_event.channel );
+					
+			gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, param->get_name(), 1, tmpstr, 2, param, -1 );	
+		} else {
+			tx_note("Please send midi event to bind first.", true, GTK_WINDOW(this_->window));
+		}
+	} else {
+		tx_note("Please select a parameter to bind first.", true, GTK_WINDOW(this_->window));
+	}
 }
 
 void tX_midiin::midi_binding_gui::close_clicked( GtkButton *button, gpointer _this )
