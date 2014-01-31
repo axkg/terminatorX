@@ -18,7 +18,7 @@ Read that fine Manual:
     o ./INSTALL             - Information on installing terminatorX
     o ./README.GNOME        - Some hints on GNOME-integration
     o ./README.PERFORMANCE  - Some hints on tuning terminatorX
-    o ./doc/terminatorX-manual/C/terminatorX-manual.xml
+    o ./help/C/terminatorX-manual.xml
                             - The user manual browsable with "yelp"
                               (yelp is the gnome2 help browser).
     o ./COPYING             - The license

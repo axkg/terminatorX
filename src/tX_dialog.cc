@@ -510,7 +510,6 @@ void show_about(int nag)
 	GtkWidget *window;
 	GtkWidget *btn;
 	GtkWidget *box;
-	GtkWidget *hbox;
 	GtkWidget *label;
 	GtkWidget *sep;
 	GtkWidget *text;

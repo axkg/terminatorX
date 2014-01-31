@@ -1,8 +1,9 @@
 #!/bin/sh
 
 echo Creating files required for building terminatorX...
-aclocal
+gnome-doc-prepare --force --automake
+aclocal -Wno-portability
 autoheader
-automake --add-missing
-autoconf
+automake --add-missing -Wno-portability
+autoconf 
 echo Now run \"./configure\"
