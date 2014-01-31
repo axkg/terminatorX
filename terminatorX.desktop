@@ -1,5 +1,7 @@
 [Desktop Entry]
+Version=1.0
 Exec=terminatorX
+Encoding=UTF-8
 Name=terminatorX
 GenericName=Virtual turntable
 Comment=Versatile DJ scratching and mixing application.

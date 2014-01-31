@@ -64,8 +64,8 @@ uname -a|grep SMP && make -j 2 || make
 
 MIMEDIR=$RPM_BUILD_ROOT%{_datadir}/mime-info
 ICONDIR=$RPM_BUILD_ROOT%{_datadir}/pixmaps
-ICONS="gnome-support/terminatorX-app.png gnome-support/terminatorX-mime.png"
-MIMEFILES="gnome-support/terminatorX.keys gnome-support/terminatorX.mime"
+ICONS="icons/terminatorX-app.png icons/terminatorX-mime.png"
+MIMEFILES="icons/terminatorX.keys icons/terminatorX.mime"
 
 mkdir -p $MIMEDIR
 mkdir -p $ICONDIR

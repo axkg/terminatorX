@@ -1,17 +1,28 @@
 <?xml version='1.0'?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+	  <!ENTITY version "3.90">
+	  <!ENTITY date "2014-01-31">
+]>
 <article id="index" lang="en">
 
   <articleinfo>
+	<abstract role="description">terminatorX is a realtime audio synthesizer that allows you
+      to "scratch" on digitally sampled audio data (*.wav, *.au, *.ogg,
+      *.mp3, etc.) the way hiphop-DJs scratch on vinyl records.</abstract>
 
     <title>terminatorX - Manual</title>
 
-    <author><firstname>Alexander</firstname><surname>König</surname></author>
+    <author role="maintainer"><firstname>Alexander</firstname><surname>König</surname></author>
 
-    <copyright><year>1999</year><year>2000</year><year>2001</year><year>2002</year><year>2003</year><year>2004</year><year>2005</year><year>2006</year>
-    <holder role="mailto:alex@lisas.de">Alexander 
-    König</holder></copyright>
-    <releaseinfo>Version 3.84</releaseinfo>
+    <copyright><year>1999</year><year>2000</year><year>2001</year><year>2002</year><year>2003</year><year>2004</year><year>2005</year><year>2006</year><year>2014</year>
+    <holder role="mailto:alex@lisas.de">Alexander König</holder></copyright>
+    <revhistory>
+	<revision>
+        <revnumber>terminatorX Manual &version;</revnumber>
+        <date>&date;</date>
+      </revision>
+    </revhistory>
+    <releaseinfo>Version &version;</releaseinfo>
 
     <legalnotice id="legalnotice">
 

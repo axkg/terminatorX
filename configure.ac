@@ -1,6 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(src/tX_global.h)
-AM_INIT_AUTOMAKE(terminatorX, 3.89)
+AC_INIT([terminatorX], [3.89])
+AC_CONFIG_SRCDIR([src/tX_global.h])
+AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(sox,		[  --enable-sox            use sox as input converter. (default=auto) ])
@@ -46,7 +47,6 @@ OPTION_OGG123="no"
 OPTION_VORBIS="no"
 OPTION_AUDIOFILE="no"
 OPTION_WAV="no"
-OPTION_GNOME="no"
 OPTION_SCHEDULER="no"
 OPTION_ALSAMIDI="no"
 OPTION_LEGACY="no"
@@ -496,27 +496,6 @@ dnl if test "$enable_dga2" = yes; then
 dnl 	AC_DEFINE(USE_DGA2)
 dnl fi
 
-GNOMEpresent=fl
-
-AC_MSG_CHECKING(for GNOME)
-	AC_MSG_RESULT([in progress])
-	AC_CHECK_PROG(gnomepresent, gnome-name-service, yes, no)
-	if test "$gnomepresent" = yes; then
-		AC_CHECK_PROG(gnomeconfig, gnome-config, yes)
-		if test "$gnomeconfig" = yes; then
-			gnomedatadir=`gnome-config --datadir`
-		else
-			gnomedatadir=${datadir}
-		fi
-		AC_SUBST(gnomedatadir)
-   		AC_MSG_RESULT([Found GNOME - installing terminatorX.desktop.])
-		OPTION_GNOME="yes"
-    	else
-   		AC_MSG_RESULT([GNOME not found.])
-    	fi
-	AM_CONDITIONAL(GNOMEpresent, test "$gnomepresent" = yes)
-
-
 dnl Detecting libxml. Based on dia's test.
 found_libxml=false
 
@@ -565,16 +544,6 @@ fi
 AC_SUBST(XML_LIBS)
 AC_SUBST(XML_CFLAGS)
 
-if test "$prefix" != "NONE"; then
-	xml_man="\\\"$datadir/terminatorX/doc/terminatorX-manual/C/terminatorX-manual.xml\\\""
-else
-	xml_man="\\\"/usr/local/share/terminatorX/doc/terminatorX-manual/C/terminatorX-manual.xml\\\""
-fi
-
-if test "$with_docdir" != ""; then
-	xml_man="\\\"$with_docdir/terminatorX/doc/terminatorX-manual/C/terminatorX-manual.xml\\\""
-fi
-
 if test "$enable_lrdf" != "no"; then
     AC_MSG_CHECKING(for liblrdf >= 0.2.4)
 	LRDF_VERS=`$PKG_CONFIG --modversion lrdf | sed -e "s/libxml //" | awk 'BEGIN {FS=".";} { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
@@ -596,11 +565,10 @@ if test "$enable_lrdf" != "no"; then
 
 fi
 
-dnl Scrollkeeper
-AC_PATH_PROG(SK_CONFIG,scrollkeeper-config,no)
-if test x$SK_CONFIG = xno; then
-  AC_MSG_ERROR(Couldn't find scrollkeeper-config. Please install the scrollkeeper package: http://scrollkeeper.sourceforge.net)
-fi
+dnl User Manual
+GNOME_DOC_INIT
+
+xml_man="\\\"${datadir}/gnome/help/terminatorX-manual/C/terminatorX-manual.xml\\\""
 
 dnl Now Check for Xlibs - I do this here as other tests fail if these run earlier
 AC_PATH_XTRA
@@ -625,12 +593,10 @@ LIBS="$XML_LIBS $LIBS"
 
 AC_OUTPUT(Makefile 
 	src/Makefile 
-	gnome-support/Makefile 
-	gnome-support/terminatorX.keys 
+	icons/Makefile 
 	src/icons/Makefile 
-	doc/Makefile 
-	doc/terminatorX-manual/Makefile
-	doc/terminatorX-manual/C/Makefile	
+	help/Makefile
+	terminatorX.keys 
 	terminatorX.spec 
 	terminatorX.1)
 
@@ -691,6 +657,5 @@ echo "legacy files support: $OPTION_LEGACY"
 echo "builtin-wav support: $OPTION_WAV"
 echo "enhanced scheduling support: $OPTION_SCHEDULER"
 echo "capabilities support: $OPTION_CAP"
-echo "GNOME support: $OPTION_GNOME"
 echo
 echo You can now run \'make\' to compile terminatorX
