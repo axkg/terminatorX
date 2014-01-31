@@ -29,6 +29,7 @@
 #include "tX_extdial.h"
 #include "tX_engine.h"
 #include <malloc.h>
+#include <string.h>
 
 #define TX_SEQPAR_DEFAULT_SCALE 0.05
 

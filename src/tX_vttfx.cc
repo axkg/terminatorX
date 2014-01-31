@@ -27,6 +27,7 @@
 #include "tX_vtt.h"
 #define myvtt ((vtt_class *) vtt)
 #include "tX_global.h"
+#include <string.h>
 
 float ladspa_dummy_output_port;
 

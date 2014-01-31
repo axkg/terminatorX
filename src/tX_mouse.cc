@@ -47,6 +47,7 @@
 #include "tX_engine.h"
 #include "tX_vtt.h"
 #include <stdlib.h>
+#include <string.h>
 
 #define TX_MOUSE_SPEED_NORMAL 0.05
 #define TX_MOUSE_SPEED_WARP 250000

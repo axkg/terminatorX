@@ -40,6 +40,8 @@
 
 #include "tX_loaddlg.h"
 
+#include <string.h>
+
 #define USE_PREFETCH 1
 
 #ifdef USE_PREFETCH
