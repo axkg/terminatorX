@@ -35,6 +35,7 @@
 #include <glib.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
+#include <gtk/gtk.h>
 
 /* Use old gdk keys if the new ones are not yet defined */
 
