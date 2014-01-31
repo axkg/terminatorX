@@ -49,6 +49,7 @@
 #include "tX_flash.h"
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
 #define WID_DYN TRUE, TRUE, 0
 #define WID_FIX FALSE, FALSE, 0
