@@ -19,7 +19,7 @@
  
     Description: Aquire CAP_SYS_NICE through Linux' capabilities.
 */    
-
+#include <sys/types.h>
 #include "tX_capabilities.h"
 #include "tX_global.h"
 #include <errno.h>
