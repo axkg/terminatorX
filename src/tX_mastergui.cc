@@ -1825,9 +1825,11 @@ gboolean help_checker()
 			g_source_remove(help_tag);
 			help_tag=-1;
 		}
-	} else {
-		/* We are still here and the child exited - that could mean trouble. */
-		tx_note("Couldn't run the gnome-help command (alias \"yelp\") to display the terminatorX manual. Please ensure that \"yelp\" is installed.", true);		
+	}  else {
+		//yelp waitpid status does not allow determining success
+		//printf("%i %i\n", WIFEXITED(status), WEXITSTATUS(status));
+		///* We are still here and the child exited - that could mean trouble. */
+		//tx_note("Couldn't run the gnome-help command (alias \"yelp\") to display the terminatorX manual. Please ensure that \"yelp\" is installed.", true);		
 		
 		g_source_remove(help_tag);
 		help_tag=-1;
@@ -1853,8 +1855,7 @@ void display_help()
 	
 	if (help_child==0) {
 		// child
-		// execlp("gnome-help","gnome-help","ghelp:/" INSTALL_PREFIX "/terminatorX/doc/terminatorX-manual/C/terminatorX-manual.xml", NULL);
-		execlp("gnome-help","gnome-help","ghelp://" XML_MANUAL, NULL);		
+		execlp("gnome-help","gnome-help","file://" XML_MANUAL, NULL);		
 		_exit(-1);
 	} else if (help_child==-1) {
 		tx_note("System error: couldn't fork() to run the help process.", true);

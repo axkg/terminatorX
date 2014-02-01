@@ -81,8 +81,11 @@ FILE* open_wav(char *header, char file_name[], int *mode){
 	FILE* handle;
 	handle = fopen(file_name, "r");
 	if(handle)
-	fread((char *) header, 1, 44, handle); // TODO: What about res?
-	return(handle);
+	if (fread((char *) header, 1, 44, handle) != 44) {
+		fclose(handle);
+		handle = NULL;
+	}
+	return handle;
 }
 
 int16_t get_wav_format(wav_sig *info){
