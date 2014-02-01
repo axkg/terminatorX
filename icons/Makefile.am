@@ -5,7 +5,7 @@ context = apps
 iconsdir = $(themedir)/$(size)/$(context)
 
 icons_DATA = \
-	terminatorX-app.png\
+	terminatorX.png\
 	terminatorX-mime.png
 
 EXTRA_DIST = \
