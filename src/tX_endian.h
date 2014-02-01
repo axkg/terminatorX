@@ -33,13 +33,8 @@
 #endif
 
 #ifdef WORDS_BIGENDIAN
-
 #	include "tX_types.h"
-
-#define __USE_XOPEN // we need this for swab()
 #	include <unistd.h>
-#undef __USE_XOPEN
-
 #define swapbuffer(b, s) swab((void *) b, (void *) b, (ssize_t) s<<1)
 
 static inline void swap32_inline(int32_t *val) {
