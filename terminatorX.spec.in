@@ -1,120 +1,190 @@
-%define name terminatorX
-%define version @VERSION@
-%define release 1
+Summary:	Real-time Audio Synthesizer
+Name:		%{name}
+Version:	%{version}
+Release:	%{release}%{?dist}
+Group:		Applications/Multimedia
+License:	GPLv2+ and GFDL
+URL:		http://terminatorX.org
+Source0:	http://terminatorX.org/dist/%{name}-%{version}.tar.gz
 
-Summary: Realtime Audio Synthesizer
-Name: %{name}
-Version: %{version}
-Release: %{release}
-Group: Applications/Multimedia
-Copyright: GPL2
-URL: http://www.terminatorX.org
-Source: %{name}-%{version}.tar.gz
-Buildroot: %{_tmppath}/%{name}-%{version}-root
-Requires: gtk2, libvorbis, audiofile, libxml2, zlib, scrollkeeper, yelp, sox, vorbis-tools, libcap
-BuildPrereq: gtk2-devel, libvorbis-devel, audiofile-devel, libxml2-devel, scrollkeeper, libcap-devel
+BuildRequires: alsa-lib-devel
+BuildRequires: audiofile-devel
+BuildRequires: desktop-file-utils
+BuildRequires: gnome-libs-devel
+BuildRequires: gtk2-devel
+BuildRequires: jack-audio-connection-kit-devel
+BuildRequires: ladspa-devel
+BuildRequires: libcap-devel
+BuildRequires: liblrdf-devel
+BuildRequires: libmad-devel
+BuildRequires: libvorbis-devel 
+BuildRequires: libxml2-devel
+BuildRequires: libXxf86dga-devel 
+BuildRequires: mpg321
+BuildRequires: scrollkeeper
+BuildRequires: sox
+BuildRequires: vorbis-tools 
 
+Requires:      mpg321
+Requires:      sox
+Requires:      vorbis-tools
+
+Requires(post): scrollkeeper
+Requires(postun): scrollkeeper
 %description
-terminatorX is a realtime audio synthesizer that allows you to "scratch" on 
+terminatorX is a real-time audio synthesizer that allows you to "scratch" on 
 digitally sampled audio data (*.wav, *.au, *.ogg, *.mp3, etc.) the way 
-hiphop-DJs scratch on vinyl records. It features multiple turntables, realtime
-effects (buit-in as well as LADSPA plugin effects), a sequencer and MIDI
+hiphop-DJs scratch on vinyl records. It features multiple turntables, real-time
+effects (buit-in as well as LADSPA plug-in effects), a sequencer and MIDI
 interface - all accessible through an easy-to-use gtk+ GUI.
 
-%changelog
-* Mon Aug 18 2003 Alexander König <alex@lisas.de>
- - added libcap dependency
-* Fri Apr 11 2003 Alexander König <alex@lisas.de>
- - disabled the suid root stuff
-* Fri Apr 11 2003 Alexander König <alex@lisas.de>
- - scrollkeeper changes and updates
-* Sat Sep 14 2002 Alexander König <alex@lisas.de>
- - Switch from xpm to pngs for GNOME icons
-* Fri May 31 2002 Alexander König <alex@lisas.de>
- - Added Adrian's man page
-* Tue Mar 20 2001 Adrian Reber <adrian@lisas.de>
- - Updated to 3.71
-* Sat Dec 09 2000 Adrian Reber <adrian@lisas.de>
- - Updated to 3.70
-* Wed Apr 12 2000 Adrian Reber <adrian@lisas.de>
- - Updated to 3.60
-* Wed Feb 23 2000 Adrian Reber <adrian@42.fht-esslingen.de>
- - Mandrake adaptations.
-* Thu Feb 14 2000 Adrian Reber <adrian@42.fht-esslingen.de>
- - Updated to 3.55
-* Thu Dec 17 1999 Adrian Reber <adrian@42.fht-esslingen.de>
- - Updated to 3.5
-* Thu Jul 29 1999 Adrian Reber <adrian@rhlx01.fht-esslingen.de>
- - Updated to 3.2
-* Fri May 07 1999 Adrian Reber <adrian@rhlx01.fht-esslingen.de>
- - Initial release
-
 %prep
-
 %setup -q
 
 %build
-%configure --with-docdir=/usr/share
-
-uname -a|grep SMP && make -j 2 || make
+%configure
+make %{?_smp_mflags}
 
 %install
+make install DESTDIR=%{buildroot}
 
-%makeinstall
+# install mime files
+mkdir -p %{buildroot}%{_datadir}/mime-info
+install -pm 0644 terminatorX.keys %{buildroot}%{_datadir}/mime-info
+install -pm 0644 terminatorX.mime %{buildroot}%{_datadir}/mime-info
 
-MIMEDIR=$RPM_BUILD_ROOT%{_datadir}/mime-info
-ICONDIR=$RPM_BUILD_ROOT%{_datadir}/pixmaps
-ICONS="icons/terminatorX-app.png icons/terminatorX-mime.png"
-MIMEFILES="icons/terminatorX.keys icons/terminatorX.mime"
+# desktop file categories
+ADD="Audio X-Jack X-DJTools X-DigitalProcessing Sequencer"
+REMOVE="Application"
+mkdir -p %{buildroot}%{_datadir}/applications
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  `for c in ${ADD}    ; do echo "--add-category $c "    ; done` \
+  `for c in ${REMOVE} ; do echo "--remove-category $c " ; done` \
+  gnome-support/%{name}.desktop
 
-mkdir -p $MIMEDIR
-mkdir -p $ICONDIR
-
-cp $ICONS $ICONDIR
-cp $MIMEFILES $MIMEDIR
-
-( cd $RPM_BUILD_ROOT%{_datadir}
-  mkdir -p ./gnome/apps/Multimedia
-  cat > ./gnome/apps/Multimedia/terminatorX.desktop <<EOF
-[Desktop Entry]
-Name=terminatorX
-Type=Application
-Comment=sophisticated scratching and audio tool
-Exec=terminatorX
-Icon=terminatorX-app.png
-EOF
-)
-
-# cleanup that scrollkeeper stuff
-rm -rf $RPM_BUILD_ROOT/var
-
-#do some cleanup for the documentation
-#find . -name "Makefile*" -print -exec rm -rf {} \;
-
-%files
-%defattr(0644,root,root,0755)
-%doc COPYING COPYING-DOCS AUTHORS ChangeLog INSTALL NEWS README THANKS TODO README.GNOME README.PERFORMANCE
-%attr(0755,root,root) %{_bindir}/terminatorX
-%{_mandir}/man1/terminatorX.1*
-%{_datadir}/mime-info/terminatorX.keys
-%{_datadir}/mime-info/terminatorX.mime
-%{_datadir}/pixmaps/terminatorX-app.png
-%{_datadir}/pixmaps/terminatorX-mime.png
-%{_datadir}/gnome/apps/Multimedia/terminatorX.desktop
-%{_datadir}/omf/terminatorX
-%{_datadir}/terminatorX
+# we don't need to package these
+rm -f %{buildroot}%{_datadir}/gnome/apps/Multimedia/%{name}.desktop
 
 %post
-if which scrollkeeper-update>/dev/null 2>&1; then scrollkeeper-update -q -o %{_datadir}/omf/terminatorX; fi
-
-echo Note: Installing terminatorX \"suid root\" improves terminatorX\' performance 
-echo for non-root users, but poses a potential security threat. See \'INSTALL\' for
-echo and \'README.PERFORMANCE\' details. If you want to take the risk (after you 
-echo have read the docs) you can execute the following command:
-echo
-echo                        chmod u+s /usr/bin/terminatorX
-echo
-echo to install terminatorX "suid root". 
+touch --no-create %{_datadir}/icons/hicolor &>/dev/null
 
 %postun
-if which scrollkeeper-update>/dev/null 2>&1; then scrollkeeper-update -q; fi
+if [ $1 -eq 0 ] ; then
+    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null
+fi
+
+%posttrans
+gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+
+%files
+%doc AUTHORS ChangeLog COPYING* NEWS README* THANKS TODO 
+%{_bindir}/%{name}
+%{_mandir}/man1/%{name}.1*
+%{_datadir}/%{name}/
+%{_datadir}/mime-info/%{name}.keys
+%{_datadir}/mime-info/%{name}.mime
+%{_datadir}/omf/*/*
+%{_datadir}/icons/hicolor/48x48/apps/*png
+%{_datadir}/applications/%{name}.desktop
+
+%changelog
+* Sat Feb 01 2014 Alexander Koenig <alex@lisas.de> - 3.90-1
+- Merge RPMFusion version
+- Drop obsolete patches
+
+* Sun Dec 08 2013 Nicolas Chauvet <kwizart@gmail.com> - 3.84-5
+- Rebuilt
+
+* Sun Mar 24 2013 Orcan Ogetbil <oged[DOT]fedora[AT]gmail[DOT]com> - 3.84-4
+- Build fix against newer zlib
+- Spec file cleanup
+
+* Sun Mar 03 2013 Nicolas Chauvet <kwizart@gmail.com> - 3.84-3
+- Mass rebuilt for Fedora 19 Features
+
+* Fri Mar 02 2012 Nicolas Chauvet <kwizart@gmail.com> - 3.84-2
+- Rebuilt for c++ ABI breakage
+
+* Sat Nov 26 2011 Orcan Ogetbil <oged[DOT]fedora[AT]gmail[DOT]com> - 3.84-1
+- Update to 3.84
+
+* Tue Mar 01 2011 Orcan Ogetbil <oged[DOT]fedora[AT]gmail[DOT]com> - 3.83-1
+- Update to 3.83
+
+* Fri Oct 23 2009 Orcan Ogetbil <oged[DOT]fedora[AT]gmail[DOT]com> - 3.82-4
+- Update desktop file according to F-12 FedoraStudio feature
+
+* Sat Apr 04 2009 Orcan Ogetbil <oget[dot]fedora[at]gmail[dot]com> - 3.82-3
+- Fix ppc/ppc64 build failure
+
+* Wed Apr 01 2009 Orcan Ogetbil <oget[dot]fedora[at]gmail[dot]com> - 3.82-2
+- Prepared package for RPMFusion submission (originates from planetccrma)
+
+* Tue Dec 11 2007 Fernando Lopez-Lezcano <nando@ccrma.stanford.edu> 
+- spec file cleanup
+
+* Wed Feb 16 2005 Fernando Lopez-Lezcano <nando@ccrma.stanford.edu> 
+- declare do_save_tables before using it (for <= fc1)
+
+* Fri Dec 31 2004 Fernando Lopez-Lezcano <nando@ccrma.stanford.edu> 3.82-1
+- updated to 3.82
+- update doc file list
+
+* Mon Dec 27 2004 Fernando Lopez-Lezcano <nando@ccrma.stanford.edu> 
+- spec file cleanup
+
+* Thu May 20 2004 Fernando Lopez-Lezcano <nando@ccrma.stanford.edu> 
+- added build dependencies
+
+* Sun Feb 29 2004 Fernando Lopez-Lezcano <nando@ccrma.stanford.edu> 3.81-2
+- rebuild for liblrdf 0.3.5
+
+* Mon Oct 20 2003 Patrice Tisserand <Patrice.Tisserand@ircam.fr> 3.81-1
+- updated for terminatorX-3.81
+- fixed building as non root user
+- still need to bez built with --define='_unpackaged_files_terminate_build 0', 
+  don't knwo what to do with scrollkeeper
+
+* Wed May  7 2003 Fernando Lopez-Lezcano <nando@ccrma.stanford.edu> 3.80-1
+- updated to 3.80
+- added proper desktop entry
+- updated file list (what to do with scrollkeeper?)
+- added clean target
+- make it build under gcc 2.96
+
+* Mon Dec  9 2002 Fernando Lopez-Lezcano <nando@ccrma.stanford.edu>
+- added patch to compile under redhat 8.0 and gcc 3.2
+- erased post warning about suid root executable
+
+* Sat Sep 14 2002 Alexander Koenig <alex@lisas.de>
+ - Switch from xpm to pngs for GNOME icons
+
+* Fri May 31 2002 Alexander Koenig <alex@lisas.de>
+ - Added Adrian's man page
+
+* Tue Mar 20 2001 Adrian Reber <adrian@lisas.de>
+ - Updated to 3.71
+
+* Sat Dec 09 2000 Adrian Reber <adrian@lisas.de>
+ - Updated to 3.70
+
+* Wed Apr 12 2000 Adrian Reber <adrian@lisas.de>
+ - Updated to 3.60
+
+* Wed Feb 23 2000 Adrian Reber <adrian@42.fht-esslingen.de>
+ - Mandrake adaptations.
+
+* Thu Feb 14 2000 Adrian Reber <adrian@42.fht-esslingen.de>
+ - Updated to 3.55
+
+* Thu Dec 17 1999 Adrian Reber <adrian@42.fht-esslingen.de>
+ - Updated to 3.5
+
+* Thu Jul 29 1999 Adrian Reber <adrian@rhlx01.fht-esslingen.de>
+ - Updated to 3.2
+
+* Fri May 07 1999 Adrian Reber <adrian@rhlx01.fht-esslingen.de>
+ - Initial release
+
