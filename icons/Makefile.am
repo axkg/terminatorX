@@ -1,20 +1,22 @@
 themedir = $(datadir)/icons/hicolor
 size = 48x48
-context = apps
+apps_context = apps
+mime_context = mimetypes
 
-iconsdir = $(themedir)/$(size)/$(context)
 
-icons_DATA = \
-	terminatorX.png\
-	terminatorX-mime.png
+mimeiconsdir = $(themedir)/$(size)/$(mime_context)
+mimeicons_DATA = \
+        terminatorX-mime.png
+
+appiconsdir = $(themedir)/$(size)/$(apps_context)
+appicons_DATA = \
+	terminatorX.png
 
 pixmapsdir = $(datadir)/pixmaps
 pixmaps_DATA = \
-        terminatorX.png\
-	terminatorX.xpm\
-        terminatorX-mime.png
-
+	terminatorX.xpm
 
 EXTRA_DIST = \
-	$(icons_DATA)\
+	$(mimeicons_DATA)\
+	$(appicons_DATA)\
 	$(pixmaps_DATA)
