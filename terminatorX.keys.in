@@ -2,4 +2,4 @@ application/x-terminatorX:
 	open=terminatorX %f
 	view=terminatorX %f
 	edit=terminatorX %f
-	icon-filename=@prefix@/share/pixmaps/terminatorX-mime.png
+	icon-filename=@prefix@/icons/hicolor/48x48/mimetypes/terminatorX-mime.png
