@@ -5,6 +5,7 @@ EXTRA_DIST = COPYING-DOCS\
 	terminatorX.spec.in\
 	gnome-doc-utils.make\
 	terminatorX.desktop\
+	autogen.sh\
 	terminatorX.mime
 
 DISTCLEANFILES = gnome-doc-utils.make
