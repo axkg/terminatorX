@@ -24,6 +24,9 @@ BuildRequires: mpg321
 BuildRequires: scrollkeeper
 BuildRequires: sox
 BuildRequires: vorbis-tools 
+BuildRequires: gcc-c++
+BuildRequires: gnome-doc-utils
+
 
 Requires:      mpg321
 Requires:      sox
@@ -178,10 +181,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Wed Feb 23 2000 Adrian Reber <adrian@42.fht-esslingen.de>
  - Mandrake adaptations.
 
-* Thu Feb 14 2000 Adrian Reber <adrian@42.fht-esslingen.de>
+* Mon Feb 14 2000 Adrian Reber <adrian@42.fht-esslingen.de>
  - Updated to 3.55
 
-* Thu Dec 17 1999 Adrian Reber <adrian@42.fht-esslingen.de>
+* Fri Dec 17 1999 Adrian Reber <adrian@42.fht-esslingen.de>
  - Updated to 3.5
 
 * Thu Jul 29 1999 Adrian Reber <adrian@rhlx01.fht-esslingen.de>
