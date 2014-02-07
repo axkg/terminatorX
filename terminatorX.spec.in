@@ -64,7 +64,7 @@ desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   `for c in ${ADD}    ; do echo "--add-category $c "    ; done` \
   `for c in ${REMOVE} ; do echo "--remove-category $c " ; done` \
-  gnome-support/%{name}.desktop
+  %{name}.desktop
 
 # we don't need to package these
 rm -f %{buildroot}%{_datadir}/gnome/apps/Multimedia/%{name}.desktop
@@ -85,10 +85,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %doc AUTHORS ChangeLog COPYING* NEWS README* THANKS TODO 
 %{_bindir}/%{name}
 %{_mandir}/man1/%{name}.1*
-%{_datadir}/%{name}/
 %{_datadir}/mime-info/%{name}.keys
 %{_datadir}/mime-info/%{name}.mime
 %{_datadir}/omf/*/*
+%{_datadir}/gnome/help/terminatorX-manual/C/figures/signalflow.png
+%{_datadir}/gnome/help/terminatorX-manual/C/terminatorX-manual.xml
 %{_datadir}/pixmaps/*xpm
 %{_datadir}/icons/hicolor/48x48/apps/*png
 %{_datadir}/icons/hicolor/48x48/mimetypes/*png
