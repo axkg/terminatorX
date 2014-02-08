@@ -58,6 +58,10 @@
 #define TX_SET_ID_13 "terminatorX turntable set file - version 1.3 - data:"
 #define TX_SET_ID_14 "terminatorX turntable set file - version 1.4 - data:"
 
+#define BROWSER1 "xdg-open"
+#define BROWSER2 "x-www-browser"
+#define BROWSER3 "firefox"
+
 int audioon=0;
 int sequencer_ready=1;
 
@@ -1871,58 +1875,19 @@ pid_t browser_child=0;
 GTimer *browser_timer=NULL;
 int browser_tag=-1;
 
-gboolean browser_checker()
-{
-	gdouble time;
-	gulong ms;
-	int status;
-	int result=waitpid(browser_child, &status, WNOHANG);
-	
-	if (result==0) {
-		time=g_timer_elapsed(browser_timer, &ms);
-		if (time > 5) {
-			/* 5 seconds and it's still running - so we assume everything's OK. */
-			tX_debug("No longer waiting for a browser..");
-			g_source_remove(browser_tag);
-			browser_tag=-1;
-		}
-	} else {
-		/* We are still here and the child exited - that could mean trouble. */
-		tx_note("Failed to run a suitable web browser - if there's one installed on this system, please run it and forward yourself to:\nhttp://terminatorX.org", true);		
-		
-		g_source_remove(browser_tag);
-		browser_tag=-1;
-	}
-	return TRUE;	
-}
-
 void display_browser()
 {	
 	browser_child=fork();
-
-	if (browser_tag!=-1) {
-		g_source_remove(browser_tag);
-		if (browser_timer) g_timer_destroy(browser_timer);
-		browser_child=0;
-		browser_tag=-1;
-		browser_timer=NULL;
-	}
 	
 	if (browser_child==0) {
 		// child
-		execlp("mozilla","mozilla","http://terminatorX.org", NULL);
-		execlp("netscape","netscape","http://terminatorX.org", NULL);
-		execlp("galeon","galeon","http://terminatorX.org", NULL);
-		execlp("konqueror","konqueror","http://terminatorX.org", NULL);		
+		execlp(BROWSER1, BROWSER1, "http://terminatorX.org", NULL);
+		execlp(BROWSER2, BROWSER2, "http://terminatorX.org", NULL);
+		execlp(BROWSER3, BROWSER3, "http://terminatorX.org", NULL);
 		_exit(-1);
 	} else if (browser_child==-1) {
 		tx_note("System error: couldn't fork() to run the browser process.", true);
-	} else {
-		browser_timer=g_timer_new();
-		g_timer_start(browser_timer);
-	
-		browser_tag=g_idle_add((GSourceFunc) browser_checker, NULL);
-	}
+	} 
 }
 
 
