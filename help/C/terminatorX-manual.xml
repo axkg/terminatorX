@@ -114,7 +114,7 @@
       <para>This is software may have 
       <ulink url="http://terminatorX.org/bugs.html">bugs</ulink> please 
       help fixing them. See <xref linkend="CONTACT"/>. Please read this 
-      manual and visit the <ulink url="http://www.terminatorX.org">
+      manual and visit the <ulink url="http://terminatorX.org">
       homepage</ulink>.</para>
 
     </sect2>
@@ -2280,7 +2280,7 @@
     <title>Contact / Download</title>
 
     <para>Find out more about terminatorX at it's 
-    <ulink url="http://www.terminatorX.org">homepage</ulink>.</para>
+    <ulink url="http://terminatorX.org">homepage</ulink>.</para>
 
     <para>Send me comments, bug-reports, patches or scratches (see 
     scratches section on the terminatorX homepage) at: 
