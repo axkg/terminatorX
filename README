@@ -12,13 +12,12 @@ WARNING: TerminatorX comes with ABSOLUTELY NO WARRANTY. This software is known
 to lockup X11 or cause other problems under rare conditions. Don't use
 it on production servers. You have been warned!
 
-Read that fine Manual:
+Read that fine manual:
 ----------------------
 
     o ./INSTALL             - Information on installing terminatorX
-    o ./README.GNOME        - Some hints on GNOME-integration
     o ./README.PERFORMANCE  - Some hints on tuning terminatorX
     o ./help/C/terminatorX-manual.xml
                             - The user manual browsable with "yelp"
-                              (yelp is the gnome2 help browser).
-    o ./COPYING             - The license
+                              (yelp is the gnome help browser).
+    o ./COPYING             - The license (GPL V2)
