@@ -116,14 +116,6 @@ extern void add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn);
 extern void destroy_gui(vtt_class *vtt);
 extern void gui_show_frame(vtt_class *vtt, int show);
 
-#ifndef USE_FILECHOOSER
-GdkWindow *save_dialog_win=NULL;
-GdkWindow *load_dialog_win=NULL;
-
-GtkWidget *save_dialog=NULL;
-GtkWidget *load_dialog=NULL;
-#endif
-
 GdkWindow *rec_dialog_win=NULL;
 GtkWidget *rec_dialog=NULL;
 
@@ -294,16 +286,6 @@ GCallback new_tables() {
 }
 
 /* Loading saved setups */
-#ifndef USE_FILECHOOSER
-GCallback cancel_load_tables(GtkWidget *wid)
-{
-	gtk_widget_destroy(load_dialog);
-	load_dialog=NULL;
-	load_dialog_win=NULL;
-	return(0);
-}
-#endif
-
 void load_tt_part(char * buffer)
 {
 	char wbuf[PATH_MAX];
@@ -378,27 +360,8 @@ void load_tt_part(char * buffer)
 	gtk_window_set_title(GTK_WINDOW(main_window), wbuf);		
 }
 
-#ifndef USE_FILECHOOSER
-void do_load_tables(GtkWidget *wid)
-{
-	char buffer[PATH_MAX];
-	
-	strcpy(buffer, gtk_file_selection_get_filename(GTK_FILE_SELECTION(load_dialog)));
-	
-	gtk_widget_destroy(load_dialog);
-	
-	load_dialog=NULL;
-	load_dialog_win=NULL;
-
-	tX_cursor::set_cursor(tX_cursor::WAIT_CURSOR);
-	load_tt_part(buffer);
-	tX_cursor::reset_cursor();
-}
-#endif
-
 GCallback load_tables()
 {
-#ifdef USE_FILECHOOSER	
 	GtkWidget * dialog = gtk_file_chooser_dialog_new ("Open Set File",
 		GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_OPEN,
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,  
@@ -429,30 +392,6 @@ GCallback load_tables()
 	}	
 	
 	gtk_widget_destroy(dialog);
-#else
-	if (load_dialog_win) {
-		gdk_window_raise(load_dialog_win);
-		return 0;
-	}
-
-	load_dialog=gtk_file_selection_new("Load Set");	
-	
-	gtk_file_selection_show_fileop_buttons(GTK_FILE_SELECTION(load_dialog));
-	gtk_file_selection_complete(GTK_FILE_SELECTION(load_dialog), "*.tX");
-	
-	if (strlen(globals.tables_filename)) {
-		gtk_file_selection_set_filename(GTK_FILE_SELECTION(load_dialog), globals.tables_filename);
-	}
-	
-	gtk_widget_show(load_dialog);
-	
-	load_dialog_win=load_dialog->window;
-	
-	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(load_dialog)->ok_button), "clicked", G_CALLBACK(do_load_tables), NULL);
-	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(load_dialog)->cancel_button), "clicked", G_CALLBACK (cancel_load_tables), NULL);	
-	g_signal_connect (G_OBJECT(load_dialog), "delete-event", G_CALLBACK(cancel_load_tables), NULL);	
-	
-#endif
 
 	return NULL;
 }
@@ -554,39 +493,6 @@ GCallback drop_set(GtkWidget *widget, GdkDragContext *context,
 }
 
 /* save tables */
-
-#ifndef USE_FILECHOOSER
-GCallback cancel_save_tables(GtkWidget *wid)
-{
-	gtk_widget_destroy(save_dialog);
-	save_dialog=NULL;
-	save_dialog_win=NULL;
-	return(0);
-}
-
-gboolean do_save_from_selection(GtkWidget *wid) {
-	char buffer[PATH_MAX];
-	
-	if (wid) {
-		strcpy(buffer, gtk_file_selection_get_filename(GTK_FILE_SELECTION(save_dialog)));
-		int len=strlen(buffer);
-		if (!len || (buffer[len-1]=='/')) {			
-			tx_note("Invalid filename for set file.", true);			
-			return FALSE;
-		}
-		gtk_widget_destroy(save_dialog);
-		save_dialog=NULL;
-		save_dialog_win=NULL;
-	} else {
-		strcpy(buffer, tx_mg_current_setname);
-	}	
-	
-	do_save_tables(buffer);
-	
-	return TRUE;
-}
-#endif
-
 void do_save_tables(char *buffer)
 {
 	FILE *out;
@@ -629,7 +535,6 @@ void do_save_tables(char *buffer)
 
 GCallback save_tables_as()
 {
-#ifdef USE_FILECHOOSER
 	GtkWidget * dialog = gtk_file_chooser_dialog_new ("Save Set",
 		GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_SAVE, 
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
@@ -648,27 +553,7 @@ GCallback save_tables_as()
 	}	
 	
 	gtk_widget_destroy(dialog);	
-#else
-	if (save_dialog_win) {
-		gtk_widget_destroy(save_dialog);
-		save_dialog=NULL;
-		save_dialog_win=NULL;
-	}
-	
-	save_dialog=gtk_file_selection_new("Save Set");	
 
-	if (tx_mg_have_setname) {
-		gtk_file_selection_set_filename(GTK_FILE_SELECTION(save_dialog), tx_mg_current_setname);
-	}
-	
-	gtk_widget_show(save_dialog);
-	
-	save_dialog_win=save_dialog->window;
-	
-	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(save_dialog)->ok_button), "clicked", G_CALLBACK(do_save_from_selection), NULL);
-	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(save_dialog)->cancel_button), "clicked", G_CALLBACK (cancel_save_tables), NULL);	
-	g_signal_connect (G_OBJECT(save_dialog), "delete-event", G_CALLBACK(cancel_save_tables), NULL);	
-#endif
 	return NULL;
 }
 
@@ -808,7 +693,6 @@ void do_rec(GtkWidget *wid)
 
 GCallback select_rec_file()
 {
-#ifdef USE_FILECHOOSER
 	GtkWidget * dialog = gtk_file_chooser_dialog_new ("Record To Disk",
 		GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_SAVE, 
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
@@ -832,28 +716,6 @@ GCallback select_rec_file()
 	rec_dont_care = 0;
 	
 	gtk_widget_destroy(dialog);
-	
-#else	
-	if (rec_dialog_win) {
-		gdk_window_raise(rec_dialog_win);
-		return 0;
-	}
-	
-	rec_dialog=gtk_file_selection_new("Record To Disk");	
-	
-	if (strlen(globals.record_filename)) {
-		gtk_file_selection_set_filename(GTK_FILE_SELECTION(rec_dialog), globals.record_filename);
-	}
-	
-	gtk_widget_show(rec_dialog);
-	
-	rec_dialog_win=rec_dialog->window;
-	
-	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(rec_dialog)->ok_button), "clicked", G_CALLBACK(do_rec), NULL);
-	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(rec_dialog)->cancel_button), "clicked", G_CALLBACK (cancel_rec), NULL);	
-	g_signal_connect (G_OBJECT(rec_dialog), "delete-event", G_CALLBACK(cancel_rec), NULL);	
-	
-#endif
 
 	return NULL;
 }

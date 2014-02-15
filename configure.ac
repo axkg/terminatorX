@@ -21,7 +21,6 @@ AC_ARG_ENABLE(libxml2,	    	[  --disable-libxml2       use libxml even if verion
 AC_ARG_ENABLE(mad,		[  --disable-mad           disable mad for mp3 support (default=auto) ])
 AC_ARG_ENABLE(vorbis,		[  --disable-vorbis        disable libvorbis support (default=auto) ])
 AC_ARG_ENABLE(audiofile,	[  --disable-audiofile     disable audiofile support (default=auto) ])
-AC_ARG_ENABLE(filechooser,	[  --disable-filechooser   disable gtk+ 2.4 filechooser (default=auto) ])
 AC_ARG_ENABLE(startup,		[  --disable-startup       disable startup-notification (default=auto) ])
 AC_ARG_ENABLE(legacy,		[  --enable-legacy         enable support for old terminatorX files (default=no) ])
 AC_ARG_ENABLE(alsamidi,		[  --disable-alsamidi      disable support  ALSA MIDI in (default=auto) ])
@@ -122,7 +121,7 @@ fi
 
 AC_SEARCH_LIBS([dlclose], [dl])
 
-dnl GTK+ search. Enable FileChooser for gtk+>=2.4
+dnl Check for GTK
 
 AM_PATH_GTK_2_0(, [
 	GTK2_CFLAGS="$GTK_CFLAGS"
@@ -132,16 +131,6 @@ AM_PATH_GTK_2_0(, [
 
 OPTION_GTK_VERSION="Version 2 - ($GTK2_VERSION)"
 vers=`echo $GTK2_VERSION | awk 'BEGIN {FS=".";} { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-
-if test "$enable_filechooser" != "no"; then
-	AC_MSG_CHECKING([whether to use the FileChooser])
-	if test "$vers" -ge 2004000; then
-		AC_MSG_RESULT([yes])
-		AC_DEFINE_UNQUOTED([USE_FILECHOOSER], 1, [Use the new FileChooser.])
-	else
-		AC_MSG_RESULT([no])
-	fi
-fi
 
 if test "$gtk2" = "no"; then
 	AC_MSG_ERROR([** couldn't find gtk+ > Version 2. Please upgrade (http://www.gtk.org). **])
