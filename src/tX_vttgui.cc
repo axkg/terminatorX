@@ -99,7 +99,6 @@ void pitch_changed(GtkWidget *wid, vtt_class *vtt)
 	vtt->sp_pitch.receive_gui_value(gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 }
 
-#ifdef USE_FILECHOOSER
 GCallback chooser_prelis(GtkWidget *w)
 {
 	GtkFileChooser *fc=GTK_FILE_CHOOSER(gtk_widget_get_toplevel(w));
@@ -113,30 +112,6 @@ GCallback chooser_prelis(GtkWidget *w)
 	}
 	return NULL;
 }
-#else
-GCallback trigger_prelis(GtkWidget *w)
-{
-	GtkFileSelection *fs;
-
-	fs=GTK_FILE_SELECTION(gtk_widget_get_toplevel(w));
-	
-	prelis_start((char *) gtk_file_selection_get_filename(GTK_FILE_SELECTION(fs)));
-	return NULL;
-}
-
-void cancel_load_file(GtkWidget *wid, vtt_class *vtt)
-{
-	prelis_stop();
-	
-	vtt->gui.file_dialog=NULL;
-	if (vtt->gui.fs) gtk_widget_destroy(GTK_WIDGET(vtt->gui.fs));
-}
-
-int quit_load_file(GtkWidget *wid, vtt_class *vtt)
-{
-	return 1;
-}
-#endif
 
 char global_filename_buffer[PATH_MAX];
 
@@ -215,24 +190,6 @@ void load_part(char *newfile, vtt_class *vtt)
 	}	
 }
 
-#ifndef USE_FILECHOOSER
-void do_load_file(GtkWidget *wid, vtt_class *vtt)
-{
-	char newfile[PATH_MAX];
-	
-	prelis_stop();
-
-	strcpy(newfile, gtk_file_selection_get_filename(GTK_FILE_SELECTION(vtt->gui.fs)));
-	gtk_widget_destroy(GTK_WIDGET(vtt->gui.fs));
-	vtt->gui.file_dialog=NULL;
-	
-	tX_cursor::set_cursor(tX_cursor::WAIT_CURSOR);
-	load_part(newfile, vtt);
-	strcpy(globals.current_path, newfile);
-	tX_cursor::reset_cursor();
-}
-#endif
-
 void drop_file(GtkWidget *widget, GdkDragContext *context,
 		gint x, gint y, GtkSelectionData *selection_data,
 		guint info, guint time, vtt_class *vtt)
@@ -265,8 +222,7 @@ void drop_file(GtkWidget *widget, GdkDragContext *context,
 }
 
 GCallback load_file(GtkWidget *wid, vtt_class *vtt)
-{	
-#ifdef USE_FILECHOOSER
+{
 	const char *extensions[]={ "mp3", "wav", "ogg", "flac", "iff", "aiff", "voc", "au", "spx", NULL };
 	char name_buf[512];
 	sprintf(name_buf, "Select Audio File for %s", vtt->name);
@@ -315,31 +271,7 @@ GCallback load_file(GtkWidget *wid, vtt_class *vtt)
 	
 	prelis_stop();
 	gtk_widget_destroy(dialog);	
-#else
-	char buffer[512];
-	
-	if (vtt->gui.file_dialog) {
-		gdk_window_raise(vtt->gui.file_dialog);
-		return(0);
-	}
-	
-	sprintf(buffer, "Select Audio File for %s", vtt->name);
-	vtt->gui.fs=gtk_file_selection_new(buffer);
-	
-	if (vtt->audiofile) {
-		gtk_file_selection_set_filename(GTK_FILE_SELECTION(vtt->gui.fs), vtt->filename);	
-	} else if (strlen(globals.current_path)>0 ) {
-		gtk_file_selection_set_filename(GTK_FILE_SELECTION(vtt->gui.fs),globals.current_path);
-	}
-	
-	gtk_widget_show(GTK_WIDGET(vtt->gui.fs));	
-	vtt->gui.file_dialog=vtt->gui.fs->window;
-	
-	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->ok_button), "clicked", G_CALLBACK(do_load_file), vtt);
-	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->cancel_button), "clicked", G_CALLBACK (cancel_load_file), vtt);	
-	g_signal_connect (G_OBJECT(vtt->gui.fs), "delete-event", G_CALLBACK(quit_load_file), vtt);	
-	g_signal_connect (G_OBJECT(GTK_FILE_SELECTION(vtt->gui.fs)->file_list), "cursor_changed", G_CALLBACK(trigger_prelis), vtt->gui.fs);		
-#endif	
+
 	return NULL;
 }
 
@@ -1162,9 +1094,6 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->flash, WID_FIX);
 	gtk_widget_show(g->flash);		
 
-#ifndef USE_FILECHOOSER
-	g->file_dialog=NULL;
-#endif
 	gui_connect_signals(vtt);
 	
 	g->audio_minimized_panel_bar_button=NULL;
