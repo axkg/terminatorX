@@ -1195,7 +1195,33 @@ void create_master_menu()
 	
 	GtkAccelGroup* accel_group=gtk_accel_group_new();
 	gtk_window_add_accel_group(GTK_WINDOW(main_window), accel_group);
+	GtkStyle *style=gtk_widget_get_style(main_window);
 
+	const static GtkStockItem items[] = {
+			{ (char *) "tX-open-audio", (char *)  "Load _Audio File", (GdkModifierType) 0, 0, NULL },
+			{ (char *) "tX-open-set", (char *) "_Open Set File", (GdkModifierType) 0, 0, NULL },
+			{ (char *) "tX-new", (char *) "_New Set", (GdkModifierType) 0, 0, NULL },
+			{ (char *) "tX-save", (char *) "_Save Set", (GdkModifierType) 0, 0, NULL },
+			{ (char *) "tX-save-as", (char *) "Save Set As", (GdkModifierType) 0, 0, NULL }
+	};
+	
+	GtkIconFactory* factory = gtk_icon_factory_new();
+	gtk_icon_factory_add_default(factory);
+	
+	gtk_stock_add (items, G_N_ELEMENTS (items));
+	GtkIconSet * icon_set =gtk_style_lookup_icon_set(style, GTK_STOCK_OPEN);
+	gtk_icon_factory_add(factory, "tX-open-audio", icon_set);
+	gtk_icon_factory_add(factory, "tX-open-set", icon_set);
+	
+	icon_set = gtk_style_lookup_icon_set(style, GTK_STOCK_NEW);
+	gtk_icon_factory_add(factory, "tX-new", icon_set);
+	
+	icon_set = gtk_style_lookup_icon_set(style, GTK_STOCK_SAVE);
+	gtk_icon_factory_add(factory, "tX-save", icon_set);
+	
+	icon_set = gtk_style_lookup_icon_set(style, GTK_STOCK_SAVE_AS);
+	gtk_icon_factory_add(factory, "tX-save-as", icon_set);
+	
 	/* FILE */
 	menu_item = gtk_menu_item_new_with_mnemonic ("_File");
 	gtk_widget_show (menu_item);
@@ -1204,12 +1230,7 @@ void create_master_menu()
 	sub_menu = gtk_menu_new ();
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), sub_menu);
 
-	menu_item = gtk_image_menu_item_new_from_stock ("gtk-open", accel_group);
-	label = gtk_bin_get_child(GTK_BIN(menu_item));
-	gtk_label_set_text(GTK_LABEL(label), "Load Audio File");
-	// Warning: gtk+ stock hacks ahead...
-	gtk_widget_remove_accelerator(menu_item, accel_group, GDK_O, GDK_CONTROL_MASK);
-	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_F, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+	menu_item = gtk_image_menu_item_new_from_stock ("tX-open-audio", accel_group);
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) load_audio, NULL);
@@ -1219,30 +1240,22 @@ void create_master_menu()
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	gtk_widget_set_sensitive (menu_item, FALSE);
 
-	menu_item = gtk_image_menu_item_new_from_stock ("gtk-new", accel_group);
-	label = gtk_bin_get_child(GTK_BIN(menu_item));
-	gtk_label_set_text(GTK_LABEL(label), "New Set");
+	menu_item = gtk_image_menu_item_new_from_stock ("tX-new", accel_group);
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) new_tables, NULL);
 
-	menu_item = gtk_image_menu_item_new_from_stock ("gtk-open", accel_group);
-	label = gtk_bin_get_child(GTK_BIN(menu_item));
-	gtk_label_set_text(GTK_LABEL(label), "Open Set File");
+	menu_item = gtk_image_menu_item_new_from_stock ("tX-open-set", accel_group);
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) load_tables, NULL);
 
-	menu_item = gtk_image_menu_item_new_from_stock ("gtk-save", accel_group);
-	label = gtk_bin_get_child(GTK_BIN(menu_item));
-	gtk_label_set_text(GTK_LABEL(label), "Save Set");
+	menu_item = gtk_image_menu_item_new_from_stock ("tX-save", accel_group);
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) save_tables, NULL);
 
-	menu_item = gtk_image_menu_item_new_from_stock ("gtk-save-as", accel_group);
-	label = gtk_bin_get_child(GTK_BIN(menu_item));
-	gtk_label_set_text(GTK_LABEL(label), "Save Set As");
+	menu_item = gtk_image_menu_item_new_from_stock ("tX-save-as", accel_group);
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) save_tables_as, NULL);
