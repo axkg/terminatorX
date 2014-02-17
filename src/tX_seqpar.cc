@@ -993,7 +993,7 @@ void tX_seqpar_vttfx_int :: create_widget()
 
 	*fx_value=min_value;
 	myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value, max_value, 1, 10, 0));
-	GtkWidget *box=gtk_vbox_new(FALSE, 2);
+	GtkWidget *box=gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
 	
 	tmpwid=gtk_spin_button_new(myadj,1.0,0);
 	gtk_widget_show(tmpwid);

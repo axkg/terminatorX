@@ -177,7 +177,7 @@ void apply_options(GtkWidget *dialog) {
 #define WID_FIX FALSE, FALSE, 0
 
 #define my_new_subsec(s); \
-	separator=gtk_hseparator_new(); \
+	separator=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL); \
 	gtk_box_pack_start(GTK_BOX(vbox), separator, WID_DYN);\
 	gtk_widget_show(separator); \
 	label=gtk_label_new(s); \
@@ -191,7 +191,7 @@ void apply_options(GtkWidget *dialog) {
 	gtk_widget_show(btn);
 	
 
-#define begin_box(); box=gtk_hbox_new(FALSE, 5);
+#define begin_box(); box=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 
 #define begin_hom_box(); box=gtk_hbox_new(TRUE, 5);
 
@@ -503,8 +503,6 @@ void destroy_about()
 #define add_about_wid_fix(wid); gtk_box_pack_start(GTK_BOX(box), wid, WID_FIX); \
 	gtk_widget_show(wid);
 
-GdkFont *GPL_font=NULL;
-
 void show_about(int nag)
 {
 	GtkWidget *window;
@@ -535,8 +533,8 @@ void show_about(int nag)
 	iwid = gtk_image_new_from_pixbuf(image);
 	
 	if (nag) {
-		GtkWidget *box=gtk_vbox_new(FALSE, 2);
-		GtkWidget *box2=gtk_hbox_new(FALSE, 2);
+		GtkWidget *box=gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
+		GtkWidget *box2=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
 		GtkWidget *label;
 		
 		gtk_container_add(GTK_CONTAINER(window), box);
@@ -560,10 +558,10 @@ void show_about(int nag)
 		gtk_window_set_decorated(GTK_WINDOW(window), FALSE);		
 		gtk_widget_show(window);
 	} else {
-		box=gtk_vbox_new(FALSE, 5);
+		box=gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 		add_about_wid_fix(iwid);
 		
-		sep=gtk_hseparator_new();
+		sep=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 		add_about_wid_fix(sep);
 		
 		label=gtk_label_new("This is "PACKAGE" release "VERSION".\nCopyright (C) 1999-2014 by Alexander König <alex@lisas.de>");
@@ -571,11 +569,11 @@ void show_about(int nag)
 		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
 		add_about_wid_fix(label);
 
-		sep=gtk_hseparator_new();
+		sep=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 		add_about_wid_fix(sep);
 
 		expander = gtk_expander_new("Build info");
-		GtkWidget *exbox=gtk_vbox_new(FALSE, 2);
+		GtkWidget *exbox=gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
 		gtk_container_add(GTK_CONTAINER(expander), exbox);
 		gtk_widget_show(exbox);
 
@@ -629,7 +627,7 @@ void show_about(int nag)
 		add_about_wid_fix(expander);
 
 #ifdef 	USE_SCHEDULER
-		sep=gtk_hseparator_new();
+		sep=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 		gtk_widget_show(sep);
 		gtk_container_add(GTK_CONTAINER(exbox), sep);
 
@@ -669,7 +667,7 @@ void show_about(int nag)
 		gtk_container_add(GTK_CONTAINER(exbox), label);
 #endif
 
-		sep=gtk_hseparator_new();
+		sep=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 		add_about_wid_fix(sep);
 
 		expander = gtk_expander_new("License (GPL V2):");
@@ -699,7 +697,7 @@ void show_about(int nag)
 		gtk_container_add(GTK_CONTAINER(expander), scroll);
 		gtk_widget_show(scroll);		
 		
-		sep=gtk_hseparator_new();
+		sep=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 		add_about_wid_fix(sep);
 
 		btn=gtk_button_new_with_label("Close");

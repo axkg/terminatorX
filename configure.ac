@@ -123,27 +123,16 @@ AC_SEARCH_LIBS([dlclose], [dl])
 
 dnl Check for GTK
 
-AM_PATH_GTK_2_0(, [
-	GTK2_CFLAGS="$GTK_CFLAGS"
-	GTK2_LIBS="$GTK_LIBS"
-	gtk2="yes"
-	GTK2_VERSION="`$PKG_CONFIG --modversion gtk+-2.0`"], [ gtk2="yes" ]) 
+AM_PATH_GTK_3_0(, [
+	GTK3_CFLAGS="$GTK_CFLAGS"
+	GTK3_LIBS="$GTK_LIBS"
+	gtk3="yes"
+	GTK3_VERSION="`$PKG_CONFIG --modversion gtk+-3.0`"], [ gtk3="yes" ]) 
 
-OPTION_GTK_VERSION="Version 2 - ($GTK2_VERSION)"
-vers=`echo $GTK2_VERSION | awk 'BEGIN {FS=".";} { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-
-if test "$gtk2" = "no"; then
-	AC_MSG_ERROR([** couldn't find gtk+ > Version 2. Please upgrade (http://www.gtk.org). **])
-fi
-
-if test "$enable_startup" != "no"; then
-	AC_MSG_CHECKING([whether gtk+ does startup notification])
-	if test "$vers" -ge 2002000; then
-		AC_MSG_RESULT([yes])
-		AC_DEFINE_UNQUOTED([USE_STARTUP_NOTIFICATION], 1, [Use gtk+ statup notification.])
-	else
-		AC_MSG_RESULT([no])
-	fi
+if test "$gtk3" = "yes"; then
+	AC_DEFINE_UNQUOTED([USE_STARTUP_NOTIFICATION], 1, [Use gtk+ statup notification.])
+else
+	AC_MSG_ERROR([** couldn't find gtk+ > Version 3. Please upgrade (http://www.gtk.org). **])
 fi
 
 dnl Checks for header files.

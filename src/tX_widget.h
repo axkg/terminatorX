@@ -24,7 +24,7 @@
 #ifndef __GTK_TX_H__
 #define __GTK_TX_H__
 #include <gdk/gdk.h>
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 
 #include "tX_types.h"
 
@@ -53,13 +53,13 @@ struct _GtkTx {
 	int16_t *data;
 	int samples;
 	
-	GdkColor colors[6];
+	GdkRGBA colors[6];
 	
-	GdkColor *current_fg;
-	GdkColor *current_bg;
+	GdkRGBA *current_fg;
+	GdkRGBA *current_bg;
 	
-	GdkColor *audio_colors_focus;
-	GdkColor *audio_colors_nofocus;
+	GdkRGBA *audio_colors_focus;
+	GdkRGBA *audio_colors_nofocus;
 	
 	int spp;
 	int yc;
@@ -76,8 +76,6 @@ struct _GtkTx {
 
 	int display_width;
 	int display_x_offset;
-	
-	int colors_allocated;
 
 #ifdef USE_DISPLAY_NORMALIZE
 	f_prec max_value;

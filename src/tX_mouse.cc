@@ -34,10 +34,6 @@
 #include <X11/extensions/Xxf86dga.h>
 #endif
 
-#ifdef HAVE_X11_EXTENSIONS_XF86DGA_H
-#include <X11/extensions/xf86dga.h>
-#endif
-
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
@@ -58,6 +54,9 @@ tx_mouse :: tx_mouse()
 	xmot=(XMotionEvent *) &xev;
 	xkey=(XKeyEvent *) &xev;
 	xbut=(XButtonEvent *) &xev;
+	
+	pointer = NULL;
+	keyboard = NULL;
 	
 #ifdef USE_DGA2
 	xdgamot=(XDGAMotionEvent *) &xev;
@@ -83,10 +82,13 @@ int tx_mouse :: grab()
 	if (grabbed) return 0;
 
 	warp_override=false;
-	dpy = gdk_x11_get_default_xdisplay();
-//	GdkDisplay* gdk_dpy = gdk_display_get_default();
-
-	if (!dpy/* && !gdk_dpy*/) {
+	
+	GdkWindow *window =  gtk_widget_get_window(main_window);
+	GdkDisplay* gdk_dpy = gdk_window_get_display(window);
+	GdkDeviceManager *device_manager = gdk_display_get_device_manager(gdk_dpy);
+	dpy = gdk_x11_display_get_xdisplay(gdk_dpy);
+	
+	if (!dpy && !gdk_dpy) {
 		fputs("GrabMode Error: couldn't connect to XDisplay.", stderr);
 		return(ENG_ERR_XOPEN);
 	}
@@ -104,8 +106,8 @@ int tx_mouse :: grab()
 
 	gtk_window_present(GTK_WINDOW(main_window));
 
-	savedEventMask = gdk_window_get_events(top_window);
-	GdkEventMask newEventMask = GdkEventMask ((int) savedEventMask |  GDK_POINTER_MOTION_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
+	savedEventMask = gdk_window_get_events(window);
+	GdkEventMask newEventMask = GdkEventMask ((int) savedEventMask | GDK_POINTER_MOTION_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
 	gdk_window_set_events(top_window, newEventMask);
 
 //	if (globals.xinput_enable) {
@@ -116,10 +118,6 @@ int tx_mouse :: grab()
 //		}
 //	}
 
-//	GdkModifierType modifiers = (GdkModifierType)NULL;
-//	gtk_window_set_mnemonic_modifier(GTK_WINDOW(main_window), modifiers);
-//	gtk_window_set_mnemonics_visible(GTK_WINDOW(main_window), false);
-
 	g_object_get (gtk_widget_get_settings (main_window), "gtk-auto-mnemonics", &enable_auto_mnemonics, NULL);
 
 	if (enable_auto_mnemonics) {
@@ -127,7 +125,8 @@ int tx_mouse :: grab()
 		g_object_set (gtk_widget_get_settings (main_window), "gtk-auto-mnemonics", off, NULL);
 	}
 
-	GdkGrabStatus grab_status =gdk_pointer_grab(top_window, FALSE, GdkEventMask (GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, NULL, GDK_CURRENT_TIME);
+	pointer = gdk_device_manager_get_client_pointer(device_manager);
+	GdkGrabStatus grab_status = gdk_device_grab(pointer, top_window, GDK_OWNERSHIP_NONE, FALSE, GdkEventMask (GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, GDK_CURRENT_TIME);
 
 	if (grab_status != GDK_GRAB_SUCCESS) {
 		//reset_xinput();
@@ -136,10 +135,21 @@ int tx_mouse :: grab()
 		return(-1);
 	}	
 	
-	grab_status = gdk_keyboard_grab(top_window, FALSE, GDK_CURRENT_TIME);
+	GList *list = gdk_device_manager_list_devices (device_manager, GDK_DEVICE_TYPE_MASTER);
+	for (GList *link = list; link != NULL; link = g_list_next (link)) {
+		GdkDevice *device = GDK_DEVICE (link->data);
+		
+		if (gdk_device_get_source (device) != GDK_SOURCE_KEYBOARD)
+			continue;
+
+		keyboard = device;
+		break;
+	}
+	
+	grab_status = gdk_device_grab(keyboard, top_window, GDK_OWNERSHIP_NONE, FALSE, GdkEventMask (GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK), NULL, GDK_CURRENT_TIME);
 
 	if (grab_status != GDK_GRAB_SUCCESS) {
-		gdk_pointer_ungrab(GDK_CURRENT_TIME);
+		gdk_device_ungrab(pointer, GDK_CURRENT_TIME);
 		//reset_xinput();
 		//XCloseDisplay(dpy);
 		//fputs("GrabMode Error: XGrabKeyboard failed.", stderr);
@@ -152,8 +162,8 @@ int tx_mouse :: grab()
 #else	
 	if (!XF86DGADirectVideo(dpy,DefaultScreen(dpy),XF86DGADirectMouse)) {
 #endif
-		gdk_pointer_ungrab(GDK_CURRENT_TIME);
-		gdk_keyboard_ungrab(GDK_CURRENT_TIME);
+		gdk_device_ungrab(pointer, GDK_CURRENT_TIME);
+		gdk_device_ungrab(keyboard, GDK_CURRENT_TIME);
 
 //		reset_xinput();
 //		XCloseDisplay(dpy);
@@ -199,8 +209,8 @@ void tx_mouse :: ungrab()
 	XF86DGADirectVideo(dpy,DefaultScreen(dpy),0);
 #endif	
 
-	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
-	gdk_pointer_ungrab(GDK_CURRENT_TIME);
+	gdk_device_ungrab(keyboard, GDK_CURRENT_TIME);
+	gdk_device_ungrab(pointer, GDK_CURRENT_TIME);
 
 	XAutoRepeatOn(dpy);
 	
@@ -445,7 +455,6 @@ gboolean tx_mouse::button_press_wrap(GtkWidget *widget, GdkEventButton *eventBut
 		}
 		return TRUE;
 	}
-
 	return FALSE;
 }
 

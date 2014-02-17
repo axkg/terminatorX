@@ -57,7 +57,7 @@ on_pref_ok_clicked                     (GtkButton       *button,
 
 
 void
-on_tx_options_destroy                  (GtkObject       *object,
+on_tx_options_destroy                  (GObject       *object,
                                         gpointer         user_data)
 {
 	opt_dialog=NULL;
@@ -143,49 +143,32 @@ void
 color_clicked                          (GtkButton       *button,
                                         gpointer         user_data)
 {
-	GdkColor p;
-	GtkWidget *dialog=create_tX_color_selection();
-	GtkWidget *sel=lookup_widget(dialog, "color_selection");
+	GdkRGBA p;
+	GtkWidget *dialog=create_tX_color_chooser(gtk_widget_get_toplevel(GTK_WIDGET(button)));
+	GtkWidget *sel=lookup_widget(dialog, "tX_color_chooser");
 	g_object_set_data(G_OBJECT(dialog), "Button", button);
 	
-	gdk_color_parse((const char *) g_object_get_data(G_OBJECT(button), "Color"), &p);
-	gtk_color_selection_set_current_color(GTK_COLOR_SELECTION(sel), &p);
+	gdk_rgba_parse(&p, (const char *) g_object_get_data(G_OBJECT(button), "Color"));
+	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(sel), &p);
 	gtk_widget_show(dialog);
 }
 
-
 void
-on_color_selection_ok_clicked          (GtkButton       *button,
-                                        gpointer         user_data)
+color_response (GtkDialog *dialog, gint       response_id, gpointer   user_data)
 {
-	char tmp[56];
-	char *col;
-	GdkColor p;
-	
-	GtkWidget *dialog=gtk_widget_get_parent(gtk_widget_get_parent(gtk_widget_get_parent(GTK_WIDGET(button))));
-	GtkWidget *c_but=(GtkWidget *) g_object_get_data(G_OBJECT(dialog), "Button");
-	
-	GtkWidget *sel=lookup_widget(dialog, "color_selection");
-	gtk_color_selection_get_current_color(GTK_COLOR_SELECTION(sel), &p);
+  if (response_id == GTK_RESPONSE_OK) {
+	  char tmp[128];
+	  char col[16];
+	  GdkRGBA p;
+	  
+	  GtkWidget *c_but=(GtkWidget *) g_object_get_data(G_OBJECT(dialog), "Button");
+      gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER (dialog), &p);
+      sprintf(col, "#%02X%02X%02X", (int) (p.red * 256.0),  (int) (p.green * 256.0), (int) (p.blue * 256.0));
+      
+      sprintf(tmp, "<span foreground=\"%s\"><b>%s</b></span>", col, col);
+      gtk_label_set_markup(GTK_LABEL(gtk_container_get_children(GTK_CONTAINER(c_but))->data), tmp);
+  }
 
-	col=(char *) g_object_get_data(G_OBJECT(c_but), "Color");
-	sprintf(col, "#%02X%02X%02X", p.red >> 8, p.green >> 8, p.blue >> 8);	
-	sprintf(tmp, "<span foreground=\"%s\"><b>%s</b></span>", col, col);
-	gtk_label_set_markup(GTK_LABEL(gtk_container_get_children(GTK_CONTAINER(c_but))->data), tmp);
-	
-	gtk_widget_destroy(dialog);
-}
-
-
-void
-on_color_selection_cancel_clicked      (GtkButton       *button,
-                                        gpointer         user_data)
-{
-	gtk_widget_destroy(
-		gtk_widget_get_parent(
-			gtk_widget_get_parent(
-				gtk_widget_get_parent(GTK_WIDGET(button))
-			)
-		)
-	);
+  gtk_widget_hide (GTK_WIDGET (dialog));
+  gtk_widget_destroy (GTK_WIDGET (dialog));
 }

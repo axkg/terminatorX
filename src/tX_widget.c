@@ -43,12 +43,15 @@
 static void gtk_tx_class_init(GtkTxClass *);
 static void gtk_tx_init(GtkTx * tx);
 GtkWidget *gtk_tx_new(int16_t * wavdata, int wavsamples);
-static void gtk_tx_destroy(GtkObject * object);
+static void gtk_tx_destroy(GtkWidget * widget);
 void gtk_tx_set_data(GtkTx * tx, int16_t * wavdata, int wavsamples);
 static void gtk_tx_realize(GtkWidget * widget);
-static void gtk_tx_size_request(GtkWidget * widget, GtkRequisition * requisition);
+
+static void gtk_tx_get_preferred_width (GtkWidget *widget, gint *minimal_height, gint *natural_height);
+static void gtk_tx_get_preferred_height (GtkWidget *widget, gint *minimal_height, gint *natural_height);
+
 static void gtk_tx_size_allocate(GtkWidget * widget, GtkAllocation * allocation);
-static gint gtk_tx_expose(GtkWidget * widget, GdkEventExpose * event);
+static gboolean gtk_tx_draw(GtkWidget * widget, cairo_t *cr);
 static void gtk_tx_update(GtkTx * tx);
 static void gtk_tx_prepare(GtkWidget * widget);
 
@@ -80,19 +83,18 @@ GType gtk_tx_get_type() {
 }
 
 static void gtk_tx_class_init(GtkTxClass * gclass) {
-	GtkObjectClass *object_class;
 	GtkWidgetClass *widget_class;
 	
-	object_class = (GtkObjectClass *) gclass;
 	widget_class = (GtkWidgetClass *) gclass;
 	
 	parent_class = (GtkWidgetClass *) g_type_class_peek(gtk_widget_get_type());
 	
-	object_class->destroy = gtk_tx_destroy;
+	widget_class->destroy = gtk_tx_destroy;
 	
 	widget_class->realize = gtk_tx_realize;
-	widget_class->expose_event = gtk_tx_expose;
-	widget_class->size_request = gtk_tx_size_request;
+	widget_class->draw = gtk_tx_draw;
+	widget_class->get_preferred_height = gtk_tx_get_preferred_height;
+	widget_class->get_preferred_width = gtk_tx_get_preferred_width;
 	widget_class->size_allocate = gtk_tx_size_allocate;
 //	widget_class->button_press_event = gtk_tx_button_press;
 //	widget_class->button_release_event = gtk_tx_button_release;
@@ -108,44 +110,32 @@ static void gtk_tx_class_init(GtkTxClass * gclass) {
 
 void gtk_tx_update_colors(GtkTx *tx)
 {
-	int i;
+	gdk_rgba_parse(&tx->colors[COL_BG_FOCUS], globals.wav_display_bg_focus);
+	tx->colors[COL_BG_FOCUS].alpha=1.0;
+	gdk_rgba_parse(&tx->colors[COL_BG_NO_FOCUS], globals.wav_display_bg_no_focus);
+	tx->colors[COL_BG_NO_FOCUS].alpha=1.0;
 	
-	if (tx->colors_allocated) {
-		gdk_colormap_free_colors(gtk_widget_get_colormap(GTK_WIDGET(tx)), tx->colors, 6);
-	}
+	gdk_rgba_parse(&tx->colors[COL_FG_FOCUS], globals.wav_display_fg_focus);
+	tx->colors[COL_FG_FOCUS].alpha=1.0;
+	gdk_rgba_parse(&tx->colors[COL_FG_NO_FOCUS], globals.wav_display_fg_no_focus);
+	tx->colors[COL_FG_NO_FOCUS].alpha=1.0;
 	
-	gdk_color_parse(globals.wav_display_bg_focus, &tx->colors[COL_BG_FOCUS]);
-	gdk_color_parse(globals.wav_display_bg_no_focus, &tx->colors[COL_BG_NO_FOCUS]);
-	
-	gdk_color_parse(globals.wav_display_fg_focus, &tx->colors[COL_FG_FOCUS]);
-	gdk_color_parse(globals.wav_display_fg_no_focus, &tx->colors[COL_FG_NO_FOCUS]);
-	
-	gdk_color_parse(globals.wav_display_cursor, &tx->colors[COL_CURSOR]);
-	gdk_color_parse(globals.wav_display_cursor_mute, &tx->colors[COL_CURSOR_MUTE]);
-	
-	for (i=0; i<6; i++) {
-		gdk_colormap_alloc_color(gtk_widget_get_colormap(GTK_WIDGET(tx)), &tx->colors[i], 0, 1);
-	}
-
-	tx->colors_allocated=1;
+	gdk_rgba_parse(&tx->colors[COL_CURSOR], globals.wav_display_cursor);
+	tx->colors[COL_CURSOR].alpha=1.0;
+	gdk_rgba_parse(&tx->colors[COL_CURSOR_MUTE], globals.wav_display_cursor_mute);
+	tx->colors[COL_CURSOR_MUTE].alpha=1.0;
 }
 
 
 static void gtk_tx_init(GtkTx * tx) {
-	GdkColormap *priv;
-
 	tx->disp_data = NULL;
 	tx->data = NULL;
-	tx->colors_allocated=0;
 	tx->samples = 0;
 	tx->do_showframe = 0;
 #ifdef USE_DISPLAY_NORMALIZE
 	tx->max_value=-1;
 #endif
 	
-	priv = gdk_colormap_new(gtk_widget_get_visual(GTK_WIDGET(tx)), 6);
-	gtk_widget_set_colormap(GTK_WIDGET(tx), priv);
-
 	memset(tx->colors, 0, sizeof(tx->colors));
 	
 	gtk_tx_update_colors(tx);
@@ -178,17 +168,17 @@ GtkWidget *gtk_tx_new(int16_t * wavdata, int wavsamples) {
 	return GTK_WIDGET(tx);
 }
 
-static void gtk_tx_destroy(GtkObject * object) {
+static void gtk_tx_destroy(GtkWidget * widget) {
 	GtkTx *tx;
-	g_return_if_fail(object != NULL);
-	g_return_if_fail(GTK_IS_TX(object));
+	g_return_if_fail(widget != NULL);
+	g_return_if_fail(GTK_IS_TX(widget));
 
-	tx=GTK_TX(object);
+	tx=GTK_TX(widget);
 	
 	if (tx->disp_data) { free(tx->disp_data); tx->disp_data=NULL; }
 	
-	if (GTK_OBJECT_CLASS(parent_class)->destroy) {
-		(*GTK_OBJECT_CLASS(parent_class)->destroy) (object);
+	if (GTK_WIDGET_CLASS(parent_class)->destroy) {
+		(*GTK_WIDGET_CLASS(parent_class)->destroy) (widget);
 	}	
 }
 
@@ -229,15 +219,13 @@ static void gtk_tx_realize(GtkWidget * widget) {
 	attributes.window_type = GDK_WINDOW_CHILD;
 	attributes.event_mask = gtk_widget_get_events(widget) | GDK_EXPOSURE_MASK;
 	attributes.visual = gtk_widget_get_visual(widget);
-	attributes.colormap = gtk_widget_get_colormap(widget);
-	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 
 	gtk_widget_set_window(widget, gdk_window_new(gtk_widget_get_parent_window(widget), &attributes, attributes_mask));
-	gtk_widget_set_style(widget, gtk_style_attach(gtk_widget_get_style(widget), gtk_widget_get_window(widget)));
 
 	gdk_window_set_user_data(gtk_widget_get_window(widget), widget);
 
-	gtk_style_set_background(gtk_widget_get_style(widget), gtk_widget_get_window(widget), GTK_STATE_NORMAL);
+	gtk_style_context_set_background(gtk_widget_get_style_context(widget), gtk_widget_get_window(widget));
 	
 	if (tx->surface) {
 		cairo_surface_destroy (tx->surface);
@@ -246,9 +234,14 @@ static void gtk_tx_realize(GtkWidget * widget) {
 	tx->surface = gdk_window_create_similar_surface (gtk_widget_get_window(widget), CAIRO_CONTENT_COLOR, allocation.width, allocation.height);
 }
 
-static void gtk_tx_size_request(GtkWidget * widget, GtkRequisition * requisition) {
-	requisition->width = TX_DEFAULT_SIZE_X;
-	requisition->height = TX_DEFAULT_SIZE_Y;
+static void gtk_tx_get_preferred_width (GtkWidget *widget, gint *minimal_width, gint *natural_width)
+{
+  *minimal_width = *natural_width = TX_DEFAULT_SIZE_X;
+}
+
+static void gtk_tx_get_preferred_height (GtkWidget *widget, gint *minimal_height, gint *natural_height)
+{
+    *minimal_height = *natural_height = TX_DEFAULT_SIZE_Y;
 }
 
 static void gtk_tx_prepare(GtkWidget * widget) {
@@ -265,14 +258,10 @@ static void gtk_tx_prepare(GtkWidget * widget) {
 	tx = GTK_TX(widget);
 	
 	GtkAllocation allocation;
-	GdkColor midColor;
+	GdkRGBA midColor;
 	gboolean fg = (tx->current_fg == tx->audio_colors_focus);
 	
 	if (tx->audio_colors_focus) { 
-		// deallocate colors with old tx->yc value
-		gdk_colormap_free_colors(gtk_widget_get_colormap(GTK_WIDGET(tx)), tx->audio_colors_focus, tx->yc);
-		gdk_colormap_free_colors(gtk_widget_get_colormap(GTK_WIDGET(tx)), tx->audio_colors_nofocus, tx->yc);
-		
 		free(tx->audio_colors_focus); 
 		free(tx->audio_colors_nofocus); 
 		
@@ -289,8 +278,8 @@ static void gtk_tx_prepare(GtkWidget * widget) {
 	
 	// allocate colors
 	
-	tx->audio_colors_focus = (GdkColor *) malloc(tx->yc * sizeof(GdkColor));
-	tx->audio_colors_nofocus = (GdkColor *) malloc(tx->yc * sizeof(GdkColor));
+	tx->audio_colors_focus = (GdkRGBA *) malloc(tx->yc * sizeof(GdkRGBA));
+	tx->audio_colors_nofocus = (GdkRGBA *) malloc(tx->yc * sizeof(GdkRGBA));
 	
 	success = (gboolean *) malloc(tx->yc * sizeof(gboolean));
 
@@ -305,10 +294,9 @@ static void gtk_tx_prepare(GtkWidget * widget) {
 		
 		tx->audio_colors_nofocus[color].red = midColor.red + dist*(tx->colors[COL_FG_NO_FOCUS].red - midColor.red);
 		tx->audio_colors_nofocus[color].green = midColor.green + dist*(tx->colors[COL_FG_NO_FOCUS].green - midColor.green);
-		tx->audio_colors_nofocus[color].blue = midColor.blue + dist*(tx->colors[COL_FG_NO_FOCUS].blue - midColor.blue);		
+		tx->audio_colors_nofocus[color].blue = midColor.blue + dist*(tx->colors[COL_FG_NO_FOCUS].blue - midColor.blue);
+		tx->audio_colors_nofocus[color].alpha = 1.0;
 	}
-	gdk_colormap_alloc_colors(gtk_widget_get_colormap(GTK_WIDGET(tx)), tx->audio_colors_nofocus, tx->yc, 0, 1, success);
-	
 	// focus colors
 
 	midColor.red = tx->colors[COL_BG_FOCUS].red + (tx->colors[COL_FG_FOCUS].red - tx->colors[COL_BG_FOCUS].red) / 4;
@@ -320,9 +308,9 @@ static void gtk_tx_prepare(GtkWidget * widget) {
 		
 		tx->audio_colors_focus[color].red = midColor.red + dist*(tx->colors[COL_FG_FOCUS].red - midColor.red);
 		tx->audio_colors_focus[color].green = midColor.green + dist*(tx->colors[COL_FG_FOCUS].green - midColor.green);
-		tx->audio_colors_focus[color].blue = midColor.blue + dist*(tx->colors[COL_FG_FOCUS].blue - midColor.blue);		
+		tx->audio_colors_focus[color].blue = midColor.blue + dist*(tx->colors[COL_FG_FOCUS].blue - midColor.blue);
+		tx->audio_colors_focus[color].alpha = 1.0;
 	}
-	gdk_colormap_alloc_colors(gtk_widget_get_colormap(GTK_WIDGET(tx)), tx->audio_colors_focus, tx->yc, 0, 1, success);
 	
 	if (fg) {
 		tx->current_fg = tx->audio_colors_focus;
@@ -423,42 +411,33 @@ static void gtk_tx_size_allocate(GtkWidget * widget, GtkAllocation * allocation)
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
 
-static gint gtk_tx_expose(GtkWidget * widget, GdkEventExpose * event) {
+static gboolean gtk_tx_draw(GtkWidget * widget, cairo_t *cr) {
 	GtkTx *tx;
 	gint x;
-	GdkRectangle *area;
-	cairo_t *cr;
+	GdkRectangle area;
 	
 	g_return_val_if_fail(widget != NULL, FALSE);
 	g_return_val_if_fail(GTK_IS_TX(widget), FALSE);
-	g_return_val_if_fail(event != NULL, FALSE);
 
-/*	if (event->count > 0) { 
-		fprintf(stderr, "Ignoring %i expose events.\n", event->count);
-		return FALSE;
-	}*/
-
-	area=&event->area;
-
+	gdk_cairo_get_clip_rectangle(cr, &area);
+	
 	tx = GTK_TX(widget);
-	cr = gdk_cairo_create (gtk_widget_get_window(widget));
+	
 	cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 	cairo_set_source_surface (cr, tx->surface, 0, 0);
 	cairo_set_line_width(cr,1);
 
-	gdk_cairo_set_source_color (cr, tx->current_bg);
+	gdk_cairo_set_source_rgba (cr, tx->current_bg);
 
-	//printf("%i, %i, %i, %i\n", area->x, area->y, area->width, area->height);
-
-	cairo_rectangle(cr, area->x, area->y, area->width, area->height);
+	cairo_rectangle(cr, area.x, area.y, area.width, area.height);
 	cairo_fill(cr);
 
 	if (tx->disp_data) {
-		int max_x=area->x+area->width+1;
+		int max_x=area.x+area.width+1;
 
-	    for (x =area->x; x < max_x; x++) {
+	    for (x =area.x; x < max_x; x++) {
 			int dy = tx->disp_data[tx->display_x_offset+x];
-			gdk_cairo_set_source_color (cr, &tx->current_fg[dy]);
+			gdk_cairo_set_source_rgba (cr, &tx->current_fg[dy]);
 			cairo_move_to (cr, x, tx->yc - dy);
 			cairo_line_to (cr, x, tx->yc + dy+1);
 			cairo_stroke (cr);
@@ -467,14 +446,12 @@ static gint gtk_tx_expose(GtkWidget * widget, GdkEventExpose * event) {
 		GtkAllocation allocation;
 		gtk_widget_get_allocation(widget, &allocation);
 		
-		gdk_cairo_set_source_color (cr, tx->current_fg);
+		gdk_cairo_set_source_rgba (cr, tx->current_fg);
 		cairo_move_to (cr, 0, tx->yc);
 		cairo_line_to (cr, allocation.width, tx->yc);
 		cairo_stroke (cr);
 	}
 	
-	cairo_destroy (cr);
-
 	return FALSE;
 }
 
@@ -531,14 +508,14 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	cairo_set_line_width(cr,1);
 	
 	if (x >= 0) {
-		gdk_cairo_set_source_color (cr, tx->current_bg);
+		gdk_cairo_set_source_rgba (cr, tx->current_bg);
 		
 		cairo_move_to (cr, x, 0);
 		cairo_line_to (cr, x, ymax);
 		cairo_stroke (cr);
 		
 	    y = tx->disp_data[x+tx->display_x_offset];
-	    gdk_cairo_set_source_color (cr, &tx->current_fg[y]);
+	    gdk_cairo_set_source_rgba (cr, &tx->current_fg[y]);
 	    
 		cairo_move_to (cr, x, yc + y);
 		cairo_line_to (cr, x, yc - y+1);
@@ -587,15 +564,15 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 
 	x = current_pos_x;
 
-	if (mute) gdk_cairo_set_source_color(cr, &tx->colors[COL_CURSOR_MUTE]);
-	else gdk_cairo_set_source_color(cr, &tx->colors[COL_CURSOR]);
+	if (mute) gdk_cairo_set_source_rgba(cr, &tx->colors[COL_CURSOR_MUTE]);
+	else gdk_cairo_set_source_rgba(cr, &tx->colors[COL_CURSOR]);
 
 	cairo_move_to (cr, x, 0);
 	cairo_line_to (cr, x, ymax);
 	cairo_stroke (cr);
 	
-	cairo_destroy(cr);
-		
+	cairo_destroy (cr);
+	
 	if (force_draw) {
 		gtk_widget_queue_draw_area(widget, 0, 0, allocation.width, allocation.height);
 	}

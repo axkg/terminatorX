@@ -233,7 +233,7 @@ tX_midiin::midi_binding_gui::midi_binding_gui ( GtkTreeModel* _model, tX_midiin*
 	gtk_window_set_title (GTK_WINDOW (window), "Configure MIDI Bindings");
 	gtk_window_set_default_size(GTK_WINDOW(window), 600, 260);
 	
-	hbox1 = gtk_hbox_new (FALSE, 2);
+	hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
 	gtk_widget_show (hbox1);
 	gtk_container_add (GTK_CONTAINER (window), hbox1);
 	gtk_container_set_border_width(GTK_CONTAINER(hbox1), 4);
@@ -257,7 +257,7 @@ tX_midiin::midi_binding_gui::midi_binding_gui ( GtkTreeModel* _model, tX_midiin*
 											   NULL );
 	gtk_tree_view_set_headers_visible( GTK_TREE_VIEW(parameter_treeview), TRUE );
 	
-	vbox1 = gtk_vbox_new (FALSE, 0);
+	vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_show (vbox1);
 	gtk_box_pack_start (GTK_BOX (hbox1), vbox1, FALSE, FALSE, 0);
 	

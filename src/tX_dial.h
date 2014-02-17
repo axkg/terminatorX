@@ -30,8 +30,7 @@
 #endif
 
 #include <gdk/gdk.h>
-#include <gtk/gtkadjustment.h>
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,14 +46,8 @@ typedef struct _GtkTxDialClass   GtkTxDialClass;
 struct _GtkTxDial {
 	GtkWidget widget;
 	
-	/* update policy (GTK_UPDATE_[CONTINUOUS/DELAYED/DISCONTINUOUS]) */
-	guint policy : 2;
-	
 	/* Button currently pressed or 0 if none */
 	guint8 button;
-	
-	/* ID of update timer, or 0 if none */
-	guint32 timer;
 	
 	/* Old values from adjustment stored so we know when something changes */
 	gfloat old_value;
@@ -78,7 +71,7 @@ struct _GtkTxDialClass {
 GtkWidget* gtk_tx_dial_new (GtkAdjustment *adjustment);
 GType gtk_tx_dial_get_type (void);
 GtkAdjustment* gtk_tx_dial_get_adjustment (GtkTxDial *tx_dial);
-void gtk_tx_dial_set_update_policy (GtkTxDial *tx_dial, GtkUpdateType policy);
+
 void gtk_tx_dial_set_adjustment (GtkTxDial *tx_dial, GtkAdjustment *adjustment);
 
 #ifdef __cplusplus

@@ -71,7 +71,7 @@ tX_panel :: tX_panel (const char *name, GtkWidget *par)
 	gtk_misc_set_alignment(GTK_MISC(labelbutton), 0, 0.5);
 	tX_panel_make_label_bold(labelbutton);
  
-	button_box=gtk_hbox_new(FALSE, 5);
+	button_box=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 	       
 	gtk_box_pack_start(GTK_BOX(button_box), pixmap_min, WID_FIX);
 	gtk_box_pack_start(GTK_BOX(button_box), pixmap_max, WID_FIX);
@@ -80,10 +80,10 @@ tX_panel :: tX_panel (const char *name, GtkWidget *par)
 	gtk_container_set_border_width(GTK_CONTAINER(button_box), 2);
 	
 	gtk_container_add (GTK_CONTAINER (minbutton), button_box);
-	mainbox=gtk_vbox_new(FALSE, 0);
+	mainbox=gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 	
-	topbox=gtk_hbox_new(FALSE, 0);
-	clientbox=gtk_vbox_new(FALSE, 0);
+	topbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	clientbox=gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 	clientframe=gtk_frame_new((char *) NULL);
 	gtk_container_set_border_width( GTK_CONTAINER(clientframe), 0);
 	gtk_container_add(GTK_CONTAINER(clientframe), clientbox);
