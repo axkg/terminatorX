@@ -638,7 +638,7 @@ static gint fx_button_pressed(GtkWidget *wid, GdkEventButton *event, vtt_class *
 
 	LADSPA_Class::set_current_vtt(vtt);
 
-	if (g->ladspa_menu) gtk_object_destroy(GTK_OBJECT(g->ladspa_menu));
+	if (g->ladspa_menu) gtk_widget_destroy(GTK_WIDGET(g->ladspa_menu));
 	g->ladspa_menu=LADSPA_Class::get_ladspa_menu();
 	gtk_menu_popup (GTK_MENU(g->ladspa_menu), NULL, NULL, NULL, NULL, 0, 0);
 
@@ -654,7 +654,7 @@ static gint stereo_fx_button_pressed(GtkWidget *wid, GdkEventButton *event, vtt_
 
 	LADSPA_Class::set_current_vtt(vtt);
 
-	if (g->ladspa_menu) gtk_object_destroy(GTK_OBJECT(g->ladspa_menu));
+	if (g->ladspa_menu) gtk_widget_destroy(GTK_WIDGET(g->ladspa_menu));
 	g->ladspa_menu=LADSPA_Class::get_stereo_ladspa_menu();
 	gtk_menu_popup (GTK_MENU(g->ladspa_menu), NULL, NULL, NULL, NULL, 0, 0);
 
@@ -782,14 +782,15 @@ void build_vtt_gui(vtt_class *vtt)
 	g->ladspa_menu=NULL;
 
 	/* Building Audio Box */
-	g->audio_box=gtk_vbox_new(FALSE,2);
+	g->audio_box=gtk_box_new(GTK_ORIENTATION_VERTICAL,2);
 	gtk_widget_show(g->audio_box);
 	
-	tempbox2=gtk_hbox_new(FALSE,2);
+	tempbox2=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,2);
 	gtk_widget_show(tempbox2);
 	gtk_box_pack_start(GTK_BOX(g->audio_box), tempbox2, WID_FIX);
 	
-	tempbox=gtk_hbox_new(TRUE,2);
+	tempbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,2);
+	gtk_box_set_homogeneous(GTK_BOX(tempbox), TRUE);
 	gtk_widget_show(tempbox);
 	gtk_box_pack_start(GTK_BOX(tempbox2), tempbox, WID_DYN);
 
@@ -829,13 +830,13 @@ void build_vtt_gui(vtt_class *vtt)
 	}
 #endif
 
-	tempbox=gtk_hbox_new(FALSE, 2);
+	tempbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
 
 	g->display=gtk_tx_new(vtt->buffer, vtt->samples_in_buffer);
 	gtk_box_pack_start(GTK_BOX(tempbox), g->display, WID_DYN);
 	gtk_widget_show(g->display);	
 	
-	g->zoom=gtk_vscale_new_with_range(0,99.0,1.0);
+	g->zoom=gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL, 0,99.0,1.0);
 	gtk_range_set_inverted(GTK_RANGE(g->zoom), TRUE);
 	gtk_scale_set_draw_value(GTK_SCALE(g->zoom), TRUE);
 	gtk_scale_set_digits(GTK_SCALE(g->zoom), 0);
@@ -851,10 +852,10 @@ void build_vtt_gui(vtt_class *vtt)
 	
 	/* Building Control Box */
 	
-	g->control_box=gtk_vbox_new(FALSE,2);
+	g->control_box=gtk_box_new(GTK_ORIENTATION_VERTICAL,2);
 	gtk_widget_show(g->control_box);
 
-	tempbox2=gtk_hbox_new(FALSE, 2);
+	tempbox2=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
 	gtk_widget_show(tempbox2);
 	gtk_box_pack_start(GTK_BOX(g->control_box), tempbox2, WID_FIX);
 
@@ -876,9 +877,12 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_widget_show(g->scrolled_win);
 	gtk_box_pack_start(GTK_BOX(g->control_box), g->scrolled_win, WID_DYN);
 				    
-	g->control_subbox=gtk_vbox_new(FALSE,0);
-	gtk_scrolled_window_add_with_viewport (
-                   GTK_SCROLLED_WINDOW (g->scrolled_win), g->control_subbox);
+	g->control_subbox=gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
+#if GTK_CHECK_VERSION(3,8,0)
+	gtk_container_add(GTK_CONTAINER(g->scrolled_win), g->control_subbox);
+#else
+	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(g->scrolled_win), g->control_subbox);
+#endif
 	gtk_widget_show(g->control_subbox);
 		   
 
@@ -890,9 +894,10 @@ void build_vtt_gui(vtt_class *vtt)
 	g->name = gtk_entry_new();
 	gtk_entry_set_max_length(GTK_ENTRY(g->name), 256);
 	gtk_entry_set_text(GTK_ENTRY(g->name), vtt->name);
+	gtk_entry_set_width_chars(GTK_ENTRY(g->name), 10);
 	p->add_client_widget(g->name);
 	gui_set_tooltip(g->name, "Enter the turntable's name here.");
-	gtk_widget_set_size_request(g->name, 40, -1);
+	//gtk_widget_set_size_request(g->name, 40, -1);
 
 	g->del=gtk_button_new_with_label("Delete");
 	gui_set_tooltip(g->del, "Click here to annihilate this turntable. All events recorded for this turntable will be erased, too.");
@@ -947,7 +952,7 @@ void build_vtt_gui(vtt_class *vtt)
 
 	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
 	
-	g->fx_box=gtk_vbox_new(FALSE,0);
+	g->fx_box=gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
 	gtk_box_pack_start(GTK_BOX(g->control_subbox), g->fx_box, WID_FIX);
 	gtk_widget_show(g->fx_box);
 	
@@ -1027,7 +1032,7 @@ void build_vtt_gui(vtt_class *vtt)
 
 	gtk_box_pack_start(GTK_BOX(g->fx_box), p->get_widget(), WID_FIX);
 	
-	g->stereo_fx_box=gtk_vbox_new(FALSE, 0);
+	g->stereo_fx_box=gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 	gtk_box_pack_start(GTK_BOX(g->control_subbox), g->stereo_fx_box, WID_FIX);
 	gtk_widget_show(g->stereo_fx_box);
 	
@@ -1040,11 +1045,11 @@ void build_vtt_gui(vtt_class *vtt)
 
 	/* Output */
 	
-	tempbox=gtk_hbox_new(FALSE,2);
+	tempbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,2);
 	gtk_widget_show(tempbox);
 	gtk_box_pack_end(GTK_BOX(g->control_box), tempbox, WID_FIX);
 	
-	tempbox2=gtk_vbox_new(FALSE,0);
+	tempbox2=gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
 	gtk_widget_show(tempbox2);
 	gtk_box_pack_start(GTK_BOX(tempbox), tempbox2, WID_FIX);
 	
@@ -1060,7 +1065,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->pand->get_widget(), WID_FIX);
 	gui_set_tooltip(g->pand->get_entry(), "Specifies the position of this turntable within the stereo spectrum: -1 -> left, 0-> center, 1->right.");
 
-	tempbox3=gtk_hbox_new(FALSE,2);
+	tempbox3=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,2);
 	gtk_widget_show(tempbox3);
 
 	g->mute=gtk_check_button_new_with_label("M");
@@ -1077,12 +1082,12 @@ void build_vtt_gui(vtt_class *vtt)
 
 	gtk_box_pack_start(GTK_BOX(tempbox2), tempbox3, WID_FIX);
 
-	tempbox2=gtk_hbox_new(FALSE,0);
+	tempbox2=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
 	gtk_widget_show(tempbox2);
 	gtk_box_pack_start(GTK_BOX(tempbox), tempbox2, WID_FIX);
 	
 	g->volume=GTK_ADJUSTMENT(gtk_adjustment_new(2.0-vtt->rel_volume, 0, 2, 0.01, 0.01, 0.01));
-	dummy=gtk_vscale_new(GTK_ADJUSTMENT(g->volume)); 
+	dummy=gtk_scale_new(GTK_ORIENTATION_VERTICAL, GTK_ADJUSTMENT(g->volume)); 
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), False);
 	gui_set_tooltip(dummy, "Adjust this turntable's volume.");
 	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_volume);	
@@ -1092,7 +1097,7 @@ void build_vtt_gui(vtt_class *vtt)
 
 	g->flash=gtk_tx_flash_new();
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->flash, WID_FIX);
-	gtk_widget_show(g->flash);		
+	gtk_widget_show(g->flash);
 
 	gui_connect_signals(vtt);
 	
@@ -1138,7 +1143,7 @@ GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel)
 	GtkWidget *pixmap;
 	GtkWidget *button;
 	
-	box=gtk_hbox_new(FALSE,0);
+	box=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
 
 	if (showdel) {
 		button=gtk_button_new();

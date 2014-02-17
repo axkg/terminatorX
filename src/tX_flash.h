@@ -49,8 +49,7 @@ struct flash_channel {
 
 struct _GtkTxFlash {
 	GtkWidget widget;
-	GdkColor colors[5];	
-	int colors_allocated;
+	GdkRGBA colors[5];	
 	int levels;
 	int red_level;
 	f_prec level_value;

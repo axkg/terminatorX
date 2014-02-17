@@ -895,11 +895,11 @@ void sequencer_move(GtkWidget *wid, void *d)
 	}
 }
 
-#define add_sep(); 	dummy=gtk_hseparator_new ();\
+#define add_sep(); 	dummy=gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);\
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);\
 	gtk_widget_show(dummy);\
 
-#define add_sep2(); 	dummy=gtk_hseparator_new ();\
+#define add_sep2(); 	dummy=gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);\
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);\
 	gtk_widget_show(dummy);\
 
@@ -1053,11 +1053,10 @@ void create_master_menu()
 {
 	GtkWidget *menu_item;
 	GtkWidget *sub_menu;
-	GtkWidget *label;
 	
 	GtkAccelGroup* accel_group=gtk_accel_group_new();
 	gtk_window_add_accel_group(GTK_WINDOW(main_window), accel_group);
-	GtkStyle *style=gtk_widget_get_style(main_window);
+	GtkStyleContext *style_context=gtk_widget_get_style_context(main_window);
 
 	const static GtkStockItem items[] = {
 			{ (char *) "tX-open-audio", (char *)  "Load _Audio File", (GdkModifierType) 0, 0, NULL },
@@ -1071,17 +1070,17 @@ void create_master_menu()
 	gtk_icon_factory_add_default(factory);
 	
 	gtk_stock_add (items, G_N_ELEMENTS (items));
-	GtkIconSet * icon_set =gtk_style_lookup_icon_set(style, GTK_STOCK_OPEN);
+	GtkIconSet * icon_set =gtk_style_context_lookup_icon_set(style_context, GTK_STOCK_OPEN);
 	gtk_icon_factory_add(factory, "tX-open-audio", icon_set);
 	gtk_icon_factory_add(factory, "tX-open-set", icon_set);
 	
-	icon_set = gtk_style_lookup_icon_set(style, GTK_STOCK_NEW);
+	icon_set = gtk_style_context_lookup_icon_set(style_context, GTK_STOCK_NEW);
 	gtk_icon_factory_add(factory, "tX-new", icon_set);
 	
-	icon_set = gtk_style_lookup_icon_set(style, GTK_STOCK_SAVE);
+	icon_set = gtk_style_context_lookup_icon_set(style_context, GTK_STOCK_SAVE);
 	gtk_icon_factory_add(factory, "tX-save", icon_set);
 	
-	icon_set = gtk_style_lookup_icon_set(style, GTK_STOCK_SAVE_AS);
+	icon_set = gtk_style_context_lookup_icon_set(style_context, GTK_STOCK_SAVE_AS);
 	gtk_icon_factory_add(factory, "tX-save-as", icon_set);
 	
 	/* FILE */
@@ -1143,7 +1142,7 @@ void create_master_menu()
 	menu_item = gtk_menu_item_new_with_mnemonic("_Add Turntable");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
-	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_A, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);	
+	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_KEY_A, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);	
 	g_signal_connect(menu_item, "activate", (GCallback) new_table, NULL);
 
 	menu_item = gtk_menu_item_new ();
@@ -1154,7 +1153,7 @@ void create_master_menu()
 	menu_item = gtk_menu_item_new_with_mnemonic("Assign _Default MIDI Mappings");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
-	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_M, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_KEY_M, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
 #ifdef USE_ALSA_MIDI_IN
 	g_signal_connect(menu_item, "activate", G_CALLBACK(tX_midiin::auto_assign_midi_mappings), (void *) true);
@@ -1175,7 +1174,7 @@ void create_master_menu()
 	menu_item = gtk_menu_item_new_with_mnemonic("_Clear MIDI Mappings");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
-	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_C, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_KEY_C, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 
 #ifdef USE_ALSA_MIDI_IN
 	g_signal_connect(menu_item, "activate", G_CALLBACK(tX_midiin::clear_midi_mappings), (void *) true);
@@ -1190,7 +1189,7 @@ void create_master_menu()
 
 	menu_item = gtk_check_menu_item_new_with_mnemonic("_Record Audio To Disk");
 	rec_menu_item = menu_item;
-	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_KEY_R, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) tape_on, NULL);
@@ -1246,7 +1245,7 @@ void create_master_menu()
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), globals.fullscreen_enabled);
-	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_F11, (GdkModifierType) 0, GTK_ACCEL_VISIBLE);
+	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_KEY_F11, (GdkModifierType) 0, GTK_ACCEL_VISIBLE);
 	g_signal_connect(menu_item, "activate", (GCallback) fullscreen_toggle, NULL);
 	
 	menu_item = gtk_menu_item_new ();
@@ -1263,7 +1262,6 @@ void create_master_menu()
 	menu_item = gtk_menu_item_new_with_mnemonic ("_Help");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (main_menubar), menu_item);
-	gtk_menu_item_set_right_justified(GTK_MENU_ITEM(menu_item), TRUE);
 	
 	sub_menu = gtk_menu_new ();
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), sub_menu);
@@ -1272,7 +1270,7 @@ void create_master_menu()
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) display_help, NULL);
-	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_F1, (GdkModifierType) 0, GTK_ACCEL_VISIBLE);
+	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_KEY_F1, (GdkModifierType) 0, GTK_ACCEL_VISIBLE);
 
 	menu_item = gtk_menu_item_new_with_mnemonic ("_About");
 	gtk_widget_show (menu_item);
@@ -1312,7 +1310,7 @@ void create_mastergui(int x, int y)
 
 	gtk_widget_realize(main_window);
 
-	wrapbox=gtk_vbox_new(FALSE, 5);
+	wrapbox=gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	gtk_container_add(GTK_CONTAINER(main_window), wrapbox);
 	gtk_widget_show(wrapbox);
 
@@ -1320,8 +1318,10 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_start(GTK_BOX(wrapbox), main_menubar, WID_FIX);
 	gtk_widget_show(main_menubar);
 
-	mother_of_all_boxen=gtk_vbox_new(FALSE, 5);
+	mother_of_all_boxen=gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	gtk_container_set_border_width(GTK_CONTAINER(mother_of_all_boxen), 5);
+	gtk_widget_set_hexpand(mother_of_all_boxen, TRUE);
+	gtk_widget_set_vexpand(mother_of_all_boxen, TRUE);
 	gtk_container_add(GTK_CONTAINER(wrapbox), mother_of_all_boxen);
 	gtk_widget_show(mother_of_all_boxen);	
 
@@ -1333,19 +1333,19 @@ void create_mastergui(int x, int y)
 	g_signal_connect(G_OBJECT(main_window), "key_press_event", G_CALLBACK(tx_mouse::key_press_wrap), &mouse);
 	g_signal_connect(G_OBJECT(main_window), "key_release_event", G_CALLBACK(tx_mouse::key_release_wrap), &mouse);
 	
-	main_vbox=gtk_hbox_new(FALSE, 5);
+	main_vbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_box_pack_start(GTK_BOX(mother_of_all_boxen), main_vbox, WID_DYN);
 	gtk_widget_show(main_vbox);
 	
-	left_hbox=gtk_vbox_new(FALSE, 5);
+	left_hbox=gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	gtk_box_pack_start(GTK_BOX(main_vbox), left_hbox, WID_DYN);
 	gtk_widget_show(left_hbox);
 	
-	control_box=gtk_hbox_new(FALSE, 5);
+	control_box=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_box_pack_start(GTK_BOX(left_hbox), control_box, WID_FIX);
 	gtk_widget_show(control_box);
 	
-	dummy=gtk_hseparator_new();
+	dummy=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 	gtk_box_pack_start(GTK_BOX(left_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
@@ -1368,7 +1368,7 @@ void create_mastergui(int x, int y)
 	gui_set_tooltip(grab_button, "Enter the mouse grab mode operation. Press <ESCAPE> to exit grab mode.");
 	gtk_widget_show(grab_button);
 
-	dummy=gtk_vseparator_new();
+	dummy=gtk_separator_new(GTK_ORIENTATION_VERTICAL);
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
     
@@ -1416,7 +1416,7 @@ void create_mastergui(int x, int y)
 	dumadj=(GtkAdjustment*) gtk_adjustment_new(0, 0, 100, 0.1, 1, 1);
 	seq_adj=dumadj;
 	connect_adj(dumadj, sequencer_move, NULL);	
-	dummy=gtk_hscale_new(dumadj);
+	dummy=gtk_scale_new(GTK_ORIENTATION_HORIZONTAL, dumadj);
 	gtk_widget_set_size_request(dummy, 65, 20);
 	seq_slider=dummy;
 	g_signal_connect(G_OBJECT(seq_slider), "button-release-event", (GCallback) seq_slider_released, NULL);
@@ -1426,32 +1426,33 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_DYN);
 	gtk_widget_show(dummy);
 	
-	dummy=gtk_hbox_new(FALSE,2); //gtk_hpaned_new ();
+	dummy=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,2); //gtk_hpaned_new ();
 	gtk_box_pack_start(GTK_BOX(left_hbox), dummy, WID_DYN);
 	gtk_widget_show(dummy);
 	
 	tt_parent=dummy;
 
-    panel_bar=gtk_hbox_new(TRUE,0);
+    panel_bar=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
+    gtk_box_set_homogeneous(GTK_BOX(panel_bar), TRUE);
 	gtk_box_pack_start(GTK_BOX(left_hbox), panel_bar, WID_FIX);
 
-	control_parent=gtk_hbox_new(FALSE,4);
+	control_parent=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,4);
 	gtk_box_pack_start(GTK_BOX(tt_parent), control_parent, WID_FIX);
 	gtk_widget_show(control_parent);
 
-	dummy=gtk_vseparator_new();
+	dummy=gtk_separator_new(GTK_ORIENTATION_VERTICAL);
 	gtk_box_pack_start(GTK_BOX(tt_parent), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
-	audio_parent=gtk_vbox_new(FALSE,2);
+	audio_parent=gtk_box_new(GTK_ORIENTATION_VERTICAL,2);
 	gtk_box_pack_start(GTK_BOX(tt_parent), audio_parent, WID_DYN);
 	gtk_widget_show(audio_parent);
 	
-	dummy=gtk_vseparator_new();
+	dummy=gtk_separator_new(GTK_ORIENTATION_VERTICAL);
 	gtk_box_pack_start(GTK_BOX(main_vbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 		
-	right_hbox=gtk_vbox_new(FALSE, 5);
+	right_hbox=gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	gtk_box_pack_start(GTK_BOX(main_vbox), right_hbox, WID_FIX);
 	gtk_widget_show(right_hbox);
 
@@ -1463,7 +1464,7 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);	
 
-	dummy=gtk_hseparator_new();
+	dummy=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
@@ -1481,20 +1482,20 @@ void create_mastergui(int x, int y)
 	gtk_box_pack_start(GTK_BOX(right_hbox), pdial->get_widget(), WID_FIX);
 	gui_set_tooltip(pdial->get_entry(), "Use this dial to adjust the master pitch (affecting *all* turntables).");
 	
-	dummy=gtk_hseparator_new();
+	dummy=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 	
 	/* Volume */
-	master_vol_box=gtk_hbox_new(FALSE, 5);
+	master_vol_box=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_box_pack_start(GTK_BOX(right_hbox), master_vol_box, WID_DYN);
-	gtk_widget_show(master_vol_box);	
+	gtk_widget_show(master_vol_box);
 	
 	dumadj=(GtkAdjustment*) gtk_adjustment_new(globals.volume, 0, 2, 0.01, 0.05, 0.000);
 	volume_adj=dumadj;
 
-	connect_adj(dumadj, master_volume_changed, NULL);	
-	dummy=gtk_vscale_new(dumadj);
+	connect_adj(dumadj, master_volume_changed, NULL);
+	dummy=gtk_scale_new(GTK_ORIENTATION_VERTICAL, dumadj);
 	gtk_range_set_inverted(GTK_RANGE(dummy), TRUE);
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), False);
 	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &sp_master_volume);	
@@ -1513,11 +1514,11 @@ void create_mastergui(int x, int y)
 	gtk_widget_show(dummy);
 
 	/* STATUS BOX */ 
-	dummy=gtk_hseparator_new();
+	dummy=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 	
-	status_box=gtk_vbox_new(FALSE, 0);
+	status_box=gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 	gtk_box_pack_start(GTK_BOX(right_hbox), status_box, WID_FIX);
 	gtk_widget_show(status_box);
 	
@@ -1682,7 +1683,7 @@ void display_mastergui()
 	fullscreen_setup();	
 	top=gtk_widget_get_toplevel(main_window);
 	top_window=GDK_WINDOW(gtk_widget_get_window(top));
-	x_window=GDK_WINDOW_XWINDOW(gtk_widget_get_window(top));
+	x_window=gdk_x11_window_get_xid(gtk_widget_get_window(top));
 }
 
 pid_t help_child=0;

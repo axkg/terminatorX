@@ -54,7 +54,7 @@ gfloat ld_old_prog;
 
 int ld_create_loaddlg(int mode, int count)
 {
-	GtkWidget *vbox=gtk_vbox_new(0, 5);
+	GtkWidget *vbox=gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	GtkWidget *dummy;
 	
 	if (ld_loaddlg) return 1;
@@ -80,7 +80,7 @@ int ld_create_loaddlg(int mode, int count)
 		ld_multi_p=gtk_progress_bar_new();
 		add_widget_fix(ld_multi_p);
 		
-		dummy=gtk_hseparator_new();
+		dummy=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 		add_widget_fix(dummy);
 		
 		ld_current=0;

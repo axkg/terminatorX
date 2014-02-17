@@ -34,12 +34,12 @@ create_tx_adjust (void)
   GtkWidget *dialog_vbox2;
   GtkWidget *vbox1;
   GtkWidget *label34;
-  GtkWidget *table7;
-  GtkObject *master_cycles_adj;
+  GtkWidget *grid7;
+  GtkAdjustment *master_cycles_adj;
   GtkWidget *master_cycles;
   GtkWidget *label36;
   GtkWidget *label35;
-  GtkObject *cycles_adj;
+  GtkAdjustment *cycles_adj;
   GtkWidget *cycles;
   GtkWidget *create_event;
   GtkWidget *dialog_action_area2;
@@ -52,7 +52,7 @@ create_tx_adjust (void)
   dialog_vbox2 = gtk_dialog_get_content_area(GTK_DIALOG (tx_adjust));
   gtk_widget_show (dialog_vbox2);
 
-  vbox1 = gtk_vbox_new (FALSE, 4);
+  vbox1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
   gtk_widget_show (vbox1);
   gtk_box_pack_start (GTK_BOX (dialog_vbox2), vbox1, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (vbox1), 4);
@@ -62,37 +62,31 @@ create_tx_adjust (void)
   gtk_box_pack_start (GTK_BOX (vbox1), label34, FALSE, FALSE, 0);
   gtk_label_set_line_wrap (GTK_LABEL (label34), TRUE);
 
-  table7 = gtk_table_new (2, 2, FALSE);
-  gtk_widget_show (table7);
-  gtk_box_pack_start (GTK_BOX (vbox1), table7, TRUE, TRUE, 0);
-  gtk_table_set_col_spacings (GTK_TABLE (table7), 3);
+  grid7 = gtk_grid_new ();
+  gtk_widget_show (grid7);
+  gtk_box_pack_start (GTK_BOX (vbox1), grid7, TRUE, TRUE, 0);
+  gtk_grid_set_column_spacing (GTK_GRID (grid7), 3);
 
   master_cycles_adj = gtk_adjustment_new (1, 1, 100, 1, 10, 0);
   master_cycles = gtk_spin_button_new (GTK_ADJUSTMENT (master_cycles_adj), 1, 0);
+  gtk_widget_set_hexpand(master_cycles, TRUE);
   gtk_widget_show (master_cycles);
-  gtk_table_attach (GTK_TABLE (table7), master_cycles, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid7), master_cycles, 1, 1, 1, 1);
   gtk_widget_set_tooltip_text(master_cycles, "Specify the number of loops for the master turntable.");
 
   label36 = gtk_label_new ("Loops of the master turntable:");
   gtk_widget_show (label36);
-  gtk_table_attach (GTK_TABLE (table7), label36, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid7), label36, 0, 1, 1, 1);
 
   label35 = gtk_label_new ("Loops of this turntable turntable:");
   gtk_widget_show (label35);
-  gtk_table_attach (GTK_TABLE (table7), label35, 0, 1, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid7), label35, 0, 0, 1, 1);
 
   cycles_adj = gtk_adjustment_new (1, 1, 100, 1, 10, 0);
   cycles = gtk_spin_button_new (GTK_ADJUSTMENT (cycles_adj), 1, 0);
+  gtk_widget_set_hexpand(cycles, TRUE);
   gtk_widget_show (cycles);
-  gtk_table_attach (GTK_TABLE (table7), cycles, 1, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid7), cycles, 1, 0, 1, 1);
   gtk_widget_set_tooltip_text(cycles, "Specify the number of loops of _this_ turntable.");
 
   create_event = gtk_check_button_new_with_mnemonic ("Record a sequencer event");
@@ -118,7 +112,7 @@ create_tx_adjust (void)
   TX_UI_HOOKUP_OBJECT_NO_REF (tx_adjust, dialog_vbox2, "dialog_vbox2");
   TX_UI_HOOKUP_OBJECT (tx_adjust, vbox1, "vbox1");
   TX_UI_HOOKUP_OBJECT (tx_adjust, label34, "label34");
-  TX_UI_HOOKUP_OBJECT (tx_adjust, table7, "table7");
+  TX_UI_HOOKUP_OBJECT (tx_adjust, grid7, "grid7");
   TX_UI_HOOKUP_OBJECT (tx_adjust, master_cycles, "master_cycles");
   TX_UI_HOOKUP_OBJECT (tx_adjust, label36, "label36");
   TX_UI_HOOKUP_OBJECT (tx_adjust, label35, "label35");
@@ -137,7 +131,7 @@ create_tx_options (void)
   GtkWidget *tx_options;
   GtkWidget *dialog_vbox3;
   GtkWidget *notebook1;
-  GtkWidget *table4;
+  GtkWidget *grid4;
   GtkWidget *label18;
   GtkWidget *hbox2;
   GtkWidget *oss_driver;
@@ -147,18 +141,18 @@ create_tx_options (void)
   GtkWidget *use_realtime_label;
   GtkWidget *use_realtime;
   GtkWidget *label1;
-  GtkWidget *table5;
+  GtkWidget *grid5;
   GtkWidget *label21;
   GtkWidget *label22;
   GtkWidget *label23;
   GtkWidget *label24;
   GtkWidget *oss_audio_device;
-  GtkObject *oss_buffers_adj;
+  GtkAdjustment *oss_buffers_adj;
   GtkWidget *oss_buffers;
   GtkWidget *oss_buffersize;
   GtkWidget *oss_samplerate;
   GtkWidget *label15;
-  GtkWidget *table6;
+  GtkWidget *grid6;
   GtkWidget *label27;
   GtkWidget *label29;
   GtkWidget *label30;
@@ -170,7 +164,7 @@ create_tx_options (void)
   GtkWidget *label39;
   GtkWidget *alsa_free_hwstats;
   GtkWidget *label16;
-  GtkWidget *table1;
+  GtkWidget *grid1;
   GtkWidget *label5;
   GtkWidget *label6;
   GtkWidget *label7;
@@ -182,7 +176,7 @@ create_tx_options (void)
   GtkWidget *label37;
   GtkWidget *vtt_inertia;
   GtkWidget *label4;
-  GtkWidget *table2;
+  GtkWidget *grid2;
   GtkWidget *label8;
   GtkWidget *label9;
   GtkWidget *label10;
@@ -200,10 +194,10 @@ create_tx_options (void)
   GtkWidget *buttons_icon_only;
   GtkWidget *buttons_text_only;
   GtkWidget *label38;
-  GtkObject *filename_length_adj;
+  GtkAdjustment *filename_length_adj;
   GtkWidget *filename_length;
   GtkWidget *label2;
-  GtkWidget *table8;
+  GtkWidget *grid8;
   GtkWidget *label42;
   GtkWidget *label43;
   GtkWidget *label44;
@@ -217,7 +211,7 @@ create_tx_options (void)
   GtkWidget *wav_display_cursor;
   GtkWidget *wav_display_cursor_mute;
   GtkWidget *label41;
-  GtkWidget *table9;
+  GtkWidget *grid9;
   GtkWidget *label53;
   GtkWidget *label54;
   GtkWidget *label55;
@@ -227,7 +221,7 @@ create_tx_options (void)
   GtkWidget *vu_meter_normal;
   GtkWidget *vu_meter_loud;
   GtkWidget *label52;
-  GtkWidget *table3;
+  GtkWidget *grid3;
   GtkWidget *label13;
   GtkWidget *soundfile_editor;
   GtkWidget *label26;
@@ -261,26 +255,23 @@ create_tx_options (void)
   gtk_widget_show (notebook1);
   gtk_box_pack_start (GTK_BOX (dialog_vbox3), notebook1, TRUE, TRUE, 0);
 
-  table4 = gtk_table_new (2, 2, FALSE);
-  gtk_widget_show (table4);
-  gtk_container_add (GTK_CONTAINER (notebook1), table4);
-  gtk_container_set_border_width (GTK_CONTAINER (table4), 4);
-  gtk_table_set_row_spacings (GTK_TABLE (table4), 2);
-  gtk_table_set_col_spacings (GTK_TABLE (table4), 2);
+  grid4 = gtk_grid_new ();
+  gtk_widget_show (grid4);
+  gtk_container_add (GTK_CONTAINER (notebook1), grid4);
+  gtk_container_set_border_width (GTK_CONTAINER (grid4), 4);
+  gtk_grid_set_row_spacing (GTK_GRID (grid4), 2);
+  gtk_grid_set_column_spacing (GTK_GRID (grid4), 2);
 
   label18 = gtk_label_new ("Driver:");
   gtk_widget_show (label18);
-  gtk_table_attach (GTK_TABLE (table4), label18, 0, 1, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid4), label18, 0, 0, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label18), 0, 0.5);
 
-  hbox2 = gtk_hbox_new (FALSE, 5);
+  hbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
   gtk_widget_show (hbox2);
-  gtk_table_attach (GTK_TABLE (table4), hbox2, 1, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
+  gtk_grid_attach (GTK_GRID (grid4), hbox2, 1, 0, 1, 1);
+  gtk_widget_set_hexpand(hbox2, TRUE);
+  
   oss_driver = gtk_radio_button_new_with_mnemonic (NULL, "OSS");
   gtk_widget_show (oss_driver);
   gtk_box_pack_start (GTK_BOX (hbox2), oss_driver, FALSE, FALSE, 0);
@@ -304,63 +295,49 @@ create_tx_options (void)
 
   use_realtime_label = gtk_label_new ("Scheduling:");
   gtk_widget_show (use_realtime_label);
-  gtk_table_attach (GTK_TABLE (table4), use_realtime_label, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid4), use_realtime_label, 0, 1, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (use_realtime_label), 0, 0.5);
 
   use_realtime = gtk_check_button_new_with_mnemonic ("Use realtime scheduling where available");
   gtk_widget_show (use_realtime);
-  gtk_table_attach (GTK_TABLE (table4), use_realtime, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-
+  gtk_grid_attach (GTK_GRID (grid4), use_realtime, 1, 1, 1, 1);
+  
   label1 = gtk_label_new ("Audio");
   gtk_widget_show (label1);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 0), label1);
 
-  table5 = gtk_table_new (4, 2, FALSE);
-  gtk_widget_show (table5);
-  gtk_container_add (GTK_CONTAINER (notebook1), table5);
-  gtk_container_set_border_width (GTK_CONTAINER (table5), 4);
-  gtk_table_set_row_spacings (GTK_TABLE (table5), 2);
-  gtk_table_set_col_spacings (GTK_TABLE (table5), 2);
+  grid5 = gtk_grid_new ();
+  gtk_widget_show (grid5);
+  gtk_container_add (GTK_CONTAINER (notebook1), grid5);
+  gtk_container_set_border_width (GTK_CONTAINER (grid5), 4);
+  gtk_grid_set_row_spacing (GTK_GRID (grid5), 2);
+  gtk_grid_set_column_spacing (GTK_GRID (grid5), 2);
 
   label21 = gtk_label_new ("Audio device:");
   gtk_widget_show (label21);
-  gtk_table_attach (GTK_TABLE (table5), label21, 0, 1, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid5), label21, 0, 0, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label21), 0, 0.5);
 
   label22 = gtk_label_new ("No. of buffers:");
   gtk_widget_show (label22);
-  gtk_table_attach (GTK_TABLE (table5), label22, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid5), label22, 0, 1, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label22), 0, 0.5);
 
   label23 = gtk_label_new ("Buffersize (2^x):");
   gtk_widget_show (label23);
-  gtk_table_attach (GTK_TABLE (table5), label23, 0, 1, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid5), label23, 0, 2, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label23), 0, 0.5);
 
   label24 = gtk_label_new ("Samplerate (Hz):");
   gtk_widget_show (label24);
-  gtk_table_attach (GTK_TABLE (table5), label24, 0, 1, 3, 4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid5), label24, 0, 3, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label24), 0, 0.5);
 
   oss_audio_device = gtk_combo_box_text_new ();
 //  g_object_set_data (G_OBJECT (GTK_COMBO_BOX (oss_audio_device)->popwin),
 //                     "tXUiParentKey", oss_audio_device);
   gtk_widget_show (oss_audio_device);
-  gtk_table_attach (GTK_TABLE (table5), oss_audio_device, 1, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid5), oss_audio_device, 1, 0, 1, 1);
 
   //combo_entry2 = GTK_COMBO (oss_audio_device)->entry;
   //gtk_widget_show (combo_entry2);
@@ -368,27 +345,23 @@ create_tx_options (void)
 
   oss_buffers_adj = gtk_adjustment_new (2, 2, 5, 1, 10, 0);
   oss_buffers = gtk_spin_button_new (GTK_ADJUSTMENT (oss_buffers_adj), 1, 0);
+  gtk_widget_set_hexpand(oss_buffers, TRUE);
   gtk_widget_show (oss_buffers);
-  gtk_table_attach (GTK_TABLE (table5), oss_buffers, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid5), oss_buffers, 1, 1, 1, 1);
   gtk_widget_set_tooltip_text(oss_buffers, "Sets the number of kernel level audio buffers. Actually most systems should run just fine with two.");
 
-  oss_buffersize = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (9, 8, 16, 1, 1, 1)));
+  oss_buffersize = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (9, 8, 16, 1, 1, 1)));
   gtk_widget_show (oss_buffersize);
-  gtk_table_attach (GTK_TABLE (table5), oss_buffersize, 1, 2, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid5), oss_buffersize, 1, 2, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (oss_buffersize), GTK_POS_LEFT);
   gtk_scale_set_digits (GTK_SCALE (oss_buffersize), 0);
 
   oss_samplerate = gtk_combo_box_text_new ();
   //g_object_set_data (G_OBJECT (GTK_COMBO (oss_samplerate)->popwin),
                      //"tXUiParentKey", oss_samplerate);
+  gtk_widget_set_hexpand(oss_samplerate, TRUE);
   gtk_widget_show (oss_samplerate);
-  gtk_table_attach (GTK_TABLE (table5), oss_samplerate, 1, 2, 3, 4,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid5), oss_samplerate, 1, 3, 1, 1);
 
 //  combo_entry3 = GTK_COMBO (oss_samplerate)->entry;
 //  gtk_widget_show (combo_entry3);
@@ -398,41 +371,34 @@ create_tx_options (void)
   gtk_widget_show (label15);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 1), label15);
 
-  table6 = gtk_table_new (5, 2, FALSE);
-  gtk_widget_show (table6);
-  gtk_container_add (GTK_CONTAINER (notebook1), table6);
-  gtk_container_set_border_width (GTK_CONTAINER (table6), 4);
-  gtk_table_set_row_spacings (GTK_TABLE (table6), 2);
-  gtk_table_set_col_spacings (GTK_TABLE (table6), 2);
+  grid6 = gtk_grid_new ();
+  gtk_widget_show (grid6);
+  gtk_container_add (GTK_CONTAINER (notebook1), grid6);
+  gtk_container_set_border_width (GTK_CONTAINER (grid6), 4);
+  gtk_grid_set_row_spacing (GTK_GRID (grid6), 2);
+  gtk_grid_set_column_spacing (GTK_GRID (grid6), 2);
 
   label27 = gtk_label_new ("Audio Device:");
   gtk_widget_show (label27);
-  gtk_table_attach (GTK_TABLE (table6), label27, 0, 1, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid6), label27, 0, 0, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label27), 0, 0.5);
 
   label29 = gtk_label_new ("Period Time (ms):");
   gtk_widget_show (label29);
-  gtk_table_attach (GTK_TABLE (table6), label29, 0, 1, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid6), label29, 0, 2, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label29), 0, 0.5);
 
   label30 = gtk_label_new ("Samplerate (Hz):");
   gtk_widget_show (label30);
-  gtk_table_attach (GTK_TABLE (table6), label30, 0, 1, 3, 4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid6), label30, 0, 3, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label30), 0, 0.5);
 
   alsa_audio_device = gtk_combo_box_text_new ();
 //  g_object_set_data (G_OBJECT (GTK_COMBO (alsa_audio_device)->popwin),
 //                     "tXUiParentKey", alsa_audio_device);
+  gtk_widget_set_hexpand(alsa_audio_device, TRUE);
   gtk_widget_show (alsa_audio_device);
-  gtk_table_attach (GTK_TABLE (table6), alsa_audio_device, 1, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid6), alsa_audio_device, 1, 0, 1, 1);
 
 //  combo_entry4 = GTK_COMBO (alsa_audio_device)->entry;
 //  gtk_widget_show (combo_entry4);
@@ -440,232 +406,179 @@ create_tx_options (void)
   alsa_samplerate = gtk_combo_box_text_new ();
 //  g_object_set_data (G_OBJECT (GTK_COMBO (alsa_samplerate)->popwin),
 //                     "tXUiParentKey", alsa_samplerate);
+  gtk_widget_set_hexpand(alsa_samplerate, TRUE);
   gtk_widget_show (alsa_samplerate);
-  gtk_table_attach (GTK_TABLE (table6), alsa_samplerate, 1, 2, 3, 4,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid6), alsa_samplerate, 1, 3, 1, 1);
 
 //  combo_entry5 = GTK_COMBO (alsa_samplerate)->entry;
 //  gtk_widget_show (combo_entry5);
 
-  alsa_period_time = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (29, 10, 500, 1, 10, 10)));
+  alsa_period_time = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (29, 10, 500, 1, 10, 10)));
   gtk_widget_show (alsa_period_time);
-  gtk_table_attach (GTK_TABLE (table6), alsa_period_time, 1, 2, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid6), alsa_period_time, 1, 2, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (alsa_period_time), GTK_POS_LEFT);
   gtk_scale_set_digits (GTK_SCALE (alsa_period_time), 0);
 
   label32 = gtk_label_new ("Buffer Time (ms):");
   gtk_widget_show (label32);
-  gtk_table_attach (GTK_TABLE (table6), label32, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid6), label32, 0, 1, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label32), 0, 0.5);
 
-  alsa_buffer_time = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (69, 10, 500, 1, 10, 10)));
+  alsa_buffer_time = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (69, 10, 500, 1, 10, 10)));
   gtk_widget_show (alsa_buffer_time);
-  gtk_table_attach (GTK_TABLE (table6), alsa_buffer_time, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid6), alsa_buffer_time, 1, 1, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (alsa_buffer_time), GTK_POS_LEFT);
   gtk_scale_set_digits (GTK_SCALE (alsa_buffer_time), 0);
 
   label39 = gtk_label_new ("Free HWstats:");
   gtk_widget_show (label39);
-  gtk_table_attach (GTK_TABLE (table6), label39, 0, 1, 4, 5,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid6), label39, 0, 4, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label39), 0, 0.5);
 
   alsa_free_hwstats = gtk_check_button_new_with_mnemonic ("Enabled");
   gtk_widget_show (alsa_free_hwstats);
-  gtk_table_attach (GTK_TABLE (table6), alsa_free_hwstats, 1, 2, 4, 5,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid6), alsa_free_hwstats, 1, 4, 1, 1);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (alsa_free_hwstats), TRUE);
 
   label16 = gtk_label_new ("Audio: ALSA");
   gtk_widget_show (label16);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 2), label16);
 
-  table1 = gtk_table_new (5, 2, FALSE);
-  gtk_widget_show (table1);
-  gtk_container_add (GTK_CONTAINER (notebook1), table1);
-  gtk_container_set_border_width (GTK_CONTAINER (table1), 4);
-  gtk_table_set_row_spacings (GTK_TABLE (table1), 2);
-  gtk_table_set_col_spacings (GTK_TABLE (table1), 2);
+  grid1 = gtk_grid_new ();
+  gtk_widget_show (grid1);
+  gtk_container_add (GTK_CONTAINER (notebook1), grid1);
+  gtk_container_set_border_width (GTK_CONTAINER (grid1), 4);
+  gtk_grid_set_row_spacing (GTK_GRID (grid1), 2);
+  gtk_grid_set_column_spacing (GTK_GRID (grid1), 2);
 
   label5 = gtk_label_new ("XInput device:");
   gtk_widget_show (label5);
-  gtk_table_attach (GTK_TABLE (table1), label5, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid1), label5, 0, 1, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label5), 0, 0.5);
 
   label6 = gtk_label_new ("Mouse speed:");
   gtk_widget_show (label6);
-  gtk_table_attach (GTK_TABLE (table1), label6, 0, 1, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid1), label6, 0, 2, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label6), 0, 0.5);
 
   label7 = gtk_label_new ("Stop-sense-cycles:");
   gtk_widget_show (label7);
-  gtk_table_attach (GTK_TABLE (table1), label7, 0, 1, 3, 4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid1), label7, 0, 3, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label7), 0, 0.5);
 
   xinput_device = gtk_combo_box_text_new ();
 //  g_object_set_data (G_OBJECT (GTK_COMBO (xinput_device)->popwin),
 //                     "tXUiParentKey", xinput_device);
+  gtk_widget_set_hexpand(xinput_device, TRUE);
   gtk_widget_show (xinput_device);
-  gtk_table_attach (GTK_TABLE (table1), xinput_device, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid1), xinput_device, 1, 1, 1, 1);
 
 //  combo_entry1 = GTK_COMBO (xinput_device)->entry;
 //  gtk_widget_show (combo_entry1);
   gtk_widget_set_tooltip_text(xinput_device, "Select the input device to use when XInput is enabled. Note: do not use this option if you plan on using your default device (standard mouse).");
 
-  mouse_speed = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (0, -10, 10, 0.5, 0.1, 0.1)));
+  mouse_speed = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (0, -10, 10, 0.5, 0.1, 0.1)));
   gtk_widget_show (mouse_speed);
-  gtk_table_attach (GTK_TABLE (table1), mouse_speed, 1, 2, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid1), mouse_speed, 1, 2, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (mouse_speed), GTK_POS_LEFT);
 
-  stop_sense_cycles = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (80, 30, 250, 5, 1, 1)));
+  stop_sense_cycles = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (80, 30, 250, 5, 1, 1)));
   gtk_widget_show (stop_sense_cycles);
-  gtk_table_attach (GTK_TABLE (table1), stop_sense_cycles, 1, 2, 3, 4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid1), stop_sense_cycles, 1, 3, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (stop_sense_cycles), GTK_POS_LEFT);
 
   label25 = gtk_label_new ("XInput:");
   gtk_widget_show (label25);
-  gtk_table_attach (GTK_TABLE (table1), label25, 0, 1, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid1), label25, 0, 0, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label25), 0, 0.5);
 
   xinput_enable = gtk_check_button_new_with_mnemonic ("Activate XInput support");
   gtk_widget_show (xinput_enable);
-  gtk_table_attach (GTK_TABLE (table1), xinput_enable, 1, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid1), xinput_enable, 1, 0, 1, 1);
   gtk_widget_set_tooltip_text(xinput_enable, "CAREFUL! Enable this *only* if you want to use an input device than your default X-Pointer (yes, your mouse ;). You have to select your desired device as well. Selecting the default mouse pointer will crash terminatorX so if you want to use that keep this option disabled.");
 
   label37 = gtk_label_new ("Turntable inertia:");
   gtk_widget_show (label37);
-  gtk_table_attach (GTK_TABLE (table1), label37, 0, 1, 4, 5,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid1), label37, 0, 4, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label37), 0, 0.5);
 
-  vtt_inertia = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (11, 1, 310, 0.01, 1, 10)));
+  vtt_inertia = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (11, 1, 310, 0.01, 1, 10)));
   gtk_widget_show (vtt_inertia);
-  gtk_table_attach (GTK_TABLE (table1), vtt_inertia, 1, 2, 4, 5,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid1), vtt_inertia, 1, 4, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (vtt_inertia), GTK_POS_LEFT);
 
   label4 = gtk_label_new ("Input");
   gtk_widget_show (label4);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 3), label4);
 
-  table2 = gtk_table_new (7, 2, FALSE);
-  gtk_widget_show (table2);
-  gtk_container_add (GTK_CONTAINER (notebook1), table2);
-  gtk_container_set_border_width (GTK_CONTAINER (table2), 4);
-  gtk_table_set_row_spacings (GTK_TABLE (table2), 2);
-  gtk_table_set_col_spacings (GTK_TABLE (table2), 2);
+  grid2 = gtk_grid_new ();
+  gtk_widget_show (grid2);
+  gtk_container_add (GTK_CONTAINER (notebook1), grid2);
+  gtk_container_set_border_width (GTK_CONTAINER (grid2), 4);
+  gtk_grid_set_row_spacing (GTK_GRID (grid2), 2);
+  gtk_grid_set_column_spacing (GTK_GRID (grid2), 2);
 
   label8 = gtk_label_new ("Tooltips:");
   gtk_widget_show (label8);
-  gtk_table_attach (GTK_TABLE (table2), label8, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid2), label8, 0, 1, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label8), 0, 0.5);
 
   label9 = gtk_label_new ("Update idle (ms):");
   gtk_widget_show (label9);
-  gtk_table_attach (GTK_TABLE (table2), label9, 0, 1, 3, 4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid2), label9, 0, 3, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label9), 0, 0.5);
 
   label10 = gtk_label_new ("Update delay (cycles):");
   gtk_widget_show (label10);
-  gtk_table_attach (GTK_TABLE (table2), label10, 0, 1, 4, 5,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid2), label10, 0, 4, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label10), 0, 0.5);
 
   label11 = gtk_label_new ("VU meter decay:");
   gtk_widget_show (label11);
-  gtk_table_attach (GTK_TABLE (table2), label11, 0, 1, 5, 6,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid2), label11, 0, 5, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label11), 0, 0.49);
 
   mainwin_tooltips = gtk_check_button_new_with_mnemonic ("Activate tooltips for the main wnidow");
   gtk_widget_show (mainwin_tooltips);
-  gtk_table_attach (GTK_TABLE (table2), mainwin_tooltips, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid2), mainwin_tooltips, 1, 1, 1, 1);
   gtk_widget_set_tooltip_text(mainwin_tooltips, "Enable tooltips for the terminatorX main window.");
 
-  update_idle = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (11, 6, 100, 1, 10, 10)));
+  update_idle = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (11, 6, 100, 1, 10, 10)));
   gtk_widget_show (update_idle);
-  gtk_table_attach (GTK_TABLE (table2), update_idle, 1, 2, 3, 4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid2), update_idle, 1, 3, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (update_idle), GTK_POS_LEFT);
   gtk_scale_set_digits (GTK_SCALE (update_idle), 0);
 
-  update_delay = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (0, 0, 15, 1, 10, 10)));
+  update_delay = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (0, 0, 15, 1, 10, 10)));
   gtk_widget_show (update_delay);
-  gtk_table_attach (GTK_TABLE (table2), update_delay, 1, 2, 4, 5,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid2), update_delay, 1, 4, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (update_delay), GTK_POS_LEFT);
 
-  vumeter_decay = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (0.8, 0.8, 0.99, 0.01, 0.01, 0.001)));
+  vumeter_decay = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (0.8, 0.8, 0.99, 0.01, 0.01, 0.001)));
   gtk_widget_show (vumeter_decay);
-  gtk_table_attach (GTK_TABLE (table2), vumeter_decay, 1, 2, 5, 6,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid2), vumeter_decay, 1, 5, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (vumeter_decay), GTK_POS_LEFT);
   gtk_scale_set_digits (GTK_SCALE (vumeter_decay), 2);
 
   label14 = gtk_label_new ("Nagbox:");
   gtk_widget_show (label14);
-  gtk_table_attach (GTK_TABLE (table2), label14, 0, 1, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid2), label14, 0, 0, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label14), 0, 0.5);
 
   startup_nagbox = gtk_check_button_new_with_mnemonic ("Display nagbox on startup");
   gtk_widget_show (startup_nagbox);
-  gtk_table_attach (GTK_TABLE (table2), startup_nagbox, 1, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid2), startup_nagbox, 1, 0, 1, 1);
   gtk_widget_set_tooltip_text(startup_nagbox, "Display nagbox on startup while loading data.");
 
   label12 = gtk_label_new ("Buttons:");
   gtk_widget_show (label12);
-  gtk_table_attach (GTK_TABLE (table2), label12, 0, 1, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid2), label12, 0, 2, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label12), 0, 0.5);
 
-  hbox1 = gtk_hbox_new (FALSE, 5);
+  hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+  gtk_widget_set_hexpand(hbox1, TRUE);
   gtk_widget_show (hbox1);
-  gtk_table_attach (GTK_TABLE (table2), hbox1, 1, 2, 2, 3,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid2), hbox1, 1, 2, 1, 1);
 
   buttons_text_and_icon = gtk_radio_button_new_with_mnemonic (NULL, "Text + Icon");
   gtk_widget_show (buttons_text_and_icon);
@@ -687,288 +600,221 @@ create_tx_options (void)
 
   label38 = gtk_label_new ("Filename length:");
   gtk_widget_show (label38);
-  gtk_table_attach (GTK_TABLE (table2), label38, 0, 1, 6, 7,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid2), label38, 0, 6, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label38), 0, 0.5);
 
   filename_length_adj = gtk_adjustment_new (8, 3, 255, 1, 10, 0);
   filename_length = gtk_spin_button_new (GTK_ADJUSTMENT (filename_length_adj), 1, 0);
+  gtk_widget_set_hexpand(filename_length, TRUE);
   gtk_widget_show (filename_length);
-  gtk_table_attach (GTK_TABLE (table2), filename_length, 1, 2, 6, 7,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid2), filename_length, 1, 6, 1, 1);
 
   label2 = gtk_label_new ("User Interface");
   gtk_widget_show (label2);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 4), label2);
 
-  table8 = gtk_table_new (6, 2, FALSE);
-  gtk_widget_show (table8);
-  gtk_container_add (GTK_CONTAINER (notebook1), table8);
-  gtk_table_set_row_spacings (GTK_TABLE (table8), 2);
-  gtk_table_set_col_spacings (GTK_TABLE (table8), 2);
+  grid8 = gtk_grid_new ();
+  gtk_widget_show (grid8);
+  gtk_container_add (GTK_CONTAINER (notebook1), grid8);
+  gtk_grid_set_row_spacing (GTK_GRID (grid8), 2);
+  gtk_grid_set_column_spacing (GTK_GRID (grid8), 2);
 
   label42 = gtk_label_new ("Background (focus):");
   gtk_widget_show (label42);
-  gtk_table_attach (GTK_TABLE (table8), label42, 0, 1, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid8), label42, 0, 0, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label42), 0, 0.5);
 
   label43 = gtk_label_new ("Background (no focus):");
   gtk_widget_show (label43);
-  gtk_table_attach (GTK_TABLE (table8), label43, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid8), label43, 0, 1, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label43), 0, 0.5);
 
   label44 = gtk_label_new ("Signal (focus):");
   gtk_widget_show (label44);
-  gtk_table_attach (GTK_TABLE (table8), label44, 0, 1, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid8), label44, 0, 2, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label44), 0, 0.5);
 
   label45 = gtk_label_new ("Signal (no focus):");
   gtk_widget_show (label45);
-  gtk_table_attach (GTK_TABLE (table8), label45, 0, 1, 3, 4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid8), label45, 0, 3, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label45), 0, 0.5);
 
   label46 = gtk_label_new ("Cursor:");
   gtk_widget_show (label46);
-  gtk_table_attach (GTK_TABLE (table8), label46, 0, 1, 4, 5,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid8), label46, 0, 4, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label46), 0, 0.5);
 
   label47 = gtk_label_new ("Cursor (mute):");
   gtk_widget_show (label47);
-  gtk_table_attach (GTK_TABLE (table8), label47, 0, 1, 5, 6,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid8), label47, 0, 5, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label47), 0, 0.5);
 
   wav_display_bg_focus = gtk_button_new_with_mnemonic ("button1");
+  gtk_widget_set_hexpand(wav_display_bg_focus , TRUE);
   gtk_widget_show (wav_display_bg_focus);
-  gtk_table_attach (GTK_TABLE (table8), wav_display_bg_focus, 1, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid8), wav_display_bg_focus, 1, 0, 1, 1);
 
   wav_display_bg_no_focus = gtk_button_new_with_mnemonic ("button2");
+  gtk_widget_set_hexpand(wav_display_bg_no_focus , TRUE);
   gtk_widget_show (wav_display_bg_no_focus);
-  gtk_table_attach (GTK_TABLE (table8), wav_display_bg_no_focus, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid8), wav_display_bg_no_focus, 1, 1, 1, 1);
 
   wav_display_fg_focus = gtk_button_new_with_mnemonic ("button3");
+  gtk_widget_set_hexpand(wav_display_fg_focus , TRUE);
   gtk_widget_show (wav_display_fg_focus);
-  gtk_table_attach (GTK_TABLE (table8), wav_display_fg_focus, 1, 2, 2, 3,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid8), wav_display_fg_focus, 1, 2, 1, 1);
 
   wav_display_fg_no_focus = gtk_button_new_with_mnemonic ("button4");
+  gtk_widget_set_hexpand(wav_display_fg_no_focus , TRUE);
   gtk_widget_show (wav_display_fg_no_focus);
-  gtk_table_attach (GTK_TABLE (table8), wav_display_fg_no_focus, 1, 2, 3, 4,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid8), wav_display_fg_no_focus, 1, 3, 1, 1);
 
   wav_display_cursor = gtk_button_new_with_mnemonic ("button5");
+  gtk_widget_set_hexpand(wav_display_cursor , TRUE);
   gtk_widget_show (wav_display_cursor);
-  gtk_table_attach (GTK_TABLE (table8), wav_display_cursor, 1, 2, 4, 5,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid8), wav_display_cursor, 1, 4, 1, 1);
 
   wav_display_cursor_mute = gtk_button_new_with_mnemonic ("button6");
+  gtk_widget_set_hexpand(wav_display_cursor_mute , TRUE);
   gtk_widget_show (wav_display_cursor_mute);
-  gtk_table_attach (GTK_TABLE (table8), wav_display_cursor_mute, 1, 2, 5, 6,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid8), wav_display_cursor_mute, 1, 5, 1, 1);
 
   label41 = gtk_label_new ("Audio Colors");
   gtk_widget_show (label41);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 5), label41);
 
-  table9 = gtk_table_new (4, 2, FALSE);
-  gtk_widget_show (table9);
-  gtk_container_add (GTK_CONTAINER (notebook1), table9);
-  gtk_container_set_border_width (GTK_CONTAINER (table9), 4);
-  gtk_table_set_row_spacings (GTK_TABLE (table9), 2);
-  gtk_table_set_col_spacings (GTK_TABLE (table9), 2);
+  grid9 = gtk_grid_new ();
+  gtk_widget_show (grid9);
+  gtk_container_add (GTK_CONTAINER (notebook1), grid9);
+  gtk_container_set_border_width (GTK_CONTAINER (grid9), 4);
+  gtk_grid_set_row_spacing (GTK_GRID (grid9), 2);
+  gtk_grid_set_column_spacing (GTK_GRID (grid9), 2);
 
   label53 = gtk_label_new ("Background:");
   gtk_widget_show (label53);
-  gtk_table_attach (GTK_TABLE (table9), label53, 0, 1, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid9), label53, 0, 0, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label53), 0, 0.5);
 
   label54 = gtk_label_new ("Regular Signal:");
   gtk_widget_show (label54);
-  gtk_table_attach (GTK_TABLE (table9), label54, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid9), label54, 0, 1, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label54), 0, 0.5);
 
   label55 = gtk_label_new ("Loud Signal:");
   gtk_widget_show (label55);
-  gtk_table_attach (GTK_TABLE (table9), label55, 0, 1, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid9), label55, 0, 2, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label55), 0, 0.5);
 
   label56 = gtk_label_new ("Scale Opacity:");
   gtk_widget_show (label56);
-  gtk_table_attach (GTK_TABLE (table9), label56, 0, 1, 3, 4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid9), label56, 0, 3, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label56), 0, 0.5);
 
-  vu_meter_border_intensity = gtk_hscale_new (GTK_ADJUSTMENT (gtk_adjustment_new (0.07, 0, 1, 0.01, 0, 0)));
+  vu_meter_border_intensity = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL,  GTK_ADJUSTMENT (gtk_adjustment_new (0.07, 0, 1, 0.01, 0, 0)));
+  gtk_widget_set_hexpand(vu_meter_border_intensity, TRUE);
   gtk_widget_show (vu_meter_border_intensity);
-  gtk_table_attach (GTK_TABLE (table9), vu_meter_border_intensity, 1, 2, 3, 4,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid9), vu_meter_border_intensity, 1, 3, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (vu_meter_border_intensity), GTK_POS_LEFT);
   gtk_scale_set_digits (GTK_SCALE (vu_meter_border_intensity), 2);
 
   vu_meter_bg = gtk_button_new_with_mnemonic ("button7");
   gtk_widget_show (vu_meter_bg);
-  gtk_table_attach (GTK_TABLE (table9), vu_meter_bg, 1, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid9), vu_meter_bg, 1, 0, 1, 1);
 
   vu_meter_normal = gtk_button_new_with_mnemonic ("button8");
   gtk_widget_show (vu_meter_normal);
-  gtk_table_attach (GTK_TABLE (table9), vu_meter_normal, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid9), vu_meter_normal, 1, 1, 1, 1);
 
   vu_meter_loud = gtk_button_new_with_mnemonic ("button9");
   gtk_widget_show (vu_meter_loud);
-  gtk_table_attach (GTK_TABLE (table9), vu_meter_loud, 1, 2, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid9), vu_meter_loud, 1, 2, 1, 1);
 
   label52 = gtk_label_new ("VU Colors");
   gtk_widget_show (label52);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 6), label52);
 
-  table3 = gtk_table_new (8, 2, FALSE);
-  gtk_widget_show (table3);
-  gtk_container_add (GTK_CONTAINER (notebook1), table3);
-  gtk_container_set_border_width (GTK_CONTAINER (table3), 4);
-  gtk_table_set_row_spacings (GTK_TABLE (table3), 2);
-  gtk_table_set_col_spacings (GTK_TABLE (table3), 2);
+  grid3 = gtk_grid_new ();
+  gtk_widget_show (grid3);
+  gtk_container_add (GTK_CONTAINER (notebook1), grid3);
+  gtk_container_set_border_width (GTK_CONTAINER (grid3), 4);
+  gtk_grid_set_row_spacing (GTK_GRID (grid3), 2);
+  gtk_grid_set_column_spacing (GTK_GRID (grid3), 2);
 
   label13 = gtk_label_new ("Soundfile editor:");
   gtk_widget_show (label13);
-  gtk_table_attach (GTK_TABLE (table3), label13, 0, 1, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), label13, 0, 0, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label13), 0, 0.5);
 
   soundfile_editor = gtk_entry_new ();
+  gtk_widget_set_hexpand(soundfile_editor, TRUE);
   gtk_widget_show (soundfile_editor);
-  gtk_table_attach (GTK_TABLE (table3), soundfile_editor, 1, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), soundfile_editor, 1, 0, 1, 1);
   gtk_widget_set_tooltip_text(soundfile_editor, "Enter the command to run your favourite soundfile editor. It will be started when you choose \"Edit File\" from the turntable's file menu.");
 
   label26 = gtk_label_new ("Pre-listen:");
   gtk_widget_show (label26);
-  gtk_table_attach (GTK_TABLE (table3), label26, 0, 1, 3, 4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), label26, 0, 3, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label26), 0, 0.5);
 
   prelisten_enabled = gtk_check_button_new_with_mnemonic ("Play audiofiles in file dialogs");
   gtk_widget_show (prelisten_enabled);
-  gtk_table_attach (GTK_TABLE (table3), prelisten_enabled, 1, 2, 3, 4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), prelisten_enabled, 1, 3, 1, 1);
   gtk_widget_set_tooltip_text(prelisten_enabled, "When enabled soundfiles will be playedback when selected in a file dialog (before loading them).");
 
   label31 = gtk_label_new ("LADSPA RDF path:");
   gtk_widget_show (label31);
-  gtk_table_attach (GTK_TABLE (table3), label31, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), label31, 0, 1, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label31), 0, 0.5);
 
   ladspa_rdf_path = gtk_entry_new ();
   gtk_widget_show (ladspa_rdf_path);
-  gtk_table_attach (GTK_TABLE (table3), ladspa_rdf_path, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), ladspa_rdf_path, 1, 1, 1, 1);
 
   label33 = gtk_label_new ("Compression:");
   gtk_widget_show (label33);
-  gtk_table_attach (GTK_TABLE (table3), label33, 0, 1, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), label33, 0, 2, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label33), 0, 0.5);
 
   compress_set_files = gtk_check_button_new_with_mnemonic ("Compress terminatorX set files");
   gtk_widget_show (compress_set_files);
-  gtk_table_attach (GTK_TABLE (table3), compress_set_files, 1, 2, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), compress_set_files, 1, 2, 1, 1);
 
   label40 = gtk_label_new ("MIDI:");
   gtk_widget_show (label40);
-  gtk_table_attach (GTK_TABLE (table3), label40, 0, 1, 4, 5,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), label40, 0, 4, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label40), 0, 0.5);
 
   reconnect_enabled = gtk_check_button_new_with_mnemonic ("Restore MIDI connections on startup");
   gtk_widget_show (reconnect_enabled);
-  gtk_table_attach (GTK_TABLE (table3), reconnect_enabled, 1, 2, 4, 5,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), reconnect_enabled, 1, 4, 1, 1);
   gtk_widget_set_tooltip_text(reconnect_enabled, "When enabled soundfiles will be playedback when selected in a file dialog (before loading them).");
 
   label57 = gtk_label_new ("Quit:");
   gtk_widget_show (label57);
-  gtk_table_attach (GTK_TABLE (table3), label57, 0, 1, 5, 6,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), label57, 0, 5, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label57), 0, 0.5);
 
   quit_confirm = gtk_check_button_new_with_mnemonic ("Ask for \"Quit\" confirmation");
   gtk_widget_show (quit_confirm);
-  gtk_table_attach (GTK_TABLE (table3), quit_confirm, 1, 2, 5, 6,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), quit_confirm, 1, 5, 1, 1);
 
   label58 = gtk_label_new ("Plugins:");
   gtk_widget_show (label58);
-  gtk_table_attach (GTK_TABLE (table3), label58, 0, 1, 6, 7,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), label58, 0, 6, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label58), 0, 0.5);
 
   label59 = gtk_label_new ("");
   gtk_widget_show (label59);
-  gtk_table_attach (GTK_TABLE (table3), label59, 0, 1, 7, 8,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), label59, 0, 7, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label59), 0, 0.5);
 
   verbose_plugin_loading = gtk_check_button_new_with_mnemonic ("Verbose plugin loading");
   gtk_widget_show (verbose_plugin_loading);
-  gtk_table_attach (GTK_TABLE (table3), verbose_plugin_loading, 1, 2, 6, 7,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), verbose_plugin_loading, 1, 6, 1, 1);
 
   force_nonrt_plugins = gtk_check_button_new_with_mnemonic ("Force loading of \"non-RT\" plugins ");
   gtk_widget_show (force_nonrt_plugins);
-  gtk_table_attach (GTK_TABLE (table3), force_nonrt_plugins, 1, 2, 7, 8,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+  gtk_grid_attach (GTK_GRID (grid3), force_nonrt_plugins, 1, 7, 1, 1);
 
   label3 = gtk_label_new ("Misc");
   gtk_widget_show (label3);
@@ -1002,34 +848,34 @@ create_tx_options (void)
                     NULL);
   g_signal_connect_swapped ((gpointer) alsa_buffer_time, "value_changed",
                             G_CALLBACK (on_alsa_buffer_time_value_changed),
-                            GTK_OBJECT (alsa_period_time));
+                            G_OBJECT (alsa_period_time));
   g_signal_connect_swapped ((gpointer) wav_display_bg_focus, "clicked",
                             G_CALLBACK (color_clicked),
-                            GTK_OBJECT (wav_display_bg_focus));
+                            G_OBJECT (wav_display_bg_focus));
   g_signal_connect_swapped ((gpointer) wav_display_bg_no_focus, "clicked",
                             G_CALLBACK (color_clicked),
-                            GTK_OBJECT (wav_display_bg_no_focus));
+                            G_OBJECT (wav_display_bg_no_focus));
   g_signal_connect_swapped ((gpointer) wav_display_fg_focus, "clicked",
                             G_CALLBACK (color_clicked),
-                            GTK_OBJECT (wav_display_fg_focus));
+                            G_OBJECT (wav_display_fg_focus));
   g_signal_connect_swapped ((gpointer) wav_display_fg_no_focus, "clicked",
                             G_CALLBACK (color_clicked),
-                            GTK_OBJECT (wav_display_fg_no_focus));
+                            G_OBJECT (wav_display_fg_no_focus));
   g_signal_connect_swapped ((gpointer) wav_display_cursor, "clicked",
                             G_CALLBACK (color_clicked),
-                            GTK_OBJECT (wav_display_cursor));
+                            G_OBJECT (wav_display_cursor));
   g_signal_connect_swapped ((gpointer) wav_display_cursor_mute, "clicked",
                             G_CALLBACK (color_clicked),
-                            GTK_OBJECT (wav_display_cursor_mute));
+                            G_OBJECT (wav_display_cursor_mute));
   g_signal_connect_swapped ((gpointer) vu_meter_bg, "clicked",
                             G_CALLBACK (color_clicked),
-                            GTK_OBJECT (vu_meter_bg));
+                            G_OBJECT (vu_meter_bg));
   g_signal_connect_swapped ((gpointer) vu_meter_normal, "clicked",
                             G_CALLBACK (color_clicked),
-                            GTK_OBJECT (vu_meter_normal));
+                            G_OBJECT (vu_meter_normal));
   g_signal_connect_swapped ((gpointer) vu_meter_loud, "clicked",
                             G_CALLBACK (color_clicked),
-                            GTK_OBJECT (vu_meter_loud));
+                            G_OBJECT (vu_meter_loud));
   g_signal_connect ((gpointer) pref_reset, "clicked",
                     G_CALLBACK (on_pref_reset_clicked),
                     NULL);
@@ -1047,7 +893,7 @@ create_tx_options (void)
   TX_UI_HOOKUP_OBJECT_NO_REF (tx_options, tx_options, "tx_options");
   TX_UI_HOOKUP_OBJECT_NO_REF (tx_options, dialog_vbox3, "dialog_vbox3");
   TX_UI_HOOKUP_OBJECT (tx_options, notebook1, "notebook1");
-  TX_UI_HOOKUP_OBJECT (tx_options, table4, "table4");
+  TX_UI_HOOKUP_OBJECT (tx_options, grid4, "grid4");
   TX_UI_HOOKUP_OBJECT (tx_options, label18, "label18");
   TX_UI_HOOKUP_OBJECT (tx_options, hbox2, "hbox2");
   TX_UI_HOOKUP_OBJECT (tx_options, oss_driver, "oss_driver");
@@ -1056,7 +902,7 @@ create_tx_options (void)
   TX_UI_HOOKUP_OBJECT (tx_options, use_realtime_label, "use_realtime_label");
   TX_UI_HOOKUP_OBJECT (tx_options, use_realtime, "use_realtime");
   TX_UI_HOOKUP_OBJECT (tx_options, label1, "label1");
-  TX_UI_HOOKUP_OBJECT (tx_options, table5, "table5");
+  TX_UI_HOOKUP_OBJECT (tx_options, grid5, "grid5");
   TX_UI_HOOKUP_OBJECT (tx_options, label21, "label21");
   TX_UI_HOOKUP_OBJECT (tx_options, label22, "label22");
   TX_UI_HOOKUP_OBJECT (tx_options, label23, "label23");
@@ -1066,7 +912,7 @@ create_tx_options (void)
   TX_UI_HOOKUP_OBJECT (tx_options, oss_buffersize, "oss_buffersize");
   TX_UI_HOOKUP_OBJECT (tx_options, oss_samplerate, "oss_samplerate");
   TX_UI_HOOKUP_OBJECT (tx_options, label15, "label15");
-  TX_UI_HOOKUP_OBJECT (tx_options, table6, "table6");
+  TX_UI_HOOKUP_OBJECT (tx_options, grid6, "grid6");
   TX_UI_HOOKUP_OBJECT (tx_options, label27, "label27");
   TX_UI_HOOKUP_OBJECT (tx_options, label29, "label29");
   TX_UI_HOOKUP_OBJECT (tx_options, label30, "label30");
@@ -1078,7 +924,7 @@ create_tx_options (void)
   TX_UI_HOOKUP_OBJECT (tx_options, label39, "label39");
   TX_UI_HOOKUP_OBJECT (tx_options, alsa_free_hwstats, "alsa_free_hwstats");
   TX_UI_HOOKUP_OBJECT (tx_options, label16, "label16");
-  TX_UI_HOOKUP_OBJECT (tx_options, table1, "table1");
+  TX_UI_HOOKUP_OBJECT (tx_options, grid1, "grid1");
   TX_UI_HOOKUP_OBJECT (tx_options, label5, "label5");
   TX_UI_HOOKUP_OBJECT (tx_options, label6, "label6");
   TX_UI_HOOKUP_OBJECT (tx_options, label7, "label7");
@@ -1090,7 +936,7 @@ create_tx_options (void)
   TX_UI_HOOKUP_OBJECT (tx_options, label37, "label37");
   TX_UI_HOOKUP_OBJECT (tx_options, vtt_inertia, "vtt_inertia");
   TX_UI_HOOKUP_OBJECT (tx_options, label4, "label4");
-  TX_UI_HOOKUP_OBJECT (tx_options, table2, "table2");
+  TX_UI_HOOKUP_OBJECT (tx_options, grid2, "grid2");
   TX_UI_HOOKUP_OBJECT (tx_options, label8, "label8");
   TX_UI_HOOKUP_OBJECT (tx_options, label9, "label9");
   TX_UI_HOOKUP_OBJECT (tx_options, label10, "label10");
@@ -1109,7 +955,7 @@ create_tx_options (void)
   TX_UI_HOOKUP_OBJECT (tx_options, label38, "label38");
   TX_UI_HOOKUP_OBJECT (tx_options, filename_length, "filename_length");
   TX_UI_HOOKUP_OBJECT (tx_options, label2, "label2");
-  TX_UI_HOOKUP_OBJECT (tx_options, table8, "table8");
+  TX_UI_HOOKUP_OBJECT (tx_options, grid8, "grid8");
   TX_UI_HOOKUP_OBJECT (tx_options, label42, "label42");
   TX_UI_HOOKUP_OBJECT (tx_options, label43, "label43");
   TX_UI_HOOKUP_OBJECT (tx_options, label44, "label44");
@@ -1123,7 +969,7 @@ create_tx_options (void)
   TX_UI_HOOKUP_OBJECT (tx_options, wav_display_cursor, "wav_display_cursor");
   TX_UI_HOOKUP_OBJECT (tx_options, wav_display_cursor_mute, "wav_display_cursor_mute");
   TX_UI_HOOKUP_OBJECT (tx_options, label41, "label41");
-  TX_UI_HOOKUP_OBJECT (tx_options, table9, "table9");
+  TX_UI_HOOKUP_OBJECT (tx_options, grid9, "grid9");
   TX_UI_HOOKUP_OBJECT (tx_options, label53, "label53");
   TX_UI_HOOKUP_OBJECT (tx_options, label54, "label54");
   TX_UI_HOOKUP_OBJECT (tx_options, label55, "label55");
@@ -1133,7 +979,7 @@ create_tx_options (void)
   TX_UI_HOOKUP_OBJECT (tx_options, vu_meter_normal, "vu_meter_normal");
   TX_UI_HOOKUP_OBJECT (tx_options, vu_meter_loud, "vu_meter_loud");
   TX_UI_HOOKUP_OBJECT (tx_options, label52, "label52");
-  TX_UI_HOOKUP_OBJECT (tx_options, table3, "table3");
+  TX_UI_HOOKUP_OBJECT (tx_options, grid3, "grid3");
   TX_UI_HOOKUP_OBJECT (tx_options, label13, "label13");
   TX_UI_HOOKUP_OBJECT (tx_options, soundfile_editor, "soundfile_editor");
   TX_UI_HOOKUP_OBJECT (tx_options, label26, "label26");
@@ -1183,7 +1029,7 @@ create_tx_del_mode (void)
   dialog_vbox4 = gtk_dialog_get_content_area(GTK_DIALOG (tx_del_mode));
   gtk_widget_show (dialog_vbox4);
 
-  vbox2 = gtk_vbox_new (FALSE, 2);
+  vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
   gtk_widget_show (vbox2);
   gtk_box_pack_start (GTK_BOX (dialog_vbox4), vbox2, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (vbox2), 4);
@@ -1192,11 +1038,11 @@ create_tx_del_mode (void)
   gtk_widget_show (delmode_label);
   gtk_box_pack_start (GTK_BOX (vbox2), delmode_label, TRUE, FALSE, 0);
 
-  hbox3 = gtk_hbox_new (FALSE, 0);
+  hbox3 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_show (hbox3);
   gtk_box_pack_start (GTK_BOX (vbox2), hbox3, TRUE, FALSE, 0);
 
-  vbox3 = gtk_vbox_new (FALSE, 0);
+  vbox3 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox3);
   gtk_box_pack_start (GTK_BOX (hbox3), vbox3, TRUE, FALSE, 0);
 
@@ -1271,7 +1117,7 @@ create_tX_midilearn (void)
   dialog_vbox5 = gtk_dialog_get_content_area(GTK_DIALOG (tX_midilearn));
   gtk_widget_show (dialog_vbox5);
 
-  vbox4 = gtk_vbox_new (FALSE, 0);
+  vbox4 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_show (vbox4);
   gtk_box_pack_start (GTK_BOX (dialog_vbox5), vbox4, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (vbox4), 4);
@@ -1300,52 +1146,22 @@ create_tX_midilearn (void)
 }
 
 GtkWidget*
-create_tX_color_selection (void)
+create_tX_color_chooser (GtkWidget *parent)
 {
-  GtkWidget *tX_color_selection;
-  GtkWidget *ok_button1;
-  GtkWidget *cancel_button1;
-  GtkWidget *help_button1;
-  GtkWidget *color_selection;
+  GtkWidget *tX_color_chooser;
   GValue value = { 0, };
   g_value_init(&value, GTK_TYPE_WIDGET);
 
-  tX_color_selection = gtk_color_selection_dialog_new ("Select Color");
-  gtk_window_set_resizable (GTK_WINDOW (tX_color_selection), FALSE);
+  tX_color_chooser = gtk_color_chooser_dialog_new ("Select Color", GTK_WINDOW(parent));
+  gtk_window_set_resizable (GTK_WINDOW (tX_color_chooser), FALSE);
+  
+  gtk_color_chooser_set_use_alpha(GTK_COLOR_CHOOSER(tX_color_chooser), FALSE);   
 
-  g_object_get_property(G_OBJECT(tX_color_selection), "ok-button", &value);
-  ok_button1 = GTK_WIDGET(g_value_get_object(&value));
-  gtk_widget_show (ok_button1);
-  gtk_widget_set_can_default(ok_button1, TRUE);
-
-  g_object_get_property(G_OBJECT(tX_color_selection), "cancel-button", &value);
-  cancel_button1 = GTK_WIDGET(g_value_get_object(&value));
-  gtk_widget_show (cancel_button1);
-  gtk_widget_set_can_default(cancel_button1, TRUE);
-
-  g_object_get_property(G_OBJECT(tX_color_selection), "help-button", &value);
-  help_button1 = GTK_WIDGET(g_value_get_object(&value));
-  gtk_widget_show (help_button1);
-  gtk_widget_set_can_default(help_button1, TRUE);
-
-  color_selection = gtk_color_selection_dialog_get_color_selection (GTK_COLOR_SELECTION_DIALOG(tX_color_selection));
-  gtk_widget_show (color_selection);
-  gtk_color_selection_set_has_opacity_control (GTK_COLOR_SELECTION (color_selection), FALSE);
-
-  g_signal_connect ((gpointer) ok_button1, "clicked",
-                    G_CALLBACK (on_color_selection_ok_clicked),
-                    NULL);
-  g_signal_connect ((gpointer) cancel_button1, "clicked",
-                    G_CALLBACK (on_color_selection_cancel_clicked),
-                    NULL);
+  g_signal_connect(tX_color_chooser, "response", G_CALLBACK(color_response), NULL);
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
-  TX_UI_HOOKUP_OBJECT_NO_REF (tX_color_selection, tX_color_selection, "tX_color_selection");
-  TX_UI_HOOKUP_OBJECT_NO_REF (tX_color_selection, ok_button1, "ok_button1");
-  TX_UI_HOOKUP_OBJECT_NO_REF (tX_color_selection, cancel_button1, "cancel_button1");
-  TX_UI_HOOKUP_OBJECT_NO_REF (tX_color_selection, help_button1, "help_button1");
-  TX_UI_HOOKUP_OBJECT_NO_REF (tX_color_selection, color_selection, "color_selection");
-
-  return tX_color_selection;
+  TX_UI_HOOKUP_OBJECT_NO_REF (tX_color_chooser, tX_color_chooser, "tX_color_chooser");
+  
+  return tX_color_chooser;
 }
 

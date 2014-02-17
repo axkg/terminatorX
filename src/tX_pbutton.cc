@@ -84,7 +84,7 @@ GtkWidget *tx_xpm_label_box(tX_icon id, const gchar *label_text, GtkWidget **lab
 			return pixmapwid;
 			break;
 		default:
-			box1 = gtk_hbox_new (FALSE, 5);
+			box1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 			gtk_container_set_border_width (GTK_CONTAINER (box1), 2);
 			pixmapwid=tx_pixmap_widget(id);
 			gtk_box_pack_start (GTK_BOX (box1), pixmapwid, FALSE, FALSE, 0);

@@ -55,11 +55,13 @@ extern "C" {
 static void gtk_tx_flash_class_init (GtkTxFlashClass *);
 static void gtk_tx_flash_init (GtkTxFlash *tx_flash);
 GtkWidget* gtk_tx_flash_new ();
-static void gtk_tx_flash_destroy (GtkObject *object);
+static void gtk_tx_flash_destroy (GtkWidget *widget);
 static void gtk_tx_flash_realize (GtkWidget *widget);
-static void gtk_tx_flash_size_request (GtkWidget *widget, GtkRequisition *requisition);
+static void gtk_tx_flash_get_preferred_width (GtkWidget *widget, gint *minimal_height, gint *natural_height);
+static void gtk_tx_flash_get_preferred_height (GtkWidget *widget, gint *minimal_height, gint *natural_height);
+
 static void gtk_tx_flash_size_allocate (GtkWidget *widget, GtkAllocation *allocation);
-static gint gtk_tx_flash_expose (GtkWidget *widget, GdkEventExpose *event);
+static gboolean gtk_tx_flash_draw (GtkWidget *widget, cairo_t *cairo);
 
 /* Local data */
 
@@ -90,23 +92,21 @@ GType gtk_tx_flash_get_type ()
 
 static void gtk_tx_flash_class_init (GtkTxFlashClass *gclass)
 {
-	GtkObjectClass *object_class;
 	GtkWidgetClass *widget_class;
 	
-	object_class = (GtkObjectClass*) gclass;
 	widget_class = (GtkWidgetClass*) gclass;
 	
 	parent_class = (GtkWidgetClass*) g_type_class_peek (gtk_widget_get_type ());
 	
-	object_class->destroy = gtk_tx_flash_destroy;
+	widget_class->destroy = gtk_tx_flash_destroy;
 	
 	widget_class->realize = gtk_tx_flash_realize;
-	widget_class->expose_event = gtk_tx_flash_expose;
-	widget_class->size_request = gtk_tx_flash_size_request;
+	widget_class->draw = gtk_tx_flash_draw;
+	
+	widget_class->get_preferred_height = gtk_tx_flash_get_preferred_height;
+	widget_class->get_preferred_width = gtk_tx_flash_get_preferred_width;
+	
 	widget_class->size_allocate = gtk_tx_flash_size_allocate;
-	//widget_class->button_press_event = gtk_tx_flash_button_press;
-	//widget_class->button_release_event = gtk_tx_flash_button_release;
-	//widget_class->motion_notify_event = gtk_tx_flash_motion_notify;
 }
 
 enum {
@@ -120,43 +120,30 @@ enum {
 
 /* c=a+(a-b)*x; */
 
-inline void mk_half(double s, GdkColor *a, GdkColor *b, GdkColor *c)
+inline void mk_half(double s, GdkRGBA *a, GdkRGBA *b, GdkRGBA *c)
 {
 	c->red=a->red-(a->red-b->red)*s;
 	c->green=a->green-(a->green-b->green)*s;
 	c->blue=a->blue-(a->blue-b->blue)*s;
+	c->alpha=1.0;
 }
 
 void gtk_tx_flash_update_colors(GtkTxFlash *tx)
 {
-	int i;
-	
-	if (tx->colors_allocated) {
-		gdk_colormap_free_colors(gtk_widget_get_colormap(GTK_WIDGET(tx)), tx->colors, NO_COLS);
-	}
-	
-	gdk_color_parse(globals.vu_meter_bg, &tx->colors[COL_BG]);
-	gdk_color_parse(globals.vu_meter_loud, &tx->colors[COL_LOUD]);
-	gdk_color_parse(globals.vu_meter_normal, &tx->colors[COL_NORM]);	
+	gdk_rgba_parse(&tx->colors[COL_BG], globals.vu_meter_bg);
+	tx->colors[COL_BG].alpha = 1.0;
+	gdk_rgba_parse(&tx->colors[COL_LOUD], globals.vu_meter_loud);
+	tx->colors[COL_LOUD].alpha = 1.0;
+	gdk_rgba_parse(&tx->colors[COL_NORM], globals.vu_meter_normal);
+	tx->colors[COL_NORM].alpha = 1.0;
 	mk_half(globals.vu_meter_border_intensity, &tx->colors[COL_BG], &tx->colors[COL_LOUD], &tx->colors[COL_LOUD_HALF]);
 	mk_half(globals.vu_meter_border_intensity, &tx->colors[COL_BG], &tx->colors[COL_NORM], &tx->colors[COL_NORM_HALF]);
-
-	for (i=0; i<NO_COLS; i++) {
-		gdk_colormap_alloc_color(gtk_widget_get_colormap(GTK_WIDGET(tx)), &tx->colors[i], 0, 1);
-	}
-
-	tx->colors_allocated=1;
 }
 
 static void gtk_tx_flash_init (GtkTxFlash *tx_flash)
 {
-	GdkColormap *priv;
-	
 	tx_flash->surface = NULL;
-	tx_flash->colors_allocated=0;
-	priv=gdk_colormap_new(gtk_widget_get_visual(GTK_WIDGET(tx_flash)), 6);
 
-	gtk_widget_set_colormap(GTK_WIDGET(tx_flash), priv);
 	gtk_tx_flash_update_colors(tx_flash);
 }
 
@@ -169,19 +156,20 @@ GtkWidget* gtk_tx_flash_new ()
 	return GTK_WIDGET (tx_flash);
 }
 
-static void gtk_tx_flash_destroy (GtkObject *object)
+static void gtk_tx_flash_destroy (GtkWidget *widget)
 {
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (GTK_IS_TX_FLASH (object));
+	g_return_if_fail (widget != NULL);
+	g_return_if_fail (GTK_IS_TX_FLASH (widget));
 	
-	if (GTK_OBJECT_CLASS (parent_class)->destroy)
-		(*GTK_OBJECT_CLASS (parent_class)->destroy) (object);
+	if (GTK_WIDGET_CLASS (parent_class)->destroy)
+		(*GTK_WIDGET_CLASS (parent_class)->destroy) (widget);
 }
 
 static void gtk_tx_flash_realize (GtkWidget *widget)
 {
 	GtkTxFlash *tx_flash;
 	GdkWindowAttr attributes;
+	GtkStyleContext *context;
 	gint attributes_mask;
 	
 	g_return_if_fail (widget != NULL);
@@ -202,27 +190,32 @@ static void gtk_tx_flash_realize (GtkWidget *widget)
 	attributes.event_mask = gtk_widget_get_events (widget) | 
 		GDK_EXPOSURE_MASK;
 	attributes.visual = gtk_widget_get_visual (widget);
-	attributes.colormap = gtk_widget_get_colormap (widget);
-	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 	
 	gtk_widget_set_window(widget, gdk_window_new (gtk_widget_get_parent_window(widget), &attributes, attributes_mask));
-	gtk_widget_set_style(widget, gtk_style_attach (gtk_widget_get_style(widget), gtk_widget_get_window(widget)));
 	
 	gdk_window_set_user_data (gtk_widget_get_window(widget), widget);
-	gtk_style_set_background (gtk_widget_get_style(widget), gtk_widget_get_window(widget), GTK_STATE_NORMAL);
 	
-		if (tx_flash->surface) {
+	context = gtk_widget_get_style_context(widget);
+	gtk_style_context_set_background(context, gtk_widget_get_window(widget));
+	
+	if (tx_flash->surface) {
 		cairo_surface_destroy (tx_flash->surface);
 	}
 	
 	tx_flash->surface = gdk_window_create_similar_surface (gtk_widget_get_window(widget), CAIRO_CONTENT_COLOR, allocation.width, allocation.height);
 }
 
-static void gtk_tx_flash_size_request(GtkWidget *widget, GtkRequisition *requisition)
+static void gtk_tx_flash_get_preferred_width (GtkWidget *widget, gint *minimal_width, gint *natural_width)
 {
-	requisition->width = TX_FLASH_DEFAULT_SIZE_X;
-	requisition->height = TX_FLASH_DEFAULT_SIZE_Y;
+  *minimal_width = *natural_width = TX_FLASH_DEFAULT_SIZE_X;
 }
+
+static void gtk_tx_flash_get_preferred_height (GtkWidget *widget, gint *minimal_height, gint *natural_height)
+{
+    *minimal_height = *natural_height = TX_FLASH_DEFAULT_SIZE_Y;
+}
+
 
 static void gtk_tx_flash_prepare(GtkWidget *widget)
 {
@@ -278,11 +271,10 @@ static void gtk_tx_flash_size_allocate(GtkWidget *widget, GtkAllocation *allocat
 	}
 }
 
-static void gtk_tx_flash_paint_yourself(GtkWidget *widget)
+static void gtk_tx_flash_paint_yourself(GtkWidget *widget, cairo_t *cr)
 {
 	GtkTxFlash *tx_flash;
 	GtkAllocation allocation;
-	cairo_t *cr;
 	
 	gint i, x11, x12,x21, x22, y, middle;
 	int long_level;
@@ -290,19 +282,15 @@ static void gtk_tx_flash_paint_yourself(GtkWidget *widget)
 	tx_flash = GTK_TX_FLASH (widget);
 	gtk_widget_get_allocation(widget, &allocation);
 	
-	cr = gdk_cairo_create (gtk_widget_get_window(widget));
 	cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 	cairo_set_source_surface (cr, tx_flash->surface, 0, 0);
 
-	gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_BG]);
-
-	//printf("%i, %i, %i, %i\n", area->x, area->y, area->width, area->height);
-
+	gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_BG]);
 	cairo_rectangle(cr, 0, 0, allocation.width, allocation.height);
 	cairo_fill(cr);
 	
 	cairo_set_line_width(cr,1);
-	gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_NORM_HALF]);	
+	gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_NORM]);
 	
 	x12=DMINIX+S_MINIX;
 	x21=allocation.width-1-x12;
@@ -315,7 +303,7 @@ static void gtk_tx_flash_paint_yourself(GtkWidget *widget)
 			long_level=1;
 		} else if (i==tx_flash->red_level) {
 			long_level=1;
-			gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_LOUD_HALF]);	
+			gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_LOUD_HALF]);	
 		} else if (i==tx_flash->levels) {
 			long_level=1;
 		} else long_level=0;
@@ -343,21 +331,15 @@ static void gtk_tx_flash_paint_yourself(GtkWidget *widget)
 		}
 		cairo_stroke (cr);
 	}
-	
-	cairo_destroy (cr);
 }
 
-static gint gtk_tx_flash_expose (GtkWidget *widget, GdkEventExpose *event)
+static gboolean gtk_tx_flash_draw(GtkWidget *widget, cairo_t *cr)
 {
 	g_return_val_if_fail (widget != NULL, FALSE);
 	g_return_val_if_fail (GTK_IS_TX_FLASH (widget), FALSE);
-	g_return_val_if_fail (event != NULL, FALSE);
-	
-	if (event->count > 0)
-		return FALSE;
 	
 	gtk_tx_flash_prepare(widget);
-	gtk_tx_flash_paint_yourself(widget);  
+	gtk_tx_flash_paint_yourself(widget, cr); 
 	
 	return FALSE;
 } 
@@ -395,7 +377,7 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 	cairo_set_line_width(cr,1);
 	cairo_set_source_surface (cr, tx_flash->surface, 0, 0);
 
-	gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_BG]);
+	gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_BG]);
 
 	// tX_msg("setting level: %5d for widget %08x channel %08x\n", new_level, tx_flash, channel);
 	
@@ -411,7 +393,7 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 	
 	if (tx_flash->max_cycles <= 0) {
 		y=allocation.height-(DY+(channel->max)*DLEVEL);
-		gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_BG]);
+		gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_BG]);
 		cairo_move_to (cr, channel->x1, y);
 		cairo_line_to (cr, channel->x2, y);
 		cairo_stroke (cr);
@@ -420,9 +402,9 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 			channel->max--;
 			y+=DLEVEL;
 			if (channel->max>tx_flash->red_level) {
-				gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_LOUD]);
+				gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_LOUD]);
 			} else {
-				gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_NORM]);
+				gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_NORM]);
 			}
 			
 			cairo_move_to (cr, channel->x1, y);
@@ -439,12 +421,12 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 	}
 	
 	if (new_level>channel->last_level) {
-		gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_NORM]);
+		gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_NORM]);
 		
 		for (i=channel->last_level, y=allocation.height-(DY+channel->last_level*DLEVEL); i<=new_level; y-=DLEVEL, i++) {
 			if (!red) {
 				if (i>=tx_flash->red_level) {
-					gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_LOUD]);
+					gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_LOUD]);
 					red=1;
 				}
 			}
@@ -453,7 +435,7 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 			cairo_stroke (cr);
 		}
 	} else {
-		gdk_cairo_set_source_color (cr, &tx_flash->colors[COL_BG]);
+		gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_BG]);
 		
 		if (channel->last_level==channel->max) {
 			i=channel->last_level-1;
@@ -485,7 +467,9 @@ gtk_tx_flash_clear (GtkWidget *widget)
 	tx_flash->channel[1].last_level=0;
 	tx_flash->max_cycles=0;
 	
-	gtk_tx_flash_paint_yourself(widget);
+	cairo_t *cr = gdk_cairo_create (gtk_widget_get_window(widget));
+	gtk_tx_flash_paint_yourself(widget, cr);
+	cairo_destroy(cr);
 }
 
 #ifdef __cplusplus

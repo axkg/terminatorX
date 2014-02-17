@@ -59,10 +59,11 @@ tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, tX_seqpar * sp, bool t
 	ignore_adj=0;
 	
 	eventbox=gtk_event_box_new();		
-	mainbox=gtk_vbox_new(FALSE,  text_below ? 5 : 0);
+	mainbox=gtk_box_new(GTK_ORIENTATION_VERTICAL,  text_below ? 5 : 0);
 	gtk_container_add(GTK_CONTAINER(eventbox), mainbox);
 	
-	subbox=gtk_hbox_new(TRUE, 0);
+	subbox=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	gtk_box_set_homogeneous(GTK_BOX(subbox), TRUE);
 	gtk_box_pack_start(GTK_BOX(subbox), dial, WID_FIX);
 	gtk_box_pack_start(GTK_BOX(mainbox), subbox, WID_FIX);
 	gtk_box_pack_start(GTK_BOX(text_below ? mainbox : subbox), entry, WID_DYN);
@@ -88,7 +89,6 @@ tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, tX_seqpar * sp, bool t
 
 tX_extdial :: ~tX_extdial()
 {
-	gtk_object_destroy(GTK_OBJECT(adj));
 	gtk_widget_destroy(entry);
 	gtk_widget_destroy(label);
 	gtk_widget_destroy(dial);
