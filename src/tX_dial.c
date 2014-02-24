@@ -316,10 +316,6 @@ static gint gtk_tx_dial_button_release (GtkWidget *widget, GdkEventButton *event
 	if (tx_dial->button == event->button) {
 		gtk_grab_remove (widget);
 		tx_dial->button = 0;
-		
-		if ((tx_dial->old_value != gtk_adjustment_get_value(tx_dial->adjustment)))
-			g_signal_emit_by_name (G_OBJECT (tx_dial->adjustment),
-			"value_changed");
 	}
 	
 	return FALSE;
@@ -389,14 +385,7 @@ static void gtk_tx_dial_update_mouse (GtkTxDial *tx_dial, gint x, gint y)
 	else if (new_value<tx_dial->old_lower) 
 		new_value=tx_dial->old_lower;
 	
-	printf("%f %f\n", old_value, new_value);
-	
 	gtk_adjustment_set_value(tx_dial->adjustment, new_value);
-	
-	if (gtk_adjustment_get_value(tx_dial->adjustment) != old_value) {	
-		g_signal_emit_by_name (G_OBJECT (tx_dial->adjustment),
-			   "value_changed");
-	}
 }
 
 static void gtk_tx_dial_update (GtkTxDial *tx_dial)
@@ -417,7 +406,6 @@ static void gtk_tx_dial_update (GtkTxDial *tx_dial)
 	
 	if (new_value != gtk_adjustment_get_value(tx_dial->adjustment)) {
 		gtk_adjustment_set_value(tx_dial->adjustment, new_value);
-		g_signal_emit_by_name (G_OBJECT (tx_dial->adjustment), "value_changed");
 	}
 	
 	calc_image(new_value, image);
