@@ -272,7 +272,7 @@ int tX_audiodevice_alsa :: open()
 	long unsigned int buffer_size;
 
 	if (snd_pcm_hw_params_get_buffer_size(hw_params, &buffer_size) < 0) {
-		tX_error("ALSA: failed to retreive buffer size");
+		tX_error("ALSA: failed to retrieve buffer size");
 		return -1;
 	}
 	
@@ -284,7 +284,7 @@ int tX_audiodevice_alsa :: open()
 	}
 	
 	if (snd_pcm_hw_params_get_period_size(hw_params, &period_size, &dir)<0) {
-		tX_error("ALSA: failed to retreive period size");
+		tX_error("ALSA: failed to retrieve period size");
 		return -1;
 	}
 	

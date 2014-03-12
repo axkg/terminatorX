@@ -181,7 +181,7 @@ int main(int argc, char **argv)
 #ifdef USE_CAPABILITIES	
 	if (!geteuid()) {
 		if (prctl(PR_SET_KEEPCAPS, 1, -1, -1, -1)) {
-			tX_error("failed to keep capabilites.");
+			tX_error("failed to keep capabilities.");
 		}
 		set_nice_capability(CAP_PERMITTED);
 	}
