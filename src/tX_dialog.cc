@@ -655,7 +655,7 @@ void show_about(int nag)
 				break;
 			
 			default:
-				sprintf(prio_str, "UNKOWN (%i)", policy);
+				sprintf(prio_str, "UNKNOWN (%i)", policy);
 		}
 		
 		sprintf(buffer, "Audio engine scheduling policy: %s.\nScheduling with realtime priority is %s.", prio_str, s_enabled ? "enabled" : "disabled");
