@@ -351,6 +351,81 @@ void tX_audiodevice_alsa :: play(int16_t *buffer)
 
 #endif //USE_ALSA
 
+#ifdef USE_PULSE
+#include <pulse/error.h>
+
+int tX_audiodevice_pulse :: open()
+{
+	int error;
+
+	/* pulse client based on pacat-simple.c API demo */
+    	pa_sample_spec spec = {
+        	.format = PA_SAMPLE_S16LE,
+        	.rate = 44100,
+        	.channels = 2
+    	};
+
+	
+	pa_buffer_attr attr = {
+		.maxlength = -1,
+		.tlength = 2048,
+		.prebuf = 1,
+		.minreq = -1,
+		.fragsize = -1
+	};
+
+	attr.minreq = attr.tlength / 4;
+	attr.maxlength = attr.tlength + attr.minreq;
+
+	samples_per_buffer = attr.tlength / 2;
+	
+    	/* Create a new playback stream */
+    	if (!(stream = pa_simple_new(NULL, "terminatorX", PA_STREAM_PLAYBACK, NULL, "playback", &spec, NULL, &attr, &error))) {
+		tX_error("PULSE: Failed to open stream: %s", pa_strerror(error));
+    		return -1;
+	}
+	
+	is_open = true;
+
+        pa_usec_t latency;
+
+        if ((latency = pa_simple_get_latency(stream, &error)) == (pa_usec_t) -1) {
+            tX_error("PULSE: Error getting latency  %s\n", pa_strerror(error));
+        }
+
+        tX_debug( "%0.0f usec    \r", (float)latency);
+
+	return 0;
+}
+
+int tX_audiodevice_pulse :: close()
+{
+	if (is_open) {
+		pa_simple_free(stream);
+		stream = NULL;
+	}
+
+	is_open=false;
+	
+	return 0;
+}
+
+tX_audiodevice_pulse :: tX_audiodevice_pulse() : tX_audiodevice(),
+stream(NULL) {}
+
+void tX_audiodevice_pulse :: play(int16_t *buffer)
+{
+	int error;
+
+        if (pa_simple_write(stream, buffer, (size_t) samples_per_buffer * 2, &error) < 0) {
+		tX_error("PULSE: playback failed: %s\n", pa_strerror(error));
+           return;
+        }
+}
+
+
+#endif //USE_PULSE
+
 #ifdef USE_JACK
 
 tX_jack_client tX_jack_client::instance;

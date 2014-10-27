@@ -71,6 +71,9 @@ void apply_options(GtkWidget *dialog) {
 		globals.audiodevice_type=OSS;
 	} else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "jack_driver")))) {
 		globals.audiodevice_type=JACK;
+	} else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "pulse_driver")))) {
+		printf("pulse\n");
+		globals.audiodevice_type=PULSE;
 	}
 	globals.use_realtime=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "use_realtime")));
 	
@@ -340,6 +343,9 @@ void init_tx_options(GtkWidget *dialog) {
 			break;
 		
 		case JACK: gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "jack_driver")), 1);
+			break;
+
+		case PULSE: gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "pulse_driver")), 1);
 			break;
 
 		case OSS: 

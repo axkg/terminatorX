@@ -72,7 +72,8 @@ extern "C" {
 typedef enum {
 	OSS =0,
 	ALSA = 1,
-	JACK = 2
+	JACK = 2,
+	PULSE = 3
 } tX_audiodevice_type;
 	
 typedef struct {
