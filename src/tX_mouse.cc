@@ -22,17 +22,12 @@
 */
 
 #include <sys/wait.h>
-#include <X11/Xlib.h>
 
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <stdint.h>
 
 #include <config.h>
-
-#ifdef HAVE_X11_EXTENSIONS_XXF86DGA_H
-#include <X11/extensions/Xxf86dga.h>
-#endif
 
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
@@ -50,19 +45,9 @@
 
 tx_mouse :: tx_mouse()
 {
-	mask=PointerMotionMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask;
-	xmot=(XMotionEvent *) &xev;
-	xkey=(XKeyEvent *) &xev;
-	xbut=(XButtonEvent *) &xev;
-	
 	pointer = NULL;
 	keyboard = NULL;
-	
-#ifdef USE_DGA2
-	xdgamot=(XDGAMotionEvent *) &xev;
-	xdgakey=(XDGAKeyEvent *) &xev;
-	xdgabut=(XDGAButtonEvent *) &xev;
-#endif	
+	grab_mode = LINUX_INPUT;
 	
 	grabbed=0;
 	warp=TX_MOUSE_SPEED_NORMAL;
@@ -75,15 +60,17 @@ tx_mouse :: tx_mouse()
 
 int tx_mouse :: grab()
 {	
-#ifdef USE_DGA2
-	XDGAMode *mode;
-#endif	
-
 	if (grabbed) return 0;
 
 	warp_override=false;
 	
-	GdkWindow *window =  gtk_widget_get_window(main_window);
+	if (grab_linux_input()) {
+		grab_mode = LINUX_INPUT;
+	} else {
+		grab_mode = FALLBACK;
+	}
+	
+	window =  gtk_widget_get_window(main_window);
 	GdkDisplay* gdk_dpy = gdk_window_get_display(window);
 	GdkDeviceManager *device_manager = gdk_display_get_device_manager(gdk_dpy);
 	dpy = gdk_x11_display_get_xdisplay(gdk_dpy);
@@ -93,30 +80,11 @@ int tx_mouse :: grab()
 		return(ENG_ERR_XOPEN);
 	}
 
-#ifdef USE_DGA2
-	mode=XDGAQueryModes(dpy,DefaultScreen(dpy), &num);
-	
-	printf("Found %i DGA2-Modes:\n", num);
-	
-	for(i=0; i<num; i++) {
-		printf("%2i: %s\n", i, mode[i].name);
-	}
-	XFree(mode);
-#endif	
-
 	gtk_window_present(GTK_WINDOW(main_window));
 
 	savedEventMask = gdk_window_get_events(window);
 	GdkEventMask newEventMask = GdkEventMask ((int) savedEventMask | GDK_POINTER_MOTION_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
 	gdk_window_set_events(top_window, newEventMask);
-
-//	if (globals.xinput_enable) {
-//		if (set_xinput()) {
-//			XCloseDisplay(dpy);
-//			fputs("GrabMode Error: failed to setup XInput.", stderr);
-//			return(ENG_ERR_XINPUT);
-//		}
-//	}
 
 	g_object_get (gtk_widget_get_settings (main_window), "gtk-auto-mnemonics", &enable_auto_mnemonics, NULL);
 
@@ -126,12 +94,20 @@ int tx_mouse :: grab()
 	}
 
 	pointer = gdk_device_manager_get_client_pointer(device_manager);
-	GdkGrabStatus grab_status = gdk_device_grab(pointer, top_window, GDK_OWNERSHIP_NONE, FALSE, GdkEventMask (GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, GDK_CURRENT_TIME);
+	GdkGrabStatus grab_status = gdk_device_grab(pointer, top_window, GDK_OWNERSHIP_APPLICATION, FALSE, GdkEventMask (GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, GDK_CURRENT_TIME);
+
+	gdk_device_get_position(pointer, &screen, &x_restore, &y_restore);	
+	
+	gint x = gdk_screen_get_width(screen) / 2;
+	gint y = gdk_screen_get_height(screen) / 2;
+	
+	x_abs = x;
+	y_abs = y;
+	
+	gdk_device_warp(pointer, screen, x_abs, y_abs);
+
 
 	if (grab_status != GDK_GRAB_SUCCESS) {
-		//reset_xinput();
-		//XCloseDisplay(dpy);
-		//fputs("GrabMode Error: XGrabPointer failed.", stderr);
 		return(-1);
 	}	
 	
@@ -146,35 +122,15 @@ int tx_mouse :: grab()
 		break;
 	}
 	
-	grab_status = gdk_device_grab(keyboard, top_window, GDK_OWNERSHIP_NONE, FALSE, GdkEventMask (GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK), NULL, GDK_CURRENT_TIME);
+	grab_status = gdk_device_grab(keyboard, top_window, GDK_OWNERSHIP_APPLICATION, FALSE, GdkEventMask (GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK), NULL, GDK_CURRENT_TIME);
 
 	if (grab_status != GDK_GRAB_SUCCESS) {
 		gdk_device_ungrab(pointer, GDK_CURRENT_TIME);
-		//reset_xinput();
-		//XCloseDisplay(dpy);
-		//fputs("GrabMode Error: XGrabKeyboard failed.", stderr);
 		return(-2);
 	}
-	
 
-#ifdef USE_DGA2
-	if (!XDGASetMode(dpy, DefaultScreen(dpy), 1)) {
-#else	
-	if (!XF86DGADirectVideo(dpy,DefaultScreen(dpy),XF86DGADirectMouse)) {
-#endif
-		gdk_device_ungrab(pointer, GDK_CURRENT_TIME);
-		gdk_device_ungrab(keyboard, GDK_CURRENT_TIME);
-
-//		reset_xinput();
-//		XCloseDisplay(dpy);
-//		fputs("GrabMode Error: Failed to enable XF86DGA.", stderr);
-		return(ENG_ERR_DGA);
-	}
-
-#ifdef USE_DGA2
-	XDGASelectInput(dpy, DefaultScreen(dpy), mask);
-#endif	
-
+	cursor = gdk_window_get_cursor(window);
+	gdk_window_set_cursor(window, gdk_cursor_new_for_display(gdk_dpy, GDK_BLANK_CURSOR));
 	XAutoRepeatOff(dpy);	
 	otime=CurrentTime;
 	
@@ -189,12 +145,11 @@ int tx_mouse :: grab()
 			break;
 		}
 		c++;
-		//vtt_class::focus_no(0);
 	}
 
 	warp=TX_MOUSE_SPEED_NORMAL;
 	
-	return(0);
+	return 0;
 }
 
 void tx_mouse :: ungrab()
@@ -203,20 +158,11 @@ void tx_mouse :: ungrab()
 
 	tX_debug("tX_mouse::ungrab(): this: %016" PRIxPTR ", dpy: %016" PRIxPTR, (uintptr_t) this, (uintptr_t) dpy);
 	
-#ifdef USE_DGA2	
-	XDGASetMode(dpy, DefaultScreen(dpy), 0);
-#else
-	XF86DGADirectVideo(dpy,DefaultScreen(dpy),0);
-#endif	
-
 	gdk_device_ungrab(keyboard, GDK_CURRENT_TIME);
 	gdk_device_ungrab(pointer, GDK_CURRENT_TIME);
 
 	XAutoRepeatOn(dpy);
-	
-	if (globals.xinput_enable) {
-	//	reset_xinput();
-	}
+	gdk_window_set_cursor(window, cursor);
 
 	vtt_class::unfocus();
 
@@ -226,111 +172,73 @@ void tx_mouse :: ungrab()
 		g_object_set (gtk_widget_get_settings (main_window), "gtk-auto-mnemonics", enable_auto_mnemonics, NULL);
 	}
 
+	ungrab_linux_input();
+	
 	tX_debug("tX_mouse::ungrab(): done");
 	
 	grabbed=0;
 }
 
-#ifdef USE_XSETPOINTER
-
-void tx_mouse :: set_x_pointer(char *devname)
-{
-	pid_t pid;
-	int status;
-		
-	pid = fork();
+int tx_mouse::grab_linux_input() {
+	GError *error = NULL;
 	
-	if (pid==-1) { 
-		/* OOPS. fork failed */
-		perror("tX: Error: Failed to fork a new process!");
-		return; 
+	linux_input_channel = g_io_channel_new_file("/dev/input/mice", "r", &error);
+	
+	if (linux_input_channel) {
+		//GIOFlags flags = g_io_channel_get_flags(linux_input_channel);
+		g_io_channel_set_flags(linux_input_channel, G_IO_FLAG_NONBLOCK, NULL);
+		linux_input_watch = g_io_add_watch_full(linux_input_channel, G_PRIORITY_HIGH, G_IO_IN, tx_mouse::linux_input_wrap, this, NULL);
+	} else {
+		tX_msg("Failed to open /dev/input/mice: %s", error->message)
+		g_error_free(error);
+		tx_note("Failed to open input device.", true, GTK_WINDOW(main_window));		
+		return 0;
 	}
+	return 1;
 	
-	if (pid==0) {
-		/* The child execlps xsetpointer */
-		execlp("xsetpointer", "xsetpointer", devname, NULL);
-		perror("tX: Error: Failed to execute xpointer!");
-		exit(0);
-	}
-	
-	/* parent waits for xsetpointer to finish */
-	waitpid(pid,  &status, WUNTRACED);
 }
 
-#else
-
-void tx_mouse :: set_x_pointer(char *devname)
-{
-	XDeviceInfo *devlist;			
-	XDevice *device;
-	int listmax, i;
-	
-	devlist=XListInputDevices(dpy, &listmax);
-	
-	for (i=0; i<listmax; i++) {
-		if(strcmp(devlist[i].name, devname)==0) {
-			device=XOpenDevice(dpy, devlist[i].id);
-			if (device) {
-				if (XChangePointerDevice(dpy, device, 0, 1)) {
-					printf("tX: Error: failed to set pointer device.");			
-				}
-				
-				XCloseDevice(dpy, device);
-			} else {
-				printf("tX: Error: failed to open XInput device.");
-			}		
-		}
-	}
-		
-	XFreeDeviceList(devlist);		
-}
-
-#endif
-
-int tx_mouse :: set_xinput()
-{
-	XDeviceInfo *devlist;			
-	int listmax, i;
-	
-	OrgXPointer=0;
-	
-	if (globals.xinput_enable) {	
-		devlist=XListInputDevices(dpy, &listmax);
-	
-		for (i=0; i<listmax; i++) {
-			if(devlist[i].use == IsXPointer) {
-				OrgXPointer=devlist[i].id;
-				strcpy(OrgXPointerName, devlist[i].name);
-			}
-		}
-		
-		XFreeDeviceList(devlist);				
-		set_x_pointer(globals.xinput_device);
-	}
-	
-	if (OrgXPointer==0) printf("tX: Error failed to detect core pointer.");
-	return(0);
-}
-
-
-void tx_mouse :: reset_xinput()
-{
-	if (globals.xinput_enable) {
-		if (OrgXPointer) set_x_pointer(OrgXPointerName);
+void tx_mouse::ungrab_linux_input() {
+	if (grab_mode == LINUX_INPUT) {
+		g_source_remove(linux_input_watch);
+		g_io_channel_shutdown(linux_input_channel, false, NULL);
+		g_io_channel_unref(linux_input_channel);
+		linux_input_channel = NULL;
 	}
 }
-
-
 #define vtt vtt_class::focused_vtt
 
-
 void tx_mouse::motion_notify(GtkWidget *widget, GdkEventMotion *eventMotion) {
-	if (vtt) {
-		if (warp_override) {
-			f_prec value=(abs(eventMotion->x_root)>abs(eventMotion->y_root)) ? eventMotion->x_root : eventMotion->y_root;
-			vtt->sp_speed.handle_mouse_input(value*globals.mouse_speed*warp);
-		} else {
-			vtt->xy_input((f_prec) eventMotion->x_root*warp, (f_prec) eventMotion->y_root*warp);
+	if ((grab_mode == FALLBACK) && vtt) {
+		gdouble d_x = eventMotion->x_root - x_abs;
+		gdouble d_y = eventMotion->y_root - y_abs;
+		
+		if ((d_x != 0.0) || (d_y != 0.0)) {
+			gdk_device_warp(pointer, screen, x_abs, y_abs);
+			
+			if (warp_override) {
+				f_prec value=(abs(d_x)>abs(d_y)) ? d_x : d_y;
+				vtt->sp_speed.handle_mouse_input(value*globals.mouse_speed*warp);
+			} else {
+				vtt->xy_input((f_prec) d_x*warp, (f_prec) d_y*warp);
+			}
+		}
+	}
+}
+
+void tx_mouse::linux_input(tx_input_event *event) {
+	if ((grab_mode == LINUX_INPUT) && vtt) {
+		if ((event->x_motion != 0) || (event->y_motion != 0)) {
+			// gdk_device_warp(pointer, screen, x_abs, y_abs);
+			gdouble d_x = event->x_motion;
+			gdouble d_y = event->y_motion;
+		
+			if (warp_override) {
+				f_prec value=(abs(d_x)>abs(d_y)) ? d_x : d_y;
+				vtt->sp_speed.handle_mouse_input(value*globals.mouse_speed*warp);
+			} else {
+				vtt->xy_input((f_prec) d_x*warp, (f_prec) d_y*warp);
+			}
 		}
 	}
 }
@@ -440,6 +348,28 @@ gboolean tx_mouse::motion_notify_wrap(GtkWidget *widget, GdkEventMotion *eventMo
 	} else {
 		return FALSE;
 	}
+}
+
+gboolean tx_mouse::linux_input_wrap(GIOChannel *source, GIOCondition condition, gpointer data) {
+	if (condition == G_IO_IN) {
+		tx_input_event sum;
+		tx_input_event eventbuffer[512];
+		tx_mouse* mouse = (tx_mouse *) data;
+		gint fd = g_io_channel_unix_get_fd(mouse->linux_input_channel);
+		ssize_t bytes_read = read(fd, &eventbuffer, sizeof(eventbuffer));
+		
+		//printf("read %lu bytes, %lu events\n", bytes_read, bytes_read / sizeof(tx_input_event));
+		
+		sum.x_motion = 0;
+		sum.y_motion = 0;
+		
+		for (int i = 0; i < bytes_read / sizeof(tx_input_event); i++) {
+			sum.x_motion += eventbuffer[i].x_motion;
+			sum.y_motion += eventbuffer[i].y_motion;
+		}
+		mouse->linux_input(&sum);
+	}
+	return TRUE;
 }
 
 gboolean tx_mouse::button_press_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data) {

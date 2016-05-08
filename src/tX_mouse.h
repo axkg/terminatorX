@@ -29,24 +29,20 @@
 
 #include <tX_types.h>
 #include <unistd.h>
-#include <X11/Xlib.h>
-#include <X11/extensions/XInput.h>
-#include <X11/keysym.h>
 #include <glib.h>
+#include <X11/Xlib.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
+typedef struct __attribute__((__packed__)) {
+	uint8_t buttons;
+	int8_t x_motion;
+	int8_t y_motion;
+} tx_input_event;
+
 class tx_mouse
 {
-	XID OrgXPointer;
-	char OrgXPointerName[256];
-	XDevice *input_device;
-	XEvent xev;
-	long mask;
-	XMotionEvent *xmot;
-	XKeyEvent *xkey;
-	XButtonEvent *xbut;
 	bool warp_override;
 	GdkEventMask savedEventMask;
 
@@ -56,14 +52,15 @@ class tx_mouse
 
 	GdkDevice* pointer;
 	GdkDevice* keyboard;
+	GdkScreen* screen;
+	GdkWindow* window;
+	GdkCursor* blankCursor;
+	GdkCursor* cursor;
+	gdouble x_abs;
+	gdouble y_abs;
+	gint x_restore;
+	gint y_restore;
 
-#ifdef USE_DGA2	
-	XEvent xev_copy;
-	XDGAButtonEvent *xdgabut;
-	XDGAKeyEvent *xdgakey;
-	XDGAMotionEvent *xdgamot;
-#endif	
-	
 	Time otime, ntime;
 	f_prec dtime;
 	Display *dpy;
@@ -71,6 +68,14 @@ class tx_mouse
 	float warp;
 	
 	int grabbed;
+	
+	enum  {
+		FALLBACK,
+		LINUX_INPUT
+	} grab_mode;
+	
+	GIOChannel *linux_input_channel;
+	guint linux_input_watch;
 
 	public:
 	int set_xinput();
@@ -78,8 +83,11 @@ class tx_mouse
 	bool is_grabbed() { return grabbed != 0; }
 		
 	int grab();
+	int grab_linux_input();
+		
 	int check_event();
 	void ungrab();
+	void ungrab_linux_input();
 	tx_mouse();
 	
 	void motion_notify(GtkWidget *widget, GdkEventMotion *eventMotion);
@@ -87,15 +95,15 @@ class tx_mouse
 	void button_release(GtkWidget *widget, GdkEventButton *eventButton);
 	void key_press(GtkWidget *widget, GdkEventKey *eventKey);
 	void key_release(GtkWidget *widget, GdkEventKey *eventKey);
+	void linux_input(tx_input_event *event);
 
 	static gboolean motion_notify_wrap(GtkWidget *widget, GdkEventMotion *eventMotion, void *data);
 	static gboolean button_press_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data);
 	static gboolean button_release_wrap(GtkWidget *widget, GdkEventButton *eventButton, void *data);
 	static gboolean key_press_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data);
 	static gboolean key_release_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data);
+	static gboolean linux_input_wrap(GIOChannel *source, GIOCondition condition, gpointer data);
 
-	private:
-	void set_x_pointer(char*);
 };
 
 
