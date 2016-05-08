@@ -1410,6 +1410,7 @@ void create_mastergui(int x, int y)
 	gtk_entry_set_alignment(GTK_ENTRY(dummy), 0.5);
 #endif	
 	gtk_entry_set_width_chars(GTK_ENTRY(dummy), 9);
+	gtk_entry_set_max_width_chars(GTK_ENTRY(dummy), 9);
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
