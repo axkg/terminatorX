@@ -138,6 +138,7 @@ create_tx_options (void)
   GSList *oss_driver_group = NULL;
   GtkWidget *alsa_driver;
   GtkWidget *jack_driver;
+  GtkWidget *pulse_driver;
   GtkWidget *use_realtime_label;
   GtkWidget *use_realtime;
   GtkWidget *label1;
@@ -292,6 +293,13 @@ create_tx_options (void)
   gtk_widget_set_tooltip_text(jack_driver, "Use the JACK (JACK Audio Connection Kit) driver for audio output.");
   gtk_radio_button_set_group (GTK_RADIO_BUTTON (jack_driver), oss_driver_group);
   oss_driver_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (jack_driver));
+ 
+  pulse_driver = gtk_radio_button_new_with_mnemonic (NULL, "PULSE");
+  gtk_widget_show (pulse_driver);
+  gtk_box_pack_start (GTK_BOX (hbox2), pulse_driver, FALSE, FALSE, 0);
+  gtk_widget_set_tooltip_text(pulse_driver, "Use the PULSE (PulseAudio) driver for audio output.");
+  gtk_radio_button_set_group (GTK_RADIO_BUTTON (pulse_driver), oss_driver_group);
+  oss_driver_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (pulse_driver));
 
   use_realtime_label = gtk_label_new ("Scheduling:");
   gtk_widget_show (use_realtime_label);
@@ -899,6 +907,7 @@ create_tx_options (void)
   TX_UI_HOOKUP_OBJECT (tx_options, oss_driver, "oss_driver");
   TX_UI_HOOKUP_OBJECT (tx_options, alsa_driver, "alsa_driver");
   TX_UI_HOOKUP_OBJECT (tx_options, jack_driver, "jack_driver");
+  TX_UI_HOOKUP_OBJECT (tx_options, pulse_driver, "pulse_driver");
   TX_UI_HOOKUP_OBJECT (tx_options, use_realtime_label, "use_realtime_label");
   TX_UI_HOOKUP_OBJECT (tx_options, use_realtime, "use_realtime");
   TX_UI_HOOKUP_OBJECT (tx_options, label1, "label1");

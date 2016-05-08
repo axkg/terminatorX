@@ -40,6 +40,10 @@
 #include <jack/jack.h>
 #endif
 
+#ifdef USE_PULSE
+#include <pulse/simple.h>
+#endif
+
 class tX_engine;
 
 class tX_audiodevice
@@ -103,6 +107,22 @@ class tX_audiodevice_alsa : public tX_audiodevice
 	virtual void play(int16_t*);
 	
 	tX_audiodevice_alsa();
+};
+
+#endif
+
+#ifdef USE_PULSE
+
+class tX_audiodevice_pulse : public tX_audiodevice
+{
+	pa_simple *stream;
+	
+	public:
+	virtual int open();
+	virtual int close();
+	virtual void play(int16_t*);
+	
+	tX_audiodevice_pulse();
 };
 
 #endif
