@@ -269,8 +269,9 @@ int load_globals_xml() {
 
 	xmlFreeDoc(doc);
 	
-	if (strcmp(device_type, "alsa")==0) globals.audiodevice_type=ALSA;
-	else if (strcmp(device_type, "jack")==0) globals.audiodevice_type=JACK;
+	if (strcmp(device_type, "alsa")==0) { globals.audiodevice_type=ALSA; }
+	else if (strcmp(device_type, "jack")==0) { globals.audiodevice_type=JACK; }
+	else if (strcmp(device_type, "pulse")==0) { globals.audiodevice_type=PULSE; }
 	else globals.audiodevice_type=OSS;
 	
 	return 0;
@@ -290,6 +291,9 @@ void store_globals() {
 	rc=fopen(rc_name, "w");
 	
 	switch (globals.audiodevice_type) {
+		case PULSE:
+			strcpy(device_type, "pulse");
+			break;
 		case JACK:
 			strcpy(device_type, "jack");
 			break;

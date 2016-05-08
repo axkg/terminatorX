@@ -16,6 +16,7 @@ AC_ARG_ENABLE(xsetpointer,	[  --enable-xsetpointer    enables executing of xsetp
 AC_ARG_ENABLE(alsa,		[  --enable-alsa           use ALSA for sound output (default=auto) ])
 AC_ARG_ENABLE(jack,		[  --enable-jack           use JACK for sound output (default=auto) ])
 AC_ARG_ENABLE(oss,		[  --enable-oss            use OSS for sound output (default=auto) ])
+AC_ARG_ENABLE(pulse,		[  --enable-pulse          use PULSE for sound output (default=auto) ])
 dnl AC_ARG_ENABLE(dga2,		[  --enable-dga2           use DGA2 instead of DGA1. (experimental) (default=no) ])
 AC_ARG_ENABLE(libxml2,	    	[  --disable-libxml2       use libxml even if verion 2 detected (default=auto) ])
 AC_ARG_ENABLE(mad,		[  --disable-mad           disable mad for mp3 support (default=auto) ])
@@ -40,6 +41,7 @@ AC_PROG_RANLIB
 OPTION_OSS="no"
 OPTION_ALSA="no"
 OPTION_JACK="no"
+OPTION_PULSE="no"
 OPTION_SOX="no"
 OPTION_MPG123="no"
 OPTION_MAD="no"
@@ -301,12 +303,13 @@ if test "$enable_xsetpointer" != "no"; then
 fi
 
 if test "$enable_movqfix" = "no"; then
-	AC_DEFINE_UNQUOTED([OVERRIDE_MOVQ_AUTODETECT], 1, [Don't use movqfix])
+	AC_DEFINE_UNQUOTED([OVERRIDE_MOVQ_AUTODETECT], 1, [Do nott use movqfix])
 fi
 
 using_alsa=no
 using_oss=no
 using_jack=no
+using_pulse=no
 
 if test "$enable_alsa" != "no"; then
     AC_CHECK_LIB(asound, snd_pcm_writei,alsalib=yes,alsalib=no)
@@ -320,12 +323,12 @@ if test "$enable_alsa" != "no"; then
 		    OPTION_ALSA=yes
     	    else 
     		    if test "$enable_alsa" = "yes"; then
-    			    AC_MSG_ERROR([** Coulnd't find ALSA header file sys/asoundlib.h **])
+    			    AC_MSG_ERROR([** Could not find ALSA header file sys/asoundlib.h **])
     		    fi
     	    fi
     else
     	    if test "$enable_alsa" = "yes"; then
-    		    AC_MSG_ERROR([** Coulnd'f find ALSA library libasound. **])
+    		    AC_MSG_ERROR([** Could not find ALSA library libasound. **])
     	    fi
     fi
 fi
@@ -342,14 +345,37 @@ if test "$enable_jack" != "no"; then
 		    OPTION_JACK=yes
     	    else 
     		    if test "$enable_jack" = "yes"; then
-    			    AC_MSG_ERROR([** Coulnd't find JACK header file jack/jack.h **])
+    			    AC_MSG_ERROR([** Could not find JACK header file jack/jack.h **])
     		    fi
     	    fi
     else
     	    if test "$enable_jack" = "yes"; then
-    		    AC_MSG_ERROR([** Coulnd'f find JACK library libjack. **])
+    		    AC_MSG_ERROR([** Could not find JACK library libjack. **])
     	    fi
     fi
+fi
+
+if test "$enable_pulse" != "no"; then
+    AC_CHECK_LIB(pulse-simple,pa_simple_new,pulselib=yes,pulselib=no)
+    AC_CHECK_HEADERS(pulse/pulseaudio.h,pulseheader=yes,pulseheader=no)
+
+    if test "$pulselib" = "yes"; then
+    	    if test "$pulseheader" = "yes"; then
+    		    AC_DEFINE_UNQUOTED([USE_PULSE], 1, [ Define to enable PULSE audio backend.])
+		    LIBS="$LIBS -lpulse-simple -lpulse"
+    		    using_pulse=yes
+		    OPTION_PULSE=yes
+    	    else 
+    		    if test "$enable_pulse" = "yes"; then
+    			    AC_MSG_ERROR([** Could not find PULSE header file pulse/pulseaudio.h **])
+    		    fi
+    	    fi
+    else
+    	    if test "$enable_pulse" = "yes"; then
+    		    AC_MSG_ERROR([** Could not find PULSE library libpulse. **])
+    	    fi
+    fi
+
 fi
 
 
@@ -362,7 +388,7 @@ if test "$enable_oss" != "no"; then
 		using_oss=yes;
 	else
 		if test "$enable_oss" = "yes"; then
-			AC_MSG_ERROR([** Couldn't find OSS header files. ***])
+			AC_MSG_ERROR([** Could not find OSS header files. ***])
 		fi
 	fi
 fi
@@ -396,7 +422,9 @@ fi
 if test "$using_alsa" != "yes"; then
 	if test "$using_oss" != "yes"; then
 		if test "$using_jack" != "yes"; then
-			AC_MSG_ERROR([** Found neither OSS, ALSA nor JACK - no output device! **])
+			if test "$using_pulse" != "yes"; then
+				AC_MSG_ERROR([** Found neither OSS, ALSA, JACK nor PULSE - no output device! **])
+			fi
 		fi
 	fi
 fi	
@@ -612,6 +640,9 @@ option=alsa; option_val=$OPTION_ALSA; option_url=http://www.alsa-project.org
 option_info;
 
 option=jack; option_val=$OPTION_JACK; option_url=http://jackit.sourceforge.net
+option_info;
+
+option=pulse; option_val=$OPTION_PULSE; option_url=http://www.freedesktop.org/wiki/Software/PulseAudio/
 option_info;
 
 option=mad; option_val=$OPTION_MAD; option_url=http://www.mars.org/home/rob/proj/mpeg/

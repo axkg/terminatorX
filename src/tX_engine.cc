@@ -205,19 +205,25 @@ tX_engine_error tX_engine :: run() {
 #ifdef USE_OSS	
 		case OSS:
 			device=new tX_audiodevice_oss(); 
-		break;
+			break;
 #endif			
 
 #ifdef USE_ALSA			
 		case ALSA:
 			device=new tX_audiodevice_alsa(); 
-		break;
+			break;
 #endif
 
 #ifdef USE_JACK
 		case JACK:
 			device=new tX_audiodevice_jack();
-		break;
+			break;
+#endif
+
+#ifdef USE_PULSE
+		case PULSE:
+			device=new tX_audiodevice_pulse();
+			break;
 #endif
 		
 		default:
