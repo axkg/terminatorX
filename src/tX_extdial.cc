@@ -72,6 +72,7 @@ tX_extdial :: tX_extdial(const char *l, GtkAdjustment *a, tX_seqpar * sp, bool t
 	if (l) gtk_widget_show(label);
 	if (!hide_entry){ gtk_widget_show(entry); }
 	gtk_entry_set_width_chars(GTK_ENTRY(entry), 4);
+	gtk_entry_set_max_width_chars(GTK_ENTRY(entry), 4);
 	gtk_widget_show(dial);
 	gtk_widget_show(subbox);
 	gtk_widget_show(mainbox);
