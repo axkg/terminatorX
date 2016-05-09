@@ -30,10 +30,36 @@
 #include <tX_types.h>
 #include <unistd.h>
 #include <glib.h>
-#include <X11/Xlib.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
+
+#define KEY_Alt_L 1
+#define KEY_Alt_R 2
+#define KEY_BackSpace 3
+#define KEY_Control_L 4
+#define KEY_Control_R 5
+#define KEY_Escape 6
+#define KEY_f 7
+#define KEY_F1 8
+#define KEY_F10 9
+#define KEY_F11 10
+#define KEY_F12 11
+#define KEY_F2 12
+#define KEY_F3 13
+#define KEY_F4 14
+#define KEY_F5 15
+#define KEY_F6 16
+#define KEY_F7 17
+#define KEY_F8 18
+#define KEY_F9 19
+#define KEY_m  20
+#define KEY_Return 21
+#define KEY_s 22
+#define KEY_space 23
+#define KEY_Tab 24
+#define KEY_w 25
+#define MAX_KEY 26
 
 typedef struct __attribute__((__packed__)) {
 	uint8_t buttons;
@@ -61,13 +87,10 @@ class tx_mouse
 	gint x_restore;
 	gint y_restore;
 
-	Time otime, ntime;
-	f_prec dtime;
-	Display *dpy;
-	KeySym key;
 	float warp;
 	
 	int grabbed;
+	bool key_pressed[MAX_KEY];
 	
 	enum  {
 		FALLBACK,
@@ -76,6 +99,22 @@ class tx_mouse
 	
 	GIOChannel *linux_input_channel;
 	guint linux_input_watch;
+
+	bool press_key(int keycode) {
+		if (!key_pressed[keycode]) {
+			key_pressed[keycode] = true;
+			return true;
+		}
+		return false;
+	}
+
+	bool release_key(int keycode) {
+		if (key_pressed[keycode]) {
+			key_pressed[keycode] = false;
+			return true;
+		}
+		return false;
+	}
 
 	public:
 	int set_xinput();

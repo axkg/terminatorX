@@ -62,6 +62,9 @@ int tx_mouse :: grab()
 {	
 	if (grabbed) return 0;
 
+	// release all keys
+	memset(key_pressed, 0, sizeof(key_pressed));
+
 	warp_override=false;
 	
 	if (grab_linux_input()) {
@@ -73,10 +76,9 @@ int tx_mouse :: grab()
 	window =  gtk_widget_get_window(main_window);
 	GdkDisplay* gdk_dpy = gdk_window_get_display(window);
 	GdkDeviceManager *device_manager = gdk_display_get_device_manager(gdk_dpy);
-	dpy = gdk_x11_display_get_xdisplay(gdk_dpy);
 	
-	if (!dpy && !gdk_dpy) {
-		fputs("GrabMode Error: couldn't connect to XDisplay.", stderr);
+	if (!gdk_dpy) {
+		fputs("GrabMode Error: couldn't access GDKDisplay.", stderr);
 		return(ENG_ERR_XOPEN);
 	}
 
@@ -131,8 +133,6 @@ int tx_mouse :: grab()
 
 	cursor = gdk_window_get_cursor(window);
 	gdk_window_set_cursor(window, gdk_cursor_new_for_display(gdk_dpy, GDK_BLANK_CURSOR));
-	XAutoRepeatOff(dpy);	
-	otime=CurrentTime;
 	
 	grabbed=1;
 	
@@ -156,12 +156,11 @@ void tx_mouse :: ungrab()
 {
 	if (!grabbed) return;
 
-	tX_debug("tX_mouse::ungrab(): this: %016" PRIxPTR ", dpy: %016" PRIxPTR, (uintptr_t) this, (uintptr_t) dpy);
+	tX_debug("tX_mouse::ungrab(): this: %016" PRIxPTR, (uintptr_t) this);
 	
 	gdk_device_ungrab(keyboard, GDK_CURRENT_TIME);
 	gdk_device_ungrab(pointer, GDK_CURRENT_TIME);
 
-	XAutoRepeatOn(dpy);
 	gdk_window_set_cursor(window, cursor);
 
 	vtt_class::unfocus();
@@ -269,47 +268,49 @@ void tx_mouse::button_release(GtkWidget *widget, GdkEventButton *eventButton) {
 void tx_mouse::key_press(GtkWidget *widget, GdkEventKey *eventKey) {
 	if (vtt) {
 		switch(eventKey->keyval) {
-			case GDK_KEY_space: vtt->set_scratch(1); break;
-			case GDK_KEY_Escape: ungrab(); break;
+			case GDK_KEY_space: if (press_key(KEY_space)) { vtt->set_scratch(1); } break;
+			case GDK_KEY_Escape: if (press_key(KEY_Escape)) { ungrab(); } break;
 
-			case GDK_KEY_Return: vtt->sp_trigger.receive_input_value(1); break;
-			case GDK_KEY_BackSpace : vtt->sp_trigger.receive_input_value(0); break;
+			case GDK_KEY_Return: if (press_key(KEY_Return)) { vtt->sp_trigger.receive_input_value(1); } break;
+			case GDK_KEY_BackSpace: if (press_key(KEY_BackSpace)) { vtt->sp_trigger.receive_input_value(0); } break;
 
-			case GDK_KEY_Tab: vtt_class::focus_next(); break;
+			case GDK_KEY_Tab: if (press_key(KEY_Tab)) { vtt_class::focus_next(); } break;
 
-			case GDK_KEY_s: vtt->sp_sync_client.receive_input_value(!vtt->is_sync_client); break;
+			case GDK_KEY_s: if (press_key(KEY_s)) { vtt->sp_sync_client.receive_input_value(!vtt->is_sync_client); } break;
 
-			case GDK_KEY_m:
-			case GDK_KEY_Control_L:
-			case GDK_KEY_Control_R:
-			vtt->sp_mute.receive_input_value(1);
+			case GDK_KEY_m:  if (press_key(KEY_m)) { vtt->sp_mute.receive_input_value(1); } break;
+			case GDK_KEY_Control_L:  if (press_key(KEY_Control_L)) { vtt->sp_mute.receive_input_value(1); } break;
+			case GDK_KEY_Control_R:  if (press_key(KEY_Control_R)) { vtt->sp_mute.receive_input_value(1); }	break;
+
+			case GDK_KEY_Alt_L:  if (press_key(KEY_Alt_L)) { vtt->sp_mute.receive_input_value(0); } break;
+			case GDK_KEY_Alt_R:  if (press_key(KEY_Alt_R)) { vtt->sp_mute.receive_input_value(0); } break;
+
+			case GDK_KEY_w:  if (press_key(KEY_w)) {
+				vtt->sp_mute.receive_input_value(1);
+				warp_override=true;
+				warp=((float) vtt->samples_in_buffer)/TX_MOUSE_SPEED_WARP;
+				vtt->set_scratch(1);
+			}
+			break;
+			case GDK_KEY_f:  if (press_key(KEY_f)) {
+				warp_override=true;
+				warp=((float) vtt->samples_in_buffer)/TX_MOUSE_SPEED_WARP;
+				vtt->set_scratch(1);
+			}
 			break;
 
-			case GDK_KEY_Alt_L:
-			case GDK_KEY_Alt_R:
-			vtt->sp_mute.receive_input_value(0);
-			break;
-
-			case GDK_KEY_w:
-			vtt->sp_mute.receive_input_value(1);
-			case GDK_KEY_f:
-			warp_override=true;
-			warp=((float) vtt->samples_in_buffer)/TX_MOUSE_SPEED_WARP;
-			vtt->set_scratch(1);
-			break;
-
-			case GDK_KEY_F1: vtt_class::focus_no(0); break;
-			case GDK_KEY_F2: vtt_class::focus_no(1); break;
-			case GDK_KEY_F3: vtt_class::focus_no(2); break;
-			case GDK_KEY_F4: vtt_class::focus_no(3); break;
-			case GDK_KEY_F5: vtt_class::focus_no(4); break;
-			case GDK_KEY_F6: vtt_class::focus_no(5); break;
-			case GDK_KEY_F7: vtt_class::focus_no(6); break;
-			case GDK_KEY_F8: vtt_class::focus_no(7); break;
-			case GDK_KEY_F9: vtt_class::focus_no(8); break;
-			case GDK_KEY_F10: vtt_class::focus_no(9); break;
-			case GDK_KEY_F11: vtt_class::focus_no(10); break;
-			case GDK_KEY_F12: vtt_class::focus_no(11); break;
+			case GDK_KEY_F1: if (press_key(KEY_F1)) { vtt_class::focus_no(0); } break;
+			case GDK_KEY_F2: if (press_key(KEY_F2)) { vtt_class::focus_no(1); } break;
+			case GDK_KEY_F3: if (press_key(KEY_F3)) { vtt_class::focus_no(2); } break;
+			case GDK_KEY_F4: if (press_key(KEY_F4)) { vtt_class::focus_no(3); } break;
+			case GDK_KEY_F5: if (press_key(KEY_F5)) { vtt_class::focus_no(4); } break;
+			case GDK_KEY_F6: if (press_key(KEY_F6)) { vtt_class::focus_no(5); } break;
+			case GDK_KEY_F7: if (press_key(KEY_F7)) { vtt_class::focus_no(6); } break;
+			case GDK_KEY_F8: if (press_key(KEY_F8)) { vtt_class::focus_no(7); } break;
+			case GDK_KEY_F9: if (press_key(KEY_F9)) { vtt_class::focus_no(8); } break;
+			case GDK_KEY_F10: if (press_key(KEY_F10)) { vtt_class::focus_no(9); } break;
+			case GDK_KEY_F11: if (press_key(KEY_F11)) { vtt_class::focus_no(10); } break;
+			case GDK_KEY_F12: if (press_key(KEY_F12)) { vtt_class::focus_no(11); } break;
 		}
 	}
 }
@@ -317,25 +318,51 @@ void tx_mouse::key_press(GtkWidget *widget, GdkEventKey *eventKey) {
 void tx_mouse::key_release(GtkWidget *widget, GdkEventKey *eventKey) {
 	if (vtt) {
 		switch(eventKey->keyval) {
-			case GDK_KEY_space: vtt->set_scratch(0); break;
+			case GDK_KEY_space: if (release_key(KEY_space)) { vtt->set_scratch(0); } break;
+			case GDK_KEY_Escape: release_key(KEY_Escape); break;
 
-			case GDK_KEY_m:
-			case GDK_KEY_Control_L:
-			case GDK_KEY_Control_R:
-			vtt->sp_mute.receive_input_value(0);
+			case GDK_KEY_Return: release_key(KEY_Return); break;
+			case GDK_KEY_BackSpace: release_key(KEY_BackSpace); break;
+
+			case GDK_KEY_Tab: release_key(KEY_Tab); break;
+
+			case GDK_KEY_s: release_key(KEY_s); break;
+
+
+			case GDK_KEY_m: if (release_key(KEY_m)) { vtt->sp_mute.receive_input_value(0); } break;
+			case GDK_KEY_Control_L: if (release_key(KEY_Control_L)) { vtt->sp_mute.receive_input_value(0); } break;
+			case GDK_KEY_Control_R: if (release_key(KEY_Control_R)) { vtt->sp_mute.receive_input_value(0); } break;
+
+			case GDK_KEY_Alt_L: if (release_key(KEY_Alt_L)) { vtt->sp_mute.receive_input_value(1); } break;
+			case GDK_KEY_Alt_R: if (release_key(KEY_Alt_R)) { vtt->sp_mute.receive_input_value(1); } break;
+
+			case GDK_KEY_w: if (release_key(KEY_w)) {
+				vtt->sp_mute.receive_input_value(0);
+				warp=TX_MOUSE_SPEED_NORMAL;
+				warp_override=false;
+				vtt->set_scratch(0);
+			}
 			break;
 
-			case GDK_KEY_Alt_L:
-			case GDK_KEY_Alt_R:
-			vtt->sp_mute.receive_input_value(1);
+			case GDK_KEY_f: if (release_key(KEY_f)) {
+				warp=TX_MOUSE_SPEED_NORMAL;
+				warp_override=false;
+				vtt->set_scratch(0);
+			}
 			break;
 
-			case GDK_KEY_w:
-			vtt->sp_mute.receive_input_value(0);
-			case GDK_KEY_f: warp=TX_MOUSE_SPEED_NORMAL;
-			warp_override=false;
-			vtt->set_scratch(0);
-			break;
+			case GDK_KEY_F1: release_key(KEY_F1); break;
+			case GDK_KEY_F2: release_key(KEY_F2); break;
+			case GDK_KEY_F3: release_key(KEY_F3); break;
+			case GDK_KEY_F4: release_key(KEY_F4); break;
+			case GDK_KEY_F5: release_key(KEY_F5); break;
+			case GDK_KEY_F6: release_key(KEY_F6); break;
+			case GDK_KEY_F7: release_key(KEY_F7); break;
+			case GDK_KEY_F8: release_key(KEY_F8); break;
+			case GDK_KEY_F9: release_key(KEY_F9); break;
+			case GDK_KEY_F10: release_key(KEY_F10); break;
+			case GDK_KEY_F11: release_key(KEY_F11); break;
+			case GDK_KEY_F12: release_key(KEY_F12); break;
 		}
 	}
 }
