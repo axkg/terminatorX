@@ -40,15 +40,11 @@ extern "C" {
 #define MAX_KNOB_PIX 50
 #define TX_MAX_KNOB_PIX 49
 
-#ifdef USE_BIG_BUTTONS
-#define KNOB_SIZE 51
-#else
-#define KNOB_SIZE 42
-#endif
+extern int tX_knob_size;
 
 extern GdkPixbuf *knob_pixmaps[MAX_KNOB_PIX];
 	
-extern void load_knob_pixs();
+extern void load_knob_pixs(int fontHeight, int scaleFactor);
 
 #ifdef __cplusplus
 }

@@ -23,6 +23,7 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
+#include <pango/pango.h>
 #include <X11/Xlib.h>
 #include <math.h>
 #include <unistd.h>
@@ -64,6 +65,7 @@
 
 int audioon=0;
 int sequencer_ready=1;
+int fontHeight=16;
 
 bool tX_shutdown=false;
 tx_mouse mouse;
@@ -1398,6 +1400,12 @@ void create_mastergui(int x, int y)
 	gtk_widget_show(dummy);
 
 	dummy=gtk_label_new("Pos:");
+	PangoRectangle ink_rect;
+	PangoRectangle logical_rect;
+	pango_layout_get_pixel_extents(gtk_label_get_layout(GTK_LABEL(dummy)), &ink_rect, &logical_rect);
+	tX_debug("ink extent: x: %i, y: %i, width: %i, height %i ",  ink_rect.x, ink_rect.y, ink_rect.width, ink_rect.height);
+	tX_debug("logical extent: x: %i, y: %i, width: %i, height %i ",  logical_rect.x, logical_rect.y, logical_rect.width, logical_rect.height);
+	fontHeight = logical_rect.height - logical_rect.y;
 	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 	
@@ -1679,7 +1687,7 @@ void display_mastergui()
 	GtkWidget *top;
 	gtk_widget_realize(main_window);
 	tX_set_icon(main_window);
-	load_knob_pixs();
+	load_knob_pixs(fontHeight, gdk_window_get_scale_factor(gtk_widget_get_window(GTK_WIDGET(main_window))));
 	gtk_widget_show(main_window);
 	fullscreen_setup();	
 	top=gtk_widget_get_toplevel(main_window);

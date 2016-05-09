@@ -226,10 +226,10 @@ static void gtk_tx_dial_realize (GtkWidget *widget)
 }
 
 static void gtk_tx_dial_get_preferred_width (GtkWidget *widget, gint *minimal_width, gint *natural_width) {
-	*minimal_width = *natural_width = KNOB_SIZE;
+	*minimal_width = *natural_width = tX_knob_size;
 }
 static void gtk_tx_dial_get_preferred_height (GtkWidget *widget, gint *minimal_height, gint *natural_height) {
-	*minimal_height = *natural_height = KNOB_SIZE;
+	*minimal_height = *natural_height = tX_knob_size;
 }
 
 static void gtk_tx_dial_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
@@ -248,8 +248,8 @@ static void gtk_tx_dial_size_allocate (GtkWidget *widget, GtkAllocation *allocat
 				  allocation->x, allocation->y,
 				  allocation->width, allocation->height);
 		
-		tx_dial->xofs=(allocation->width-KNOB_SIZE)/2;
-		tx_dial->yofs=(allocation->height-KNOB_SIZE)/2;
+		tx_dial->xofs=(allocation->width-tX_knob_size)/2;
+		tx_dial->yofs=(allocation->height-tX_knob_size)/2;
 	}
 }
 
@@ -261,7 +261,7 @@ inline void gtk_tx_dial_do_draw (GtkTxDial *tx_dial, GtkWidget *widget, cairo_t 
 //		                NULL, //TODO: this needs to be ported to cairo!
 //		                knob_pixmaps[tx_dial->old_image],
 //		                0, 0, tx_dial->xofs, tx_dial->yofs,
-//						KNOB_SIZE, KNOB_SIZE, GDK_RGB_DITHER_NORMAL, 0, 0);
+//						tX_knob_size, tX_knob_size, GDK_RGB_DITHER_NORMAL, 0, 0);
 
 		gdk_cairo_set_source_pixbuf (cr, knob_pixmaps[tx_dial->old_image], 0, 0);
 		cairo_paint (cr);

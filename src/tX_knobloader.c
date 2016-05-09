@@ -22,9 +22,11 @@
 
 #include <gtk/gtk.h>
 #include "tX_knobloader.h"
+#include "tX_global.h"
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 #ifdef USE_DIAL
+int tX_knob_size;
 
 const guint8 * knob_pixs[MAX_KNOB_PIX]={
 	 knob0,
@@ -81,13 +83,18 @@ const guint8 * knob_pixs[MAX_KNOB_PIX]={
 
 GdkPixbuf *knob_pixmaps[MAX_KNOB_PIX];
 
-void load_knob_pixs()
+void load_knob_pixs(int fontHeight, int scaleFactor)
 {
 	int i;
 	GError *error;
+	tX_knob_size = fontHeight * 3 * scaleFactor;
+	tX_debug("load_knob_pix(): knob size is %i", tX_knob_size);
 	
 	for (i=0; i<MAX_KNOB_PIX; i++) {
-		knob_pixmaps[i]=gdk_pixbuf_new_from_inline(-1, knob_pixs[i], TRUE, &error);
+		GdkPixbuf *tmpPixbuf=gdk_pixbuf_new_from_inline(-1, knob_pixs[i], TRUE, &error);
+		GdkPixbuf *scaledPixbuf=NULL;
+		scaledPixbuf = gdk_pixbuf_scale_simple(tmpPixbuf, tX_knob_size, tX_knob_size, GDK_INTERP_HYPER);
+		knob_pixmaps[i]=scaledPixbuf;
 	}
 }
 
