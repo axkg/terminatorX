@@ -172,21 +172,29 @@ vtt_fx_ladspa :: vtt_fx_ladspa(LADSPA_Plugin *p, void *v)
 		} else if ((LADSPA_IS_PORT_CONTROL(cpd)) && (LADSPA_IS_PORT_INPUT(cpd))) {
 			min=-22100;
 			max=+22100;
-			
+	
+			tX_debug("vtt_fx_ladspa(): wiring %s for %s", cpn, plugin->getLabel());
+			tX_debug("vtt_fx_ladspa(): bound below: %s, %8lf.", LADSPA_IS_HINT_BOUNDED_BELOW(cph.HintDescriptor) ? "yes": "no", cph.LowerBound);
+			tX_debug("vtt_fx_ladspa(): bound above: %s, %8lf.", LADSPA_IS_HINT_BOUNDED_ABOVE(cph.HintDescriptor) ? "yes": "no", cph.UpperBound);
+
 			if (LADSPA_IS_HINT_BOUNDED_BELOW(cph.HintDescriptor)) min=cph.LowerBound;
 			if (LADSPA_IS_HINT_BOUNDED_ABOVE(cph.HintDescriptor)) max=cph.UpperBound;
 			
 			if (LADSPA_IS_HINT_SAMPLE_RATE(cph.HintDescriptor)) {
-				min*=44100; max*=44100;
+				tX_debug("vtt_fx_ladspa(): is sample rate");
+			   	min*=44100; max*=44100;
 			}
-			
+						
 			if (LADSPA_IS_HINT_TOGGLED(cph.HintDescriptor)) {
+			    	tX_debug("vtt_fx_ladspa(): bool seqpar - min: %f, max %f", min, max);
 				sp=new tX_seqpar_vttfx_bool();
 				sp->set_mapping_parameters(max, min, 0, 0);
 			} else if (LADSPA_IS_HINT_INTEGER(cph.HintDescriptor)) {
+			    	tX_debug("vtt_fx_ladspa(): int seqpar - min: %f, max %f", min, max);
 				sp=new tX_seqpar_vttfx_int();
 				sp->set_mapping_parameters(max, min, 0, 0);
 			} else {
+			    	tX_debug("vtt_fx_ladspa(): float seqpar - min: %f, max %f", min, max);
 				sp=new tX_seqpar_vttfx_float();
 				sp->set_mapping_parameters(max, min, (max-min)/100.0, 1);
 			}
