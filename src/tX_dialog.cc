@@ -36,11 +36,6 @@
 #include "tX_widget.h"
 #include "tX_flash.h"
 
-#ifndef WIN32
-#include <X11/extensions/XInput.h>
-#include <X11/X.h>
-#endif
-
 #include "license.c"
 #include "tX_mastergui.h"
 #include "version.h"
@@ -101,12 +96,6 @@ void apply_options(GtkWidget *dialog) {
 	/* TODO: JACK
 	*/
 	
-	/* Input */
-	globals.xinput_enable=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "xinput_enable")))==TRUE);
-	char *xinput_device = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "xinput_device")));
-	if (xinput_device) {
-		strcpy(globals.xinput_device, xinput_device);
-	}
 	globals.mouse_speed=gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "mouse_speed")));
 	globals.sense_cycles=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "stop_sense_cycles")));
 	globals.vtt_inertia=gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "vtt_inertia")));
@@ -300,22 +289,6 @@ void append_sampling_rates_list(GtkComboBoxText *combo, int current) {
 	}
 }
 
-void append_xinput_devices_list(GtkComboBoxText *combo, char *current) {
-	int devmax;
-	Display *dpy=XOpenDisplay(NULL);
-	XDeviceInfo *xdev=XListInputDevices(dpy, &devmax);
-	XCloseDisplay(dpy);
-
-	for (int i=0; i<devmax; i++) {		
-		gtk_combo_box_text_append_text(combo, strdup(xdev[i].name));
-		if (strcmp(xdev[i].name, current) == 0) {
-			gtk_combo_box_set_active(GTK_COMBO_BOX(combo), i);
-		}
-	}
-	
-	XFreeDeviceList(xdev);
-}
-
 #define MAX_COLORS 10
 char *colors[MAX_COLORS]={ NULL };
 
@@ -401,11 +374,6 @@ void init_tx_options(GtkWidget *dialog) {
 	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "alsa_free_hwstats")), globals.alsa_free_hwstats);
 	
-	/* Input */
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "xinput_enable")), globals.xinput_enable);
-	
-	append_xinput_devices_list(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "xinput_device")), globals.xinput_device);
-
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "mouse_speed")), globals.mouse_speed);
 	gtk_widget_set_tooltip_text(lookup_widget(dialog, "mouse_speed"), "The speed of your mouse in scratch mode. Use negative values to invert motion.");
 	
