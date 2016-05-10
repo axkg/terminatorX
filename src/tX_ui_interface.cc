@@ -169,11 +169,9 @@ create_tx_options (void)
   GtkWidget *label5;
   GtkWidget *label6;
   GtkWidget *label7;
-  GtkWidget *xinput_device;
   GtkWidget *mouse_speed;
   GtkWidget *stop_sense_cycles;
   GtkWidget *label25;
-  GtkWidget *xinput_enable;
   GtkWidget *label37;
   GtkWidget *vtt_inertia;
   GtkWidget *label4;
@@ -459,60 +457,37 @@ create_tx_options (void)
   gtk_grid_set_row_spacing (GTK_GRID (grid1), 2);
   gtk_grid_set_column_spacing (GTK_GRID (grid1), 2);
 
-  label5 = gtk_label_new ("XInput device:");
-  gtk_widget_show (label5);
-  gtk_grid_attach (GTK_GRID (grid1), label5, 0, 1, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label5), 0, 0.5);
-
   label6 = gtk_label_new ("Mouse speed:");
   gtk_widget_show (label6);
-  gtk_grid_attach (GTK_GRID (grid1), label6, 0, 2, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid1), label6, 0, 1, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label6), 0, 0.5);
 
   label7 = gtk_label_new ("Stop-sense-cycles:");
   gtk_widget_show (label7);
-  gtk_grid_attach (GTK_GRID (grid1), label7, 0, 3, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid1), label7, 0, 2, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label7), 0, 0.5);
-
-  xinput_device = gtk_combo_box_text_new ();
-//  g_object_set_data (G_OBJECT (GTK_COMBO (xinput_device)->popwin),
-//                     "tXUiParentKey", xinput_device);
-  gtk_widget_set_hexpand(xinput_device, TRUE);
-  gtk_widget_show (xinput_device);
-  gtk_grid_attach (GTK_GRID (grid1), xinput_device, 1, 1, 1, 1);
-
-//  combo_entry1 = GTK_COMBO (xinput_device)->entry;
-//  gtk_widget_show (combo_entry1);
-  gtk_widget_set_tooltip_text(xinput_device, "Select the input device to use when XInput is enabled. Note: do not use this option if you plan on using your default device (standard mouse).");
 
   mouse_speed = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (0, -10, 10, 0.5, 0.1, 0.1)));
   gtk_widget_show (mouse_speed);
-  gtk_grid_attach (GTK_GRID (grid1), mouse_speed, 1, 2, 1, 1);
+  gtk_widget_set_hexpand(mouse_speed, TRUE);
+  gtk_grid_attach (GTK_GRID (grid1), mouse_speed, 1, 1, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (mouse_speed), GTK_POS_LEFT);
 
   stop_sense_cycles = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (80, 30, 250, 5, 1, 1)));
   gtk_widget_show (stop_sense_cycles);
-  gtk_grid_attach (GTK_GRID (grid1), stop_sense_cycles, 1, 3, 1, 1);
+  gtk_widget_set_hexpand(stop_sense_cycles, TRUE);
+  gtk_grid_attach (GTK_GRID (grid1), stop_sense_cycles, 1, 2, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (stop_sense_cycles), GTK_POS_LEFT);
-
-  label25 = gtk_label_new ("XInput:");
-  gtk_widget_show (label25);
-  gtk_grid_attach (GTK_GRID (grid1), label25, 0, 0, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label25), 0, 0.5);
-
-  xinput_enable = gtk_check_button_new_with_mnemonic ("Activate XInput support");
-  gtk_widget_show (xinput_enable);
-  gtk_grid_attach (GTK_GRID (grid1), xinput_enable, 1, 0, 1, 1);
-  gtk_widget_set_tooltip_text(xinput_enable, "CAREFUL! Enable this *only* if you want to use an input device than your default X-Pointer (yes, your mouse ;). You have to select your desired device as well. Selecting the default mouse pointer will crash terminatorX so if you want to use that keep this option disabled.");
 
   label37 = gtk_label_new ("Turntable inertia:");
   gtk_widget_show (label37);
-  gtk_grid_attach (GTK_GRID (grid1), label37, 0, 4, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid1), label37, 0, 3, 1, 1);
   gtk_misc_set_alignment (GTK_MISC (label37), 0, 0.5);
 
   vtt_inertia = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (11, 1, 310, 0.01, 1, 10)));
   gtk_widget_show (vtt_inertia);
-  gtk_grid_attach (GTK_GRID (grid1), vtt_inertia, 1, 4, 1, 1);
+  gtk_widget_set_hexpand(vtt_inertia, TRUE);
+  gtk_grid_attach (GTK_GRID (grid1), vtt_inertia, 1, 3, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (vtt_inertia), GTK_POS_LEFT);
 
   label4 = gtk_label_new ("Input");
@@ -937,11 +912,9 @@ create_tx_options (void)
   TX_UI_HOOKUP_OBJECT (tx_options, label5, "label5");
   TX_UI_HOOKUP_OBJECT (tx_options, label6, "label6");
   TX_UI_HOOKUP_OBJECT (tx_options, label7, "label7");
-  TX_UI_HOOKUP_OBJECT (tx_options, xinput_device, "xinput_device");
   TX_UI_HOOKUP_OBJECT (tx_options, mouse_speed, "mouse_speed");
   TX_UI_HOOKUP_OBJECT (tx_options, stop_sense_cycles, "stop_sense_cycles");
   TX_UI_HOOKUP_OBJECT (tx_options, label25, "label25");
-  TX_UI_HOOKUP_OBJECT (tx_options, xinput_enable, "xinput_enable");
   TX_UI_HOOKUP_OBJECT (tx_options, label37, "label37");
   TX_UI_HOOKUP_OBJECT (tx_options, vtt_inertia, "vtt_inertia");
   TX_UI_HOOKUP_OBJECT (tx_options, label4, "label4");

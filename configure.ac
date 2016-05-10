@@ -12,12 +12,10 @@ AC_ARG_ENABLE(scheduler,	[  --enable-scheduler      enable rt-scheduling (defaul
 AC_ARG_ENABLE(debug,		[  --enable-debug          enable debug output. (default=no) ])
 dnl AC_ARG_ENABLE(benchmark	[  --enable-benchmark      creates a non-functional test version (default=no) ])
 AC_ARG_ENABLE(wav,		[  --enable-wav            enables the built-in wav-loader (default=yes) ])
-AC_ARG_ENABLE(xsetpointer,	[  --enable-xsetpointer    enables executing of xsetpointer (default=auto) ])
 AC_ARG_ENABLE(alsa,		[  --enable-alsa           use ALSA for sound output (default=auto) ])
 AC_ARG_ENABLE(jack,		[  --enable-jack           use JACK for sound output (default=auto) ])
 AC_ARG_ENABLE(oss,		[  --enable-oss            use OSS for sound output (default=auto) ])
 AC_ARG_ENABLE(pulse,		[  --enable-pulse          use PULSE for sound output (default=auto) ])
-dnl AC_ARG_ENABLE(dga2,		[  --enable-dga2           use DGA2 instead of DGA1. (experimental) (default=no) ])
 AC_ARG_ENABLE(libxml2,	    	[  --disable-libxml2       use libxml even if verion 2 detected (default=auto) ])
 AC_ARG_ENABLE(mad,		[  --disable-mad           disable mad for mp3 support (default=auto) ])
 AC_ARG_ENABLE(vorbis,		[  --disable-vorbis        disable libvorbis support (default=auto) ])
@@ -212,16 +210,6 @@ if test "$enable_mad" != "no"; then
 	fi
 fi
 
-AC_CHECK_HEADERS(X11/extensions/Xxf86dga.h,newDgaHeader=yes,newDgaHeader=no, [#include <X11/Xlib.h>])
-
-if test "$newDgaHeader" = "no"; then
-	AC_CHECK_HEADERS(X11/extensions/xf86dga.h,oldDgaHeader=yes,oldDgaHeader=no, [#include <X11/Xlib.h>])
-	
-	if test "$oldDgaHeader" = "no"; then
-		AC_MSG_ERROR([** couldn't find xf86dga.h header - Install X11 headers first. **])
-	fi
-fi
-
 if test "$enable_vorbis" != "no"; then
 	AC_CHECK_HEADERS(vorbis/codec.h vorbis/vorbisfile.h,vorbis_headers=yes,vorbis_headers="no")
 	if test "$vorbis_headers" = "yes"; then
@@ -288,17 +276,6 @@ if test "$enable_ogg123" != "no"; then
 	if test "$OGG123_PROG" = "yes"; then
 		AC_DEFINE_UNQUOTED([USE_OGG123_INPUT], 1, [Define if you want UGLY ogg-input "support" - also requires sox])
 		OPTION_OGG123="yes"
-	fi
-fi
-
-if test "$enable_xsetpointer" != "no"; then
- 	AC_CHECK_PROG(XSETPOINTER_PROG, xsetpointer, yes)
-	if test "$XSETPOINTER_PROG" = "yes"; then
-	 	AC_DEFINE_UNQUOTED([USE_XSETPOINTER], 1, [Exec xsetpointer instead of using Xlib-calls.])
-	else
-		if test "$enable_xsetpointer" = "yes"; then
-			AC_MSG_ERROR([** xsetpointer not found. **])
-		fi
 	fi
 fi
 
@@ -499,10 +476,6 @@ if test "$enable_legacy" = yes; then
 	OPTION_LEGACY="yes"
 fi
 
-dnl if test "$enable_dga2" = yes; then
-dnl 	AC_DEFINE(USE_DGA2)
-dnl fi
-
 dnl Detecting libxml. Based on dia's test.
 found_libxml=false
 
@@ -588,12 +561,6 @@ AC_SUBST(x_libraries)
 
 GTK_LIBS="$GTK_LIBS $X_LIBS"
 AC_CHECK_LIB(X11, XOpenDisplay,, AC_MSG_ERROR([** X11-libs not installed or broken **]), $X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS)
-AC_CHECK_LIB(Xext, XShmQueryExtension,, AC_MSG_ERROR([** Xext-libs not installed or broken **]), $X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS)
-AC_CHECK_LIB(Xi, XOpenDevice,, AC_MSG_ERROR([** XInput not installed or broken **]), $X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS)
-AC_CHECK_LIB(Xxf86dga, XF86DGAQueryExtension,, AC_MSG_ERROR([** DGA not installed or broken **]), $X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS)
-if test "$enable_dga2" = yes; then
-	AC_CHECK_LIB(Xxf86dga, XDGASelectInput,, AC_MSG_ERROR([** DGA2 not installed. Try using dga1 instead. **]), $X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS)
-fi
 
 CFLAGS="$XML_CFLAGS $CFLAGS -DXML_MANUAL=$xml_man"
 LIBS="$XML_LIBS $LIBS"
