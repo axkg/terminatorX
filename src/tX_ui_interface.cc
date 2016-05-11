@@ -126,7 +126,7 @@ create_tx_adjust (void)
 }
 
 GtkWidget*
-create_tx_options (void)
+create_tx_options (GtkWindow* parent)
 {
   GtkWidget *tx_options;
   GtkWidget *dialog_vbox3;
@@ -166,12 +166,10 @@ create_tx_options (void)
   GtkWidget *alsa_free_hwstats;
   GtkWidget *label16;
   GtkWidget *grid1;
-  GtkWidget *label5;
   GtkWidget *label6;
   GtkWidget *label7;
   GtkWidget *mouse_speed;
   GtkWidget *stop_sense_cycles;
-  GtkWidget *label25;
   GtkWidget *label37;
   GtkWidget *vtt_inertia;
   GtkWidget *label4;
@@ -251,6 +249,7 @@ create_tx_options (void)
   GtkWidget *pref_ok;
   
   tx_options = gtk_dialog_new ();
+  gtk_window_set_transient_for (GTK_WINDOW (tx_options), parent);
   gtk_window_set_title (GTK_WINDOW (tx_options), "terminatorX Preferences");
 
   dialog_vbox3 = gtk_dialog_get_content_area(GTK_DIALOG(tx_options));
@@ -936,12 +935,10 @@ create_tx_options (void)
   TX_UI_HOOKUP_OBJECT (tx_options, alsa_free_hwstats, "alsa_free_hwstats");
   TX_UI_HOOKUP_OBJECT (tx_options, label16, "label16");
   TX_UI_HOOKUP_OBJECT (tx_options, grid1, "grid1");
-  TX_UI_HOOKUP_OBJECT (tx_options, label5, "label5");
   TX_UI_HOOKUP_OBJECT (tx_options, label6, "label6");
   TX_UI_HOOKUP_OBJECT (tx_options, label7, "label7");
   TX_UI_HOOKUP_OBJECT (tx_options, mouse_speed, "mouse_speed");
   TX_UI_HOOKUP_OBJECT (tx_options, stop_sense_cycles, "stop_sense_cycles");
-  TX_UI_HOOKUP_OBJECT (tx_options, label25, "label25");
   TX_UI_HOOKUP_OBJECT (tx_options, label37, "label37");
   TX_UI_HOOKUP_OBJECT (tx_options, vtt_inertia, "vtt_inertia");
   TX_UI_HOOKUP_OBJECT (tx_options, label4, "label4");

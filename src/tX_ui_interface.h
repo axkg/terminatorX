@@ -4,7 +4,7 @@
  */
 
 GtkWidget* create_tx_adjust (void);
-GtkWidget* create_tx_options (void);
+GtkWidget* create_tx_options (GtkWindow *parent);
 GtkWidget* create_tx_del_mode (void);
 GtkWidget* create_tX_midilearn (void);
 GtkWidget* create_tX_color_chooser (GtkWidget *parentS);
