@@ -87,7 +87,11 @@ void load_knob_pixs(int fontHeight, int scaleFactor)
 {
 	int i;
 	GError *error;
-	tX_knob_size = fontHeight * 3 * scaleFactor;
+	if (globals.knob_size_override > 0) {
+		tX_knob_size = globals.knob_size_override;			
+	} else {
+		tX_knob_size = fontHeight * 3 * scaleFactor;
+	}
 	tX_debug("load_knob_pix(): knob size is %i", tX_knob_size);
 	
 	for (i=0; i<MAX_KNOB_PIX; i++) {

@@ -114,9 +114,10 @@ typedef struct {
 	int autoname;
 	
 	float flash_response;
+	int knob_size_override;
 	
 	int button_type;
-	
+
 	char file_editor[PATH_MAX];
 	int true_block_size;
 	int update_delay; 

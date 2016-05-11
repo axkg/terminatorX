@@ -1600,9 +1600,10 @@ void tx_note(const char *message, bool isError, GtkWindow *window)
 {
 	if (!window) window=GTK_WINDOW(main_window);
 	
-	GtkWidget *dialog=gtk_message_dialog_new(window,
+	GtkWidget *dialog=gtk_message_dialog_new_with_markup(window,
 		GTK_DIALOG_DESTROY_WITH_PARENT,
-		isError ? GTK_MESSAGE_ERROR : GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, "%s", message);
+		isError ? GTK_MESSAGE_ERROR : GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, "%s", "");
+	gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(dialog), message);
 	gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);	
 }

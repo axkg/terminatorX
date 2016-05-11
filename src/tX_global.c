@@ -102,6 +102,7 @@ void set_global_defaults() {
 	globals.gui_wrap=3;
 	
 	globals.flash_response=0.95;
+	globals.knob_size_override=0;
 	
 	globals.button_type=BUTTON_TYPE_BOTH;
 		
@@ -220,6 +221,7 @@ int load_globals_xml() {
 			restore_float("pitch", globals.pitch);
 			restore_float("volume", globals.volume);
 			restore_float("flash_response", globals.flash_response);
+			restore_int("knob_size_override", globals.knob_size_override);
 			restore_int("button_type", globals.button_type);
 			restore_string("tables_filename", globals.tables_filename);
 			restore_string("record_filename", globals.record_filename);
@@ -343,6 +345,7 @@ void store_globals() {
 		store_float("pitch", globals.pitch);
 		store_float("volume", globals.volume);
 		store_float("flash_response", globals.flash_response);
+		store_int("knob_size_override", globals.knob_size_override);
 		store_int("button_type", globals.button_type);
 		store_string("tables_filename", globals.tables_filename);
 		store_string("record_filename", globals.record_filename);

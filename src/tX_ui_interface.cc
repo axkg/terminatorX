@@ -184,6 +184,12 @@ create_tx_options (void)
   GtkWidget *update_idle;
   GtkWidget *update_delay;
   GtkWidget *vumeter_decay;
+
+  GtkWidget *label_override;
+  GtkWidget *label_knob_size;
+  GtkWidget *knob_size;
+  GtkWidget *override_knob_size;
+
   GtkWidget *label14;
   GtkWidget *startup_nagbox;
   GtkWidget *label12;
@@ -592,6 +598,27 @@ create_tx_options (void)
   gtk_widget_show (filename_length);
   gtk_grid_attach (GTK_GRID (grid2), filename_length, 1, 6, 1, 1);
 
+	label_override = gtk_label_new ("Knob size:");
+	gtk_widget_show(label_override);
+	gtk_grid_attach(GTK_GRID(grid2), label_override, 0, 7, 1, 1);
+	gtk_misc_set_alignment(GTK_MISC(label_override), 0, 0.5);
+
+  override_knob_size = gtk_check_button_new_with_mnemonic ("Override automatic adjustment");
+  gtk_widget_show (override_knob_size);
+  gtk_grid_attach (GTK_GRID (grid2), override_knob_size, 1, 7, 1, 1);
+  gtk_widget_set_tooltip_text(override_knob_size, "Only when this option is activated the configured value for knob size will be used. Otherwise the size is adjusted automatically.");
+
+	label_knob_size = gtk_label_new ("Size (override):");
+  gtk_widget_show(label_knob_size);
+  gtk_grid_attach(GTK_GRID(grid2), label_knob_size, 0, 8, 1, 1);
+  gtk_misc_set_alignment(GTK_MISC(label_knob_size), 0, 0.5);
+  
+  knob_size = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (48, 16, 169, 1, 1, 1)));
+  gtk_widget_show (knob_size);
+  gtk_grid_attach (GTK_GRID (grid2), knob_size, 1, 8, 1, 1);
+  gtk_scale_set_value_pos (GTK_SCALE (knob_size), GTK_POS_LEFT);
+  gtk_scale_set_digits (GTK_SCALE (knob_size), 0);
+
   label2 = gtk_label_new ("User Interface");
   gtk_widget_show (label2);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 4), label2);
@@ -984,6 +1011,10 @@ create_tx_options (void)
   TX_UI_HOOKUP_OBJECT (tx_options, pref_cancel, "pref_cancel");
   TX_UI_HOOKUP_OBJECT (tx_options, pref_apply, "pref_apply");
   TX_UI_HOOKUP_OBJECT (tx_options, pref_ok, "pref_ok");
+  TX_UI_HOOKUP_OBJECT (tx_options, label_override, "label_override");
+  TX_UI_HOOKUP_OBJECT (tx_options, label_knob_size, "label_knob_size");
+  TX_UI_HOOKUP_OBJECT (tx_options, knob_size, "knob_size");
+  TX_UI_HOOKUP_OBJECT (tx_options, override_knob_size, "override_knob_size");
 
   return tx_options;
 }
