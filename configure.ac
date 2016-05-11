@@ -26,6 +26,7 @@ AC_ARG_ENABLE(alsamidi,		[  --disable-alsamidi      disable support  ALSA MIDI i
 AC_ARG_ENABLE(lrdf,		[  --disable-lrdf          disable support for liblrdf (default=auto) ])
 AC_ARG_ENABLE(capabilities,	[  --enable-capabilities   to use rt-scheduling (default=auto) ])
 AC_ARG_ENABLE(deprecated,	[  --disable-deprecated    compile without deprecated G*-headers (default=no) ])
+AC_ARG_ENABLE(suidroot,   [  --disable-suidroot      to avoid setuid root upon installation (default=no) ])
 AC_ARG_WITH(docdir,		[  --with-docdir=/some/dir the final location the docs will be installed to. ])
 
 dnl Checks for programs.
@@ -52,6 +53,7 @@ OPTION_ALSAMIDI="no"
 OPTION_LEGACY="no"
 OPTION_LRDF="no"
 OPTION_CAP="no"
+OPTION_SUIDROOT="no"
 
 dnl Checks for libraries.
 AC_CHECK_LIB(m, floor,, AC_MSG_ERROR([** math-lib not installed or broken **]))
@@ -451,8 +453,6 @@ if test "$enable_capabilities" = "yes"; then
 	fi
 fi
 
-
-
 if test "$enable_deprecated" = "no"; then
 	DEPRECATED_FLAGS="-DGTK_DISABLE_DEPRECATED -DGDK_DISABLE_DEPRECATED -DG_DISABLE_DEPRECATED"
 else 
@@ -460,6 +460,14 @@ else
 fi
 
 AC_SUBST(DEPRECATED_FLAGS)
+
+if test "$enable_suidroot" = "no"; then
+	OPTION_SUIDROOT="no"
+else
+	OPTION_SUIDROOT="yes"
+fi
+
+AM_CONDITIONAL([SUIDROOT], [ test x$OPTION_SUIDROOT = xyes])
 
 AC_MSG_CHECKING(for necessary scratching skillz)
 AC_MSG_RESULT(yes)
@@ -634,5 +642,6 @@ echo "legacy files support: $OPTION_LEGACY"
 echo "builtin-wav support: $OPTION_WAV"
 echo "enhanced scheduling support: $OPTION_SCHEDULER"
 echo "capabilities support: $OPTION_CAP"
+echo "install setuid-root: $OPTION_SUIDROOT"
 echo
 echo You can now run \'make\' to compile terminatorX
