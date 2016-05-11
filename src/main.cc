@@ -175,30 +175,43 @@ void checkenv(const char *name)
 
 int main(int argc, char **argv)
 {
-	fprintf(stderr, "%s - Copyright (C) 1999-2014 by Alexander König\n", VERSIONSTRING);
-	fprintf(stderr, "terminatorX comes with ABSOLUTELY NO WARRANTY - for details read the license.\n");
+	bool keep_caps_failed = false;
+	bool root_dropped = false;
 
 #ifdef USE_CAPABILITIES	
 	if (!geteuid()) {
 		if (prctl(PR_SET_KEEPCAPS, 1, -1, -1, -1)) {
-			tX_error("failed to keep capabilities.");
+			keep_caps_failed = true;
 		}
 		set_nice_capability(CAP_PERMITTED);
 	}
 #endif
 
+	GError *mouse_error = mouse.open_channel();
+
 	if ((!geteuid()) && (getuid() != geteuid())) {
-		tX_msg("runnig suid-root - dropping root privileges.");
-		
 		int result=setuid(getuid());
+		root_dropped = true;
 		
 		if (result) {
-			tX_error("main() Panic: can't drop root privileges.");
+			tX_error("main() panic: can't drop root privileges.");
 			exit(2);
 		}
 	}
 	
 	/* No suidroot below this comment. */
+
+	fprintf(stderr, "%s - Copyright (C) 1999-2016 by Alexander König\n", VERSIONSTRING);
+	fprintf(stderr, "terminatorX comes with ABSOLUTELY NO WARRANTY - for details read the license.\n");
+
+	if (keep_caps_failed) {
+		tX_error("failed to keep capabilities.");
+	}
+
+	if (root_dropped) {
+		tX_msg("started suid-root - root privileges dropped.");
+	}
+
 	
 #ifdef USE_CAPABILITIES		
 	set_nice_capability(CAP_EFFECTIVE);	
@@ -253,7 +266,7 @@ int main(int argc, char **argv)
 	jack_check();
 #endif
 	display_mastergui();
-		
+	
 	if (globals.startup_set) {
 		while (gtk_events_pending()) gtk_main_iteration(); gdk_flush();	
 		tX_cursor::set_cursor(tX_cursor::WAIT_CURSOR);
@@ -265,6 +278,22 @@ int main(int argc, char **argv)
 #endif		
 	}
 
+	if (mouse_error) {
+		char buffer[4096];
+		const char *errorFmt = "<span size=\"larger\" weight=\"bold\">Failed to access input hardware</span>\n\n"
+			"terminatorX failed to get direct access to the Linux input interface and "
+			"will now fallback to the standard \"pointer warp\" mode, which will result in "
+			"<span weight=\"bold\">significantly reduced scratching precision</span>.\n\nTo achieve "
+			"high precision scratching either\n - <span style=\"italic\">install terminatorX suid-root</span>, or\n"
+			" - <span style=\"italic\">add the users running terminatorX to a group that can access the special "
+			"file \"/dev/input/mice\"</span>\nand restart terminatorX.\n\n"
+			"The reported error was: <span weight=\"bold\">%s</span>";
+
+		snprintf(buffer, 4096, errorFmt, mouse_error->message);
+		tx_note(buffer, true, NULL);
+		g_error_free(mouse_error);
+	}
+		
 #ifdef USE_STARTUP_NOTIFICATION
 	gdk_notify_startup_complete();
 #endif	
@@ -273,6 +302,8 @@ int main(int argc, char **argv)
 	gtk_main();
 
 	store_globals();
+
+	mouse.close_channel();
 
 	delete engine;
 	

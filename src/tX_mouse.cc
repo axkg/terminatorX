@@ -47,6 +47,7 @@ tx_mouse :: tx_mouse()
 {
 	pointer = NULL;
 	keyboard = NULL;
+	linux_input_channel = NULL;
 	grab_mode = LINUX_INPUT;
 	
 	grabbed=0;
@@ -107,7 +108,6 @@ int tx_mouse :: grab()
 	y_abs = y;
 	
 	gdk_device_warp(pointer, screen, x_abs, y_abs);
-
 
 	if (grab_status != GDK_GRAB_SUCCESS) {
 		return(-1);
@@ -178,33 +178,46 @@ void tx_mouse :: ungrab()
 	grabbed=0;
 }
 
-int tx_mouse::grab_linux_input() {
+GError *tx_mouse::open_channel() {
 	GError *error = NULL;
-	
+
 	linux_input_channel = g_io_channel_new_file("/dev/input/mice", "r", &error);
+	if (linux_input_channel) {
+		g_io_channel_set_flags(linux_input_channel, G_IO_FLAG_NONBLOCK, NULL);
+		return 0;
+	} else {
+		return error;
+	}
+	
+	return NULL;
+}
+
+void tx_mouse::close_channel() {
+    if (linux_input_channel) {
+	    g_io_channel_shutdown(linux_input_channel, false, NULL);
+	    g_io_channel_unref(linux_input_channel);
+	    linux_input_channel = NULL;
+    }
+}
+
+int tx_mouse::grab_linux_input() {
 	
 	if (linux_input_channel) {
-		//GIOFlags flags = g_io_channel_get_flags(linux_input_channel);
-		g_io_channel_set_flags(linux_input_channel, G_IO_FLAG_NONBLOCK, NULL);
 		linux_input_watch = g_io_add_watch_full(linux_input_channel, G_PRIORITY_HIGH, G_IO_IN, tx_mouse::linux_input_wrap, this, NULL);
 	} else {
-		tX_msg("Failed to open /dev/input/mice: %s", error->message)
-		g_error_free(error);
-		tx_note("Failed to open input device.", true, GTK_WINDOW(main_window));		
+		tX_msg("Linux input channel not available, falling back to pointer warping.");
 		return 0;
 	}
 	return 1;
-	
 }
 
 void tx_mouse::ungrab_linux_input() {
 	if (grab_mode == LINUX_INPUT) {
+	    	// only remove the watch, we keep the channel as we dropped root and might fail to re-open it
 		g_source_remove(linux_input_watch);
-		g_io_channel_shutdown(linux_input_channel, false, NULL);
-		g_io_channel_unref(linux_input_channel);
-		linux_input_channel = NULL;
 	}
 }
+
 #define vtt vtt_class::focused_vtt
 
 void tx_mouse::motion_notify(GtkWidget *widget, GdkEventMotion *eventMotion) {
@@ -213,6 +226,9 @@ void tx_mouse::motion_notify(GtkWidget *widget, GdkEventMotion *eventMotion) {
 		gdouble d_y = eventMotion->y_root - y_abs;
 		
 		if ((d_x != 0.0) || (d_y != 0.0)) {
+			gdouble xnow, ynow;
+			//gdk_device_get_position_double(pointer, NULL, &xnow, &ynow);
+			//printf("%lf -> %lf, %lf -> %lf\n", eventMotion->x_root, xnow, eventMotion->y_root, ynow);
 			gdk_device_warp(pointer, screen, x_abs, y_abs);
 			
 			if (warp_override) {
