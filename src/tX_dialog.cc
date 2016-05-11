@@ -119,6 +119,12 @@ void apply_options(GtkWidget *dialog) {
 	globals.update_delay=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "update_delay")));
 	globals.update_idle=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "update_idle")));
 	globals.flash_response=gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "vumeter_decay")));
+
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "override_knob_size")))) {
+		globals.knob_size_override=gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "knob_size")));
+	} else {
+		globals.knob_size_override = 0;
+	}
 	
 	/* Audio Colors */
 	
@@ -410,6 +416,13 @@ void init_tx_options(GtkWidget *dialog) {
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "vumeter_decay")), globals.flash_response);
 	gtk_widget_set_tooltip_text(lookup_widget(dialog, "vumeter_decay"), "Defines how fast the maximum values of the VU meters should be decayed.");	
 
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "override_knob_size")), globals.knob_size_override > 0);
+	if (globals.knob_size_override) {
+		gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "knob_size")), globals.knob_size_override);
+	} else {
+		gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "knob_size")), 48);
+	}
 	/* Audio Colors */
 	int ctr=0;
 	
