@@ -17,6 +17,12 @@ bin_PROGRAMS = terminatorX
 
 terminatorX_DEPENDENCIES = license.c
 
+if SUIDROOT
+install-exec-hook:
+	chown root $(bindir)/terminatorX
+	chmod u+s $(bindir)/terminatorX
+endif
+
 terminatorX_SOURCES =	tX_endian.c tX_dialog.cc tX_widget.c wav_write.c \
 			tX_engine.cc tX_logo.c tX_mouse.cc tX_mouse.h \
 			main.cc tX_global.c wav_read.c licmak.awk \
