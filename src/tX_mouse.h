@@ -128,7 +128,9 @@ class tx_mouse
 	void ungrab();
 	void ungrab_linux_input();
 	tx_mouse();
-	
+	GError *open_channel();
+	void close_channel();
+
 	void motion_notify(GtkWidget *widget, GdkEventMotion *eventMotion);
 	void button_press(GtkWidget *widget, GdkEventButton *eventButton);
 	void button_release(GtkWidget *widget, GdkEventButton *eventButton);
