@@ -453,7 +453,7 @@ void init_tx_options(GtkWidget *dialog) {
 
 void create_options()
 {
-	opt_dialog=create_tx_options();
+	opt_dialog=create_tx_options(GTK_WINDOW(main_window));
 	tX_set_icon(opt_dialog);
 	init_tx_options(opt_dialog);
 	gtk_widget_show(opt_dialog);
