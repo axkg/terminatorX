@@ -1076,27 +1076,26 @@ void create_master_menu()
 	sub_menu = gtk_menu_new ();
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), sub_menu);
 
-	menu_item = gtk_menu_item_new_with_label("Load _Audio File");
+	menu_item = gtk_menu_item_new_with_mnemonic("Load _Audio File");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) load_audio, NULL);
 
-	menu_item = gtk_menu_item_new ();
+	menu_item = gtk_separator_menu_item_new ();
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
-	gtk_widget_set_sensitive (menu_item, FALSE);
 
-	menu_item = gtk_menu_item_new_with_label("_New Set");
+	menu_item = gtk_menu_item_new_with_mnemonic("_New Set");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) new_tables, NULL);
 
-	menu_item = gtk_menu_item_new_with_label("_Open Set");
+	menu_item = gtk_menu_item_new_with_mnemonic("_Open Set");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) load_tables, NULL);
 
-	menu_item = gtk_menu_item_new_with_label("_Save Set");
+	menu_item = gtk_menu_item_new_with_mnemonic("_Save Set");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) save_tables, NULL);
@@ -1106,12 +1105,11 @@ void create_master_menu()
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) save_tables_as, NULL);
 
-	menu_item = gtk_menu_item_new ();
+	menu_item = gtk_separator_menu_item_new ();
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
-	gtk_widget_set_sensitive (menu_item, FALSE);
 
-	menu_item = gtk_menu_item_new_with_label("_Quit");
+	menu_item = gtk_menu_item_new_with_mnemonic("_Quit");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) quit, NULL);
@@ -1130,10 +1128,9 @@ void create_master_menu()
 	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_KEY_A, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);	
 	g_signal_connect(menu_item, "activate", (GCallback) new_table, NULL);
 
-	menu_item = gtk_menu_item_new ();
+	menu_item = gtk_separator_menu_item_new ();
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
-	gtk_widget_set_sensitive (menu_item, FALSE);
 
 	menu_item = gtk_menu_item_new_with_mnemonic("Assign _Default MIDI Mappings");
 	gtk_widget_show (menu_item);
@@ -1167,10 +1164,9 @@ void create_master_menu()
 	gtk_widget_set_sensitive(menu_item, FALSE);
 #endif
 
-	menu_item = gtk_menu_item_new ();
+	menu_item = gtk_separator_menu_item_new ();
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
-	gtk_widget_set_sensitive (menu_item, FALSE);
 
 	menu_item = gtk_check_menu_item_new_with_mnemonic("_Record Audio To Disk");
 	rec_menu_item = menu_item;
@@ -1204,10 +1200,9 @@ void create_master_menu()
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) menu_delete_all_events, NULL);
 
-	menu_item = gtk_menu_item_new ();
+	menu_item = gtk_separator_menu_item_new ();
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
-	gtk_widget_set_sensitive (menu_item, FALSE);
 
 	menu_item = gtk_check_menu_item_new_with_mnemonic("_Confirm Recorded Events");
 	//rec_menu_item = menu_item;
@@ -1224,7 +1219,6 @@ void create_master_menu()
 	sub_menu = gtk_menu_new ();
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), sub_menu);
 
-#ifdef USE_X11		
 	menu_item = gtk_check_menu_item_new_with_mnemonic("_Fullscreen");
 	fullscreen_item = menu_item;
 	gtk_widget_show (menu_item);
@@ -1233,9 +1227,15 @@ void create_master_menu()
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), globals.fullscreen_enabled);
 	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_KEY_F11, (GdkModifierType) 0, GTK_ACCEL_VISIBLE);
 	g_signal_connect(menu_item, "activate", (GCallback) fullscreen_toggle, NULL);
-#endif
 
-	menu_item = gtk_menu_item_new_with_label ("_Preferences");
+#ifndef USE_X11
+	gtk_widget_set_sensitive(menu_item, False);
+#endif
+	menu_item = gtk_separator_menu_item_new();
+	gtk_widget_show (menu_item);
+	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
+
+	menu_item = gtk_menu_item_new_with_mnemonic("_Preferences");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) display_options, NULL);
@@ -1259,10 +1259,9 @@ void create_master_menu()
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) mplcfitx, NULL);
 	
-	menu_item = gtk_menu_item_new ();
+	menu_item = gtk_separator_menu_item_new();
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
-	gtk_widget_set_sensitive (menu_item, FALSE);
 
 	menu_item = gtk_menu_item_new_with_mnemonic ("_Visit terminatorX.org");
 	gtk_widget_show (menu_item);
