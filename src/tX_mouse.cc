@@ -39,6 +39,7 @@
 #include "tX_vtt.h"
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #define TX_MOUSE_SPEED_NORMAL 0.05
 #define TX_MOUSE_SPEED_WARP 250000
@@ -226,13 +227,13 @@ void tx_mouse::motion_notify(GtkWidget *widget, GdkEventMotion *eventMotion) {
 		gdouble d_y = eventMotion->y_root - y_abs;
 		
 		if ((d_x != 0.0) || (d_y != 0.0)) {
-			gdouble xnow, ynow;
+			//gdouble xnow, ynow;
 			//gdk_device_get_position_double(pointer, NULL, &xnow, &ynow);
 			//printf("%lf -> %lf, %lf -> %lf\n", eventMotion->x_root, xnow, eventMotion->y_root, ynow);
 			gdk_device_warp(pointer, screen, x_abs, y_abs);
 			
 			if (warp_override) {
-				f_prec value=(abs(d_x)>abs(d_y)) ? d_x : d_y;
+				f_prec value=(fabs(d_x)>fabs(d_y)) ? d_x : d_y;
 				vtt->sp_speed.handle_mouse_input(value*globals.mouse_speed*warp);
 			} else {
 				vtt->xy_input((f_prec) d_x*warp, (f_prec) d_y*warp);
@@ -249,7 +250,7 @@ void tx_mouse::linux_input(tx_input_event *event) {
 			gdouble d_y = event->y_motion;
 		
 			if (warp_override) {
-				f_prec value=(abs(d_x)>abs(d_y)) ? d_x : d_y;
+				f_prec value=(fabs(d_x)>fabs(d_y)) ? d_x : d_y;
 				vtt->sp_speed.handle_mouse_input(value*globals.mouse_speed*warp);
 			} else {
 				vtt->xy_input((f_prec) d_x*warp, (f_prec) d_y*warp);
@@ -406,7 +407,7 @@ gboolean tx_mouse::linux_input_wrap(GIOChannel *source, GIOCondition condition, 
 		sum.x_motion = 0;
 		sum.y_motion = 0;
 		
-		for (int i = 0; i < bytes_read / sizeof(tx_input_event); i++) {
+		for (ssize_t i = 0; i < bytes_read / ((ssize_t) sizeof(tx_input_event)); i++) {
 			sum.x_motion += eventbuffer[i].x_motion;
 			sum.y_motion += eventbuffer[i].y_motion;
 		}
