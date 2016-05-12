@@ -1,4 +1,4 @@
-LIBS=@X_LIBS@ @GTK_LIBS@ @LIBS@
+LIBS=@GTK_LIBS@ @LIBS@
 
 SUBDIRS = icons
 

@@ -16,6 +16,7 @@ AC_ARG_ENABLE(alsa,		[  --enable-alsa           use ALSA for sound output (defau
 AC_ARG_ENABLE(jack,		[  --enable-jack           use JACK for sound output (default=auto) ])
 AC_ARG_ENABLE(oss,		[  --enable-oss            use OSS for sound output (default=auto) ])
 AC_ARG_ENABLE(pulse,		[  --enable-pulse          use PULSE for sound output (default=auto) ])
+AC_ARG_ENABLE(x11,    [  --enable-x11            include X11 specific code (default=auto) ])
 AC_ARG_ENABLE(libxml2,	    	[  --disable-libxml2       use libxml even if verion 2 detected (default=auto) ])
 AC_ARG_ENABLE(mad,		[  --disable-mad           disable mad for mp3 support (default=auto) ])
 AC_ARG_ENABLE(vorbis,		[  --disable-vorbis        disable libvorbis support (default=auto) ])
@@ -41,6 +42,7 @@ OPTION_OSS="no"
 OPTION_ALSA="no"
 OPTION_JACK="no"
 OPTION_PULSE="no"
+OPTION_X11="no"
 OPTION_SOX="no"
 OPTION_MPG123="no"
 OPTION_MAD="no"
@@ -407,6 +409,28 @@ if test "$using_alsa" != "yes"; then
 		fi
 	fi
 fi	
+
+if test "$enable_x11" != "no"; then
+		AC_CHECK_LIB(X11, XOpenDisplay, x11lib=yes, x11lib=no)
+		AC_CHECK_HEADERS(X11/Xlib.h, x11header=yes, x11header=no)
+
+    if test "$x11lib" = "yes"; then
+    	    if test "$x11header" = "yes"; then
+    		    AC_DEFINE_UNQUOTED([USE_X11], 1, [ Define to enable X11 specific code (e.g. fullscreen mode ).])
+						LIBS="$LIBS -lX11"
+    		    using_x11=yes
+						OPTION_X11=yes
+    	    else 
+    		    if test "$enable_x11" = "yes"; then
+    			    AC_MSG_ERROR([** X11 headers not installed or broken **])
+    		    fi
+    	    fi
+    else
+    	    if test "$enable_x11" = "yes"; then
+    		    AC_MSG_ERROR([** X11 libs not installed or broken **])
+    	    fi
+    fi
+fi
 	
 if test "$enable_wav" != "no";
 then
@@ -558,17 +582,6 @@ GNOME_DOC_INIT
 
 xml_man="\\\"${datadir}/gnome/help/terminatorX-manual/C/terminatorX-manual.xml\\\""
 
-dnl Now Check for Xlibs - I do this here as other tests fail if these run earlier
-AC_PATH_XTRA
-
-AC_SUBST(X_CFLAGS)
-AC_SUBST(X_PRE_LIBS)
-AC_SUBST(X_EXTRA_LIBS)
-AC_SUBST(X_LIBS)
-AC_SUBST(x_libraries)
-
-GTK_LIBS="$GTK_LIBS $X_LIBS"
-AC_CHECK_LIB(X11, XOpenDisplay,, AC_MSG_ERROR([** X11-libs not installed or broken **]), $X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS)
 
 CFLAGS="$XML_CFLAGS $CFLAGS -DXML_MANUAL=$xml_man"
 LIBS="$XML_LIBS $LIBS"
@@ -638,6 +651,7 @@ option_info;
 option=lrdf; option_val=$OPTION_LRDF; option_url=http://plugin.org.uk/releases/lrdf/
 option_info;
 
+echo "x11 support: $OPTION_X11"
 echo "legacy files support: $OPTION_LEGACY"
 echo "builtin-wav support: $OPTION_WAV"
 echo "enhanced scheduling support: $OPTION_SCHEDULER"
