@@ -10,8 +10,7 @@ Source0:	http://terminatorX.org/dist/%{name}-%{version}.tar.gz
 BuildRequires: alsa-lib-devel
 BuildRequires: audiofile-devel
 BuildRequires: desktop-file-utils
-BuildRequires: gnome-libs-devel
-BuildRequires: gtk2-devel
+BuildRequires: gtk3-devel
 BuildRequires: jack-audio-connection-kit-devel
 BuildRequires: ladspa-devel
 BuildRequires: libcap-devel
@@ -19,14 +18,13 @@ BuildRequires: liblrdf-devel
 BuildRequires: libmad-devel
 BuildRequires: libvorbis-devel 
 BuildRequires: libxml2-devel
-BuildRequires: libXxf86dga-devel 
+BuildRequires: libX11-devel 
 BuildRequires: mpg321
 BuildRequires: scrollkeeper
 BuildRequires: sox
 BuildRequires: vorbis-tools 
 BuildRequires: gcc-c++
 BuildRequires: gnome-doc-utils
-
 
 Requires:      mpg321
 Requires:      sox
