@@ -1535,7 +1535,7 @@ void create_mastergui(int x, int y)
 
 	add_sep2();
 
-	dummy=gtk_label_new("v"VERSION);
+	dummy=gtk_label_new("v" VERSION);
 	gtk_widget_set_halign(dummy, GTK_ALIGN_END);
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);

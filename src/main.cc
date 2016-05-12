@@ -255,7 +255,7 @@ int main(int argc, char **argv)
 	
 	if (globals.show_nag) {
 		while (!timesup) {
-			while (gtk_events_pending()) gtk_main_iteration(); 
+			while (gtk_events_pending()) { gtk_main_iteration(); }
 			gdk_flush();				
 			usleep(250);
 		}
@@ -268,7 +268,8 @@ int main(int argc, char **argv)
 	display_mastergui();
 	
 	if (globals.startup_set) {
-		while (gtk_events_pending()) gtk_main_iteration(); gdk_flush();	
+		while (gtk_events_pending()) { gtk_main_iteration(); }
+		gdk_flush();	
 		tX_cursor::set_cursor(tX_cursor::WAIT_CURSOR);
 		load_tt_part(globals.startup_set);
 		tX_cursor::reset_cursor();

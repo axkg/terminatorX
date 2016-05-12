@@ -367,11 +367,11 @@ int tX_audiodevice_pulse :: open()
 
 	
 	pa_buffer_attr attr = {
-		.maxlength = -1,
+		.maxlength = (uint32_t) -1,
 		.tlength = 2048,
 		.prebuf = 1,
-		.minreq = -1,
-		.fragsize = -1
+		.minreq = (uint32_t) -1,
+		.fragsize = (uint32_t) -1
 	};
 
 	attr.minreq = attr.tlength / 4;

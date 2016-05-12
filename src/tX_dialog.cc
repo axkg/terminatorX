@@ -526,7 +526,7 @@ void show_about(int nag)
 		gtk_box_pack_start(GTK_BOX(box), iwid, WID_FIX);
 		gtk_box_pack_start(GTK_BOX(box), box2, WID_FIX);
 		
-		label=gtk_label_new(PACKAGE" release "VERSION);
+		label=gtk_label_new(PACKAGE " release " VERSION);
 		gtk_box_pack_start(GTK_BOX(box2), label, WID_DYN);
 		gtk_widget_set_halign(label, GTK_ALIGN_START);
 		gtk_widget_show(label);
@@ -549,7 +549,7 @@ void show_about(int nag)
 		sep=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 		add_about_wid_fix(sep);
 		
-		label=gtk_label_new("This is "PACKAGE" release "VERSION".\nCopyright (C) 1999-2016 by Alexander König <alex@lisas.de>");
+		label=gtk_label_new("This is " PACKAGE " release " VERSION ".\nCopyright (C) 1999-2016 by Alexander König <alex@lisas.de>");
 
 		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
 		add_about_wid_fix(label);
