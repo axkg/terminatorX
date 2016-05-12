@@ -895,6 +895,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_entry_set_max_length(GTK_ENTRY(g->name), 256);
 	gtk_entry_set_text(GTK_ENTRY(g->name), vtt->name);
 	gtk_entry_set_width_chars(GTK_ENTRY(g->name), 10);
+	gtk_entry_set_max_width_chars(GTK_ENTRY(g->name), 10);
 	p->add_client_widget(g->name);
 	gui_set_tooltip(g->name, "Enter the turntable's name here.");
 	//gtk_widget_set_size_request(g->name, 40, -1);
@@ -1088,7 +1089,7 @@ void build_vtt_gui(vtt_class *vtt)
 	
 	g->volume=GTK_ADJUSTMENT(gtk_adjustment_new(2.0-vtt->rel_volume, 0, 2, 0.01, 0.01, 0.01));
 	dummy=gtk_scale_new(GTK_ORIENTATION_VERTICAL, GTK_ADJUSTMENT(g->volume)); 
-	gtk_scale_set_draw_value(GTK_SCALE(dummy), False);
+	gtk_scale_set_draw_value(GTK_SCALE(dummy), FALSE);
 	gui_set_tooltip(dummy, "Adjust this turntable's volume.");
 	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_volume);	
 

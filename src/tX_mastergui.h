@@ -24,14 +24,12 @@
 #define _h_tx_mastergui 1
 
 #include <gtk/gtk.h>
-#include <X11/Xlib.h>
 
 #include "tX_seqpar.h"
 #include "tX_mouse.h"
 
 extern int audioon;
 extern tx_mouse mouse;
-extern Window x_window;
 extern GdkWindow* top_window;
 
 extern GtkWidget *main_window;

@@ -24,7 +24,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 #include <pango/pango.h>
-#include <X11/Xlib.h>
 #include <math.h>
 #include <unistd.h>
 #include <string.h>
@@ -51,6 +50,10 @@
 
 #ifdef USE_SCHEDULER
 #include <sys/resource.h>
+#endif
+
+#ifdef USE_X11
+#include <X11/Xlib.h>
 #endif
 
 #define TX_SET_ID_10 "terminatorX turntable set file - version 1.0 - data:"
@@ -101,7 +104,6 @@ GtkWidget *engine_btn;
 
 GtkWidget *main_menubar;
 GtkWidget *rec_menu_item;
-GtkWidget *fullscreen_item;
 
 int rec_dont_care=0;
 gint update_tag;
@@ -110,7 +112,11 @@ gint update_tag;
 #define connect_adj(wid, func, ptr); g_signal_connect(G_OBJECT(wid), "value_changed", (GCallback) func, (void *) ptr);
 #define connect_button(wid, func, ptr); g_signal_connect(G_OBJECT(wid), "clicked", (GCallback) func, (void *) ptr);
 
+#ifdef USE_X11
 Window x_window;
+GtkWidget *fullscreen_item;
+#endif
+
 GdkWindow* top_window;
 #define WID_DYN TRUE, TRUE, 0
 #define WID_FIX FALSE, FALSE, 0
@@ -905,7 +911,10 @@ void sequencer_move(GtkWidget *wid, void *d)
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);\
 	gtk_widget_show(dummy);\
 
+#ifdef USE_X11
 void fullscreen_toggle(GtkCheckMenuItem *item, gpointer data);
+#endif
+
 void display_help();
 void display_browser();
 
@@ -1240,7 +1249,8 @@ void create_master_menu()
 
 	sub_menu = gtk_menu_new ();
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), sub_menu);
-		
+
+#ifdef USE_X11		
 	menu_item = gtk_check_menu_item_new_with_mnemonic("_Fullscreen");
 	fullscreen_item = menu_item;
 	gtk_widget_show (menu_item);
@@ -1249,11 +1259,7 @@ void create_master_menu()
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), globals.fullscreen_enabled);
 	gtk_widget_add_accelerator (menu_item, "activate", accel_group, GDK_KEY_F11, (GdkModifierType) 0, GTK_ACCEL_VISIBLE);
 	g_signal_connect(menu_item, "activate", (GCallback) fullscreen_toggle, NULL);
-	
-	menu_item = gtk_menu_item_new ();
-	gtk_widget_show (menu_item);
-	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
-	gtk_widget_set_sensitive (menu_item, FALSE);
+#endif
 
 	menu_item = gtk_image_menu_item_new_from_stock ("gtk-preferences", accel_group);
 	gtk_widget_show (menu_item);
@@ -1506,7 +1512,7 @@ void create_mastergui(int x, int y)
 	connect_adj(dumadj, master_volume_changed, NULL);
 	dummy=gtk_scale_new(GTK_ORIENTATION_VERTICAL, dumadj);
 	gtk_range_set_inverted(GTK_RANGE(dummy), TRUE);
-	gtk_scale_set_draw_value(GTK_SCALE(dummy), False);
+	gtk_scale_set_draw_value(GTK_SCALE(dummy), FALSE);
 	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &sp_master_volume);	
 	
 	gtk_box_pack_end(GTK_BOX(master_vol_box), dummy, WID_FIX);
@@ -1634,6 +1640,7 @@ void remove_from_panel_bar(GtkWidget *button)
 	if (buttons_on_panel_bar==0) gtk_widget_hide(panel_bar);
 }
 
+#ifdef USE_X11
 /* Fullscreen code... */
 #define _WIN_LAYER_TOP 		-1
 #define _WIN_LAYER_NORMAL	4
@@ -1682,6 +1689,7 @@ void fullscreen_setup() {
 		fullscreen_toggle(NULL, NULL);
 	}
 }
+#endif
 
 void display_mastergui()
 {
@@ -1690,10 +1698,13 @@ void display_mastergui()
 	tX_set_icon(main_window);
 	load_knob_pixs(fontHeight, gdk_window_get_scale_factor(gtk_widget_get_window(GTK_WIDGET(main_window))));
 	gtk_widget_show(main_window);
-	fullscreen_setup();	
 	top=gtk_widget_get_toplevel(main_window);
 	top_window=GDK_WINDOW(gtk_widget_get_window(top));
+
+#ifdef USE_X11	
+	fullscreen_setup();	
 	x_window=gdk_x11_window_get_xid(gtk_widget_get_window(top));
+#endif
 }
 
 pid_t help_child=0;
