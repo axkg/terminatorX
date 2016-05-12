@@ -179,7 +179,7 @@ void apply_options(GtkWidget *dialog) {
 	gtk_box_pack_start(GTK_BOX(vbox), separator, WID_DYN);\
 	gtk_widget_show(separator); \
 	label=gtk_label_new(s); \
-	gtk_misc_set_alignment (GTK_MISC(label), 0 ,0.5); \
+	gtk_widget_set_halign(label, GTK_ALIGN_START); \
 	gtk_box_pack_start(GTK_BOX(vbox), label, WID_DYN); \
 	gtk_widget_show(label); 
 
@@ -203,11 +203,9 @@ void apply_options(GtkWidget *dialog) {
 	gtk_widget_show(wid);
 
 #define add_expl(s); label=gtk_label_new(s); \
-	gtk_misc_set_alignment(GTK_MISC(label), 0.5, 0.5);\
 	add_widget_fix(label);
 
 #define add_expl_dyn(s); label=gtk_label_new(s); \
-	gtk_misc_set_alignment(GTK_MISC(label), 0.5, 0.5);\
 	add_widget_dyn(label);
 
 #ifdef USE_ALSA
@@ -530,12 +528,12 @@ void show_about(int nag)
 		
 		label=gtk_label_new(PACKAGE" release "VERSION);
 		gtk_box_pack_start(GTK_BOX(box2), label, WID_DYN);
-		gtk_misc_set_alignment(GTK_MISC(label), 0.1, 0.5);
+		gtk_widget_set_halign(label, GTK_ALIGN_START);
 		gtk_widget_show(label);
 
 		label=gtk_label_new("Copyright (C) 1999-2014 by Alexander König");
 		gtk_box_pack_start(GTK_BOX(box2), label, WID_DYN);
-		gtk_misc_set_alignment(GTK_MISC(label), 0.9, 0.5);
+		gtk_widget_set_halign(label, GTK_ALIGN_END);
 		gtk_widget_show(label);
 		
 		gtk_widget_show(box2);

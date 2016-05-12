@@ -229,8 +229,8 @@ GCallback load_file(GtkWidget *wid, vtt_class *vtt)
 	
 	GtkWidget * dialog = gtk_file_chooser_dialog_new (name_buf,
 		GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_OPEN, 
-		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
-		GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
+		"_Cancel", GTK_RESPONSE_CANCEL, 
+		"_Open", GTK_RESPONSE_ACCEPT, NULL);
 
 		
 	GtkFileFilter *filter=gtk_file_filter_new();
@@ -804,7 +804,8 @@ void build_vtt_gui(vtt_class *vtt)
 
 
 	g->audio_label=gtk_label_new(vtt->name);
-	gtk_misc_set_alignment(GTK_MISC(g->audio_label), 0.025, 0.5);
+	gtk_widget_set_halign(g->audio_label, GTK_ALIGN_START);
+	gtk_widget_set_margin_start(g->audio_label, 10);
 	gtk_widget_show(g->audio_label);
 	gtk_box_pack_start(GTK_BOX(tempbox), g->audio_label, WID_DYN);
 

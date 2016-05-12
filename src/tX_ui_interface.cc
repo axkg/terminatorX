@@ -42,7 +42,6 @@ create_tx_adjust (void)
   GtkAdjustment *cycles_adj;
   GtkWidget *cycles;
   GtkWidget *create_event;
-  GtkWidget *dialog_action_area2;
   GtkWidget *cancel;
   GtkWidget *ok;
   
@@ -94,15 +93,13 @@ create_tx_adjust (void)
   gtk_box_pack_start (GTK_BOX (vbox1), create_event, FALSE, FALSE, 0);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (create_event), TRUE);
 
-  dialog_action_area2 = gtk_dialog_get_action_area(GTK_DIALOG (tx_adjust));
-  gtk_widget_show (dialog_action_area2);
 
-  cancel = gtk_button_new_from_stock ("gtk-cancel");
+  cancel = gtk_button_new_with_label("_Cancel");
   gtk_widget_show (cancel);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_adjust), cancel, GTK_RESPONSE_CANCEL);
   gtk_widget_set_can_default(cancel, TRUE);
 
-  ok = gtk_button_new_from_stock ("gtk-ok");
+  ok = gtk_button_new_with_label("_OK");
   gtk_widget_show (ok);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_adjust), ok, GTK_RESPONSE_OK);
   gtk_widget_set_can_default(ok, TRUE);
@@ -118,7 +115,6 @@ create_tx_adjust (void)
   TX_UI_HOOKUP_OBJECT (tx_adjust, label35, "label35");
   TX_UI_HOOKUP_OBJECT (tx_adjust, cycles, "cycles");
   TX_UI_HOOKUP_OBJECT (tx_adjust, create_event, "create_event");
-  TX_UI_HOOKUP_OBJECT_NO_REF (tx_adjust, dialog_action_area2, "dialog_action_area2");
   TX_UI_HOOKUP_OBJECT (tx_adjust, cancel, "cancel");
   TX_UI_HOOKUP_OBJECT (tx_adjust, ok, "ok");
 
@@ -242,7 +238,6 @@ create_tx_options (GtkWindow* parent)
   GtkWidget *verbose_plugin_loading;
   GtkWidget *force_nonrt_plugins;
   GtkWidget *label3;
-  GtkWidget *dialog_action_area3;
   GtkWidget *pref_reset;
   GtkWidget *pref_cancel;
   GtkWidget *pref_apply;
@@ -269,7 +264,7 @@ create_tx_options (GtkWindow* parent)
   label18 = gtk_label_new ("Driver:");
   gtk_widget_show (label18);
   gtk_grid_attach (GTK_GRID (grid4), label18, 0, 0, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label18), 0, 0.5);
+  gtk_widget_set_halign(label18, GTK_ALIGN_START);
 
   hbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
   gtk_widget_show (hbox2);
@@ -307,7 +302,7 @@ create_tx_options (GtkWindow* parent)
   use_realtime_label = gtk_label_new ("Scheduling:");
   gtk_widget_show (use_realtime_label);
   gtk_grid_attach (GTK_GRID (grid4), use_realtime_label, 0, 1, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (use_realtime_label), 0, 0.5);
+  gtk_widget_set_halign(use_realtime_label, GTK_ALIGN_START);
 
   use_realtime = gtk_check_button_new_with_mnemonic ("Use realtime scheduling where available");
   gtk_widget_show (use_realtime);
@@ -327,22 +322,22 @@ create_tx_options (GtkWindow* parent)
   label21 = gtk_label_new ("Audio device:");
   gtk_widget_show (label21);
   gtk_grid_attach (GTK_GRID (grid5), label21, 0, 0, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label21), 0, 0.5);
+  gtk_widget_set_halign(label21, GTK_ALIGN_START);
 
   label22 = gtk_label_new ("No. of buffers:");
   gtk_widget_show (label22);
   gtk_grid_attach (GTK_GRID (grid5), label22, 0, 1, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label22), 0, 0.5);
+  gtk_widget_set_halign(label22, GTK_ALIGN_START);
 
   label23 = gtk_label_new ("Buffersize (2^x):");
   gtk_widget_show (label23);
   gtk_grid_attach (GTK_GRID (grid5), label23, 0, 2, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label23), 0, 0.5);
+  gtk_widget_set_halign(label23, GTK_ALIGN_START);
 
   label24 = gtk_label_new ("Samplerate (Hz):");
   gtk_widget_show (label24);
   gtk_grid_attach (GTK_GRID (grid5), label24, 0, 3, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label24), 0, 0.5);
+  gtk_widget_set_halign(label24, GTK_ALIGN_START);
 
   oss_audio_device = gtk_combo_box_text_new ();
 //  g_object_set_data (G_OBJECT (GTK_COMBO_BOX (oss_audio_device)->popwin),
@@ -392,17 +387,17 @@ create_tx_options (GtkWindow* parent)
   label27 = gtk_label_new ("Audio Device:");
   gtk_widget_show (label27);
   gtk_grid_attach (GTK_GRID (grid6), label27, 0, 0, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label27), 0, 0.5);
+  gtk_widget_set_halign(label27, GTK_ALIGN_START);
 
   label29 = gtk_label_new ("Period Time (ms):");
   gtk_widget_show (label29);
   gtk_grid_attach (GTK_GRID (grid6), label29, 0, 2, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label29), 0, 0.5);
+  gtk_widget_set_halign(label29, GTK_ALIGN_START);
 
   label30 = gtk_label_new ("Samplerate (Hz):");
   gtk_widget_show (label30);
   gtk_grid_attach (GTK_GRID (grid6), label30, 0, 3, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label30), 0, 0.5);
+  gtk_widget_set_halign(label30, GTK_ALIGN_START);
 
   alsa_audio_device = gtk_combo_box_text_new ();
 //  g_object_set_data (G_OBJECT (GTK_COMBO (alsa_audio_device)->popwin),
@@ -433,7 +428,7 @@ create_tx_options (GtkWindow* parent)
   label32 = gtk_label_new ("Buffer Time (ms):");
   gtk_widget_show (label32);
   gtk_grid_attach (GTK_GRID (grid6), label32, 0, 1, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label32), 0, 0.5);
+  gtk_widget_set_halign(label32, GTK_ALIGN_START);
 
   alsa_buffer_time = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (69, 10, 500, 1, 10, 10)));
   gtk_widget_show (alsa_buffer_time);
@@ -444,7 +439,7 @@ create_tx_options (GtkWindow* parent)
   label39 = gtk_label_new ("Free HWstats:");
   gtk_widget_show (label39);
   gtk_grid_attach (GTK_GRID (grid6), label39, 0, 4, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label39), 0, 0.5);
+  gtk_widget_set_halign(label39, GTK_ALIGN_START);
 
   alsa_free_hwstats = gtk_check_button_new_with_mnemonic ("Enabled");
   gtk_widget_show (alsa_free_hwstats);
@@ -465,12 +460,12 @@ create_tx_options (GtkWindow* parent)
   label6 = gtk_label_new ("Mouse speed:");
   gtk_widget_show (label6);
   gtk_grid_attach (GTK_GRID (grid1), label6, 0, 1, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label6), 0, 0.5);
+  gtk_widget_set_halign(label6, GTK_ALIGN_START);
 
   label7 = gtk_label_new ("Stop-sense-cycles:");
   gtk_widget_show (label7);
   gtk_grid_attach (GTK_GRID (grid1), label7, 0, 2, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label7), 0, 0.5);
+  gtk_widget_set_halign(label7, GTK_ALIGN_START);
 
   mouse_speed = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (0, -10, 10, 0.5, 0.1, 0.1)));
   gtk_widget_show (mouse_speed);
@@ -487,7 +482,7 @@ create_tx_options (GtkWindow* parent)
   label37 = gtk_label_new ("Turntable inertia:");
   gtk_widget_show (label37);
   gtk_grid_attach (GTK_GRID (grid1), label37, 0, 3, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label37), 0, 0.5);
+  gtk_widget_set_halign(label37, GTK_ALIGN_START);
 
   vtt_inertia = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (11, 1, 310, 0.01, 1, 10)));
   gtk_widget_show (vtt_inertia);
@@ -509,22 +504,22 @@ create_tx_options (GtkWindow* parent)
   label8 = gtk_label_new ("Tooltips:");
   gtk_widget_show (label8);
   gtk_grid_attach (GTK_GRID (grid2), label8, 0, 1, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label8), 0, 0.5);
+  gtk_widget_set_halign(label8, GTK_ALIGN_START);
 
   label9 = gtk_label_new ("Update idle (ms):");
   gtk_widget_show (label9);
   gtk_grid_attach (GTK_GRID (grid2), label9, 0, 3, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label9), 0, 0.5);
+  gtk_widget_set_halign(label9, GTK_ALIGN_START);
 
   label10 = gtk_label_new ("Update delay (cycles):");
   gtk_widget_show (label10);
   gtk_grid_attach (GTK_GRID (grid2), label10, 0, 4, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label10), 0, 0.5);
+  gtk_widget_set_halign(label10, GTK_ALIGN_START);
 
   label11 = gtk_label_new ("VU meter decay:");
   gtk_widget_show (label11);
   gtk_grid_attach (GTK_GRID (grid2), label11, 0, 5, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label11), 0, 0.49);
+  gtk_widget_set_halign(label11, GTK_ALIGN_START);
 
   mainwin_tooltips = gtk_check_button_new_with_mnemonic ("Activate tooltips for the main wnidow");
   gtk_widget_show (mainwin_tooltips);
@@ -551,7 +546,7 @@ create_tx_options (GtkWindow* parent)
   label14 = gtk_label_new ("Nagbox:");
   gtk_widget_show (label14);
   gtk_grid_attach (GTK_GRID (grid2), label14, 0, 0, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label14), 0, 0.5);
+  gtk_widget_set_halign(label14, GTK_ALIGN_START);
 
   startup_nagbox = gtk_check_button_new_with_mnemonic ("Display nagbox on startup");
   gtk_widget_show (startup_nagbox);
@@ -561,7 +556,7 @@ create_tx_options (GtkWindow* parent)
   label12 = gtk_label_new ("Buttons:");
   gtk_widget_show (label12);
   gtk_grid_attach (GTK_GRID (grid2), label12, 0, 2, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label12), 0, 0.5);
+  gtk_widget_set_halign(label12, GTK_ALIGN_START);
 
   hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
   gtk_widget_set_hexpand(hbox1, TRUE);
@@ -589,7 +584,7 @@ create_tx_options (GtkWindow* parent)
   label38 = gtk_label_new ("Filename length:");
   gtk_widget_show (label38);
   gtk_grid_attach (GTK_GRID (grid2), label38, 0, 6, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label38), 0, 0.5);
+  gtk_widget_set_halign(label38, GTK_ALIGN_START);
 
   filename_length_adj = gtk_adjustment_new (8, 3, 255, 1, 10, 0);
   filename_length = gtk_spin_button_new (GTK_ADJUSTMENT (filename_length_adj), 1, 0);
@@ -600,7 +595,7 @@ create_tx_options (GtkWindow* parent)
 	label_override = gtk_label_new ("Knob size:");
 	gtk_widget_show(label_override);
 	gtk_grid_attach(GTK_GRID(grid2), label_override, 0, 7, 1, 1);
-	gtk_misc_set_alignment(GTK_MISC(label_override), 0, 0.5);
+	gtk_widget_set_halign(label_override, GTK_ALIGN_START);
 
   override_knob_size = gtk_check_button_new_with_mnemonic ("Override automatic adjustment");
   gtk_widget_show (override_knob_size);
@@ -610,7 +605,7 @@ create_tx_options (GtkWindow* parent)
 	label_knob_size = gtk_label_new ("Size (override):");
   gtk_widget_show(label_knob_size);
   gtk_grid_attach(GTK_GRID(grid2), label_knob_size, 0, 8, 1, 1);
-  gtk_misc_set_alignment(GTK_MISC(label_knob_size), 0, 0.5);
+  gtk_widget_set_halign(label_knob_size, GTK_ALIGN_START);
   
   knob_size = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (48, 16, 169, 1, 1, 1)));
   gtk_widget_show (knob_size);
@@ -631,32 +626,32 @@ create_tx_options (GtkWindow* parent)
   label42 = gtk_label_new ("Background (focus):");
   gtk_widget_show (label42);
   gtk_grid_attach (GTK_GRID (grid8), label42, 0, 0, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label42), 0, 0.5);
+  gtk_widget_set_halign(label42, GTK_ALIGN_START);
 
   label43 = gtk_label_new ("Background (no focus):");
   gtk_widget_show (label43);
   gtk_grid_attach (GTK_GRID (grid8), label43, 0, 1, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label43), 0, 0.5);
+  gtk_widget_set_halign(label43, GTK_ALIGN_START);
 
   label44 = gtk_label_new ("Signal (focus):");
   gtk_widget_show (label44);
   gtk_grid_attach (GTK_GRID (grid8), label44, 0, 2, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label44), 0, 0.5);
+  gtk_widget_set_halign(label44, GTK_ALIGN_START);
 
   label45 = gtk_label_new ("Signal (no focus):");
   gtk_widget_show (label45);
   gtk_grid_attach (GTK_GRID (grid8), label45, 0, 3, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label45), 0, 0.5);
+  gtk_widget_set_halign(label45, GTK_ALIGN_START);
 
   label46 = gtk_label_new ("Cursor:");
   gtk_widget_show (label46);
   gtk_grid_attach (GTK_GRID (grid8), label46, 0, 4, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label46), 0, 0.5);
+  gtk_widget_set_halign(label46, GTK_ALIGN_START);
 
   label47 = gtk_label_new ("Cursor (mute):");
   gtk_widget_show (label47);
   gtk_grid_attach (GTK_GRID (grid8), label47, 0, 5, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label47), 0, 0.5);
+  gtk_widget_set_halign(label47, GTK_ALIGN_START);
 
   wav_display_bg_focus = gtk_button_new_with_mnemonic ("button1");
   gtk_widget_set_hexpand(wav_display_bg_focus , TRUE);
@@ -702,22 +697,22 @@ create_tx_options (GtkWindow* parent)
   label53 = gtk_label_new ("Background:");
   gtk_widget_show (label53);
   gtk_grid_attach (GTK_GRID (grid9), label53, 0, 0, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label53), 0, 0.5);
+  gtk_widget_set_halign(label53, GTK_ALIGN_START);
 
   label54 = gtk_label_new ("Regular Signal:");
   gtk_widget_show (label54);
   gtk_grid_attach (GTK_GRID (grid9), label54, 0, 1, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label54), 0, 0.5);
+  gtk_widget_set_halign(label54, GTK_ALIGN_START);
 
   label55 = gtk_label_new ("Loud Signal:");
   gtk_widget_show (label55);
   gtk_grid_attach (GTK_GRID (grid9), label55, 0, 2, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label55), 0, 0.5);
+  gtk_widget_set_halign(label55, GTK_ALIGN_START);
 
   label56 = gtk_label_new ("Scale Opacity:");
   gtk_widget_show (label56);
   gtk_grid_attach (GTK_GRID (grid9), label56, 0, 3, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label56), 0, 0.5);
+  gtk_widget_set_halign(label56, GTK_ALIGN_START);
 
   vu_meter_border_intensity = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL,  GTK_ADJUSTMENT (gtk_adjustment_new (0.07, 0, 1, 0.01, 0, 0)));
   gtk_widget_set_hexpand(vu_meter_border_intensity, TRUE);
@@ -752,7 +747,7 @@ create_tx_options (GtkWindow* parent)
   label13 = gtk_label_new ("Soundfile editor:");
   gtk_widget_show (label13);
   gtk_grid_attach (GTK_GRID (grid3), label13, 0, 0, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label13), 0, 0.5);
+  gtk_widget_set_halign(label13, GTK_ALIGN_START);
 
   soundfile_editor = gtk_entry_new ();
   gtk_widget_set_hexpand(soundfile_editor, TRUE);
@@ -763,7 +758,7 @@ create_tx_options (GtkWindow* parent)
   label26 = gtk_label_new ("Pre-listen:");
   gtk_widget_show (label26);
   gtk_grid_attach (GTK_GRID (grid3), label26, 0, 3, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label26), 0, 0.5);
+  gtk_widget_set_halign(label26, GTK_ALIGN_START);
 
   prelisten_enabled = gtk_check_button_new_with_mnemonic ("Play audiofiles in file dialogs");
   gtk_widget_show (prelisten_enabled);
@@ -773,7 +768,7 @@ create_tx_options (GtkWindow* parent)
   label31 = gtk_label_new ("LADSPA RDF path:");
   gtk_widget_show (label31);
   gtk_grid_attach (GTK_GRID (grid3), label31, 0, 1, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label31), 0, 0.5);
+  gtk_widget_set_halign(label31, GTK_ALIGN_START);
 
   ladspa_rdf_path = gtk_entry_new ();
   gtk_widget_show (ladspa_rdf_path);
@@ -782,7 +777,7 @@ create_tx_options (GtkWindow* parent)
   label33 = gtk_label_new ("Compression:");
   gtk_widget_show (label33);
   gtk_grid_attach (GTK_GRID (grid3), label33, 0, 2, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label33), 0, 0.5);
+  gtk_widget_set_halign(label33, GTK_ALIGN_START);
 
   compress_set_files = gtk_check_button_new_with_mnemonic ("Compress terminatorX set files");
   gtk_widget_show (compress_set_files);
@@ -791,7 +786,7 @@ create_tx_options (GtkWindow* parent)
   label40 = gtk_label_new ("MIDI:");
   gtk_widget_show (label40);
   gtk_grid_attach (GTK_GRID (grid3), label40, 0, 4, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label40), 0, 0.5);
+  gtk_widget_set_halign(label40, GTK_ALIGN_START);
 
   reconnect_enabled = gtk_check_button_new_with_mnemonic ("Restore MIDI connections on startup");
   gtk_widget_show (reconnect_enabled);
@@ -801,7 +796,7 @@ create_tx_options (GtkWindow* parent)
   label57 = gtk_label_new ("Quit:");
   gtk_widget_show (label57);
   gtk_grid_attach (GTK_GRID (grid3), label57, 0, 5, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label57), 0, 0.5);
+  gtk_widget_set_halign(label57, GTK_ALIGN_START);
 
   quit_confirm = gtk_check_button_new_with_mnemonic ("Ask for \"Quit\" confirmation");
   gtk_widget_show (quit_confirm);
@@ -810,12 +805,12 @@ create_tx_options (GtkWindow* parent)
   label58 = gtk_label_new ("Plugins:");
   gtk_widget_show (label58);
   gtk_grid_attach (GTK_GRID (grid3), label58, 0, 6, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label58), 0, 0.5);
+  gtk_widget_set_halign(label58, GTK_ALIGN_START);
 
   label59 = gtk_label_new ("");
   gtk_widget_show (label59);
   gtk_grid_attach (GTK_GRID (grid3), label59, 0, 7, 1, 1);
-  gtk_misc_set_alignment (GTK_MISC (label59), 0, 0.5);
+  gtk_widget_set_halign(label59, GTK_ALIGN_START);
 
   verbose_plugin_loading = gtk_check_button_new_with_mnemonic ("Verbose plugin loading");
   gtk_widget_show (verbose_plugin_loading);
@@ -829,25 +824,23 @@ create_tx_options (GtkWindow* parent)
   gtk_widget_show (label3);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 7), label3);
 
-  dialog_action_area3 = gtk_dialog_get_content_area(GTK_DIALOG (tx_options));
-  gtk_widget_show (dialog_action_area3);
 
-  pref_reset = gtk_button_new_from_stock ("gtk-revert-to-saved");
+  pref_reset = gtk_button_new_with_label("_Revert");
   gtk_widget_show (pref_reset);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), pref_reset, 0);
   gtk_widget_set_can_default(pref_reset, TRUE);
   
-  pref_cancel = gtk_button_new_from_stock ("gtk-cancel");
+  pref_cancel = gtk_button_new_with_label("_Cancel");
   gtk_widget_show (pref_cancel);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), pref_cancel, GTK_RESPONSE_CANCEL);
   gtk_widget_set_can_default(pref_cancel, TRUE);
   
-  pref_apply = gtk_button_new_from_stock ("gtk-apply");
+  pref_apply = gtk_button_new_with_label("_Apply");
   gtk_widget_show (pref_apply);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), pref_apply, GTK_RESPONSE_APPLY);
   gtk_widget_set_can_default(pref_apply, TRUE);
 
-  pref_ok = gtk_button_new_from_stock ("gtk-ok");
+  pref_ok = gtk_button_new_with_label("_OK");
   gtk_widget_show (pref_ok);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), pref_ok, GTK_RESPONSE_OK);
   gtk_widget_set_can_default(pref_ok, TRUE);
@@ -1003,7 +996,6 @@ create_tx_options (GtkWindow* parent)
   TX_UI_HOOKUP_OBJECT (tx_options, verbose_plugin_loading, "verbose_plugin_loading");
   TX_UI_HOOKUP_OBJECT (tx_options, force_nonrt_plugins, "force_nonrt_plugins");
   TX_UI_HOOKUP_OBJECT (tx_options, label3, "label3");
-  TX_UI_HOOKUP_OBJECT_NO_REF (tx_options, dialog_action_area3, "dialog_action_area3");
   TX_UI_HOOKUP_OBJECT (tx_options, pref_reset, "pref_reset");
   TX_UI_HOOKUP_OBJECT (tx_options, pref_cancel, "pref_cancel");
   TX_UI_HOOKUP_OBJECT (tx_options, pref_apply, "pref_apply");
@@ -1029,7 +1021,6 @@ create_tx_del_mode (void)
   GSList *all_events_group = NULL;
   GtkWidget *upto_current;
   GtkWidget *from_current;
-  GtkWidget *dialog_action_area4;
   GtkWidget *cancelbutton1;
   GtkWidget *okbutton1;
 
@@ -1074,15 +1065,13 @@ create_tx_del_mode (void)
   gtk_radio_button_set_group (GTK_RADIO_BUTTON (from_current), all_events_group);
   all_events_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (from_current));
 
-  dialog_action_area4 = gtk_dialog_get_action_area(GTK_DIALOG (tx_del_mode));
-  gtk_widget_show (dialog_action_area4);
 
-  cancelbutton1 = gtk_button_new_from_stock ("gtk-cancel");
+  cancelbutton1 = gtk_button_new_with_label("_Cancel");
   gtk_widget_show (cancelbutton1);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_del_mode), cancelbutton1, GTK_RESPONSE_CANCEL);
   gtk_widget_set_can_default(cancelbutton1, TRUE);
 
-  okbutton1 = gtk_button_new_from_stock ("gtk-ok");
+  okbutton1 = gtk_button_new_with_label("_OK");
   gtk_widget_show (okbutton1);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_del_mode), okbutton1, GTK_RESPONSE_OK);
   gtk_widget_set_can_default(okbutton1, TRUE);
@@ -1104,7 +1093,6 @@ create_tx_del_mode (void)
   TX_UI_HOOKUP_OBJECT (tx_del_mode, all_events, "all_events");
   TX_UI_HOOKUP_OBJECT (tx_del_mode, upto_current, "upto_current");
   TX_UI_HOOKUP_OBJECT (tx_del_mode, from_current, "from_current");
-  TX_UI_HOOKUP_OBJECT_NO_REF (tx_del_mode, dialog_action_area4, "dialog_action_area4");
   TX_UI_HOOKUP_OBJECT (tx_del_mode, cancelbutton1, "cancelbutton1");
   TX_UI_HOOKUP_OBJECT (tx_del_mode, okbutton1, "okbutton1");
 
@@ -1118,7 +1106,6 @@ create_tX_midilearn (void)
   GtkWidget *dialog_vbox5;
   GtkWidget *vbox4;
   GtkWidget *midilabel;
-  GtkWidget *dialog_action_area5;
   GtkWidget *cancel;
 
   tX_midilearn = gtk_dialog_new ();
@@ -1136,10 +1123,8 @@ create_tX_midilearn (void)
   gtk_widget_show (midilabel);
   gtk_box_pack_start (GTK_BOX (vbox4), midilabel, TRUE, TRUE, 0);
 
-  dialog_action_area5 = gtk_dialog_get_action_area(GTK_DIALOG (tX_midilearn));
-  gtk_widget_show (dialog_action_area5);
 
-  cancel = gtk_button_new_from_stock ("gtk-cancel");
+  cancel = gtk_button_new_with_label("_Cancel");
   gtk_widget_show (cancel);
   gtk_dialog_add_action_widget (GTK_DIALOG (tX_midilearn), cancel, GTK_RESPONSE_CANCEL);
   gtk_widget_set_can_default(cancel, TRUE);
@@ -1149,7 +1134,6 @@ create_tX_midilearn (void)
   TX_UI_HOOKUP_OBJECT_NO_REF (tX_midilearn, dialog_vbox5, "dialog_vbox5");
   TX_UI_HOOKUP_OBJECT (tX_midilearn, vbox4, "vbox4");
   TX_UI_HOOKUP_OBJECT (tX_midilearn, midilabel, "midilabel");
-  TX_UI_HOOKUP_OBJECT_NO_REF (tX_midilearn, dialog_action_area5, "dialog_action_area5");
   TX_UI_HOOKUP_OBJECT (tX_midilearn, cancel, "cancel");
 
   return tX_midilearn;

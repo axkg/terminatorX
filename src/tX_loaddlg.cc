@@ -74,7 +74,6 @@ int ld_create_loaddlg(int mode, int count)
 	
 	if (mode==TX_LOADDLG_MODE_MULTI) {
 		ld_multi_l=gtk_label_new("Loading Set");
-		gtk_misc_set_alignment(GTK_MISC(ld_multi_l), 0.5, 0.5);
 		add_widget_fix(ld_multi_l);
 		
 		ld_multi_p=gtk_progress_bar_new();
