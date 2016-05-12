@@ -372,8 +372,8 @@ GCallback load_tables()
 {
 	GtkWidget * dialog = gtk_file_chooser_dialog_new ("Open Set File",
 		GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_OPEN,
-		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,  
-	    GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
+		"_Cancel", GTK_RESPONSE_CANCEL,  
+	    "_Open", GTK_RESPONSE_ACCEPT, NULL);
 				      
 
 	GtkFileFilter *filter=gtk_file_filter_new();
@@ -406,8 +406,8 @@ GCallback load_tables()
 
 vtt_class* choose_vtt() {
 	GtkWidget *dialog = gtk_dialog_new_with_buttons("Select Turntable",
-		GTK_WINDOW(main_window), GTK_DIALOG_MODAL, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
-		GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, NULL);	
+		GTK_WINDOW(main_window), GTK_DIALOG_MODAL, "_Cancel", GTK_RESPONSE_REJECT,
+		"_OK", GTK_RESPONSE_ACCEPT, NULL);	
 
 	GtkWidget *label = gtk_label_new ("Select turntable to load audio file to:");
 	gtk_widget_show(label);
@@ -545,8 +545,8 @@ GCallback save_tables_as()
 {
 	GtkWidget * dialog = gtk_file_chooser_dialog_new ("Save Set",
 		GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_SAVE, 
-		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
-		GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,NULL);
+		"_Cancel", GTK_RESPONSE_CANCEL, 
+		"_Save", GTK_RESPONSE_ACCEPT,NULL);
 	
 	if (tx_mg_have_setname) {
 		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER (dialog), tx_mg_current_setname);
@@ -703,8 +703,8 @@ GCallback select_rec_file()
 {
 	GtkWidget * dialog = gtk_file_chooser_dialog_new ("Record To Disk",
 		GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_SAVE, 
-		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
-		GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,NULL);
+		"_Cancel", GTK_RESPONSE_CANCEL, 
+		"_Save", GTK_RESPONSE_ACCEPT,NULL);
 	
 	if (strlen(globals.record_filename)) {
 		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER (dialog), globals.record_filename);
@@ -1067,32 +1067,6 @@ void create_master_menu()
 	
 	GtkAccelGroup* accel_group=gtk_accel_group_new();
 	gtk_window_add_accel_group(GTK_WINDOW(main_window), accel_group);
-	GtkStyleContext *style_context=gtk_widget_get_style_context(main_window);
-
-	const static GtkStockItem items[] = {
-			{ (char *) "tX-open-audio", (char *)  "Load _Audio File", (GdkModifierType) 0, 0, NULL },
-			{ (char *) "tX-open-set", (char *) "_Open Set File", (GdkModifierType) 0, 0, NULL },
-			{ (char *) "tX-new", (char *) "_New Set", (GdkModifierType) 0, 0, NULL },
-			{ (char *) "tX-save", (char *) "_Save Set", (GdkModifierType) 0, 0, NULL },
-			{ (char *) "tX-save-as", (char *) "Save Set As", (GdkModifierType) 0, 0, NULL }
-	};
-	
-	GtkIconFactory* factory = gtk_icon_factory_new();
-	gtk_icon_factory_add_default(factory);
-	
-	gtk_stock_add (items, G_N_ELEMENTS (items));
-	GtkIconSet * icon_set =gtk_style_context_lookup_icon_set(style_context, GTK_STOCK_OPEN);
-	gtk_icon_factory_add(factory, "tX-open-audio", icon_set);
-	gtk_icon_factory_add(factory, "tX-open-set", icon_set);
-	
-	icon_set = gtk_style_context_lookup_icon_set(style_context, GTK_STOCK_NEW);
-	gtk_icon_factory_add(factory, "tX-new", icon_set);
-	
-	icon_set = gtk_style_context_lookup_icon_set(style_context, GTK_STOCK_SAVE);
-	gtk_icon_factory_add(factory, "tX-save", icon_set);
-	
-	icon_set = gtk_style_context_lookup_icon_set(style_context, GTK_STOCK_SAVE_AS);
-	gtk_icon_factory_add(factory, "tX-save-as", icon_set);
 	
 	/* FILE */
 	menu_item = gtk_menu_item_new_with_mnemonic ("_File");
@@ -1102,7 +1076,7 @@ void create_master_menu()
 	sub_menu = gtk_menu_new ();
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), sub_menu);
 
-	menu_item = gtk_image_menu_item_new_from_stock ("tX-open-audio", accel_group);
+	menu_item = gtk_menu_item_new_with_label("Load _Audio File");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) load_audio, NULL);
@@ -1112,22 +1086,22 @@ void create_master_menu()
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	gtk_widget_set_sensitive (menu_item, FALSE);
 
-	menu_item = gtk_image_menu_item_new_from_stock ("tX-new", accel_group);
+	menu_item = gtk_menu_item_new_with_label("_New Set");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) new_tables, NULL);
 
-	menu_item = gtk_image_menu_item_new_from_stock ("tX-open-set", accel_group);
+	menu_item = gtk_menu_item_new_with_label("_Open Set");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) load_tables, NULL);
 
-	menu_item = gtk_image_menu_item_new_from_stock ("tX-save", accel_group);
+	menu_item = gtk_menu_item_new_with_label("_Save Set");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) save_tables, NULL);
 
-	menu_item = gtk_image_menu_item_new_from_stock ("tX-save-as", accel_group);
+	menu_item = gtk_menu_item_new_with_label("Save Set As");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) save_tables_as, NULL);
@@ -1137,7 +1111,7 @@ void create_master_menu()
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	gtk_widget_set_sensitive (menu_item, FALSE);
 
-	menu_item = gtk_image_menu_item_new_from_stock ("gtk-quit", accel_group);
+	menu_item = gtk_menu_item_new_with_label("_Quit");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) quit, NULL);
@@ -1261,7 +1235,7 @@ void create_master_menu()
 	g_signal_connect(menu_item, "activate", (GCallback) fullscreen_toggle, NULL);
 #endif
 
-	menu_item = gtk_image_menu_item_new_from_stock ("gtk-preferences", accel_group);
+	menu_item = gtk_menu_item_new_with_label ("_Preferences");
 	gtk_widget_show (menu_item);
 	gtk_container_add (GTK_CONTAINER (sub_menu), menu_item);
 	g_signal_connect(menu_item, "activate", (GCallback) display_options, NULL);
@@ -1475,7 +1449,6 @@ void create_mastergui(int x, int y)
 	
 	dummy=gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(dummy),"<b>Master</b>");
-	gtk_misc_set_alignment(GTK_MISC(dummy), 0.5, 0.5);
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);	
 
@@ -1524,7 +1497,6 @@ void create_mastergui(int x, int y)
 	gtk_widget_show(main_flash);
 
 	dummy=gtk_label_new("Volume");
-	gtk_misc_set_alignment(GTK_MISC(dummy), 0.5, 0.5);
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
@@ -1539,12 +1511,12 @@ void create_mastergui(int x, int y)
 	
 	dummy=gtk_label_new("0");
 	used_mem=dummy;
-	gtk_misc_set_alignment(GTK_MISC(dummy), 1, 0.5);
+	gtk_widget_set_halign(dummy, GTK_ALIGN_END);
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
 //	dummy=gtk_label_new("Mem/MB:");
-//	gtk_misc_set_alignment(GTK_MISC(dummy), 0, 0.5);
+//	gtk_widget_set_halign(dummy, GTK_ALIGN_START);
 //	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
 //	gtk_widget_show(dummy);
 	
@@ -1552,24 +1524,24 @@ void create_mastergui(int x, int y)
 
 	dummy=gtk_label_new("1");
 	no_of_vtts=dummy;
-	gtk_misc_set_alignment(GTK_MISC(dummy), 1, 0.5);
+	gtk_widget_set_halign(dummy, GTK_ALIGN_END);
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
 	dummy=gtk_label_new("Vtts:");
-	gtk_misc_set_alignment(GTK_MISC(dummy), 0, 0.5);
+	gtk_widget_set_halign(dummy, GTK_ALIGN_START);
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);*/
 
 	add_sep2();
 
 	dummy=gtk_label_new("v"VERSION);
-	gtk_misc_set_alignment(GTK_MISC(dummy), 1, 0.5);
+	gtk_widget_set_halign(dummy, GTK_ALIGN_END);
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 
 	/*dummy=gtk_label_new("Release:");
-	gtk_misc_set_alignment(GTK_MISC(dummy), 0, 0.5);
+	gtk_widget_set_halign(dummy, GTK_ALIGN_START);
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);*/
 	
@@ -1577,7 +1549,6 @@ void create_mastergui(int x, int y)
 
 	dummy=gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(dummy), "<b>Status</b>");
-	gtk_misc_set_alignment(GTK_MISC(dummy), 0.5, 0.5);
 	gtk_box_pack_end(GTK_BOX(status_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 	

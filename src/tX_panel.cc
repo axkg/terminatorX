@@ -68,7 +68,7 @@ tX_panel :: tX_panel (const char *name, GtkWidget *par)
 	pixmap_min=tx_pixmap_widget(MINIMIZE);
 	pixmap_max=tx_pixmap_widget(MAXIMIZE);
 	labelbutton=gtk_label_new(name);
-	gtk_misc_set_alignment(GTK_MISC(labelbutton), 0, 0.5);
+	gtk_widget_set_halign(labelbutton, GTK_ALIGN_START);
 	tX_panel_make_label_bold(labelbutton);
  
 	button_box=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
