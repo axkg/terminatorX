@@ -94,12 +94,12 @@ create_tx_adjust (void)
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (create_event), TRUE);
 
 
-  cancel = gtk_button_new_with_label("_Cancel");
+  cancel = gtk_button_new_with_mnemonic("_Cancel");
   gtk_widget_show (cancel);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_adjust), cancel, GTK_RESPONSE_CANCEL);
   gtk_widget_set_can_default(cancel, TRUE);
 
-  ok = gtk_button_new_with_label("_OK");
+  ok = gtk_button_new_with_mnemonic("_OK");
   gtk_widget_show (ok);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_adjust), ok, GTK_RESPONSE_OK);
   gtk_widget_set_can_default(ok, TRUE);
@@ -825,22 +825,22 @@ create_tx_options (GtkWindow* parent)
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 7), label3);
 
 
-  pref_reset = gtk_button_new_with_label("_Revert");
+  pref_reset = gtk_button_new_with_mnemonic("_Revert");
   gtk_widget_show (pref_reset);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), pref_reset, 0);
   gtk_widget_set_can_default(pref_reset, TRUE);
   
-  pref_cancel = gtk_button_new_with_label("_Cancel");
+  pref_cancel = gtk_button_new_with_mnemonic("_Cancel");
   gtk_widget_show (pref_cancel);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), pref_cancel, GTK_RESPONSE_CANCEL);
   gtk_widget_set_can_default(pref_cancel, TRUE);
   
-  pref_apply = gtk_button_new_with_label("_Apply");
+  pref_apply = gtk_button_new_with_mnemonic("_Apply");
   gtk_widget_show (pref_apply);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), pref_apply, GTK_RESPONSE_APPLY);
   gtk_widget_set_can_default(pref_apply, TRUE);
 
-  pref_ok = gtk_button_new_with_label("_OK");
+  pref_ok = gtk_button_new_with_mnemonic("_OK");
   gtk_widget_show (pref_ok);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_options), pref_ok, GTK_RESPONSE_OK);
   gtk_widget_set_can_default(pref_ok, TRUE);
@@ -1066,12 +1066,12 @@ create_tx_del_mode (void)
   all_events_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (from_current));
 
 
-  cancelbutton1 = gtk_button_new_with_label("_Cancel");
+  cancelbutton1 = gtk_button_new_with_mnemonic("_Cancel");
   gtk_widget_show (cancelbutton1);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_del_mode), cancelbutton1, GTK_RESPONSE_CANCEL);
   gtk_widget_set_can_default(cancelbutton1, TRUE);
 
-  okbutton1 = gtk_button_new_with_label("_OK");
+  okbutton1 = gtk_button_new_with_mnemonic("_OK");
   gtk_widget_show (okbutton1);
   gtk_dialog_add_action_widget (GTK_DIALOG (tx_del_mode), okbutton1, GTK_RESPONSE_OK);
   gtk_widget_set_can_default(okbutton1, TRUE);
@@ -1124,7 +1124,7 @@ create_tX_midilearn (void)
   gtk_box_pack_start (GTK_BOX (vbox4), midilabel, TRUE, TRUE, 0);
 
 
-  cancel = gtk_button_new_with_label("_Cancel");
+  cancel = gtk_button_new_with_mnemonic("_Cancel");
   gtk_widget_show (cancel);
   gtk_dialog_add_action_widget (GTK_DIALOG (tX_midilearn), cancel, GTK_RESPONSE_CANCEL);
   gtk_widget_set_can_default(cancel, TRUE);
