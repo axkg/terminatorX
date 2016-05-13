@@ -19,8 +19,8 @@ terminatorX_DEPENDENCIES = license.c
 
 if SUIDROOT
 install-exec-hook:
-	chown root $(bindir)/terminatorX
-	chmod u+s $(bindir)/terminatorX
+	chown root $(DESTDIR)/$(bindir)/terminatorX
+	chmod u+s $(DESTDIR)/$(bindir)/terminatorX
 endif
 
 terminatorX_SOURCES =	tX_endian.c tX_dialog.cc tX_widget.c wav_write.c \

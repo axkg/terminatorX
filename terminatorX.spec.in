@@ -19,14 +19,15 @@ BuildRequires: libmad-devel
 BuildRequires: libvorbis-devel 
 BuildRequires: libxml2-devel
 BuildRequires: libX11-devel 
-BuildRequires: mpg321
+BuildRequires: mpg123
+BuildRequires: pulseaudio-libs-devel
 BuildRequires: scrollkeeper
 BuildRequires: sox
 BuildRequires: vorbis-tools 
 BuildRequires: gcc-c++
 BuildRequires: gnome-doc-utils
 
-Requires:      mpg321
+Requires:      mpg123
 Requires:      sox
 Requires:      vorbis-tools
 
@@ -43,7 +44,7 @@ interface - all accessible through an easy-to-use gtk+ GUI.
 %setup -q
 
 %build
-%configure
+%configure --disable-suidroot
 make %{?_smp_mflags}
 
 %install
@@ -81,7 +82,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %files
 %doc AUTHORS ChangeLog COPYING* NEWS README* THANKS TODO 
-%{_bindir}/%{name}
+%attr(4755, root, root) %{_bindir}/%{name}
 %{_mandir}/man1/%{name}.1*
 %{_datadir}/mime-info/%{name}.keys
 %{_datadir}/mime-info/%{name}.mime
@@ -94,6 +95,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/applications/%{name}.desktop
 
 %changelog
+* Fri May 13 2016 Alexander Koenig <alex@lisas.de> - 4.00-1
+- update to compile on rawhide (fc24)
+- install binary setuid root
+- require mpg123 instead of mpg321
+
 * Sat Feb 01 2014 Alexander Koenig <alex@lisas.de> - 3.90-1
 - Merge RPMFusion version
 - Drop obsolete patches

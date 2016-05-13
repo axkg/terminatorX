@@ -33,6 +33,7 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
+#include <stdint.h>
 
 #define KEY_Alt_L 1
 #define KEY_Alt_R 2
