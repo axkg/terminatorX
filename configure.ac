@@ -139,6 +139,11 @@ else
 	AC_MSG_ERROR([** couldn't find gtk+ > Version 3. Please upgrade (http://www.gtk.org). **])
 fi
 
+AC_PATH_PROG([GLIB_COMPILE_RESOURCES],[glib-compile-resources])
+AS_IF([test "$GLIB_COMPILE_RESOURCES" == ""],[
+       	AC_MSG_ERROR([glib-compile-resources not found])
+       	])
+
 dnl Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h limits.h malloc.h unistd.h)

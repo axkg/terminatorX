@@ -24,7 +24,6 @@
 #define _tX_knobloader_ 1
 
 #include <gtk/gtk.h>
-#include "icons/knobs.pixbuf"
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
