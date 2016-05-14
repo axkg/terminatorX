@@ -1764,18 +1764,19 @@ tX_cursor::cursor_shape tX_cursor::current_shape=tX_cursor::DEFAULT_CURSOR;
 
 void tX_cursor::set_cursor(cursor_shape shape)
 {
+	GdkDisplay *display = gdk_window_get_display(gtk_widget_get_window(main_window));
 	switch (shape) {
 		case DEFAULT_CURSOR:
 			cursors[shape]=NULL;
 			break;
 		
 		case WAIT_CURSOR:
-			if (!cursors[shape]) cursors[shape]=gdk_cursor_new(GDK_WATCH);
+			if (!cursors[shape]) cursors[shape]=gdk_cursor_new_for_display(display, GDK_WATCH);
 			break;
 		
 		case WAIT_A_SECOND_CURSOR:
 			/* FIXME: What's that short-time wait cursor's id? */
-			if (!cursors[shape]) cursors[shape]=gdk_cursor_new(GDK_WATCH);
+			if (!cursors[shape]) cursors[shape]=gdk_cursor_new_for_display(display, GDK_WATCH);
 			break;
 		
 		default:

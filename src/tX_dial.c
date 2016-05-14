@@ -222,7 +222,6 @@ static void gtk_tx_dial_realize (GtkWidget *widget)
 	gtk_widget_set_window(widget, gdk_window_new(gtk_widget_get_parent_window(widget), &attributes, attributes_mask));
 	
 	gdk_window_set_user_data (gtk_widget_get_window(widget), widget);
-	gtk_style_context_set_background(gtk_widget_get_style_context(widget), gtk_widget_get_window(widget));
 }
 
 static void gtk_tx_dial_get_preferred_width (GtkWidget *widget, gint *minimal_width, gint *natural_width) {

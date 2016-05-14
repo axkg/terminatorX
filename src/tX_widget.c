@@ -225,8 +225,6 @@ static void gtk_tx_realize(GtkWidget * widget) {
 
 	gdk_window_set_user_data(gtk_widget_get_window(widget), widget);
 
-	gtk_style_context_set_background(gtk_widget_get_style_context(widget), gtk_widget_get_window(widget));
-	
 	if (tx->surface) {
 		cairo_surface_destroy (tx->surface);
 	}
