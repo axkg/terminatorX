@@ -78,7 +78,12 @@ int tx_mouse :: grab()
 	window =  gtk_widget_get_window(main_window);
 	GdkDisplay* gdk_dpy = gdk_window_get_display(window);
 	GdkDeviceManager *device_manager = gdk_display_get_device_manager(gdk_dpy);
-	
+
+	if (grab_mode == FALLBACK) {
+	    enable_compression = gdk_window_get_event_compression(window);
+	    gdk_window_set_event_compression(window, False);
+	}
+
 	if (!gdk_dpy) {
 		fputs("GrabMode Error: couldn't access GDKDisplay.", stderr);
 		return(ENG_ERR_XOPEN);
@@ -170,6 +175,10 @@ void tx_mouse :: ungrab()
 
 	if (enable_auto_mnemonics) {
 		g_object_set (gtk_widget_get_settings (main_window), "gtk-auto-mnemonics", enable_auto_mnemonics, NULL);
+	}
+	
+	if (grab_mode == FALLBACK) {
+	    gdk_window_set_event_compression(window, enable_compression);
 	}
 
 	ungrab_linux_input();
