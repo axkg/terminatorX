@@ -73,7 +73,6 @@ on_alsa_buffer_time_value_changed      (GtkRange        *range,
 
 
 	gtk_adjustment_set_upper(period_time, gtk_adjustment_get_value(buffer_time));
-	gtk_adjustment_changed(period_time);
 }
 
 void
