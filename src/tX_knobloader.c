@@ -24,69 +24,22 @@
 #include "tX_knobloader.h"
 #include "tX_global.h"
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include "icons/tX_knob_resources.c"
 
 #ifdef USE_DIAL
 int tX_knob_size;
-
-const guint8 * knob_pixs[MAX_KNOB_PIX]={
-	 knob0,
-	 knob1,
-	 knob2,
-	 knob3,
-	 knob4,
-	 knob5,
-	 knob6,
-	 knob7,
-	 knob8,
-	 knob9,
-	 knob10,
-	 knob11,
-	 knob12,
-	 knob13,
-	 knob14,
-	 knob15,
-	 knob16,
-	 knob17,
-	 knob18,
-	 knob19,
-	 knob20,
-	 knob21,
-	 knob22,
-	 knob23,
-	 knob24,
-	 knob25,
-	 knob26,
-	 knob27,
-	 knob28,
-	 knob29,
-	 knob30,
-	 knob31,
-	 knob32,
-	 knob33,
-	 knob34,
-	 knob35,
-	 knob36,
-	 knob37,
-	 knob38,
-	 knob39,
-	 knob40,
-	 knob41,
-	 knob42,
-	 knob43,
-	 knob44,
-	 knob45,
-	 knob46,
-	 knob47,
-	 knob48,
-	 knob49,	 
-	};
-
 GdkPixbuf *knob_pixmaps[MAX_KNOB_PIX];
 
 void load_knob_pixs(int fontHeight, int scaleFactor)
 {
 	int i;
-	GError *error;
+	GError *error = NULL;
+
+	GResource* resource = g_resource_new_from_data(g_bytes_new_static(tX_knob_resource_data.data, sizeof(tX_knob_resource_data.data)), &error);
+	if (error) {
+	    printf("error: %s\n", error->message);
+	}
+
 	if (globals.knob_size_override > 0) {
 		tX_knob_size = globals.knob_size_override;			
 	} else {
@@ -95,10 +48,18 @@ void load_knob_pixs(int fontHeight, int scaleFactor)
 	tX_debug("load_knob_pix(): knob size is %i", tX_knob_size);
 	
 	for (i=0; i<MAX_KNOB_PIX; i++) {
-		GdkPixbuf *tmpPixbuf=gdk_pixbuf_new_from_inline(-1, knob_pixs[i], TRUE, &error);
-		GdkPixbuf *scaledPixbuf=NULL;
-		scaledPixbuf = gdk_pixbuf_scale_simple(tmpPixbuf, tX_knob_size, tX_knob_size, GDK_INTERP_HYPER);
-		knob_pixmaps[i]=scaledPixbuf;
+		char resource_path[256];
+		snprintf(resource_path, 256, "/org/terminatorX/tX_dial/knob%i.png", i);
+		knob_pixmaps[i] = gdk_pixbuf_new_from_resource_at_scale(resource_path, tX_knob_size, tX_knob_size, TRUE, &error);
+
+		if (error) {
+		    printf("error: %s\n", error->message);
+		}
+
+		//GdkPixbuf *tmpPixbuf=gdk_pixbuf_new_from_resource(name, &error);
+		//GdkPixbuf *scaledPixbuf=NULL;
+		//scaledPixbuf = gdk_pixbuf_scale_simple(tmpPixbuf, tX_knob_size, tX_knob_size, GDK_INTERP_HYPER);
+		//knob_pixmaps[i]=scaledPixbuf;
 	}
 }
 

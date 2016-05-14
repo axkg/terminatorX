@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/terminatorX/tX_dial">
+    <file>knob0.png</file>
+    <file>knob1.png</file>
+    <file>knob2.png</file>
+    <file>knob3.png</file>
+    <file>knob4.png</file>
+    <file>knob5.png</file>
+    <file>knob6.png</file>
+    <file>knob7.png</file>
+    <file>knob8.png</file>
+    <file>knob9.png</file>
+    <file>knob10.png</file>
+    <file>knob11.png</file>
+    <file>knob12.png</file>
+    <file>knob13.png</file>
+    <file>knob14.png</file>
+    <file>knob15.png</file>
+    <file>knob16.png</file>
+    <file>knob17.png</file>
+    <file>knob18.png</file>
+    <file>knob19.png</file>
+    <file>knob20.png</file>
+    <file>knob21.png</file>
+    <file>knob22.png</file>
+    <file>knob23.png</file>
+    <file>knob24.png</file>
+    <file>knob25.png</file>
+    <file>knob26.png</file>
+    <file>knob27.png</file>
+    <file>knob28.png</file>
+    <file>knob29.png</file>
+    <file>knob30.png</file>
+    <file>knob31.png</file>
+    <file>knob32.png</file>
+    <file>knob33.png</file>
+    <file>knob34.png</file>
+    <file>knob35.png</file>
+    <file>knob36.png</file>
+    <file>knob37.png</file>
+    <file>knob38.png</file>
+    <file>knob39.png</file>
+    <file>knob40.png</file>
+    <file>knob41.png</file>
+    <file>knob42.png</file>
+    <file>knob43.png</file>
+    <file>knob44.png</file>
+    <file>knob45.png</file>
+    <file>knob46.png</file>
+    <file>knob47.png</file>
+    <file>knob48.png</file>
+    <file>knob49.png</file>
+  </gresource>
+</gresources>
+
