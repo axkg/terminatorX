@@ -74,6 +74,7 @@ class tx_mouse
 	GdkEventMask savedEventMask;
 
 	gboolean enable_auto_mnemonics;
+	gboolean enable_compression;
 	guint last_button_press;
 	guint last_button_release;
 
