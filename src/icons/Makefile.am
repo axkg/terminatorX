@@ -9,11 +9,20 @@ tX_knob_images = knob0.png knob1.png knob2.png\
 		knob39.png knob40.png knob41.png knob42.png knob43.png knob44.png\
 		knob45.png knob46.png knob47.png knob48.png knob49.png
 
+tX_icons = audioengine.svg fx_close.svg fx_down.svg fx_up.svg\
+					 grab.svg maximize.svg minimize_panel.svg minimize.svg\
+					 play.svg power.svg record.svg sequencer.svg stop.svg
+
+tX_icons_resource_file = tX_icons.gresource.xml
 tX_knob_resource_file = tX_knob.gresource.xml
 
-BUILT_SOURCES = tX_knob_resources.c
-EXTRA_DIST = 	icons.pixbuf $(tX_knob_resource_file) $(tX_knob_images)
+BUILT_SOURCES = tX_knob_resources.c tX_icons_resources.c
+EXTRA_DIST = 	$(tX_knob_resource_file) $(tX_knob_images) $(tX_icons_resource_file) $(tX_icons)
 
 tX_knob_resources.c: $(tX_knob_resource_file) $(tX_knob_images)
 	$(GLIB_COMPILE_RESOURCES) --target=$@ --internal --generate-source $(tX_knob_resource_file)
+
+tX_icons_resources.c: $(tX_icons_resource_file) $(tX_icons)
+	$(GLIB_COMPILE_RESOURCES) --target=$@ --internal --generate-source $(tX_icons_resource_file)
+
 

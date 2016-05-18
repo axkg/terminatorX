@@ -1290,6 +1290,16 @@ void create_mastergui(int x, int y)
 	gtk_window_set_title(GTK_WINDOW(main_window), "terminatorX");
 
 	gtk_widget_realize(main_window);
+	
+	GtkWidget *posLabel=gtk_label_new("Pos:");
+	PangoRectangle ink_rect;
+	PangoRectangle logical_rect;
+	pango_layout_get_pixel_extents(gtk_label_get_layout(GTK_LABEL(posLabel)), &ink_rect, &logical_rect);
+	tX_debug("ink extent: x: %i, y: %i, width: %i, height %i ",  ink_rect.x, ink_rect.y, ink_rect.width, ink_rect.height);
+	tX_debug("logical extent: x: %i, y: %i, width: %i, height %i ",  logical_rect.x, logical_rect.y, logical_rect.width, logical_rect.height);
+	fontHeight = logical_rect.height - logical_rect.y;
+
+	tx_icons_init(fontHeight);
 
 	wrapbox=gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	gtk_container_add(GTK_CONTAINER(main_window), wrapbox);
@@ -1378,15 +1388,8 @@ void create_mastergui(int x, int y)
 	gui_set_tooltip(dummy, "Enable recording of *events* into the sequencer. All touched controls will be recorded. Existing events for the song-time recording will be overwritten for touched controls.");
 	gtk_widget_show(dummy);
 
-	dummy=gtk_label_new("Pos:");
-	PangoRectangle ink_rect;
-	PangoRectangle logical_rect;
-	pango_layout_get_pixel_extents(gtk_label_get_layout(GTK_LABEL(dummy)), &ink_rect, &logical_rect);
-	tX_debug("ink extent: x: %i, y: %i, width: %i, height %i ",  ink_rect.x, ink_rect.y, ink_rect.width, ink_rect.height);
-	tX_debug("logical extent: x: %i, y: %i, width: %i, height %i ",  logical_rect.x, logical_rect.y, logical_rect.width, logical_rect.height);
-	fontHeight = logical_rect.height - logical_rect.y;
-	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
-	gtk_widget_show(dummy);
+	gtk_box_pack_start(GTK_BOX(posLabel), dummy, WID_FIX);
+	gtk_widget_show(posLabel);
 	
 	dummy=gtk_entry_new();
 	gtk_entry_set_max_length(GTK_ENTRY(dummy), 12);

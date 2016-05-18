@@ -29,40 +29,52 @@
 #include "tX_pbutton.h"
 #include "tX_global.h"
 
-#include "icons/icons.pixbuf"
+#include "icons/tX_icons_resources.c"
 
-const guint8* tx_icons[ALL_ICONS];
-long tx_icon_sizes[ALL_ICONS];
+char tx_icons[ALL_ICONS][256];
+int tx_icon_size=20;
 
-#define icon_init(id, data) { tx_icons[id]=data; tx_icon_sizes[id]=sizeof(data); }
+#define icon_init(id, name) { snprintf(tx_icons[id], 256, "/org/terminatorX/tX_pbutton/%s.svg", name); }
 
-void tx_icons_init() 
+void tx_icons_init(int size) 
 {
-	icon_init(AUDIOENGINE, audioengine);
-	icon_init(POWER, power);
-	icon_init(GRAB, grab);
-	icon_init(SEQUENCER, sequencer);
-	icon_init(PLAY, play);
-	icon_init(STOP, stop);
-	icon_init(RECORD, record);
-	icon_init(MIN_AUDIO, wave);
-	icon_init(MIN_CONTROL, min_control);
-	icon_init(MINIMIZE, minimize);
-	icon_init(MAXIMIZE, maximize);
-	icon_init(FX_UP, fx_up);
-	icon_init(FX_DOWN, fx_down);
-	icon_init(FX_CLOSE, fx_close);
-	icon_init(MINIMIZE_PANEL, minimize_panel);
+	tx_icon_size=size;
+
+	GError *error = NULL;
+	GResource* resource = g_resource_new_from_data(g_bytes_new_static(tX_icons_resource_data.data, sizeof(tX_icons_resource_data.data)), &error);
+	if (error) {
+	  printf("error: %s\n", error->message);
+	}
+
+	icon_init(AUDIOENGINE, "audioengine");
+	icon_init(POWER, "power");
+	icon_init(GRAB, "grab");
+	icon_init(SEQUENCER, "sequencer");
+	icon_init(PLAY, "play");
+	icon_init(STOP, "stop");
+	icon_init(RECORD, "record");
+	icon_init(MIN_AUDIO, "wave");
+	icon_init(MIN_CONTROL, "min_control");
+	icon_init(MINIMIZE, "minimize");
+	icon_init(MAXIMIZE, "maximize");
+	icon_init(FX_UP, "fx_up");
+	icon_init(FX_DOWN, "fx_down");
+	icon_init(FX_CLOSE, "fx_close");
+	icon_init(MINIMIZE_PANEL, "minimize_panel");
 }
 
 GtkWidget *tx_pixmap_widget(tX_icon id)
 {
-	GError *error;
-	GdkPixbuf *pixbuf=gdk_pixbuf_new_from_inline(tx_icon_sizes[id], tx_icons[id], TRUE, &error);
+	GError *error = NULL;
 	GtkWidget *widget=gtk_image_new();
-	gtk_image_set_from_pixbuf(GTK_IMAGE(widget), pixbuf);
+  	GdkPixbuf *pixbuf=gdk_pixbuf_new_from_resource_at_scale(tx_icons[id], tx_icon_size, tx_icon_size, TRUE, &error);
+  	if (error) {
+  		printf("error: %s\n", error->message);
+	} else {
+		gtk_image_set_from_pixbuf(GTK_IMAGE(widget), pixbuf);
+	}
 
-    return widget;
+  return widget;
 }
 
 GtkWidget *tx_xpm_label_box(tX_icon id, const gchar *label_text, GtkWidget **labelwidget)
