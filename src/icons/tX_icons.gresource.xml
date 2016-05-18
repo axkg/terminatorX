@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/terminatorX/tX_pbutton">
+    <file>audioengine.svg</file>
+    <file>fx_close.svg</file>
+    <file>fx_down.svg</file>
+    <file>fx_up.svg</file>
+    <file>grab.svg</file>
+    <file>maximize.svg</file>
+    <file>minimize_panel.svg</file>
+    <file>minimize.svg</file>
+    <file>play.svg</file>
+    <file>power.svg</file>
+    <file>record.svg</file>
+    <file>sequencer.svg</file>
+		<file>stop.svg</file>
+  </gresource>
+</gresources>
+
