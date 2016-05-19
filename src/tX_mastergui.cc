@@ -1388,7 +1388,7 @@ void create_mastergui(int x, int y)
 	gui_set_tooltip(dummy, "Enable recording of *events* into the sequencer. All touched controls will be recorded. Existing events for the song-time recording will be overwritten for touched controls.");
 	gtk_widget_show(dummy);
 
-	gtk_box_pack_start(GTK_BOX(posLabel), dummy, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(control_box), posLabel, WID_FIX);
 	gtk_widget_show(posLabel);
 	
 	dummy=gtk_entry_new();
