@@ -15,14 +15,18 @@ tX_icons = audioengine.svg fx_close.svg fx_down.svg fx_up.svg\
 
 tX_icons_resource_file = tX_icons.gresource.xml
 tX_knob_resource_file = tX_knob.gresource.xml
+tX_dialog_resource_file = tX_dialog.gresource.xml
 
-BUILT_SOURCES = tX_knob_resources.c tX_icons_resources.c
-EXTRA_DIST = 	$(tX_knob_resource_file) $(tX_knob_images) $(tX_icons_resource_file) $(tX_icons)
+BUILT_SOURCES = tX_knob_resources.c tX_icons_resources.c tX_dialog_resources.c
+EXTRA_DIST = 	$(tX_knob_resource_file) $(tX_knob_images) $(tX_icons_resource_file) $(tX_icons) $(tX_dialog_resource_file)
 
 tX_knob_resources.c: $(tX_knob_resource_file) $(tX_knob_images)
 	$(GLIB_COMPILE_RESOURCES) --target=$@ --internal --generate-source $(tX_knob_resource_file)
 
 tX_icons_resources.c: $(tX_icons_resource_file) $(tX_icons)
 	$(GLIB_COMPILE_RESOURCES) --target=$@ --internal --generate-source $(tX_icons_resource_file)
+
+tX_dialog_resources.c: $(tX_dialog_resource_file) ../../icons/terminatorX.png
+	$(GLIB_COMPILE_RESOURCES) --target=$@ --internal --generate-source $(tX_dialog_resource_file)
 
 

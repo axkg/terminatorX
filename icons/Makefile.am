@@ -1,5 +1,5 @@
 themedir = $(datadir)/icons/hicolor
-size = 48x48
+size = 512x512
 apps_context = apps
 mime_context = mimetypes
 

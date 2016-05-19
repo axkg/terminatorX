@@ -43,7 +43,7 @@ void tx_icons_init(int size)
 	GError *error = NULL;
 	GResource* resource = g_resource_new_from_data(g_bytes_new_static(tX_icons_resource_data.data, sizeof(tX_icons_resource_data.data)), &error);
 	if (error) {
-	  printf("error: %s\n", error->message);
+	  tX_error("failed accessing tX_icons resources: %s", error->message);
 	}
 
 	icon_init(AUDIOENGINE, "audioengine");
@@ -69,7 +69,7 @@ GtkWidget *tx_pixmap_widget(tX_icon id)
 	GtkWidget *widget=gtk_image_new();
   	GdkPixbuf *pixbuf=gdk_pixbuf_new_from_resource_at_scale(tx_icons[id], tx_icon_size, tx_icon_size, TRUE, &error);
   	if (error) {
-  		printf("error: %s\n", error->message);
+  		tX_error("failed rendering icon to pixbuf: %s", error->message);
 	} else {
 		gtk_image_set_from_pixbuf(GTK_IMAGE(widget), pixbuf);
 	}

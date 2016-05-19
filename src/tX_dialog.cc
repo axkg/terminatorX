@@ -29,7 +29,6 @@
 #include <gtk/gtk.h>
 #include <string.h>
 #include <gdk/gdk.h>
-#include "tX_icon.h"
 #include "tX_ui_interface.h"
 #include "tX_ui_support.h"
 
@@ -42,6 +41,8 @@
 #include "tX_vtt.h"
 #include <dirent.h>
 #include "tX_engine.h"
+
+#include "icons/tX_dialog_resources.c"
 
 #ifdef USE_SCHEDULER
 #include <sched.h>
@@ -707,7 +708,15 @@ static GdkPixbuf *tX_window_icon=NULL;
 void tX_set_icon(GtkWidget *widget)
 {	
 	if (!tX_window_icon) {
-		tX_window_icon=gdk_pixbuf_new_from_inline(-1, tX_icon, FALSE, NULL);
+		GError *error = NULL;
+		GResource* resource = g_resource_new_from_data(g_bytes_new_static(tX_dialog_resource_data.data, sizeof(tX_dialog_resource_data.data)), &error);
+		if (error) {
+		    tX_error("Error accesing tX_dialog resources: %s", error->message);
+		}
+		tX_window_icon=gdk_pixbuf_new_from_resource("/org/terminatorX/tX_dialog/../../icons/terminatorX.png", &error);
+		if (error) {
+		    tX_error("Error rendering tX icon: %s", error->message);
+		}
 	}
 
 	gtk_window_set_icon(GTK_WINDOW(widget), tX_window_icon);
