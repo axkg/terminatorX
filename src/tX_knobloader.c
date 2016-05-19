@@ -37,7 +37,7 @@ void load_knob_pixs(int fontHeight, int scaleFactor)
 
 	GResource* resource = g_resource_new_from_data(g_bytes_new_static(tX_knob_resource_data.data, sizeof(tX_knob_resource_data.data)), &error);
 	if (error) {
-	    printf("error: %s\n", error->message);
+	    tX_error("failed accessing tX_dial resources: %s\n", error->message);
 	}
 
 	if (globals.knob_size_override > 0) {
@@ -53,13 +53,8 @@ void load_knob_pixs(int fontHeight, int scaleFactor)
 		knob_pixmaps[i] = gdk_pixbuf_new_from_resource_at_scale(resource_path, tX_knob_size, tX_knob_size, TRUE, &error);
 
 		if (error) {
-		    printf("error: %s\n", error->message);
+		    tX_error("failed rendering knob image: %s\n", error->message);
 		}
-
-		//GdkPixbuf *tmpPixbuf=gdk_pixbuf_new_from_resource(name, &error);
-		//GdkPixbuf *scaledPixbuf=NULL;
-		//scaledPixbuf = gdk_pixbuf_scale_simple(tmpPixbuf, tX_knob_size, tX_knob_size, GDK_INTERP_HYPER);
-		//knob_pixmaps[i]=scaledPixbuf;
 	}
 }
 

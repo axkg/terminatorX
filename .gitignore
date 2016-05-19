@@ -23,6 +23,9 @@ src/Makefile
 src/Makefile.in
 src/icons/Makefile
 src/icons/Makefile.in
+src/icons/tX_dialog_resources.c
+src/icons/tX_icons_resources.c
+src/icons/tX_knob_resources.c
 src/license.c
 src/*.o
 src/terminatorX
