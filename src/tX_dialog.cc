@@ -68,7 +68,6 @@ void apply_options(GtkWidget *dialog) {
 	} else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "jack_driver")))) {
 		globals.audiodevice_type=JACK;
 	} else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "pulse_driver")))) {
-		printf("pulse\n");
 		globals.audiodevice_type=PULSE;
 	}
 	globals.use_realtime=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "use_realtime")));
@@ -93,7 +92,8 @@ void apply_options(GtkWidget *dialog) {
 	globals.alsa_period_time*=1000;
 	globals.alsa_samplerate=atoi(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "alsa_samplerate"))));	
 	globals.alsa_free_hwstats=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "alsa_free_hwstats")));
-	
+	globals.pulse_buffer_length=(int) gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "pulse_buffer_size")));
+
 	/* TODO: JACK
 	*/
 	
@@ -379,6 +379,9 @@ void init_tx_options(GtkWidget *dialog) {
 	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "alsa_free_hwstats")), globals.alsa_free_hwstats);
 	
+	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "pulse_buffer_size")), globals.pulse_buffer_length);
+	gtk_widget_set_tooltip_text(lookup_widget(dialog, "pulse_buffer_size"), "Sets the requested buffer size for PulseAudio in samples (per channel). Lower values should result in lower latency, however PulseAudio may override this setting.");	
+
 	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "mouse_speed")), globals.mouse_speed);
 	gtk_widget_set_tooltip_text(lookup_widget(dialog, "mouse_speed"), "The speed of your mouse in scratch mode. Use negative values to invert motion.");
 	

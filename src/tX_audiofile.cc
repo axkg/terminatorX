@@ -312,7 +312,7 @@ tX_audio_error tx_audiofile :: load_wav() {
 		bytes = fread(p, 1, min(1024, wav_in.len-allbytes), wav_in.handle);
 
 #ifdef ENABLE_DEBUG_OUTPUT
-		if (output) { tX_debug("tX_audiofile::load_wav() read %i Bytes [%04x %04x %04x %04x %04x %04x ..]", bytes, (unsigned int) p[0],  (unsigned int) p[1], (unsigned int) p[2], (unsigned int) p[3], (unsigned int) p[4], (unsigned int) p[5]); }
+		if (output) { tX_debug("tX_audiofile::load_wav() read %zu Bytes [%04x %04x %04x %04x %04x %04x ..]", bytes, (unsigned int) p[0],  (unsigned int) p[1], (unsigned int) p[2], (unsigned int) p[3], (unsigned int) p[4], (unsigned int) p[5]); }
 #endif
 
 		if (bytes<=0) {
@@ -523,7 +523,7 @@ int tx_audiofile::mad_decode(unsigned char const *start, unsigned long length) {
 	buffer.sample_rate=0;
 	buffer.lost_sync_counter=0;
 
-	tX_debug("tx_audiofile::mad_decode() - start %016" PRIxPTR ", length %i", (uintptr_t) buffer.start, buffer.size);
+	tX_debug("tx_audiofile::mad_decode() - start %016" PRIxPTR ", length %zu", (uintptr_t) buffer.start, buffer.size);
 	/* configure input, output, and error functions */
 
 	mad_decoder_init(&decoder, &buffer, tX_mad_input, NULL, NULL, tX_mad_output, tX_mad_error, NULL);

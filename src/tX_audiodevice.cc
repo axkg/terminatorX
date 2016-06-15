@@ -354,81 +354,251 @@ void tX_audiodevice_alsa :: play(int16_t *buffer)
 #ifdef USE_PULSE
 #include <pulse/error.h>
 
-int tX_audiodevice_pulse :: open()
-{
-	int error;
+void tX_audiodevice_pulse::wrap_stream_started_callback(pa_stream *stream, void *userdata) {
+	tX_audiodevice_pulse *device = (tX_audiodevice_pulse *) userdata;
+	device->stream_started_callback(stream);
+}
 
-	/* pulse client based on pacat-simple.c API demo */
-    	pa_sample_spec spec = {
-        	.format = PA_SAMPLE_S16LE,
-        	.rate = 44100,
-        	.channels = 2
-    	};
+void tX_audiodevice_pulse::wrap_stream_underflow_callback(pa_stream *stream, void *userdata) {
+	tX_audiodevice_pulse *device = (tX_audiodevice_pulse *) userdata;
+	device->stream_underflow_callback(stream);
+}
 
+void tX_audiodevice_pulse::wrap_stream_overflow_callback(pa_stream *stream, void *userdata) {
+	tX_audiodevice_pulse *device = (tX_audiodevice_pulse *) userdata;
+	device->stream_overflow_callback(stream);
+}
+
+void tX_audiodevice_pulse::wrap_stream_drain_complete_callback(pa_stream *stream, int success, void *userdata) {
+	tX_audiodevice_pulse *device = (tX_audiodevice_pulse *) userdata;
+	device->stream_drain_complete_callback(stream, success);
+}
+
+void tX_audiodevice_pulse::wrap_stream_trigger_success_callback(pa_stream *stream, int success, void *userdata) {
+	tX_audiodevice_pulse *device = (tX_audiodevice_pulse *) userdata;
+	device->stream_trigger_success_callback(stream, success);
+}
+
+void tX_audiodevice_pulse::wrap_stream_write_callback(pa_stream *stream, size_t length, void *userdata) {
+	tX_audiodevice_pulse *device = (tX_audiodevice_pulse *) userdata;
+	device->stream_write_callback(stream, length);
+}
+
+void tX_audiodevice_pulse::wrap_context_state_callback(pa_context *context, void *userdata) {
+	tX_audiodevice_pulse *device = (tX_audiodevice_pulse *) userdata;
+	device->context_state_callback(context);
+}
+
+void tX_audiodevice_pulse::context_state_callback(pa_context *context) {
+	pa_context_state_t state;
+
+	state = pa_context_get_state(context);
+
+	tX_debug("pulseaudio context state: %i", state);
+	switch (state) {
+		case PA_CONTEXT_FAILED:
+		case PA_CONTEXT_TERMINATED:
+			tX_error("pulseaudio disconnected");
+			break;
+
+		case PA_CONTEXT_READY:
+			pa_sample_spec spec = {
+				.format = PA_SAMPLE_S16LE,
+				.rate = 44100,
+		   		.channels = 2
+		 	};
 	
-	pa_buffer_attr attr = {
-		.maxlength = (uint32_t) -1,
-		.tlength = 2048,
-		.prebuf = 1,
-		.minreq = (uint32_t) -1,
-		.fragsize = (uint32_t) -1
-	};
+			pa_buffer_attr attr = {
+				.maxlength = (uint32_t) -1,
+				.tlength = globals.pulse_buffer_length * 4, // 2 bytes per sample, 2 channels
+				.prebuf = (uint32_t) -1,
+				.minreq = (uint32_t) -1,
+				.fragsize = (uint32_t) -1
+			};
 
-	attr.minreq = attr.tlength / 4;
-	attr.maxlength = attr.tlength + attr.minreq;
+			pa_stream_flags_t flags = PA_STREAM_ADJUST_LATENCY;
 
-	samples_per_buffer = attr.tlength / 2;
-	
-    	/* Create a new playback stream */
-    	if (!(stream = pa_simple_new(NULL, "terminatorX", PA_STREAM_PLAYBACK, NULL, "playback", &spec, NULL, &attr, &error))) {
-		tX_error("PULSE: Failed to open stream: %s", pa_strerror(error));
-    		return -1;
+			if (stream = pa_stream_new(context, "terminatorX", &spec, NULL)) {
+				tX_debug("pulseaudio stream created");
+				//pa_stream_set_started_callback(stream, tX_audiodevice_pulse::wrap_stream_started_callback, this);
+				//pa_stream_set_underflow_callback(stream, tX_audiodevice_pulse::wrap_stream_underflow_callback, this);
+				pa_stream_set_overflow_callback(stream, tX_audiodevice_pulse::wrap_stream_overflow_callback, this);
+				pa_stream_set_write_callback(stream, tX_audiodevice_pulse::wrap_stream_write_callback, this);
+
+				if (pa_stream_connect_playback(stream, NULL, &attr, flags, NULL, NULL) >= 0) {
+					// start the playback.
+					pa_stream_trigger(stream, tX_audiodevice_pulse::wrap_stream_trigger_success_callback, this);
+				} else {
+					tX_error("Failed to connect pulseaudio stream playback: %s", pa_strerror(pa_context_errno(context)));
+				}
+			}	else {
+				tX_error("Failed to create pulseaudio stream: %s", pa_strerror(pa_context_errno(context)));
+			}
+
 	}
+}
+
+void tX_audiodevice_pulse::wrap_context_drain_complete_callback(pa_context *context, void *userdata) {
+	tX_audiodevice_pulse *device = (tX_audiodevice_pulse *) userdata;
+	device->context_drain_complete_callback(context);
+}
+
+void tX_audiodevice_pulse::context_drain_complete_callback(pa_context *context) {
+	pa_context_disconnect(context);
+	is_open = false;
+	pa_mainloop_quit(mainloop, 0);
+}
+
+void tX_audiodevice_pulse::stream_started_callback(pa_stream *stream) {
+	tX_debug("pulseaudio stream started");
+}
+
+void tX_audiodevice_pulse::stream_underflow_callback(pa_stream *stream) {
+	tX_debug("pulseaudio stream underflow");
+}
+
+void tX_audiodevice_pulse::stream_overflow_callback(pa_stream *stream) {
+	tX_debug("pulseaudio stream overflow");
+}
+
+void tX_audiodevice_pulse::stream_trigger_success_callback(pa_stream *stream, int success) {
+	tX_debug("pulseaudio trigger success %i", success);
+}
+
+void tX_audiodevice_pulse::stream_drain_complete_callback(pa_stream *stream, int success) {
+	if (!success) {
+		tX_debug("pulseaudio drain failed %s", pa_strerror(pa_context_errno(context)));
+	} else {
+		pa_operation *operation;
+		pa_stream_disconnect(stream);
+		pa_stream_unref(stream);
+		stream = NULL;
+
+		if (!(operation = pa_context_drain(context, tX_audiodevice_pulse::wrap_context_drain_complete_callback, this))) {
+			pa_context_disconnect(context);
+			is_open = false;
+			pa_mainloop_quit(mainloop, -1);
+		} else {
+			pa_operation_unref(operation);
+		}
+	}
+}
+
+void tX_audiodevice_pulse::stream_write_callback(pa_stream *stream, size_t length) {
+	size_t sample_length = length/2;
+
+	if (engine->is_stopped()) {
+		tX_debug("pulseaudio write callback trying to disconnect pulseaudio");
+		pa_operation *operation;
+		pa_stream_set_write_callback(stream, NULL, NULL);
+		if (!(operation = pa_stream_drain(stream, tX_audiodevice_pulse::wrap_stream_drain_complete_callback, this))) {
+			tX_error("pulseaudio failed to initiate drain %s", pa_strerror(pa_context_errno(context)));
+		}
+		pa_operation_unref(operation);
+	} else {
+		//tX_debug("pulseaudio write %i samples", sample_length);
+		unsigned int outbuffer_pos=0;
+		unsigned int sample;
 	
+		// re-alloc outbuffer only when not yet allocated or allocated buffer smaller
+		// than the chunk requested by pulseaudio
+/*		if (!outbuffer || (outbuffer_length < sample_length)) {
+			if (outbuffer) {
+				pa_xfree(outbuffer);
+			}
+			outbuffer = (int16_t* ) pa_xmalloc(length);
+			outbuffer_length = sample_length;
+		}
+*/
+
+		int16_t *outbuffer = NULL;
+		size_t outbuffer_bytes = length;
+  		pa_stream_begin_write(stream, (void **) &outbuffer, &outbuffer_bytes);
+
+	  	//tX_debug("begin write %i %i", outbuffer_bytes, length)
+
+		if (samples_in_overrun_buffer) {
+			for (sample=0; ((sample<samples_in_overrun_buffer) && (outbuffer_pos<sample_length));) {
+				outbuffer[outbuffer_pos++]=overrun_buffer[sample++];
+			}
+		}
+	
+		while (outbuffer_pos<sample_length) {
+			//tX_debug("render %i %i %i", outbuffer_pos, sample_length, vtt_class::samples_in_mix_buffer);
+			int16_t *data=engine->render_cycle();
+		
+			for (sample=0; ((sample<(unsigned int) vtt_class::samples_in_mix_buffer) && (outbuffer_pos<sample_length));) {
+				outbuffer[outbuffer_pos++]=data[sample++];
+			}
+		
+			if (sample<(unsigned int) vtt_class::samples_in_mix_buffer) {
+				samples_in_overrun_buffer=vtt_class::samples_in_mix_buffer-sample;
+				/* There's more data in the mixbuffer... */
+				memcpy(overrun_buffer, &data[sample], sizeof(int16_t) * samples_in_overrun_buffer);
+			} else {
+				samples_in_overrun_buffer=0;
+			}
+		}
+	
+		//tX_debug("write %i bytes", length);
+		if (pa_stream_write(stream, (uint8_t *) outbuffer, length, NULL, 0, PA_SEEK_RELATIVE) < 0) {
+			tX_error("pulseaudio error writing to stream: %s", pa_strerror(pa_context_errno(context)));
+		}
+		outbuffer = NULL;
+	}
+}
+
+void tX_audiodevice_pulse::start() {
+	overrun_buffer=new int16_t[vtt_class::samples_in_mix_buffer];
+	samples_in_overrun_buffer = 0;
+	int result;
+	
+	tX_debug("handover flow control to pulseaudio");
+
+	while (!engine->is_stopped()) {
+		pa_mainloop_run(mainloop, &result);
+		tX_debug("pulseaudio mainloop has terminated: %i", result);
+	}	
+	
+	delete [] overrun_buffer;
+}
+
+int tX_audiodevice_pulse::open() {
+	mainloop = pa_mainloop_new();
+	mainloop_api = pa_mainloop_get_api(mainloop);
+	context = pa_context_new(mainloop_api, "terminatorX");
+	pa_context_flags_t flags = PA_CONTEXT_NOFLAGS;
+	pa_context_connect(context, NULL, flags, NULL);
+	pa_context_set_state_callback(context, tX_audiodevice_pulse::wrap_context_state_callback, this);
+
+	sample_rate=44100;
+	tX_debug("pulseaudio opened.");
+
 	is_open = true;
-
-        pa_usec_t latency;
-
-        if ((latency = pa_simple_get_latency(stream, &error)) == (pa_usec_t) -1) {
-            tX_error("PULSE: Error getting latency  %s\n", pa_strerror(error));
-        }
-
-        tX_debug( "%0.0f usec    \r", (float)latency);
-
 	return 0;
 }
 
-int tX_audiodevice_pulse :: close()
-{
-	if (is_open) {
-		pa_simple_free(stream);
-		stream = NULL;
-	}
-
-	is_open=false;
-	
+int tX_audiodevice_pulse :: close() {
 	return 0;
 }
 
 tX_audiodevice_pulse :: tX_audiodevice_pulse() : tX_audiodevice(),
-stream(NULL) {}
-
-void tX_audiodevice_pulse :: play(int16_t *buffer)
-{
-	int error;
-
-        if (pa_simple_write(stream, buffer, (size_t) samples_per_buffer * 2, &error) < 0) {
-		tX_error("PULSE: playback failed: %s\n", pa_strerror(error));
-           return;
-        }
+mainloop(NULL), mainloop_api(NULL), context(NULL), stream(NULL)  {
 }
 
+void tX_audiodevice_pulse :: play(int16_t *buffer) {
+	tX_error("tX_audiodevice_pulse::play()");
+}
+
+tX_audiodevice_pulse :: ~tX_audiodevice_pulse() {
+}
 
 #endif //USE_PULSE
 
 #ifdef USE_JACK
 
 tX_jack_client tX_jack_client::instance;
+
 
 bool tX_jack_client::init()
 {

@@ -138,7 +138,6 @@ create_tx_options (GtkWindow* parent)
   GtkWidget *use_realtime_label;
   GtkWidget *use_realtime;
   GtkWidget *label1;
-  GtkWidget *grid5;
   GtkWidget *label21;
   GtkWidget *label22;
   GtkWidget *label23;
@@ -148,8 +147,6 @@ create_tx_options (GtkWindow* parent)
   GtkWidget *oss_buffers;
   GtkWidget *oss_buffersize;
   GtkWidget *oss_samplerate;
-  GtkWidget *label15;
-  GtkWidget *grid6;
   GtkWidget *label27;
   GtkWidget *label29;
   GtkWidget *label30;
@@ -160,7 +157,7 @@ create_tx_options (GtkWindow* parent)
   GtkWidget *alsa_buffer_time;
   GtkWidget *label39;
   GtkWidget *alsa_free_hwstats;
-  GtkWidget *label16;
+  GtkWidget *pulse_buffer_size;
   GtkWidget *grid1;
   GtkWidget *label6;
   GtkWidget *label7;
@@ -292,7 +289,7 @@ create_tx_options (GtkWindow* parent)
   gtk_radio_button_set_group (GTK_RADIO_BUTTON (jack_driver), oss_driver_group);
   oss_driver_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (jack_driver));
  
-  pulse_driver = gtk_radio_button_new_with_mnemonic (NULL, "PULSE");
+  pulse_driver = gtk_radio_button_new_with_mnemonic (NULL, "PulseAudio");
   gtk_widget_show (pulse_driver);
   gtk_box_pack_start (GTK_BOX (hbox2), pulse_driver, FALSE, FALSE, 0);
   gtk_widget_set_tooltip_text(pulse_driver, "Use the PULSE (PulseAudio) driver for audio output.");
@@ -307,149 +304,120 @@ create_tx_options (GtkWindow* parent)
   use_realtime = gtk_check_button_new_with_mnemonic ("Use realtime scheduling where available");
   gtk_widget_show (use_realtime);
   gtk_grid_attach (GTK_GRID (grid4), use_realtime, 1, 1, 1, 1);
-  
+
   label1 = gtk_label_new ("Audio");
   gtk_widget_show (label1);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 0), label1);
 
-  grid5 = gtk_grid_new ();
-  gtk_widget_show (grid5);
-  gtk_container_add (GTK_CONTAINER (notebook1), grid5);
-  gtk_container_set_border_width (GTK_CONTAINER (grid5), 4);
-  gtk_grid_set_row_spacing (GTK_GRID (grid5), 2);
-  gtk_grid_set_column_spacing (GTK_GRID (grid5), 2);
-
-  label21 = gtk_label_new ("Audio device:");
+  label21 = gtk_label_new ("OSS Audio device:");
   gtk_widget_show (label21);
-  gtk_grid_attach (GTK_GRID (grid5), label21, 0, 0, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), label21, 0, 2, 1, 1);
   gtk_widget_set_halign(label21, GTK_ALIGN_START);
 
-  label22 = gtk_label_new ("No. of buffers:");
+  label22 = gtk_label_new ("OSS No. of buffers:");
   gtk_widget_show (label22);
-  gtk_grid_attach (GTK_GRID (grid5), label22, 0, 1, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), label22, 0, 3, 1, 1);
   gtk_widget_set_halign(label22, GTK_ALIGN_START);
 
-  label23 = gtk_label_new ("Buffersize (2^x):");
+  label23 = gtk_label_new ("OSS Buffersize (2^x):");
   gtk_widget_show (label23);
-  gtk_grid_attach (GTK_GRID (grid5), label23, 0, 2, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), label23, 0, 4, 1, 1);
   gtk_widget_set_halign(label23, GTK_ALIGN_START);
 
-  label24 = gtk_label_new ("Samplerate (Hz):");
+  label24 = gtk_label_new ("OSS Samplerate (Hz):");
   gtk_widget_show (label24);
-  gtk_grid_attach (GTK_GRID (grid5), label24, 0, 3, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), label24, 0, 5, 1, 1);
   gtk_widget_set_halign(label24, GTK_ALIGN_START);
 
   oss_audio_device = gtk_combo_box_text_new ();
-//  g_object_set_data (G_OBJECT (GTK_COMBO_BOX (oss_audio_device)->popwin),
-//                     "tXUiParentKey", oss_audio_device);
   gtk_widget_show (oss_audio_device);
-  gtk_grid_attach (GTK_GRID (grid5), oss_audio_device, 1, 0, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), oss_audio_device, 1, 2, 1, 1);
 
-  //combo_entry2 = GTK_COMBO (oss_audio_device)->entry;
-  //gtk_widget_show (combo_entry2);
   gtk_widget_set_tooltip_text(oss_audio_device, "Select the audiodevice you want terminatorX to send its output to.");
 
   oss_buffers_adj = gtk_adjustment_new (2, 2, 5, 1, 10, 0);
   oss_buffers = gtk_spin_button_new (GTK_ADJUSTMENT (oss_buffers_adj), 1, 0);
   gtk_widget_set_hexpand(oss_buffers, TRUE);
   gtk_widget_show (oss_buffers);
-  gtk_grid_attach (GTK_GRID (grid5), oss_buffers, 1, 1, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), oss_buffers, 1, 3, 1, 1);
   gtk_widget_set_tooltip_text(oss_buffers, "Sets the number of kernel level audio buffers. Actually most systems should run just fine with two.");
 
   oss_buffersize = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (9, 8, 16, 1, 1, 1)));
   gtk_widget_show (oss_buffersize);
-  gtk_grid_attach (GTK_GRID (grid5), oss_buffersize, 1, 2, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), oss_buffersize, 1, 4, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (oss_buffersize), GTK_POS_LEFT);
   gtk_scale_set_digits (GTK_SCALE (oss_buffersize), 0);
 
   oss_samplerate = gtk_combo_box_text_new ();
-  //g_object_set_data (G_OBJECT (GTK_COMBO (oss_samplerate)->popwin),
-                     //"tXUiParentKey", oss_samplerate);
   gtk_widget_set_hexpand(oss_samplerate, TRUE);
   gtk_widget_show (oss_samplerate);
-  gtk_grid_attach (GTK_GRID (grid5), oss_samplerate, 1, 3, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), oss_samplerate, 1, 5, 1, 1);
 
-//  combo_entry3 = GTK_COMBO (oss_samplerate)->entry;
-//  gtk_widget_show (combo_entry3);
   gtk_widget_set_tooltip_text(oss_samplerate, "Select the sampling to use for this audio device - the higher the better quality. Note that not all sampling rates are supported by all audio devices.");
 
-  label15 = gtk_label_new ("Audio: OSS");
-  gtk_widget_show (label15);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 1), label15);
-
-  grid6 = gtk_grid_new ();
-  gtk_widget_show (grid6);
-  gtk_container_add (GTK_CONTAINER (notebook1), grid6);
-  gtk_container_set_border_width (GTK_CONTAINER (grid6), 4);
-  gtk_grid_set_row_spacing (GTK_GRID (grid6), 2);
-  gtk_grid_set_column_spacing (GTK_GRID (grid6), 2);
-
-  label27 = gtk_label_new ("Audio Device:");
+  label27 = gtk_label_new ("ALSA Audio Device:");
   gtk_widget_show (label27);
-  gtk_grid_attach (GTK_GRID (grid6), label27, 0, 0, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), label27, 0, 6, 1, 1);
   gtk_widget_set_halign(label27, GTK_ALIGN_START);
 
-  label29 = gtk_label_new ("Period Time (ms):");
+  label29 = gtk_label_new ("ALSA Period Time (ms):");
   gtk_widget_show (label29);
-  gtk_grid_attach (GTK_GRID (grid6), label29, 0, 2, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), label29, 0, 8, 1, 1);
   gtk_widget_set_halign(label29, GTK_ALIGN_START);
 
-  label30 = gtk_label_new ("Samplerate (Hz):");
+  label30 = gtk_label_new ("ALSA Samplerate (Hz):");
   gtk_widget_show (label30);
-  gtk_grid_attach (GTK_GRID (grid6), label30, 0, 3, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), label30, 0, 9, 1, 1);
   gtk_widget_set_halign(label30, GTK_ALIGN_START);
 
   alsa_audio_device = gtk_combo_box_text_new ();
-//  g_object_set_data (G_OBJECT (GTK_COMBO (alsa_audio_device)->popwin),
-//                     "tXUiParentKey", alsa_audio_device);
   gtk_widget_set_hexpand(alsa_audio_device, TRUE);
   gtk_widget_show (alsa_audio_device);
-  gtk_grid_attach (GTK_GRID (grid6), alsa_audio_device, 1, 0, 1, 1);
-
-//  combo_entry4 = GTK_COMBO (alsa_audio_device)->entry;
-//  gtk_widget_show (combo_entry4);
+  gtk_grid_attach (GTK_GRID (grid4), alsa_audio_device, 1, 6, 1, 1);
 
   alsa_samplerate = gtk_combo_box_text_new ();
-//  g_object_set_data (G_OBJECT (GTK_COMBO (alsa_samplerate)->popwin),
-//                     "tXUiParentKey", alsa_samplerate);
   gtk_widget_set_hexpand(alsa_samplerate, TRUE);
   gtk_widget_show (alsa_samplerate);
-  gtk_grid_attach (GTK_GRID (grid6), alsa_samplerate, 1, 3, 1, 1);
-
-//  combo_entry5 = GTK_COMBO (alsa_samplerate)->entry;
-//  gtk_widget_show (combo_entry5);
+  gtk_grid_attach (GTK_GRID (grid4), alsa_samplerate, 1, 9, 1, 1);
 
   alsa_period_time = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (29, 10, 500, 1, 10, 10)));
   gtk_widget_show (alsa_period_time);
-  gtk_grid_attach (GTK_GRID (grid6), alsa_period_time, 1, 2, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), alsa_period_time, 1, 8, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (alsa_period_time), GTK_POS_LEFT);
   gtk_scale_set_digits (GTK_SCALE (alsa_period_time), 0);
 
-  label32 = gtk_label_new ("Buffer Time (ms):");
+  label32 = gtk_label_new ("ALSA Buffer Time (ms):");
   gtk_widget_show (label32);
-  gtk_grid_attach (GTK_GRID (grid6), label32, 0, 1, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), label32, 0, 7, 1, 1);
   gtk_widget_set_halign(label32, GTK_ALIGN_START);
 
   alsa_buffer_time = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (69, 10, 500, 1, 10, 10)));
   gtk_widget_show (alsa_buffer_time);
-  gtk_grid_attach (GTK_GRID (grid6), alsa_buffer_time, 1, 1, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), alsa_buffer_time, 1, 7, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (alsa_buffer_time), GTK_POS_LEFT);
   gtk_scale_set_digits (GTK_SCALE (alsa_buffer_time), 0);
 
-  label39 = gtk_label_new ("Free HWstats:");
+  label39 = gtk_label_new ("ALSA Free HWstats:");
   gtk_widget_show (label39);
-  gtk_grid_attach (GTK_GRID (grid6), label39, 0, 4, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), label39, 0, 10, 1, 1);
   gtk_widget_set_halign(label39, GTK_ALIGN_START);
 
   alsa_free_hwstats = gtk_check_button_new_with_mnemonic ("Enabled");
   gtk_widget_show (alsa_free_hwstats);
-  gtk_grid_attach (GTK_GRID (grid6), alsa_free_hwstats, 1, 4, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid4), alsa_free_hwstats, 1, 10, 1, 1);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (alsa_free_hwstats), TRUE);
 
-  label16 = gtk_label_new ("Audio: ALSA");
-  gtk_widget_show (label16);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 2), label16);
+  GtkWidget *pulselabel = gtk_label_new ("PulseAudio Buffer:");
+  gtk_widget_show(pulselabel);
+  gtk_grid_attach (GTK_GRID (grid4), pulselabel, 0, 11, 1, 1);
+  gtk_widget_set_halign(pulselabel, GTK_ALIGN_START);
 
+  pulse_buffer_size = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (64, 16, 4096, 1, 10, 10)));
+  gtk_widget_show(pulse_buffer_size);
+  gtk_grid_attach (GTK_GRID (grid4), pulse_buffer_size, 1, 11, 1, 1);
+  gtk_scale_set_value_pos (GTK_SCALE (pulse_buffer_size), GTK_POS_LEFT);
+  gtk_scale_set_digits (GTK_SCALE (pulse_buffer_size), 0);
+            
   grid1 = gtk_grid_new ();
   gtk_widget_show (grid1);
   gtk_container_add (GTK_CONTAINER (notebook1), grid1);
@@ -492,7 +460,7 @@ create_tx_options (GtkWindow* parent)
 
   label4 = gtk_label_new ("Input");
   gtk_widget_show (label4);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 3), label4);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 1), label4);
 
   grid2 = gtk_grid_new ();
   gtk_widget_show (grid2);
@@ -615,7 +583,7 @@ create_tx_options (GtkWindow* parent)
 
   label2 = gtk_label_new ("User Interface");
   gtk_widget_show (label2);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 4), label2);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 2), label2);
 
   grid8 = gtk_grid_new ();
   gtk_widget_show (grid8);
@@ -685,7 +653,7 @@ create_tx_options (GtkWindow* parent)
 
   label41 = gtk_label_new ("Audio Colors");
   gtk_widget_show (label41);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 5), label41);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 3), label41);
 
   grid9 = gtk_grid_new ();
   gtk_widget_show (grid9);
@@ -735,7 +703,7 @@ create_tx_options (GtkWindow* parent)
 
   label52 = gtk_label_new ("VU Colors");
   gtk_widget_show (label52);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 6), label52);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 4), label52);
 
   grid3 = gtk_grid_new ();
   gtk_widget_show (grid3);
@@ -822,7 +790,7 @@ create_tx_options (GtkWindow* parent)
 
   label3 = gtk_label_new ("Misc");
   gtk_widget_show (label3);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 7), label3);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 5), label3);
 
 
   pref_reset = gtk_button_new_with_mnemonic("_Revert");
@@ -905,7 +873,6 @@ create_tx_options (GtkWindow* parent)
   TX_UI_HOOKUP_OBJECT (tx_options, use_realtime_label, "use_realtime_label");
   TX_UI_HOOKUP_OBJECT (tx_options, use_realtime, "use_realtime");
   TX_UI_HOOKUP_OBJECT (tx_options, label1, "label1");
-  TX_UI_HOOKUP_OBJECT (tx_options, grid5, "grid5");
   TX_UI_HOOKUP_OBJECT (tx_options, label21, "label21");
   TX_UI_HOOKUP_OBJECT (tx_options, label22, "label22");
   TX_UI_HOOKUP_OBJECT (tx_options, label23, "label23");
@@ -914,8 +881,6 @@ create_tx_options (GtkWindow* parent)
   TX_UI_HOOKUP_OBJECT (tx_options, oss_buffers, "oss_buffers");
   TX_UI_HOOKUP_OBJECT (tx_options, oss_buffersize, "oss_buffersize");
   TX_UI_HOOKUP_OBJECT (tx_options, oss_samplerate, "oss_samplerate");
-  TX_UI_HOOKUP_OBJECT (tx_options, label15, "label15");
-  TX_UI_HOOKUP_OBJECT (tx_options, grid6, "grid6");
   TX_UI_HOOKUP_OBJECT (tx_options, label27, "label27");
   TX_UI_HOOKUP_OBJECT (tx_options, label29, "label29");
   TX_UI_HOOKUP_OBJECT (tx_options, label30, "label30");
@@ -926,7 +891,7 @@ create_tx_options (GtkWindow* parent)
   TX_UI_HOOKUP_OBJECT (tx_options, alsa_buffer_time, "alsa_buffer_time");
   TX_UI_HOOKUP_OBJECT (tx_options, label39, "label39");
   TX_UI_HOOKUP_OBJECT (tx_options, alsa_free_hwstats, "alsa_free_hwstats");
-  TX_UI_HOOKUP_OBJECT (tx_options, label16, "label16");
+  TX_UI_HOOKUP_OBJECT (tx_options, pulse_buffer_size, "pulse_buffer_size");
   TX_UI_HOOKUP_OBJECT (tx_options, grid1, "grid1");
   TX_UI_HOOKUP_OBJECT (tx_options, label6, "label6");
   TX_UI_HOOKUP_OBJECT (tx_options, label7, "label7");
