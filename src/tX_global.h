@@ -143,7 +143,10 @@ typedef struct {
 	int alsa_buffer_time;
 	int alsa_period_time;
 	int alsa_samplerate;
-	
+
+	/* PULSE specific options */
+	int pulse_buffer_length;
+
 	char lrdf_path[PATH_MAX];
 	
 	int compress_set_files;

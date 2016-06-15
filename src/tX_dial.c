@@ -252,21 +252,6 @@ static void gtk_tx_dial_size_allocate (GtkWidget *widget, GtkAllocation *allocat
 	}
 }
 
-inline void gtk_tx_dial_do_draw (GtkTxDial *tx_dial, GtkWidget *widget, cairo_t *cr)
-{
-	if (gtk_widget_is_drawable (widget)) {
-//		gdk_draw_pixbuf(gtk_widget_is_drawable (widget), 
-//		                //gtk_widget_get_stlye(widget)->bg_gc[GTK_WIDGET_STATE(widget)],
-//		                NULL, //TODO: this needs to be ported to cairo!
-//		                knob_pixmaps[tx_dial->old_image],
-//		                0, 0, tx_dial->xofs, tx_dial->yofs,
-//						tX_knob_size, tX_knob_size, GDK_RGB_DITHER_NORMAL, 0, 0);
-
-		gdk_cairo_set_source_pixbuf (cr, knob_pixmaps[tx_dial->old_image], 0, 0);
-		cairo_paint (cr);
-	}		 
-}
-
 gboolean gtk_tx_dial_draw (GtkWidget *widget, cairo_t *cr)
 {
 	GtkTxDial *tx_dial;
@@ -276,7 +261,10 @@ gboolean gtk_tx_dial_draw (GtkWidget *widget, cairo_t *cr)
 	
 	tx_dial = GTK_TX_DIAL (widget);
 	
-	gtk_tx_dial_do_draw(tx_dial, widget, cr);
+	if (gtk_widget_is_drawable (widget)) {
+		gdk_cairo_set_source_pixbuf (cr, knob_pixmaps[tx_dial->old_image], 0, 0);
+		cairo_paint (cr);
+	}		 
 		  
 	return FALSE;
 }

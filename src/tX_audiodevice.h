@@ -41,7 +41,7 @@
 #endif
 
 #ifdef USE_PULSE
-#include <pulse/simple.h>
+#include <pulse/pulseaudio.h>
 #endif
 
 class tX_engine;
@@ -115,14 +115,48 @@ class tX_audiodevice_alsa : public tX_audiodevice
 
 class tX_audiodevice_pulse : public tX_audiodevice
 {
-	pa_simple *stream;
-	
+	pa_mainloop *mainloop;
+	pa_mainloop_api *mainloop_api;
+	pa_context *context;
+	pa_stream *stream;
+	int16_t *overrun_buffer;
+	unsigned int samples_in_overrun_buffer;
+
 	public:
 	virtual int open();
 	virtual int close();
+	virtual void start();
 	virtual void play(int16_t*);
-	
+
 	tX_audiodevice_pulse();
+	~tX_audiodevice_pulse();
+	
+	private:
+	// context callbacks
+	static void wrap_context_state_callback(pa_context *context, void *userdata);
+	void context_state_callback(pa_context *context);
+
+	static void wrap_context_drain_complete_callback(pa_context *context, void *userdata);
+	void context_drain_complete_callback(pa_context *context);
+
+	// stream callbacks
+	static void wrap_stream_started_callback(pa_stream *stream, void *userdata);
+	void stream_started_callback(pa_stream *stream);
+
+	static void wrap_stream_underflow_callback(pa_stream *stream, void *userdata);
+	void stream_underflow_callback(pa_stream *stream);
+	
+	static void wrap_stream_overflow_callback(pa_stream *stream, void *userdata);
+	void stream_overflow_callback(pa_stream *stream);
+	
+	static void wrap_stream_drain_complete_callback(pa_stream *stream, int success, void *userdata);
+	void stream_drain_complete_callback(pa_stream *stream, int success);
+
+	static void wrap_stream_trigger_success_callback(pa_stream *stream, int success, void *userdata);
+	void stream_trigger_success_callback(pa_stream *stream, int success);
+
+	static void wrap_stream_write_callback(pa_stream *stream, size_t length, void *userdata);
+	void stream_write_callback(pa_stream *stream, size_t length);
 };
 
 #endif

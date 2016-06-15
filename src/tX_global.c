@@ -79,7 +79,9 @@ void set_global_defaults() {
 	globals.alsa_buffer_time=80000;
 	globals.alsa_period_time=20000;
 	globals.alsa_samplerate=44100;
-	
+
+	globals.pulse_buffer_length=320;
+
 	globals.sense_cycles=80;
 	
 	globals.mouse_speed=0.8;
@@ -111,14 +113,18 @@ void set_global_defaults() {
 	strcpy(globals.tables_filename, "");
 	strcpy(globals.record_filename, "tX_record.wav");
 	strcpy(globals.file_editor, "");
-		
+
+#ifdef USE_PULSE
+	globals.audiodevice_type=ALSA;
+#else	
 #ifdef USE_ALSA
 	globals.audiodevice_type=ALSA;
 #else
 #ifdef USE_OSS
 	globals.audiodevice_type=OSS;
 #endif	
-#endif		
+#endif	
+#endif
 	globals.use_stdout_cmdline=0;
 	strcpy(globals.current_path, "");
 	strcpy(globals.lrdf_path, "/usr/share/ladspa/rdf:/usr/local/share/ladspa/rdf");
@@ -204,6 +210,8 @@ int load_globals_xml() {
 			restore_int("alsa_samplerate", globals.alsa_samplerate);
 			restore_int("alsa_free_hwstats", globals.alsa_free_hwstats);
 			
+			restore_int("pulse_buffer_length", globals.pulse_buffer_length);
+
 			restore_string("xinput_device", globals.xinput_device);
 			restore_int("xinput_enable", globals.xinput_enable);
 			restore_int("update_idle", globals.update_idle);
@@ -327,6 +335,8 @@ void store_globals() {
 		store_int("alsa_samplerate", globals.alsa_samplerate);		
 		store_int("alsa_free_hwstats", globals.alsa_free_hwstats);
 		
+		store_int("pulse_buffer_length", globals.pulse_buffer_length);
+
 		store_string("xinput_device", globals.xinput_device);
 		store_int("xinput_enable", globals.xinput_enable);
 		store_int("update_idle", globals.update_idle);

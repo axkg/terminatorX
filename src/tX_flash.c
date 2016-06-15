@@ -120,7 +120,7 @@ enum {
 
 /* c=a+(a-b)*x; */
 
-inline void mk_half(double s, GdkRGBA *a, GdkRGBA *b, GdkRGBA *c)
+void mk_half(double s, GdkRGBA *a, GdkRGBA *b, GdkRGBA *c)
 {
 	c->red=a->red-(a->red-b->red)*s;
 	c->green=a->green-(a->green-b->green)*s;
