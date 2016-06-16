@@ -396,21 +396,28 @@ void tX_audiodevice_pulse::context_state_callback(pa_context *context) {
 
 	tX_debug("pulseaudio context state: %i", state);
 	switch (state) {
+		case PA_CONTEXT_UNCONNECTED:
+		case PA_CONTEXT_CONNECTING:
+		case PA_CONTEXT_AUTHORIZING:
+		case PA_CONTEXT_SETTING_NAME:
+			break;
 		case PA_CONTEXT_FAILED:
 		case PA_CONTEXT_TERMINATED:
-			tX_error("pulseaudio disconnected");
+			if (!engine->is_stopped()) {
+				tX_error("pulseaudio disconnected");
+			}
 			break;
 
 		case PA_CONTEXT_READY:
 			pa_sample_spec spec = {
 				.format = PA_SAMPLE_S16LE,
 				.rate = 44100,
-		   		.channels = 2
+				.channels = 2
 		 	};
 	
 			pa_buffer_attr attr = {
 				.maxlength = (uint32_t) -1,
-				.tlength = globals.pulse_buffer_length * 4, // 2 bytes per sample, 2 channels
+				.tlength = (uint32_t) (globals.pulse_buffer_length * 4), // 2 bytes per sample, 2 channels
 				.prebuf = (uint32_t) -1,
 				.minreq = (uint32_t) -1,
 				.fragsize = (uint32_t) -1
@@ -418,7 +425,7 @@ void tX_audiodevice_pulse::context_state_callback(pa_context *context) {
 
 			pa_stream_flags_t flags = PA_STREAM_ADJUST_LATENCY;
 
-			if (stream = pa_stream_new(context, "terminatorX", &spec, NULL)) {
+			if ((stream = pa_stream_new(context, "terminatorX", &spec, NULL))) {
 				tX_debug("pulseaudio stream created");
 				//pa_stream_set_started_callback(stream, tX_audiodevice_pulse::wrap_stream_started_callback, this);
 				//pa_stream_set_underflow_callback(stream, tX_audiodevice_pulse::wrap_stream_underflow_callback, this);
@@ -434,7 +441,7 @@ void tX_audiodevice_pulse::context_state_callback(pa_context *context) {
 			}	else {
 				tX_error("Failed to create pulseaudio stream: %s", pa_strerror(pa_context_errno(context)));
 			}
-
+			break;
 	}
 }
 
