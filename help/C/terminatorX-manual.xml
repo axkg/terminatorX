@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
-	  <!ENTITY version "3.90">
-	  <!ENTITY date "2014-01-31">
+	  <!ENTITY version "4.00">
+	  <!ENTITY date "2016-06-17">
 ]>
 <article id="index" lang="en">
 
@@ -14,8 +14,19 @@
 
     <author role="maintainer"><firstname>Alexander</firstname><surname>König</surname></author>
 
-    <copyright><year>1999</year><year>2000</year><year>2001</year><year>2002</year><year>2003</year><year>2004</year><year>2005</year><year>2006</year><year>2014</year>
-    <holder role="mailto:alex@lisas.de">Alexander König</holder></copyright>
+		<copyright>
+			<year>1999</year>
+			<year>2000</year>
+			<year>2001</year>
+			<year>2002</year>
+			<year>2003</year>
+			<year>2004</year>
+			<year>2005</year>
+			<year>2006</year>
+			<year>2014</year>
+			<year>2016</year>
+	    <holder role="mailto:alex@lisas.de">Alexander König</holder>
+	  </copyright>
     <revhistory>
 	<revision>
         <revnumber>terminatorX Manual &version;</revnumber>
@@ -337,32 +348,17 @@
 
                 <listitem>
 
-                  <para>Linux, FreeBSD or the like</para>
+                  <para>a reasonable up-to-date Linux, reported to run on FreeBSD,too</para>
 
                 </listitem>
 
                 <listitem>
-
                   <para>glibc2 (pthreads).</para>
-
                 </listitem>
 
                 <listitem>
-
-                  <para>XFree86 (with DGA DirectMouse support). Note 
-                  that XFree86 Release 4.0 has a bug resulting in 
-                  broken DirectMouse support. This has been fixed by 
-                  the XFree86-Team with Release 4.0.1 available from 
-                  your distribution or the 
-                  <ulink url="http://www.xfree86.org">XFree86 
-                  homepage</ulink>.</para>
-
-                </listitem>
-
-                <listitem>
-
-                  <para>The Gimp Toolkit: gtk+ (&gt;= 2.0). If your 
-                  distribution doesn't provide a current version of 
+                  <para>The Gimp Toolkit: gtk+ (&gt;= 3.0). If your 
+									distribution doesn't provide a current version (which is unlikely) of 
                   gtk+ get it from the <ulink url="http://www.gtk.org">
                   gtk+ homepage</ulink>.</para>
 
@@ -379,7 +375,7 @@
 
                 <listitem>
 
-                  <para>a compiler (gcc)</para>
+									<para>a C/C++ compiler (gcc)</para>
 
                 </listitem>
 
@@ -500,16 +496,19 @@
 
             <listitem>
 
-              <para>An <ulink url="http://www.alsa-project.org">
-              ALSA</ulink> or OSS compatible soundcard capable of 
-              stereo output.</para>
-
+							<para>An audiodevice capable of low-latency stereo playback and compatible with either
+								 <itemizedlist>
+									 <listitem>ALSA,</listitem>
+									 <listitem>OSS,</listitem>
+									 <listitem>JACK or</listitem>
+									 <listitem>PulseAudio</listitem>
+								 </itemizedlist>
+							</para>
             </listitem>
 
             <listitem>
 
-              <para>A good clean mouse and pad, a good X-Pointer 
-              setup.</para>
+              <para>A good clean mouse and pad.</para>
 
             </listitem>
 
@@ -520,9 +519,9 @@
       </itemizedlist>
 
       <para>A note on performance: terminatorX is known to run 
-      satisfyingly on pentium-class systems (or above of course). 
+      satisfyingly even on low-end systems. 
       Increasing the number of turntables or plugins will of course 
-      require more performant systems.</para>
+      require may require more performant hardware.</para>
 
     </sect2>
 
@@ -2135,12 +2134,13 @@
       <title><emphasis>Audio</emphasis> Tab</title>
 
       <para>This tab allows to select which audio backend terminatorX 
-      should use. Currently there are three options: the OSS (Open 
+				should use and to set the parameters foor the different backebds. 
+				Currently there are fouroptions: the OSS (Open 
       Sound System) backend, the ALSA (Advanced Linux Sound 
-      Architecture) backend and the JACK (JACK Audio Connection Kit) 
-      backend. Some of these options might not be available, if your 
-      terminatorX binary wasn't compiled to support a certain 
-      backend.</para>
+      Architecture) backend, the JACK (JACK Audio Connection Kit) 
+			backend and the PulseAudio backend. Some of these options might not 
+			be available, if your terminatorX binary wasn't compiled to support 
+			a certain backend.</para>
 
       <para>The OSS and ALSA backends have dedicated configuration 
       tabs, JACK requires no further configuration - for more details 
@@ -2150,7 +2150,7 @@
 
     <sect2 id="OSSTAB">
 
-      <title><emphasis>Audio: OSS</emphasis> Tab</title>
+      <title><emphasis>Audio</emphasis> Tab - OSS parameters</title>
 
       <para>Select the audio device you are going to use from the 
       available options (or simply enter one yourself). terminatorX 
@@ -2183,7 +2183,7 @@
 
     <sect2 id="ALSATAB">
 
-      <title><emphasis>Audio: ALSA</emphasis> Tab</title>
+      <title><emphasis>Audio</emphasis> Tab - ALSA parameters</title>
 
       <para>Using ALSA for audio output allows specifing the buffer 
       sizes in microseconds. ALSA uses a ring-buffer to process audio. 
@@ -2201,6 +2201,26 @@
       documentation.</para>
 
     </sect2>
+
+		<sect2 id="PULSEAUDIOPARAMS">
+			<title><emphasis>Audio</emphasis> Tab - PulseAudio parameters</title>
+
+			<para>The PulseAudio backend currently provides only a single
+				configuration option: <emphasis>PulseAudio Buffer</emphasis>. This 
+				parameter defines the buffer size in samples that terminatorX
+				requests when connecting to the PulseAudio daemon. Note that 
+				PulseAudio may override this value, you can run pulseaudio manually
+				(pulseaudio -v) to trace what latency PulseAudio will actually
+				achieve.
+			</para>
+			<para>
+				The buffer size is configured in samples (the size in bytes will
+				samples * 4), for optimal latency this value should be as low
+				as possible. If you experience underruns or other artifacts in
+				the audio output try increasing the buffer size.
+			</para>
+
+		</sect2>
 
     <sect2 id="INPUTTAB">
 
