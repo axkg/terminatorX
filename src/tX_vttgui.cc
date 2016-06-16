@@ -691,6 +691,35 @@ void gui_set_name(vtt_class *vtt, char *newname)
 	}
 }
 
+f_prec gui_get_audio_x_zoom(vtt_class *vtt) {
+	return gtk_tx_get_zoom(GTK_TX(vtt->gui.display));
+}
+
+int vttgui_zoom_depth=0;
+
+void gui_set_audio_x_zoom(vtt_class *vtt, f_prec value) {
+	if (vttgui_zoom_depth==0) {
+		vttgui_zoom_depth=1;
+		gtk_range_set_value(GTK_RANGE(vtt->gui.zoom), value*100.0);
+		vttgui_zoom_depth=0;
+	} else {
+		gtk_tx_set_zoom(GTK_TX(vtt->gui.display), value);
+	}
+}
+
+void gui_scroll_callback(GtkWidget *tx, GdkEventScroll* ev, gpointer userdata) {
+	vtt_class *vtt = (vtt_class *) userdata;
+	f_prec zoom = gui_get_audio_x_zoom(vtt);
+
+	if ((ev->direction == GDK_SCROLL_UP) || (ev->direction == GDK_SCROLL_RIGHT)) {
+		zoom += 0.1;
+	} else if ((ev->direction == GDK_SCROLL_DOWN) || (ev->direction == GDK_SCROLL_LEFT)) {
+		zoom -= 0.1;
+	}
+	gui_set_audio_x_zoom(vtt, zoom);
+}
+
+
 #define connect_entry(wid, func); g_signal_connect(G_OBJECT(g->wid), "activate", G_CALLBACK(func), (void *) vtt);
 #define connect_adj(wid, func); g_signal_connect(G_OBJECT(g->wid), "value_changed", G_CALLBACK(func), (void *) vtt);
 #define connect_button(wid, func); g_signal_connect(G_OBJECT(g->wid), "clicked", G_CALLBACK(func), (void *) vtt);
@@ -744,6 +773,9 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_press_button(mouse_mapping, vg_mouse_mapping_pressed);
 	connect_button(control_minimize, minimize_control_panel);
 	connect_button(audio_minimize, minimize_audio_panel);
+
+	gtk_widget_add_events(GTK_WIDGET(g->display), GDK_SCROLL_MASK);
+  g_signal_connect(G_OBJECT(g->display), "scroll-event", G_CALLBACK(gui_scroll_callback), vtt);
 
 	static GtkTargetEntry drop_types [] = {
 		{ dnd_uri, 0, 0}
@@ -1470,19 +1502,3 @@ void vg_init_all_non_seqpars()
 	}	
 }
 
-f_prec gui_get_audio_x_zoom(vtt_class *vtt) {
-	return gtk_tx_get_zoom(GTK_TX(vtt->gui.display));
-}
-
-/* Yes, this is yet another evil hack. Fix it :) */
-int vttgui_zoom_depth=0;
-
-extern void gui_set_audio_x_zoom(vtt_class *vtt, f_prec value) {
-	if (vttgui_zoom_depth==0) {
-		vttgui_zoom_depth=1;
-		gtk_range_set_value(GTK_RANGE(vtt->gui.zoom), value*100.0);
-		vttgui_zoom_depth=0;
-	} else {
-		gtk_tx_set_zoom(GTK_TX(vtt->gui.display), value);
-	}
-}
