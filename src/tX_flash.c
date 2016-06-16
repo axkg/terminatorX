@@ -169,7 +169,6 @@ static void gtk_tx_flash_realize (GtkWidget *widget)
 {
 	GtkTxFlash *tx_flash;
 	GdkWindowAttr attributes;
-	GtkStyleContext *context;
 	gint attributes_mask;
 	
 	g_return_if_fail (widget != NULL);
@@ -195,8 +194,6 @@ static void gtk_tx_flash_realize (GtkWidget *widget)
 	gtk_widget_set_window(widget, gdk_window_new (gtk_widget_get_parent_window(widget), &attributes, attributes_mask));
 	
 	gdk_window_set_user_data (gtk_widget_get_window(widget), widget);
-	
-	context = gtk_widget_get_style_context(widget);
 	
 	if (tx_flash->surface) {
 		cairo_surface_destroy (tx_flash->surface);

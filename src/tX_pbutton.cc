@@ -41,7 +41,7 @@ void tx_icons_init(int size)
 	tx_icon_size=size;
 
 	GError *error = NULL;
-	GResource* resource = g_resource_new_from_data(g_bytes_new_static(tX_icons_resource_data.data, sizeof(tX_icons_resource_data.data)), &error);
+	g_resource_new_from_data(g_bytes_new_static(tX_icons_resource_data.data, sizeof(tX_icons_resource_data.data)), &error);
 	if (error) {
 	  tX_error("failed accessing tX_icons resources: %s", error->message);
 	}
