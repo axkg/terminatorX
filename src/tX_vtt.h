@@ -63,7 +63,7 @@ class vtt_class
 	static int16_t *mix_out_buffer;
 	static f_prec mix_max_l;
 	static f_prec mix_max_r;
-	static int samples_in_mix_buffer;
+	static unsigned int samples_in_mix_buffer;
 	static pthread_mutex_t render_lock;
 	
 	static f_prec master_volume;
