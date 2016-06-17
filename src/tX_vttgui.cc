@@ -707,13 +707,13 @@ void gui_set_audio_x_zoom(vtt_class *vtt, f_prec value) {
 	}
 }
 
-void gui_scroll_callback(GtkWidget *tx, GdkEventScroll* ev, gpointer userdata) {
+void gui_scroll_callback(GtkWidget *tx, GdkEventScroll *eventScroll, gpointer userdata) {
 	vtt_class *vtt = (vtt_class *) userdata;
 	f_prec zoom = gui_get_audio_x_zoom(vtt);
 
-	if ((ev->direction == GDK_SCROLL_UP) || (ev->direction == GDK_SCROLL_RIGHT)) {
+	if ((eventScroll->direction == GDK_SCROLL_UP) || (eventScroll->direction == GDK_SCROLL_RIGHT)) {
 		zoom += 0.1;
-	} else if ((ev->direction == GDK_SCROLL_DOWN) || (ev->direction == GDK_SCROLL_LEFT)) {
+	} else if ((eventScroll->direction == GDK_SCROLL_DOWN) || (eventScroll->direction == GDK_SCROLL_LEFT)) {
 		zoom -= 0.1;
 	}
 	gui_set_audio_x_zoom(vtt, zoom);
