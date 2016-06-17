@@ -101,6 +101,7 @@ typedef struct {
 	int use_stdout_cmdline;
 	int use_stdout_from_conf_file;
 	int show_nag;
+	int input_fallback_warning;
 	
 	int prelis;
 	

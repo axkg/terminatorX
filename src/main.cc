@@ -282,15 +282,32 @@ int main(int argc, char **argv)
 		char buffer[4096];
 		const char *errorFmt = "<span size=\"larger\" weight=\"bold\">Failed to access input hardware</span>\n\n"
 			"terminatorX failed to get direct access to the Linux input interface and "
-			"will now fallback to the standard \"pointer warp\" mode, which will result in "
+			"will now fall back to the standard \"pointer warp\" mode, which may result in "
 			"<span weight=\"bold\">significantly reduced scratching precision</span>.\n\nTo achieve "
 			"high precision scratching either\n - <span style=\"italic\">install terminatorX suid-root</span>, or\n"
 			" - <span style=\"italic\">add the users running terminatorX to a group that can access the special "
 			"file \"/dev/input/mice\"</span>\nand restart terminatorX.\n\n"
 			"The reported error was: <span weight=\"bold\">%s</span>";
 
-		snprintf(buffer, 4096, errorFmt, mouse_error->message);
-		tx_note(buffer, true, NULL);
+
+		if (globals.input_fallback_warning) {
+			snprintf(buffer, 4096, errorFmt, mouse_error->message);
+			GtkWidget *dialog=gtk_message_dialog_new_with_markup(GTK_WINDOW(main_window), GTK_DIALOG_DESTROY_WITH_PARENT,
+					GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", "");
+			gtk_message_dialog_set_markup(GTK_MESSAGE_DIALOG(dialog), buffer);
+			GtkWidget *message_area = gtk_message_dialog_get_message_area(GTK_MESSAGE_DIALOG(dialog));
+			GtkWidget *check_button = gtk_check_button_new_with_mnemonic ("Show this warning next time");
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_button), 1);
+			gtk_widget_show(check_button);
+			gtk_box_pack_start(GTK_BOX(message_area), check_button, FALSE, FALSE, 0);
+			gtk_widget_grab_focus(gtk_dialog_get_widget_for_response(GTK_DIALOG(dialog), GTK_RESPONSE_CLOSE));
+			gtk_dialog_run(GTK_DIALOG(dialog));
+			globals.input_fallback_warning=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button));
+			gtk_widget_destroy(dialog);
+		} else {
+			tX_warning("Failed t access input hardware: %s", mouse_error->message);
+		}
+
 		g_error_free(mouse_error);
 	}
 		

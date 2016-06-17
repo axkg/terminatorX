@@ -95,6 +95,7 @@ void set_global_defaults() {
 	globals.use_stdout_from_conf_file=0;
 	
 	globals.show_nag=1;
+	globals.input_fallback_warning=1;
 	globals.prelis=1;
 	
 	strcpy(globals.last_fn,"");
@@ -224,6 +225,7 @@ int load_globals_xml() {
 			restore_int("tooltips", globals.tooltips);
 			restore_int("use_stdout", globals.use_stdout);
 			restore_int("show_nag", globals.show_nag);
+			restore_int("input_fallback_warning", globals.input_fallback_warning);
 			restore_int("prelis", globals.prelis);
 			restore_string("last_fn", globals.last_fn);
 			restore_float("pitch", globals.pitch);
@@ -350,6 +352,7 @@ void store_globals() {
 		store_int("use_stdout", globals.use_stdout);
 		// globals.use_stdout_from_conf_file=0; What the heck is this?
 		store_int("show_nag", globals.show_nag);
+		store_int("input_fallback_warning", globals.input_fallback_warning);
 		store_int("prelis", globals.prelis);
 		store_string("last_fn", globals.last_fn);
 		store_float("pitch", globals.pitch);
