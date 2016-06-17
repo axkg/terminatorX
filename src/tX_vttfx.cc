@@ -251,7 +251,7 @@ void vtt_fx_ladspa :: run()
 		f_prec wet=sp_wet->get_value();
 		f_prec dry=1.0-wet;
 		
-		for (int sample=0; sample < (vtt_class::samples_in_mix_buffer)>>1; sample++) {
+		for (unsigned int sample=0; sample < (vtt_class::samples_in_mix_buffer)>>1; sample++) {
 			myvtt->output_buffer[sample]=dry*myvtt->output_buffer[sample]+wet*wet_buffer[sample];
 		}
 	}
@@ -451,7 +451,7 @@ void vtt_fx_stereo_ladspa :: run()
 		f_prec wet=sp_wet->get_value();
 		f_prec dry=1.0-wet;
 		
-		for (int sample=0; sample < (vtt_class::samples_in_mix_buffer)>>1; sample++) {
+		for (unsigned int sample=0; sample < (vtt_class::samples_in_mix_buffer)>>1; sample++) {
 			myvtt->output_buffer[sample]=dry*myvtt->output_buffer[sample]+wet*wet_buffer[sample];
 			myvtt->output_buffer2[sample]=dry*myvtt->output_buffer2[sample]+wet*wet_buffer2[sample];
 		}

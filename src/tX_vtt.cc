@@ -72,7 +72,7 @@ f_prec * vtt_class::mix_buffer=NULL;
 f_prec * vtt_class::mix_buffer_end=NULL;
 int vtt_class::solo_ctr=0;
 
-int vtt_class::samples_in_mix_buffer=0;
+unsigned int vtt_class::samples_in_mix_buffer=0;
 pthread_mutex_t vtt_class::render_lock=PTHREAD_MUTEX_INITIALIZER;
 f_prec vtt_class::master_volume=1.0;
 f_prec vtt_class::res_master_volume=1.0;
@@ -853,8 +853,8 @@ int vtt_class :: set_mix_buffer_size(int no_samples)
 int16_t * vtt_class :: render_all_turntables()
 {
 	list <vtt_class *> :: iterator vtt, next;
-	int sample;
-	int mix_sample;
+	unsigned int sample;
+	unsigned int mix_sample;
 	
 	pthread_mutex_lock(&render_lock);
 	
