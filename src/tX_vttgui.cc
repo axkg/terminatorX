@@ -629,7 +629,7 @@ static gint vg_file_button_pressed(GtkWidget *wid, GdkEventButton *event, vtt_cl
 
 void vg_adjust_zoom(GtkWidget *wid, vtt_class *vtt) {	
 	GtkAdjustment *adj=gtk_range_get_adjustment(GTK_RANGE(vtt->gui.zoom));
-	gtk_tx_set_zoom(GTK_TX(vtt->gui.display), gtk_adjustment_get_value(adj)/100.0);
+	gtk_tx_set_zoom(GTK_TX(vtt->gui.display), gtk_adjustment_get_value(adj)/100.0, vtt->is_playing);
 }
 
 static gint fx_button_pressed(GtkWidget *wid, GdkEventButton *event, vtt_class *vtt)
@@ -703,7 +703,7 @@ void gui_set_audio_x_zoom(vtt_class *vtt, f_prec value) {
 		gtk_range_set_value(GTK_RANGE(vtt->gui.zoom), value*100.0);
 		vttgui_zoom_depth=0;
 	} else {
-		gtk_tx_set_zoom(GTK_TX(vtt->gui.display), value);
+		gtk_tx_set_zoom(GTK_TX(vtt->gui.display), value, vtt->is_playing);
 	}
 }
 

@@ -92,9 +92,9 @@ GtkWidget* gtk_tx_new	(int16_t *wavdata, int wavsamples);
 GType gtk_tx_get_type	(void);
 void gtk_tx_set_data  (GtkTx *tx, int16_t *wavdata, int wavsamples);
 void gtk_tx_cleanup_pos_display (GtkTx *tx);
-void	gtk_tx_update_pos_display  (GtkTx *tx, int sample, int mute);
+void gtk_tx_update_pos_display (GtkTx *tx, int sample, int mute);
 void gtk_tx_show_frame(GtkTx *tx, int show);
-void gtk_tx_set_zoom(GtkTx *tx, f_prec zoom);
+void gtk_tx_set_zoom(GtkTx *tx, f_prec zoom, int is_playing);
 void gtk_tx_update_colors(GtkTx *tx);
 f_prec gtk_tx_get_zoom(GtkTx *tx);
 
