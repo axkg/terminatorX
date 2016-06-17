@@ -242,82 +242,14 @@ static void gtk_tx_get_preferred_height (GtkWidget *widget, gint *minimal_height
     *minimal_height = *natural_height = TX_DEFAULT_SIZE_Y;
 }
 
-static void gtk_tx_prepare(GtkWidget * widget) {
-	int x, sample;
+static void gtk_tx_reallocate_disp_data(GtkWidget *widget) {
+	GtkAllocation allocation;
+	GtkTx *tx = GTK_TX(widget);
+	int x, sample, avg_pos;
 	int16_t *ptr;
 	f_prec value;
-	GtkTx *tx;
-	int avg_pos, color;
-	gboolean *success;
 
-	g_return_if_fail(widget != NULL);
-	g_return_if_fail(GTK_IS_TX(widget));
-
-	tx = GTK_TX(widget);
-	
-	GtkAllocation allocation;
-	GdkRGBA midColor;
-	gboolean fg = (tx->current_fg == tx->audio_colors_focus);
-	
-	if (tx->audio_colors_focus) { 
-		free(tx->audio_colors_focus); 
-		free(tx->audio_colors_nofocus); 
-		
-		tx->audio_colors_focus = NULL; 
-		tx->audio_colors_nofocus = NULL; 
-	} else {
-		fg = FALSE;
-	}
-	
-	// update tx->yc
-	
 	gtk_widget_get_allocation(widget, &allocation);
-	tx->yc = allocation.height / 2;
-	
-	// allocate colors
-	
-	tx->audio_colors_focus = (GdkRGBA *) malloc(tx->yc * sizeof(GdkRGBA));
-	tx->audio_colors_nofocus = (GdkRGBA *) malloc(tx->yc * sizeof(GdkRGBA));
-	
-	success = (gboolean *) malloc(tx->yc * sizeof(gboolean));
-
-	// no focus colors
-
-	midColor.red = tx->colors[COL_BG_NO_FOCUS].red + (tx->colors[COL_FG_NO_FOCUS].red - tx->colors[COL_BG_NO_FOCUS].red) / 4;
-	midColor.green = tx->colors[COL_BG_NO_FOCUS].green + (tx->colors[COL_FG_NO_FOCUS].green - tx->colors[COL_BG_NO_FOCUS].green) / 4;
-	midColor.blue = tx->colors[COL_BG_NO_FOCUS].blue + (tx->colors[COL_FG_NO_FOCUS].blue - tx->colors[COL_BG_NO_FOCUS].blue) / 4;
-	
-	for (color=0 ; color < tx->yc; color++) {
-		float dist = (float) color / (float) tx->yc;
-		
-		tx->audio_colors_nofocus[color].red = midColor.red + dist*(tx->colors[COL_FG_NO_FOCUS].red - midColor.red);
-		tx->audio_colors_nofocus[color].green = midColor.green + dist*(tx->colors[COL_FG_NO_FOCUS].green - midColor.green);
-		tx->audio_colors_nofocus[color].blue = midColor.blue + dist*(tx->colors[COL_FG_NO_FOCUS].blue - midColor.blue);
-		tx->audio_colors_nofocus[color].alpha = 1.0;
-	}
-	// focus colors
-
-	midColor.red = tx->colors[COL_BG_FOCUS].red + (tx->colors[COL_FG_FOCUS].red - tx->colors[COL_BG_FOCUS].red) / 4;
-	midColor.green = tx->colors[COL_BG_FOCUS].green + (tx->colors[COL_FG_FOCUS].green - tx->colors[COL_BG_FOCUS].green) / 4;
-	midColor.blue = tx->colors[COL_BG_FOCUS].blue + (tx->colors[COL_FG_FOCUS].blue - tx->colors[COL_BG_FOCUS].blue) / 4;
-	
-	for (color=0 ; color < tx->yc; color++) {
-		float dist = (float) color / (float) tx->yc;
-		
-		tx->audio_colors_focus[color].red = midColor.red + dist*(tx->colors[COL_FG_FOCUS].red - midColor.red);
-		tx->audio_colors_focus[color].green = midColor.green + dist*(tx->colors[COL_FG_FOCUS].green - midColor.green);
-		tx->audio_colors_focus[color].blue = midColor.blue + dist*(tx->colors[COL_FG_FOCUS].blue - midColor.blue);
-		tx->audio_colors_focus[color].alpha = 1.0;
-	}
-	
-	if (fg) {
-		tx->current_fg = tx->audio_colors_focus;
-	} else {
-		tx->current_fg = tx->audio_colors_nofocus;
-	}
-	
-	// give up success
-	free(success);
 
 	if (tx->disp_data) { free(tx->disp_data); tx->disp_data=NULL; }
 
@@ -382,9 +314,82 @@ static void gtk_tx_prepare(GtkWidget * widget) {
 	    tx->disp_data = NULL;
 	}
 	
+}
+
+
+
+static void gtk_tx_prepare(GtkWidget * widget) {
+	GtkTx *tx;
+	int color;
+
+	g_return_if_fail(widget != NULL);
+	g_return_if_fail(GTK_IS_TX(widget));
+
+	tx = GTK_TX(widget);
+	
+	GtkAllocation allocation;
+	GdkRGBA midColor;
+	gboolean fg = (tx->current_fg == tx->audio_colors_focus);
+	
+	if (tx->audio_colors_focus) { 
+		free(tx->audio_colors_focus); 
+		free(tx->audio_colors_nofocus); 
+		
+		tx->audio_colors_focus = NULL; 
+		tx->audio_colors_nofocus = NULL; 
+	} else {
+		fg = FALSE;
+	}
+	
+	// update tx->yc
+	
+	gtk_widget_get_allocation(widget, &allocation);
+	tx->yc = allocation.height / 2;
+	
+	// allocate colors
+	
+	tx->audio_colors_focus = (GdkRGBA *) malloc(tx->yc * sizeof(GdkRGBA));
+	tx->audio_colors_nofocus = (GdkRGBA *) malloc(tx->yc * sizeof(GdkRGBA));
+	
+	// no focus colors
+
+	midColor.red = tx->colors[COL_BG_NO_FOCUS].red + (tx->colors[COL_FG_NO_FOCUS].red - tx->colors[COL_BG_NO_FOCUS].red) / 4;
+	midColor.green = tx->colors[COL_BG_NO_FOCUS].green + (tx->colors[COL_FG_NO_FOCUS].green - tx->colors[COL_BG_NO_FOCUS].green) / 4;
+	midColor.blue = tx->colors[COL_BG_NO_FOCUS].blue + (tx->colors[COL_FG_NO_FOCUS].blue - tx->colors[COL_BG_NO_FOCUS].blue) / 4;
+	
+	for (color=0 ; color < tx->yc; color++) {
+		float dist = (float) color / (float) tx->yc;
+		
+		tx->audio_colors_nofocus[color].red = midColor.red + dist*(tx->colors[COL_FG_NO_FOCUS].red - midColor.red);
+		tx->audio_colors_nofocus[color].green = midColor.green + dist*(tx->colors[COL_FG_NO_FOCUS].green - midColor.green);
+		tx->audio_colors_nofocus[color].blue = midColor.blue + dist*(tx->colors[COL_FG_NO_FOCUS].blue - midColor.blue);
+		tx->audio_colors_nofocus[color].alpha = 1.0;
+	}
+	// focus colors
+
+	midColor.red = tx->colors[COL_BG_FOCUS].red + (tx->colors[COL_FG_FOCUS].red - tx->colors[COL_BG_FOCUS].red) / 4;
+	midColor.green = tx->colors[COL_BG_FOCUS].green + (tx->colors[COL_FG_FOCUS].green - tx->colors[COL_BG_FOCUS].green) / 4;
+	midColor.blue = tx->colors[COL_BG_FOCUS].blue + (tx->colors[COL_FG_FOCUS].blue - tx->colors[COL_BG_FOCUS].blue) / 4;
+	
+	for (color=0 ; color < tx->yc; color++) {
+		float dist = (float) color / (float) tx->yc;
+		
+		tx->audio_colors_focus[color].red = midColor.red + dist*(tx->colors[COL_FG_FOCUS].red - midColor.red);
+		tx->audio_colors_focus[color].green = midColor.green + dist*(tx->colors[COL_FG_FOCUS].green - midColor.green);
+		tx->audio_colors_focus[color].blue = midColor.blue + dist*(tx->colors[COL_FG_FOCUS].blue - midColor.blue);
+		tx->audio_colors_focus[color].alpha = 1.0;
+	}
+	
+	if (fg) {
+		tx->current_fg = tx->audio_colors_focus;
+	} else {
+		tx->current_fg = tx->audio_colors_nofocus;
+	}
+	
 	tx->cursor_pos=-1;
 	tx->lastmute=-1;
-	
+
+	gtk_tx_reallocate_disp_data(widget);
 	//tX_warning("spp: %i samples: %i width %i x %i", tx->spp, tx->samples, tx->display_width, x);
 }
 
@@ -418,7 +423,7 @@ static gboolean gtk_tx_draw(GtkWidget * widget, cairo_t *cr) {
 	g_return_val_if_fail(GTK_IS_TX(widget), FALSE);
 
 	gdk_cairo_get_clip_rectangle(cr, &area);
-	
+
 	tx = GTK_TX(widget);
 	
 	cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
@@ -453,12 +458,16 @@ static gboolean gtk_tx_draw(GtkWidget * widget, cairo_t *cr) {
 	return FALSE;
 }
 
-void gtk_tx_set_zoom(GtkTx *tx, f_prec zoom) {
+void gtk_tx_set_zoom(GtkTx *tx, f_prec zoom, int is_playing) {
 	GtkWidget *wid=GTK_WIDGET(tx);
 	
-	tx->zoom=zoom;
-	gtk_tx_prepare(wid);
-	gtk_widget_queue_draw(wid);
+	if (zoom != tx->zoom) {
+		tx->zoom=zoom;
+		gtk_tx_reallocate_disp_data(wid);
+		if (!is_playing || (zoom < 0.01)) {
+			gtk_widget_queue_draw(wid);
+		}
+	}
 }
 
 static void gtk_tx_update(GtkTx * tx) {
