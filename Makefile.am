@@ -3,6 +3,7 @@ SUBDIRS = src icons help
 EXTRA_DIST = COPYING-DOCS\
 	README.PERFORMANCE\
 	terminatorX.spec.in\
+	terminatorX.appdata.xml\
 	gnome-doc-utils.make\
 	terminatorX.desktop\
 	autogen.sh\
@@ -13,6 +14,9 @@ DISTCLEANFILES = gnome-doc-utils.make
 # Destkop Entry
 desktopdir = $(datadir)/applications
 desktop_DATA = terminatorX.desktop
+
+appdatadir = $(datarootdir)/appdata
+appdata_DATA = terminatorX.appdata.xml 
 
 mimedir = $(datadir)/mime-info
 mime_DATA = terminatorX.mime terminatorX.keys
