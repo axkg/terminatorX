@@ -417,7 +417,7 @@ void tX_audiodevice_pulse::context_state_callback(pa_context *context) {
 	
 			pa_buffer_attr attr = {
 				.maxlength = (uint32_t) -1,
-				.tlength = (uint32_t) (globals.pulse_buffer_length * 4), // 2 bytes per sample, 2 channels
+				.tlength = (uint32_t) (globals.pulse_buffer_length * 2 * sizeof(int16_t)), // 2 bytes per sample, 2 channels
 				.prebuf = (uint32_t) -1,
 				.minreq = (uint32_t) -1,
 				.fragsize = (uint32_t) -1
@@ -491,6 +491,8 @@ void tX_audiodevice_pulse::stream_drain_complete_callback(pa_stream *stream, int
 	}
 }
 
+#define min(a,b) ((a) < (b) ? (a) : (b))
+
 void tX_audiodevice_pulse::stream_write_callback(pa_stream *stream, size_t length) {
 	size_t sample_length = length/2;
 
@@ -503,42 +505,27 @@ void tX_audiodevice_pulse::stream_write_callback(pa_stream *stream, size_t lengt
 		}
 		pa_operation_unref(operation);
 	} else {
-		//tX_debug("pulseaudio write %i samples", sample_length);
 		unsigned int outbuffer_pos=0;
 		unsigned int sample;
 	
-		// re-alloc outbuffer only when not yet allocated or allocated buffer smaller
-		// than the chunk requested by pulseaudio
-/*		if (!outbuffer || (outbuffer_length < sample_length)) {
-			if (outbuffer) {
-				pa_xfree(outbuffer);
-			}
-			outbuffer = (int16_t* ) pa_xmalloc(length);
-			outbuffer_length = sample_length;
-		}
-*/
-
 		int16_t *outbuffer = NULL;
 		size_t outbuffer_bytes = length;
-  		pa_stream_begin_write(stream, (void **) &outbuffer, &outbuffer_bytes);
-
-	  	//tX_debug("begin write %i %i", outbuffer_bytes, length)
+		pa_stream_begin_write(stream, (void **) &outbuffer, &outbuffer_bytes);
 
 		if (samples_in_overrun_buffer) {
-			for (sample=0; ((sample<samples_in_overrun_buffer) && (outbuffer_pos<sample_length));) {
-				outbuffer[outbuffer_pos++]=overrun_buffer[sample++];
-			}
+			memcpy(outbuffer, overrun_buffer, sizeof(int16_t) * samples_in_overrun_buffer);
+			outbuffer_pos+=samples_in_overrun_buffer;
 		}
 	
 		while (outbuffer_pos<sample_length) {
-			//tX_debug("render %i %i %i", outbuffer_pos, sample_length, vtt_class::samples_in_mix_buffer);
 			int16_t *data=engine->render_cycle();
+
+			sample = min(vtt_class::samples_in_mix_buffer, (sample_length - outbuffer_pos));
+
+			memcpy(&outbuffer[outbuffer_pos], data, sizeof(int16_t) * sample);
+			outbuffer_pos+=sample;
 		
-			for (sample=0; ((sample<(unsigned int) vtt_class::samples_in_mix_buffer) && (outbuffer_pos<sample_length));) {
-				outbuffer[outbuffer_pos++]=data[sample++];
-			}
-		
-			if (sample<(unsigned int) vtt_class::samples_in_mix_buffer) {
+			if (sample < vtt_class::samples_in_mix_buffer) {
 				samples_in_overrun_buffer=vtt_class::samples_in_mix_buffer-sample;
 				/* There's more data in the mixbuffer... */
 				memcpy(overrun_buffer, &data[sample], sizeof(int16_t) * samples_in_overrun_buffer);
@@ -547,7 +534,6 @@ void tX_audiodevice_pulse::stream_write_callback(pa_stream *stream, size_t lengt
 			}
 		}
 	
-		//tX_debug("write %i bytes", length);
 		if (pa_stream_write(stream, (uint8_t *) outbuffer, length, NULL, 0, PA_SEEK_RELATIVE) < 0) {
 			tX_error("pulseaudio error writing to stream: %s", pa_strerror(pa_context_errno(context)));
 		}
