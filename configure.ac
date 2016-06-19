@@ -27,7 +27,7 @@ AC_ARG_ENABLE(alsamidi,		[  --disable-alsamidi      disable support  ALSA MIDI i
 AC_ARG_ENABLE(lrdf,		[  --disable-lrdf          disable support for liblrdf (default=auto) ])
 AC_ARG_ENABLE(capabilities,	[  --enable-capabilities   to use rt-scheduling (default=auto) ])
 AC_ARG_ENABLE(deprecated,	[  --disable-deprecated    compile without deprecated G*-headers (default=no) ])
-AC_ARG_ENABLE(suidroot,   [  --disable-suidroot      to avoid setuid root upon installation (default=no) ])
+AC_ARG_ENABLE(suidroot,   [  --enable-suidroot      install terminatorX setuid root (default=no) ])
 AC_ARG_WITH(docdir,		[  --with-docdir=/some/dir the final location the docs will be installed to. ])
 
 dnl Checks for programs.
@@ -490,10 +490,10 @@ fi
 
 AC_SUBST(DEPRECATED_FLAGS)
 
-if test "$enable_suidroot" = "no"; then
-	OPTION_SUIDROOT="no"
-else
+if test "$enable_suidroot" = "yes"; then
 	OPTION_SUIDROOT="yes"
+else
+	OPTION_SUIDROOT="no"
 fi
 
 AM_CONDITIONAL([SUIDROOT], [ test x$OPTION_SUIDROOT = xyes])
@@ -664,3 +664,8 @@ echo "capabilities support: $OPTION_CAP"
 echo "install setuid-root: $OPTION_SUIDROOT"
 echo
 echo You can now run \'make\' to compile terminatorX
+
+if test "$OPTION_SUIDROOT" = "yes"; then
+    echo As setuid-root is enabled, \'make install\' must be run with root privileges.
+fi
+ 
