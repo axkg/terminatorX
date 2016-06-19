@@ -498,10 +498,10 @@
 
 							<para>An audiodevice capable of low-latency stereo playback and compatible with either
 								 <itemizedlist>
-									 <listitem>ALSA,</listitem>
-									 <listitem>OSS,</listitem>
-									 <listitem>JACK or</listitem>
-									 <listitem>PulseAudio</listitem>
+								     <listitem><para>ALSA,</para></listitem>
+								     <listitem><para>OSS,</para></listitem>
+								     <listitem><para>JACK or</para></listitem>
+								     <listitem><para>PulseAudio</para></listitem>
 								 </itemizedlist>
 							</para>
             </listitem>
