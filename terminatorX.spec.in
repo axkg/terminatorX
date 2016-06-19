@@ -86,16 +86,21 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_mandir}/man1/%{name}.1*
 %{_datadir}/mime-info/%{name}.keys
 %{_datadir}/mime-info/%{name}.mime
-%{_datadir}/omf/*/*
+%{_datadir}/omf/{%name}-manual/%{name}-manual-C.omf
 %{_datadir}/gnome/help/terminatorX-manual/C/figures/signalflow.png
 %{_datadir}/gnome/help/terminatorX-manual/C/terminatorX-manual.xml
-%{_datadir}/pixmaps/*xpm
-%{_datadir}/icons/hicolor/48x48/apps/*png
-%{_datadir}/icons/hicolor/48x48/mimetypes/*png
+%{_datadir}/pixmaps/%{name}.xpm
+%{_datadir}/icons/hicolor/512x512/apps/%{name}.png
+%{_datadir}/icons/hicolor/512x512/mimetypes/%{name}-mime.png
 %{_datadir}/applications/%{name}.desktop
+%{_datadir}/appdata/%{name}.appdata.xml
 
 %changelog
-* Fri May 13 2016 Alexander Koenig <alex@lisas.de> - 4.00-1
+* Sun Jun 19 2016  Alexander Koenig <alex@lisas.de> - 4.00-1
+- fix icon resolutions
+- include appdata
+
+* Fri May 13 2016 Alexander Koenig <alex@lisas.de> - 3.99-1
 - update to compile on rawhide (fc24)
 - install binary setuid root
 - require mpg123 instead of mpg321
