@@ -437,14 +437,15 @@ static gboolean gtk_tx_draw(GtkWidget * widget, cairo_t *cr) {
 
 	if (tx->disp_data) {
 		int max_x=area.x+area.width+1;
+		int src_x;
 
-	    for (x =area.x; x < max_x; x++) {
-			int dy = tx->disp_data[tx->display_x_offset+x];
+		for (x=area.x, src_x=tx->display_x_offset+area.x; (x < max_x) && (src_x < tx->display_width); x++, src_x=tx->display_x_offset+x) {
+			int dy = tx->disp_data[src_x];
 			gdk_cairo_set_source_rgba (cr, &tx->current_fg[dy]);
 			cairo_move_to (cr, x, tx->yc - dy);
 			cairo_line_to (cr, x, tx->yc + dy+1);
 			cairo_stroke (cr);
-	    }
+		}
 	} else {
 		GtkAllocation allocation;
 		gtk_widget_get_allocation(widget, &allocation);
@@ -514,7 +515,7 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 	cairo_set_source_surface (cr, tx->surface, 0, 0);
 	cairo_set_line_width(cr,1);
 	
-	if (x >= 0) {
+	if ((x >= 0) && (x < tx->display_width)) {
 		gdk_cairo_set_source_rgba (cr, tx->current_bg);
 		
 		cairo_move_to (cr, x, 0);
