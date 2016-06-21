@@ -200,6 +200,7 @@ create_tx_options (GtkWindow* parent)
   GtkWidget *label45;
   GtkWidget *label46;
   GtkWidget *label47;
+  GtkWidget *wav_display_history;
   GtkWidget *wav_display_bg_focus;
   GtkWidget *wav_display_bg_no_focus;
   GtkWidget *wav_display_fg_focus;
@@ -580,6 +581,16 @@ create_tx_options (GtkWindow* parent)
   gtk_grid_attach (GTK_GRID (grid2), knob_size, 1, 8, 1, 1);
   gtk_scale_set_value_pos (GTK_SCALE (knob_size), GTK_POS_LEFT);
   gtk_scale_set_digits (GTK_SCALE (knob_size), 0);
+
+  label38 = gtk_label_new("Highlight:");
+  gtk_widget_show (label38);
+  gtk_grid_attach (GTK_GRID (grid2), label38, 0, 9, 1, 1);
+  gtk_widget_set_halign(label38, GTK_ALIGN_START);
+
+  wav_display_history = gtk_check_button_new_with_mnemonic ("Highlight recently played back samples");
+  gtk_widget_show (wav_display_history);
+  gtk_grid_attach (GTK_GRID (grid2), wav_display_history, 1, 9, 1, 1);
+  gtk_widget_set_tooltip_text(wav_display_history, "Adds visual history to the turntable cursor or needles.");
 
   label2 = gtk_label_new ("User Interface");
   gtk_widget_show (label2);
@@ -969,6 +980,7 @@ create_tx_options (GtkWindow* parent)
   TX_UI_HOOKUP_OBJECT (tx_options, label_knob_size, "label_knob_size");
   TX_UI_HOOKUP_OBJECT (tx_options, knob_size, "knob_size");
   TX_UI_HOOKUP_OBJECT (tx_options, override_knob_size, "override_knob_size");
+  TX_UI_HOOKUP_OBJECT (tx_options, wav_display_history, "wav_display_history");
 
   return tx_options;
 }

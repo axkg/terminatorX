@@ -64,8 +64,6 @@
 #	include <audiofile.h>
 #endif
 
-#define min(a,b) ((a) < (b) ? (a) : (b))
-
 tx_audiofile :: tx_audiofile()
 {
 	mem_type=TX_AUDIO_UNDEFINED;
@@ -309,7 +307,7 @@ tX_audio_error tx_audiofile :: load_wav() {
 #endif	
 	while (wav_in.len>allbytes)
 	{	
-		bytes = fread(p, 1, min(1024, wav_in.len-allbytes), wav_in.handle);
+		bytes = fread(p, 1, tX_min(1024, wav_in.len-allbytes), wav_in.handle);
 
 #ifdef ENABLE_DEBUG_OUTPUT
 		if (output) { tX_debug("tX_audiofile::load_wav() read %zu Bytes [%04x %04x %04x %04x %04x %04x ..]", bytes, (unsigned int) p[0],  (unsigned int) p[1], (unsigned int) p[2], (unsigned int) p[3], (unsigned int) p[4], (unsigned int) p[5]); }
@@ -409,7 +407,7 @@ static enum mad_flow tX_mad_input(void *data, struct mad_stream *stream) {
 	unsigned int pos;
 
 	if (buffer->first_call) {
-		bs=min(TX_MAD_BLOCKSIZE, buffer->size);
+		bs=tX_min(TX_MAD_BLOCKSIZE, buffer->size);
 		mad_stream_buffer(stream, buffer->start, bs);
 		buffer->first_call=false;
 		return MAD_FLOW_CONTINUE;
@@ -417,7 +415,7 @@ static enum mad_flow tX_mad_input(void *data, struct mad_stream *stream) {
 		if (!stream->next_frame) return MAD_FLOW_STOP;
 		
 		pos=stream->next_frame-buffer->start;
-		bs=min(TX_MAD_BLOCKSIZE, buffer->size-pos);
+		bs=tX_min(TX_MAD_BLOCKSIZE, buffer->size-pos);
 		//tX_debug("last: %08x, new %08x, bs: %i, pos: %i",  buffer->last_frame, stream->next_frame, bs, pos);
 		
 		mad_stream_buffer(stream, stream->next_frame, bs);
