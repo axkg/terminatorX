@@ -491,8 +491,6 @@ void tX_audiodevice_pulse::stream_drain_complete_callback(pa_stream *stream, int
 	}
 }
 
-#define min(a,b) ((a) < (b) ? (a) : (b))
-
 void tX_audiodevice_pulse::stream_write_callback(pa_stream *stream, size_t length) {
 	size_t sample_length = length/2;
 
@@ -520,7 +518,7 @@ void tX_audiodevice_pulse::stream_write_callback(pa_stream *stream, size_t lengt
 		while (outbuffer_pos<sample_length) {
 			int16_t *data=engine->render_cycle();
 
-			sample = min(vtt_class::samples_in_mix_buffer, (sample_length - outbuffer_pos));
+			sample = tX_min(vtt_class::samples_in_mix_buffer, (sample_length - outbuffer_pos));
 
 			memcpy(&outbuffer[outbuffer_pos], data, sizeof(int16_t) * sample);
 			outbuffer_pos+=sample;

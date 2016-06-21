@@ -95,6 +95,9 @@ static void gtk_tx_class_init(GtkTxClass * gclass) {
 	widget_class->size_allocate = gtk_tx_size_allocate;
 }
 
+#define COL_FOCUS 0 
+#define COL_NO_FOCUS 1
+
 #define COL_BG_FOCUS     0
 #define COL_BG_NO_FOCUS  1
 #define COL_FG_FOCUS     2
@@ -103,6 +106,8 @@ static void gtk_tx_class_init(GtkTxClass * gclass) {
 #define COL_CURSOR_MUTE  5
 
 void gtk_tx_update_colors(GtkTx *tx) {
+	int step;
+
 	gdk_rgba_parse(&tx->colors[COL_BG_FOCUS], globals.wav_display_bg_focus);
 	tx->colors[COL_BG_FOCUS].alpha=1.0;
 	gdk_rgba_parse(&tx->colors[COL_BG_NO_FOCUS], globals.wav_display_bg_no_focus);
@@ -117,6 +122,17 @@ void gtk_tx_update_colors(GtkTx *tx) {
 	tx->colors[COL_CURSOR].alpha=1.0;
 	gdk_rgba_parse(&tx->colors[COL_CURSOR_MUTE], globals.wav_display_cursor_mute);
 	tx->colors[COL_CURSOR_MUTE].alpha=1.0;
+
+	for (step = 0; step < GTK_TX_HISTORY_LENGTH; step++) {
+		double frac = (1.0 / ((double) GTK_TX_HISTORY_LENGTH + 2.0)) * ((double) step + 1.0);
+
+		GdkRGBA *color = &tx->history_colors[step];
+		color->red = tx->colors[COL_CURSOR].red;
+		color->green = tx->colors[COL_CURSOR].green;
+		color->blue = tx->colors[COL_CURSOR].blue;
+		color->alpha = frac*frac/2;
+//		printf("%i, %lf\n", step, frac);
+	}
 }
 
 
@@ -129,7 +145,8 @@ static void gtk_tx_init(GtkTx * tx) {
 #endif
 	
 	memset(tx->colors, 0, sizeof(tx->colors));
-	
+	memset(tx->history_colors, 0, sizeof(tx->history_colors));
+
 	gtk_tx_update_colors(tx);
 	
 	tx->current_fg=tx->audio_colors_focus;
@@ -231,7 +248,7 @@ static void gtk_tx_get_preferred_width (GtkWidget *widget, gint *minimal_width, 
 }
 
 static void gtk_tx_get_preferred_height (GtkWidget *widget, gint *minimal_height, gint *natural_height) {
-    *minimal_height = *natural_height = TX_DEFAULT_SIZE_Y;
+	*minimal_height = *natural_height = TX_DEFAULT_SIZE_Y;
 }
 
 static void gtk_tx_reallocate_disp_data(GtkWidget *widget) {
@@ -433,9 +450,9 @@ static gboolean gtk_tx_draw(GtkWidget * widget, cairo_t *cr) {
 	cairo_set_line_width(cr, 1);
 
 	if (tx->disp_data) {
-		int src_x;
-
+		int src_x, step;
 		int x_offset;
+
 		if (tx->zoom > 0.0) {
 		    x_offset= tx->cursor_pos > tx->xc ? tx->cursor_pos-tx->xc : 0;
 			if (x_offset+tx->xmax > tx->display_width) {
@@ -456,6 +473,58 @@ static gboolean gtk_tx_draw(GtkWidget * widget, cairo_t *cr) {
 			}
 		}
 
+		tx->cursor_history[tx->cursor_history_offset] = tx->cursor_pos;
+		tx->cursor_history_offset++;
+		if (tx->cursor_history_offset >= GTK_TX_HISTORY_LENGTH) {
+			tx->cursor_history_offset -= GTK_TX_HISTORY_LENGTH;
+		}
+
+		if (globals.wav_display_history && !tx->mute) {
+			int prev_sample_pos = -1;
+			/* draw history */
+
+			for (step = 0; step < GTK_TX_HISTORY_LENGTH; step++) {
+				int history_pos = tx->cursor_history_offset - step;
+
+				if (history_pos < 0) {
+					history_pos += GTK_TX_HISTORY_LENGTH;
+				}
+
+				int sample_pos = tx->cursor_history[history_pos];
+
+				if ((sample_pos >= 0) && (prev_sample_pos >= 0)) {
+					int sample_x_pos = sample_pos - tx->display_x_offset;
+					int prev_sample_x_pos = prev_sample_pos - tx->display_x_offset;
+					int min, max;
+
+					if (prev_sample_x_pos > sample_x_pos) {
+						min = sample_x_pos;
+						max = prev_sample_x_pos;
+					} else {
+						min = prev_sample_x_pos;
+						max = sample_x_pos;
+					}
+					
+					if ((max - min) <= tx->xc) {
+						for (x=min; x < max; x++) {
+							int value = tx->disp_data[x+tx->display_x_offset];
+							draw_sample(x, tx->yc-value, tx->yc+value+1, &tx->history_colors[GTK_TX_HISTORY_LENGTH-step]);
+						}
+					} else {
+						for (x = 0; x < min; x++) {
+							int value = tx->disp_data[x+tx->display_x_offset];
+							draw_sample(x, tx->yc-value, tx->yc+value+1, &tx->history_colors[GTK_TX_HISTORY_LENGTH-step]);
+						}
+						for (x= max; x < tx->xmax; x++) {
+							int value = tx->disp_data[x+tx->display_x_offset];
+							draw_sample(x, tx->yc-value, tx->yc+value+1, &tx->history_colors[GTK_TX_HISTORY_LENGTH-step]);
+						}
+					}
+				}
+
+				prev_sample_pos = sample_pos;
+			}
+		}
 		/* draw cursor */
 		draw_sample(tx->cursor_x_pos, 0, tx->ymax, tx->mute ? &tx->colors[COL_CURSOR_MUTE] : &tx->colors[COL_CURSOR]);
 	} else {
@@ -478,6 +547,7 @@ void gtk_tx_update_pos_display(GtkTx * tx, int sample, int mute) {
 void gtk_tx_cleanup_pos_display(GtkTx * tx) {
 	GtkWidget *widget;
 	GtkAllocation allocation;
+	int step;
 
 	widget = GTK_WIDGET(tx);
 	gtk_widget_get_allocation(widget, &allocation);
@@ -485,6 +555,10 @@ void gtk_tx_cleanup_pos_display(GtkTx * tx) {
 	tx->display_x_offset=0;
 	tx->cursor_pos=-1;
 	tx->cursor_x_pos=-1;
+
+	for (step = 0; step < GTK_TX_HISTORY_LENGTH; step++) {
+		tx->cursor_history[step] = -1;
+	}
 	
 	gtk_widget_queue_draw(widget);
 }

@@ -126,7 +126,9 @@ void apply_options(GtkWidget *dialog) {
 	} else {
 		globals.knob_size_override = 0;
 	}
-	
+
+	globals.wav_display_history=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "wav_display_history")))==TRUE);
+
 	/* Audio Colors */
 	
 	strcpy(globals.wav_display_bg_focus, (char *) g_object_get_data(G_OBJECT(lookup_widget(dialog, "wav_display_bg_focus")), "Color"));
@@ -425,6 +427,9 @@ void init_tx_options(GtkWidget *dialog) {
 	} else {
 		gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "knob_size")), 48);
 	}
+	
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "wav_display_history")), globals.wav_display_history);
+
 	/* Audio Colors */
 	int ctr=0;
 	

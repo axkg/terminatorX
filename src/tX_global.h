@@ -61,6 +61,9 @@ extern "C" {
 #define tX_msg(fmt, args...); { fprintf(stderr, "- tX_msg: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }
 #define tX_plugin_warning(fmt, args...); { if (globals.verbose_plugin_loading) { fprintf(stderr, "+ tX_warning: "); fprintf(stderr, fmt , ## args); fprintf(stderr, "\n"); }}
 
+#define tX_min(a,b) ((a) < (b) ? (a) : (b))
+#define tX_max(a,b) ((a) > (b) ? (a) : (b))
+	
 #ifdef MEM_DEBUG
 #define tX_freemem(ptr, varname, comment); fprintf(stderr, "** free() [%s] at %08x. %s.\n", varname, ptr, comment); free(ptr);
 #define tX_malloc(ptr, varname, comment, size, type); fprintf(stderr, "**[1/2] malloc() [%s]. Size: %i. %s.\n", varname, size, comment); ptr=type malloc(size); fprintf(stderr, "**[2/2] malloc() [%s]. ptr: %08x.\n", varname, ptr);
@@ -161,6 +164,7 @@ typedef struct {
 	int filename_length;
 	
 	int restore_midi_connections;
+	int wav_display_history;
 	
 	char wav_display_bg_focus[8];
 	char wav_display_bg_no_focus[8];

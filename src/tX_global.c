@@ -138,7 +138,9 @@ void set_global_defaults() {
 	globals.alsa_free_hwstats=0;
 	globals.filename_length=20;
 	globals.restore_midi_connections=1;
-	
+
+	globals.wav_display_history=1;
+
 	strcpy(globals.wav_display_bg_focus, "#00004C");
 	strcpy(globals.wav_display_bg_no_focus, "#000000");
 
@@ -244,7 +246,8 @@ int load_globals_xml() {
 			restore_int("confirm_events", globals.confirm_events);
 			restore_float("vtt_inertia", globals.vtt_inertia);
 			restore_int("restore_midi_connections", globals.restore_midi_connections);
-			
+
+			restore_int("wav_display_history", globals.wav_display_history);
 			restore_string("wav_display_bg_focus", globals.wav_display_bg_focus);
 			restore_string("wav_display_bg_no_focus", globals.wav_display_bg_no_focus);
 			restore_string("wav_display_fg_focus", globals.wav_display_fg_focus);
@@ -372,6 +375,7 @@ void store_globals() {
 		store_string("last_path", globals.current_path);
 		store_int("restore_midi_connections", globals.restore_midi_connections);
 
+		store_int("wav_display_history", globals.wav_display_history);
 		store_string("wav_display_bg_focus", globals.wav_display_bg_focus);
 		store_string("wav_display_bg_no_focus", globals.wav_display_bg_no_focus);
 		store_string("wav_display_fg_focus", globals.wav_display_fg_focus);

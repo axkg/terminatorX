@@ -32,7 +32,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-
 #define GTK_TX(obj)          G_TYPE_CHECK_INSTANCE_CAST (obj, gtk_tx_get_type (), GtkTx)
 #define GTK_TX_CLASS(klass)  GTK_CHECK_CLASS_CAST (klass, gtk_tx_get_type (), GtkTxClass)
 #define GTK_IS_TX(obj)       G_TYPE_CHECK_INSTANCE_TYPE (obj, gtk_tx_get_type ())
@@ -46,6 +45,8 @@ typedef enum tx_widget_motion {
 	MOTION_RIGHT
 } tx_widget_motion;
 
+#define GTK_TX_HISTORY_LENGTH 4 
+
 struct _GtkTx {
 	GtkWidget widget;
 
@@ -54,6 +55,7 @@ struct _GtkTx {
 	int samples;
 	
 	GdkRGBA colors[6];
+	GdkRGBA history_colors[GTK_TX_HISTORY_LENGTH];
 	
 	GdkRGBA *current_fg;
 	GdkRGBA *current_bg;
@@ -72,6 +74,8 @@ struct _GtkTx {
 	int cursor_pos;
 	int cursor_x_pos;
 	int mute;
+	int cursor_history[GTK_TX_HISTORY_LENGTH];
+	int cursor_history_offset;
 
 	int display_width;
 	int display_x_offset;
