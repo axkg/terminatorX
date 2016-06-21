@@ -62,17 +62,16 @@ struct _GtkTx {
 	GdkRGBA *audio_colors_nofocus;
 	
 	int spp;
+	int xc;
+	int xmax;
 	int yc;
-	
-	int lastmute;
-	int do_showframe;
-	
-	GtkWidget *peer_scale;
+	int ymax;
 	
 	f_prec zoom;
 		
 	int cursor_pos;
 	int cursor_x_pos;
+	int mute;
 
 	int display_width;
 	int display_x_offset;
@@ -93,7 +92,7 @@ GType gtk_tx_get_type	(void);
 void gtk_tx_set_data  (GtkTx *tx, int16_t *wavdata, int wavsamples);
 void gtk_tx_cleanup_pos_display (GtkTx *tx);
 void gtk_tx_update_pos_display (GtkTx *tx, int sample, int mute);
-void gtk_tx_show_frame(GtkTx *tx, int show);
+void gtk_tx_show_focus(GtkTx *tx, int show);
 void gtk_tx_set_zoom(GtkTx *tx, f_prec zoom, int is_playing);
 void gtk_tx_update_colors(GtkTx *tx);
 f_prec gtk_tx_get_zoom(GtkTx *tx);
