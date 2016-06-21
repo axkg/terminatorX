@@ -1473,9 +1473,9 @@ void gui_clear_master_button(vtt_class *vtt)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(vtt->gui.sync_master), 0);
 }
 
-void gui_show_frame(vtt_class *vtt, int show)
+void gui_show_focus(vtt_class *vtt, int show)
 {
-	gtk_tx_show_frame(GTK_TX(vtt->gui.display), show);
+	gtk_tx_show_focus(GTK_TX(vtt->gui.display), show);
 }
 
 #define vgui (*vtt)->gui

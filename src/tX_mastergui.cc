@@ -122,7 +122,7 @@ GdkWindow* top_window;
 #define WID_FIX FALSE, FALSE, 0
 extern void add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn);
 extern void destroy_gui(vtt_class *vtt);
-extern void gui_show_frame(vtt_class *vtt, int show);
+extern void gui_show_focus(vtt_class *vtt, int show);
 
 GdkWindow *rec_dialog_win=NULL;
 GtkWidget *rec_dialog=NULL;
@@ -161,7 +161,7 @@ gint pos_update(gpointer data)
 	if (stop_update) {		
 		cleanup_all_vtts();
 		tX_seqpar :: update_all_graphics();
-		if (old_focus) gui_show_frame(old_focus, 0);
+		if (old_focus) gui_show_focus(old_focus, 0);
 		old_focus=NULL;
 		gtk_tx_flash_clear(main_flash);
 		gdk_flush();	
@@ -178,9 +178,9 @@ gint pos_update(gpointer data)
 		gtk_tx_flash_set_level(main_flash, temp/FL_SHRT_MAX, temp2/FL_SHRT_MAX);
 
 		if (vtt_class::focused_vtt!=old_focus) {
-			if (old_focus) gui_show_frame(old_focus, 0);
+			if (old_focus) gui_show_focus(old_focus, 0);
 			old_focus=vtt_class::focused_vtt;
-			if (old_focus) gui_show_frame(old_focus, 1);			
+			if (old_focus) gui_show_focus(old_focus, 1);			
 		}
 
 		grab_status = mouse.is_grabbed();
