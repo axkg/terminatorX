@@ -11,7 +11,8 @@ tX_knob_images = knob0.png knob1.png knob2.png\
 
 tX_icons = audioengine.svg fx_close.svg fx_down.svg fx_up.svg\
 					 grab.svg maximize.svg minimize_panel.svg minimize.svg\
-					 play.svg power.svg record.svg sequencer.svg stop.svg
+					 play.svg power.svg record.svg sequencer.svg stop.svg\
+					 samples.svg control.svg
 
 tX_icons_resource_file = tX_icons.gresource.xml
 tX_knob_resource_file = tX_knob.gresource.xml
