@@ -53,8 +53,8 @@ void tx_icons_init(int size)
 	icon_init(PLAY, "play");
 	icon_init(STOP, "stop");
 	icon_init(RECORD, "record");
-	icon_init(MIN_AUDIO, "wave");
-	icon_init(MIN_CONTROL, "min_control");
+	icon_init(MIN_AUDIO, "samples");
+	icon_init(MIN_CONTROL, "control");
 	icon_init(MINIMIZE, "minimize");
 	icon_init(MAXIMIZE, "maximize");
 	icon_init(FX_UP, "fx_up");

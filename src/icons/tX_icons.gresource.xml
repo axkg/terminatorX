@@ -13,7 +13,9 @@
     <file>power.svg</file>
     <file>record.svg</file>
     <file>sequencer.svg</file>
-		<file>stop.svg</file>
+    <file>stop.svg</file>
+    <file>samples.svg</file>
+    <file>control.svg</file>
   </gresource>
 </gresources>
 
