@@ -84,7 +84,15 @@ struct _GtkTx {
 	f_prec max_value;
 #endif	
 
-	cairo_surface_t* surface;
+	cairo_surface_t* render_buffer_surface_a;
+	cairo_surface_t* render_buffer_surface_b;
+
+	cairo_surface_t* current_render_buffer_surface;
+	cairo_surface_t* previous_render_buffer_surface;
+
+	int render_buffer_x_offset;
+	int render_buffer_display_width;
+	GdkRGBA *render_buffer_fg;
 };
 
 struct _GtkTxClass {
