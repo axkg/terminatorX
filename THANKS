@@ -1,11 +1,12 @@
-terminatorX THANKS:
+terminatorX THANKS
+==================
 
 I'd like to thank:
 
 - All authors of: the GNU tools and libraries, the Linux kernel, XFree86,
-                  sox, mpg123, the wav-tools, gtk+ and TCP/IP. 
-		  It's obvious but: without their work there'd be no tX
-	
+  sox, mpg123, the wav-tools, gtk+ and TCP/IP.
+  It's obvious but: without their work there'd be no tX
+
 - All contributors (see AUTHORS)
 
 - All users who send feedback
