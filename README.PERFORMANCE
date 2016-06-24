@@ -1,31 +1,34 @@
+Tuning terminatorX' performance
+===============================
+
 There are several things you can do to improve terminatorX performance:
 
-1. Don't use fancy gtk+ themes
-2. Install suid root
-3. Compile an optimized binary
-4. Optimize your terminatorX setup
++ Don't use fancy gtk+ themes
++ Install suid root
++ Compile an optimized binary
++ Optimize your terminatorX setup
 
 In Detail:
 
-1. Don't use pixmapped nor other "fat" gtk+-themes.
----------------------------------------------------
+Don't use pixmapped nor other "fat" gtk+-themes
+-----------------------------------------------
 
 terminatorX involves quite some GUI activity, so it's desirable that drawing
-happens fast. Some gtk+ engines can slow down drawing signifcantly
+happens fast. Some gtk+ engines can slow down drawing signifcantly.
 
 2. Install suid root
 --------------------
 
 Note: Installing a program suid-root is always potentially dangerous. However,
 a program needs special privileges to acquire realtime scheduling (which 
-improves playback quality signifcantly). Since release 3.82 terminatorX provides
-only one method of running suid root:
+improves playback quality signifcantly). However, only when running suid-root
+terminatorX can acquire realtime scheduling priorty to avoid buffer underruns
+with low latency settings and the mouse motion events can be captured directly
+from the hardware improving scratching precision.
 
-- Linux' POSIX capabilities: when capabilities support is available at
-  compile time (requires libcap) terminatorX can make use of Linux' POSIX
-  capabilities. The binary has to be installed suid root but the program
-  will drop root privileges right on startup - after aquiring the CAP_SYS_NICE
-  capability.
+When running setuid-root, terminatorX makes use of Linux' POSIX capabilities:
+Right after start-up it acquires the CAP_SYS_NICE capabilty and accesses the
+Linux input interface before dropping root privileges for good.
 
 While the capabilities based approach seems much more secure than the approach
 that was previously implemented, it might still be exploitable. So, for 100%
@@ -35,13 +38,14 @@ suid root.
 3. Compile an optimized binary
 ------------------------------
 
-This issue is covered in the INSTALL file mostly. Setting good optimization
-flags is a good idea although this step will proabably have the least effect.
+This issue is covered in the seperate INSTALL file. Setting good optimization
+flags is a good idea although this step will proabably have the least effect
+and the defaults should be reasonable.
 
 4. Optimize your terminatorX setup
 ----------------------------------
 
 The default settings for the GUI updates provide good realtime feedback. This
-may cause problems on slower machines or evil gtk+-themes. If the GUI-thread
+may cause problems on slower machines or slow gtk+-themes. If the GUI-thread
 causes dropouts in the audio-engine you should increase the Update-Delay value 
 in the options dialog.
