@@ -590,6 +590,7 @@ void show_about(int nag)
 #ifdef USE_AUDIOFILE_INPUT
 		" [audiofile]"
 #endif
+		"\n"
 #ifdef USE_ALSA_MIDI_IN
 		" [midi]"
 #endif
@@ -601,6 +602,9 @@ void show_about(int nag)
 #endif
 #ifdef USE_JACK
 		" [jack]"
+#endif
+#ifdef USE_PULSE
+		" [pulse]"
 #endif
 #ifdef USE_LRDF
 		" [lrdf]"
@@ -685,7 +689,7 @@ void show_about(int nag)
 		gtk_text_buffer_insert_with_tags_by_name(tbuffer, &iter, license, -1, "courier", NULL);
 		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(text), 5);
 		gtk_text_view_set_right_margin(GTK_TEXT_VIEW(text), 5);
-		gtk_widget_set_size_request(GTK_WIDGET(text), 640, 200);
+		gtk_widget_set_size_request(GTK_WIDGET(scroll), 640, 200);
 		gtk_widget_show(text);		
 		
 		gtk_container_add(GTK_CONTAINER(expander), scroll);
