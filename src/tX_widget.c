@@ -457,7 +457,9 @@ void gtk_tx_set_zoom(GtkTx *tx, f_prec zoom, int is_playing) {
 }
 
 #define draw_line(x1, y1, x2, y2, rgba) { gdk_cairo_set_source_rgba(cr, rgba); cairo_move_to(cr, x1, y1); cairo_line_to(cr, x2, y2); cairo_stroke(cr); }
+#define draw_line2(x1, y1, x2, y2) { cairo_move_to(cr, x1, y1); cairo_line_to(cr, x2, y2); cairo_stroke(cr); }
 #define draw_sample(x, y1, y2, rgba) draw_line(x, y1, x, y2, rgba)
+#define draw_sample2(x, y1, y2) draw_line2(x, y1, x, y2)
 #define draw_rectangle(rect, rgba) { gdk_cairo_set_source_rgba(cr, rgba); cairo_rectangle(cr, rect.x, rect.y, rect.width, rect.height); cairo_fill(cr); }
 #define draw_rectangle2(x, y, width, height, rgba) { gdk_cairo_set_source_rgba(cr, rgba); cairo_rectangle(cr, x, y, width, height); cairo_fill(cr); }
 
@@ -481,7 +483,7 @@ static void gtk_tx_update_render_buffer(GtkTx *tx) {
 		tx->render_buffer_display_width = tx->display_width;
 		tx->render_buffer_x_offset = tx->display_x_offset;
 		tx->render_buffer_fg = tx->current_fg;
-   } else if (tx->render_buffer_x_offset != tx->display_x_offset) {
+	} else if (tx->render_buffer_x_offset != tx->display_x_offset) {
 		// switch buffers
 		cairo_surface_t *surface = tx->current_render_buffer_surface;
 		tx->current_render_buffer_surface = tx->previous_render_buffer_surface;
@@ -492,7 +494,7 @@ static void gtk_tx_update_render_buffer(GtkTx *tx) {
 		int cur_x, start_x, stop_x;
 		int width = tx->xmax - abs(motion);
 
-   	if (motion > 0) {
+		if (motion > 0) {
 			// move right
 			cur_x = motion;
 			start_x = 0;
@@ -504,7 +506,7 @@ static void gtk_tx_update_render_buffer(GtkTx *tx) {
 			stop_x = tx->xmax;
 		}
     
-   	cairo_set_source_surface(cr, tx->previous_render_buffer_surface, motion, 0);
+		cairo_set_source_surface(cr, tx->previous_render_buffer_surface, motion, 0);
 		cairo_rectangle(cr, cur_x, 0, width, tx->ymax);
 		cairo_fill(cr);
 
@@ -585,6 +587,7 @@ static gboolean gtk_tx_draw(GtkWidget * widget, cairo_t *cr) {
 					int prev_sample_x_pos = prev_sample_pos - tx->display_x_offset;
 					int min, max;
 
+					gdk_cairo_set_source_rgba(cr, &tx->history_colors[GTK_TX_HISTORY_LENGTH-step]);
 					if (prev_sample_x_pos > sample_x_pos) {
 						min = sample_x_pos;
 						max = prev_sample_x_pos;
@@ -598,20 +601,20 @@ static gboolean gtk_tx_draw(GtkWidget * widget, cairo_t *cr) {
 							double scale = (1.0-(fabs(x-tx->cursor_x_pos) / (double) max_dist));
 							int dist = scale * scale * 0.5 * (double) tx->ymax;
 							int value = tx->disp_data[x+tx->display_x_offset] + dist;
-							draw_sample(x, tx->yc-value, tx->yc+value+1, &tx->history_colors[GTK_TX_HISTORY_LENGTH-step]);
+							draw_sample2(x, tx->yc-value, tx->yc+value+1);
 						}
 					} else {
 						for (x = 0; x < min; x++) {
 							double scale = (1.0-(fabs(x-tx->cursor_x_pos) / (double) max_dist));
 							int dist = scale * scale * 0.5 * (double) tx->ymax;
 							int value = tx->disp_data[x+tx->display_x_offset] + dist;
-							draw_sample(x, tx->yc-value, tx->yc+value+1, &tx->history_colors[GTK_TX_HISTORY_LENGTH-step]);
+							draw_sample2(x, tx->yc-value, tx->yc+value+1);
 						}
 						for (x= max; x < tx->xmax; x++) {
 							double scale = (1.0-(fabs(x-tx->cursor_x_pos) / (double) max_dist));
 							int dist = scale * scale * 0.5 * (double) tx->ymax;
 							int value = tx->disp_data[x+tx->display_x_offset] + dist;
-							draw_sample(x, tx->yc-value, tx->yc+value+1, &tx->history_colors[GTK_TX_HISTORY_LENGTH-step]);
+							draw_sample2(x, tx->yc-value, tx->yc+value+1);
 						}
 					}
 				}
