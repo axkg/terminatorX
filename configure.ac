@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([terminatorX], [3.90], [https://terminatorx.org/bugs/], [terminatorX])
+AC_INIT([terminatorX], [4.0.0], [https://terminatorX.org/bugs/], [terminatorX], [https://terminatorX.org])
 
 AC_CONFIG_SRCDIR([src/tX_global.h])
 AM_INIT_AUTOMAKE
@@ -15,7 +15,7 @@ AC_ARG_ENABLE(wav,		[  --enable-wav            enables the built-in wav-loader (
 AC_ARG_ENABLE(alsa,		[  --enable-alsa           use ALSA for sound output (default=auto) ])
 AC_ARG_ENABLE(jack,		[  --enable-jack           use JACK for sound output (default=auto) ])
 AC_ARG_ENABLE(oss,		[  --enable-oss            use OSS for sound output (default=auto) ])
-AC_ARG_ENABLE(pulse,		[  --enable-pulse          use PULSE for sound output (default=auto) ])
+AC_ARG_ENABLE(pulse,		[  --enable-pulse          use PulseAudio for sound output (default=auto) ])
 AC_ARG_ENABLE(x11,    [  --enable-x11            include X11 specific code (default=auto) ])
 AC_ARG_ENABLE(libxml2,	    	[  --disable-libxml2       use libxml even if verion 2 detected (default=auto) ])
 AC_ARG_ENABLE(mad,		[  --disable-mad           disable mad for mp3 support (default=auto) ])
