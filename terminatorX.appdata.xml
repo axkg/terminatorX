@@ -11,13 +11,13 @@
 				(*.wav, *.au, *.ogg, *.mp3, etc.) into virtual turntables for
 				synchronized playback. The user can operate these turntables using
 				mouse and keyboard inputs in order to &quot;scratch&quot; the way
-				hiphop-DJs scratch on vinyl records. 
+				hiphop-DJs scratch on vinyl records.
 			</p>
 			<p>
-				It features realtime effects (buit-in as well as LADSPA plugin 
+				It features realtime effects (buit-in as well as LADSPA plugin
 				effects), a sequencer and a MIDI interface – all accessible through
-				an easy-to-use gtk+ user interface. Audio can be played back either 
-				directly through the hardware using the ALSA and OSS backends or via 
+				an easy-to-use gtk+ user interface. Audio can be played back either
+				directly through the hardware using the ALSA and OSS backends or via
 				an audio routing daemon through the JACK and PulseAudio backends.
 			</p>
 		</description>
