@@ -116,7 +116,7 @@ void set_global_defaults() {
 	strcpy(globals.file_editor, "");
 
 #ifdef USE_PULSE
-	globals.audiodevice_type=ALSA;
+	globals.audiodevice_type=PULSE;
 #else	
 #ifdef USE_ALSA
 	globals.audiodevice_type=ALSA;
