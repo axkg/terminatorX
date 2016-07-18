@@ -48,6 +48,7 @@ enum tX_engine_error {
 	NO_ERROR,
 	ERROR_TAPE,
 	ERROR_AUDIO,
+	ERROR_BACKEND,
 	ERROR_BUSY	
 };
 

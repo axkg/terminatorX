@@ -627,6 +627,30 @@ GCallback audio_on(GtkWidget *w, void *d)
 				case ERROR_AUDIO:
 				tx_note("Error starting engine: failed to access audiodevice.\nPlease check the audio device settings in the \"Preferences\" dialog.", true);
 				break;
+				case ERROR_BACKEND:
+				char audio_backend[256];
+				char message[4096];
+
+				switch (globals.audiodevice_type) {
+				    case OSS:
+				    	strcpy(audio_backend, "the Open Sound System (OSS)");
+				    	break;
+				    case ALSA:
+				    	strcpy(audio_backend, "the Advanced Linux Sound Architecture (ALSA)");
+				    	break;
+				    case JACK:
+				    	strcpy(audio_backend, "the JACK Audio Connection Kit");
+				    	break;
+				    case PULSE:
+				    	strcpy(audio_backend, "PulseAudio");
+				    	break;
+				    default:
+					strcpy(audio_backend, "unkown");
+				}
+
+				sprintf(message,"Error starting engine: couldn't start audio driver.\nThis terminatorX binary was compiled without support for %s.\nPlease check the audio device settings in the \"Preferences\" dialog.", audio_backend);
+				tx_note(message, true);
+				break;
 				case ERROR_TAPE:
 				tx_note("Error starting engine: failed to open the recording file.", true);
 				break;
