@@ -227,7 +227,7 @@ tX_engine_error tX_engine :: run() {
 #endif
 		
 		default:
-			device=NULL; return ERROR_AUDIO;
+			device=NULL; return ERROR_BACKEND;
 	}
 	
 	if (device->open()) {
