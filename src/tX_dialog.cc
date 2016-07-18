@@ -351,12 +351,21 @@ void init_tx_options(GtkWidget *dialog) {
 	
 #ifndef USE_ALSA
 	gtk_widget_set_sensitive(lookup_widget(dialog, "alsa_driver"), 0);	
-	// TODO: Rest!	
+        gtk_widget_set_sensitive(lookup_widget(dialog, "alsa_audio_device"), 0);
+        gtk_widget_set_sensitive(lookup_widget(dialog, "alsa_samplerate"), 0);
+        gtk_widget_set_sensitive(lookup_widget(dialog, "alsa_period_time"), 0);
+        gtk_widget_set_sensitive(lookup_widget(dialog, "alsa_buffer_time"), 0);
+        gtk_widget_set_sensitive(lookup_widget(dialog, "alsa_free_hwstats"), 0);
 #endif
 	
 #ifndef USE_JACK
 	gtk_widget_set_sensitive(lookup_widget(dialog, "jack_driver"), 0);
 #endif	
+
+#ifndef USE_PULSE
+	gtk_widget_set_sensitive(lookup_widget(dialog, "pulse_driver"), 0);
+	gtk_widget_set_sensitive(lookup_widget(dialog, "pulse_buffer_size"), 0);
+#endif
 	
 	/* Audio: OSS */
 	append_oss_device_list(GTK_COMBO_BOX_TEXT(lookup_widget(dialog, "oss_audio_device")), globals.oss_device);
