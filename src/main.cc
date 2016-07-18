@@ -85,7 +85,7 @@ void show_help()
 {
 			
 	fprintf(stderr, "\
-usage: terminatorX [options]n\
+usage: terminatorX [options]\n\
 \n\
   -h, --help 			Display help info\n\
   -f, --file			Load saved terminatorX set file\n\
