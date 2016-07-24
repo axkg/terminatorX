@@ -28,8 +28,8 @@
 #include <config.h>
 #define VERSIONSTRING PACKAGE " release " VERSION
 #else 
-#define VERSION "3.82"
-#define VERSIONSTRING "terminatorX release 4.0.0"
+#define VERSION "4.0.1"
+#define VERSIONSTRING "terminatorX release 4.0.1"
 #endif
 
 
