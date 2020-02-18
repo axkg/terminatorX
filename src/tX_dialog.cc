@@ -249,7 +249,6 @@ void append_alsa_device_list(GtkComboBoxText *combo) {
 #endif
 
 
-#ifdef USE_OSS
 int oss_select_dsp_only(const struct dirent *entry){
 	return (strstr(entry->d_name, "dsp")!=0);
 }
@@ -272,7 +271,7 @@ void append_oss_device_list(GtkComboBoxText *combo, char *current) {
 		}
 	}
 }
-#endif
+
 
 void append_sampling_rates_list(GtkComboBoxText *combo, int current) {
 
@@ -347,6 +346,7 @@ void init_tx_options(GtkWidget *dialog) {
 	gtk_widget_set_sensitive(lookup_widget(dialog, "oss_audio_device"), 0);
 	gtk_widget_set_sensitive(lookup_widget(dialog, "oss_buffers"), 0);
 	gtk_widget_set_sensitive(lookup_widget(dialog, "oss_buffersize"), 0);
+	gtk_widget_set_sensitive(lookup_widget(dialog, "oss_samplerate"), 0);
 #endif
 	
 #ifndef USE_ALSA
