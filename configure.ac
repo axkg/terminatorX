@@ -14,7 +14,7 @@ dnl AC_ARG_ENABLE(benchmark	[  --enable-benchmark      creates a non-functional 
 AC_ARG_ENABLE(wav,		[  --enable-wav            enables the built-in wav-loader (default=yes) ])
 AC_ARG_ENABLE(alsa,		[  --enable-alsa           use ALSA for sound output (default=auto) ])
 AC_ARG_ENABLE(jack,		[  --enable-jack           use JACK for sound output (default=auto) ])
-AC_ARG_ENABLE(oss,		[  --enable-oss            use OSS for sound output (default=auto) ])
+AC_ARG_ENABLE(oss,		[  --enable-oss            use OSS for sound output (default=no) ])
 AC_ARG_ENABLE(pulse,		[  --enable-pulse          use PulseAudio for sound output (default=auto) ])
 AC_ARG_ENABLE(x11,    [  --enable-x11            include X11 specific code (default=auto) ])
 AC_ARG_ENABLE(libxml2,	    	[  --disable-libxml2       use libxml even if verion 2 detected (default=auto) ])
@@ -365,7 +365,7 @@ if test "$enable_pulse" != "no"; then
 fi
 
 
-if test "$enable_oss" != "no"; then
+if test "$enable_oss" = "yes"; then
 	AC_CHECK_HEADERS(sys/ioctl.h sys/soundcard.h,oss=yes,oss=no)
 	
 	if test "$oss" = "yes"; then
@@ -600,8 +600,12 @@ AC_OUTPUT(Makefile
 	terminatorX.spec 
 	terminatorX.1)
 
-option_info() {
+option_info_min() {
 	echo "$option support: $option_val"
+}
+
+option_info() {
+	option_info_min;
 	if test "$option_val" != "yes"; then
 		echo "	- If you want $option support get $option from"
 		echo "	-	$option_url"
@@ -627,7 +631,7 @@ fi
 
 
 option=oss; option_val=$OPTION_OSS; option_url=http://www.kernel.org
-option_info;
+option_info_min; # nobody wants OSS anymore
 
 option=alsa; option_val=$OPTION_ALSA; option_url=http://www.alsa-project.org
 option_info;
