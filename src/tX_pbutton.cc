@@ -31,50 +31,37 @@
 
 #include "icons/tX_icons_resources.c"
 
-char tx_icons[ALL_ICONS][256];
-int tx_icon_size=20;
+const char* tx_icons[ALL_ICONS];
 
-#define icon_init(id, name) { snprintf(tx_icons[id], 256, "/org/terminatorX/tX_pbutton/%s.svg", name); }
+int tx_icon_size=20;
 
 void tx_icons_init(int size) 
 {
 	tx_icon_size=size;
 
-	GError *error = NULL;
-	g_resource_new_from_data(g_bytes_new_static(tX_icons_resource_data.data, sizeof(tX_icons_resource_data.data)), &error);
-	if (error) {
-	  tX_error("failed accessing tX_icons resources: %s", error->message);
-	}
+	tx_icons[AUDIOENGINE] = "audio-speakers-symbolic";
+	tx_icons[POWER] = "system-shutdown-symbolic";
+	tx_icons[GRAB] = "input-mouse-symbolic";	
 
-	icon_init(AUDIOENGINE, "audioengine");
-	icon_init(POWER, "power");
-	icon_init(GRAB, "grab");
-	icon_init(SEQUENCER, "sequencer");
-	icon_init(PLAY, "play");
-	icon_init(STOP, "stop");
-	icon_init(RECORD, "record");
-	icon_init(MIN_AUDIO, "samples");
-	icon_init(MIN_CONTROL, "control");
-	icon_init(MINIMIZE, "minimize");
-	icon_init(MAXIMIZE, "maximize");
-	icon_init(FX_UP, "fx_up");
-	icon_init(FX_DOWN, "fx_down");
-	icon_init(FX_CLOSE, "fx_close");
-	icon_init(MINIMIZE_PANEL, "minimize_panel");
+	tx_icons[SEQUENCER] = "emblem-music-symbolic";
+	
+	tx_icons[PLAY] = "media-playback-start-symbolic";
+	tx_icons[STOP] = "media-playback-stop-symbolic";
+	tx_icons[RECORD] = "media-record-symbolic";
+	tx_icons[MIN_AUDIO] = "audio-x-generic-symbolic";
+	tx_icons[MIN_CONTROL] = "multimedia-volume-control-symbolic";
+	
+	tx_icons[MINIMIZE] = "go-top-symbolic";
+	tx_icons[MAXIMIZE] = "go-bottom-symbolic";
+	tx_icons[FX_UP] = "go-up-symbolic";
+	tx_icons[FX_DOWN] = "go-down-symbolic";
+	tx_icons[FX_CLOSE] = "window-close-symbolic";
+	tx_icons[MINIMIZE_PANEL] = "window-minimize-symbolic";
 }
 
 GtkWidget *tx_pixmap_widget(tX_icon id)
 {
-	GError *error = NULL;
-	GtkWidget *widget=gtk_image_new();
-  	GdkPixbuf *pixbuf=gdk_pixbuf_new_from_resource_at_scale(tx_icons[id], tx_icon_size, tx_icon_size, TRUE, &error);
-  	if (error) {
-  		tX_error("failed rendering icon to pixbuf: %s", error->message);
-	} else {
-		gtk_image_set_from_pixbuf(GTK_IMAGE(widget), pixbuf);
-	}
-
-  return widget;
+	return gtk_image_new_from_icon_name (tx_icons[id], GTK_ICON_SIZE_SMALL_TOOLBAR);
 }
 
 GtkWidget *tx_xpm_label_box(tX_icon id, const gchar *label_text, GtkWidget **labelwidget)

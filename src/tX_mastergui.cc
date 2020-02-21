@@ -120,6 +120,7 @@ GtkWidget *fullscreen_item;
 GdkWindow* top_window;
 #define WID_DYN TRUE, TRUE, 0
 #define WID_FIX FALSE, FALSE, 0
+#define WID_FIX_BREATHE FALSE, FALSE, 5
 extern void add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn);
 extern void destroy_gui(vtt_class *vtt);
 extern void gui_show_focus(vtt_class *vtt, int show);
@@ -1367,7 +1368,7 @@ void create_mastergui(int x, int y)
     /* control_box contents */
 
 	dummy=tx_xpm_label_box(AUDIOENGINE, "Audio");
-	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX_BREATHE);
 	gtk_widget_show(dummy);
 	
 	dummy=tx_xpm_button_new(POWER,"Power ", 1);
@@ -1388,7 +1389,7 @@ void create_mastergui(int x, int y)
 	gtk_widget_show(dummy);
     
 	dummy=tx_xpm_label_box(SEQUENCER, "Seq.");
-	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX);
+	gtk_box_pack_start(GTK_BOX(control_box), dummy, WID_FIX_BREATHE);
 	gtk_widget_show(dummy);
 
 	dummy=tx_xpm_button_new(PLAY,"Play ", 1);
