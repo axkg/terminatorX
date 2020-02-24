@@ -54,8 +54,6 @@
 #define WID_DYN TRUE, TRUE, 0
 #define WID_FIX FALSE, FALSE, 0
 
-static gint vg_show_fx_menu(GtkWidget *wid, GdkEventButton *event, vtt_fx *effect);
-
 void nicer_filename(char *dest, char *source)
 {
 		char *fn;
@@ -259,18 +257,18 @@ GCallback load_file(GtkWidget *wid, vtt_class *vtt)
 	}
 	
 	g_signal_connect (G_OBJECT(dialog), "selection-changed", G_CALLBACK(chooser_prelis), vtt);	
-	
+
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
-    	char * filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+	char * filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
 		gtk_widget_hide(dialog);
 		tX_cursor::set_cursor(tX_cursor::WAIT_CURSOR);
 		load_part(filename, vtt);
 		strcpy(globals.current_path, filename);
-		tX_cursor::reset_cursor();		
-	}	
-	
+		tX_cursor::reset_cursor();
+	}
+
 	prelis_stop();
-	gtk_widget_destroy(dialog);	
+	gtk_widget_destroy(dialog);
 
 	return NULL;
 }
@@ -279,18 +277,18 @@ void delete_vtt(GtkWidget *wid, vtt_class *vtt)
 {
 	if (audioon) tx_note("Sorry, you'll have to stop playback first.");
 	else delete(vtt);
-		
+
 	mg_update_status();
 }
 
 void edit_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 {
-	char command[2*PATH_MAX];
+	char command[2*PATH_MAX+32];
 
 	if (vtt->samples_in_buffer == 0) {
 		tx_note("No audiofile loaded - so there's nothing to edit.", true);
 	} else if (strlen(globals.file_editor)>0) {
-		sprintf(command, "%s \"%s\" &", globals.file_editor, vtt->filename);
+		snprintf(command, sizeof(command), "%s \"%s\" &", globals.file_editor, vtt->filename);
 		if (system(command) < 0) {
 			tx_note("Error running the soundfile editor.");
 		}
@@ -302,9 +300,9 @@ void edit_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 void reload_vtt_buffer(GtkWidget *wid, vtt_class *vtt)
 {
 	char reload_buffer[PATH_MAX];
-	
+
 	while (gtk_events_pending()) gtk_main_iteration();
-	
+
 	if (vtt->samples_in_buffer > 0) {
 		strcpy(reload_buffer, vtt->filename);
 		load_part(reload_buffer, vtt);
@@ -728,8 +726,6 @@ void gui_scroll_callback(GtkWidget *tx, GdkEventScroll *eventScroll, gpointer us
 #define connect_press_button(wid, func); g_signal_connect(G_OBJECT(g->wid), "button_press_event", G_CALLBACK(func), (void *) vtt);
 #define connect_rel_button(wid, func); g_signal_connect(G_OBJECT(g->wid), "released", G_CALLBACK(func), (void *) vtt);
 
-GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel);
-
 gchar dnd_uri[128];
 
 void gui_connect_signals(vtt_class *vtt)
@@ -827,13 +823,9 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_box_pack_start(GTK_BOX(tempbox2), tempbox, WID_DYN);
 
 	GtkWidget *pixmap;
-	g->audio_minimize=gtk_button_new();
-	pixmap=tx_pixmap_widget(MINIMIZE_PANEL);
-	gtk_container_add (GTK_CONTAINER (g->audio_minimize), pixmap);	
+	g->audio_minimize=create_top_button(MINIMIZE);
 	gtk_box_pack_end(GTK_BOX(tempbox2), g->audio_minimize, WID_FIX);
-	gtk_widget_show(pixmap);
 	gtk_widget_show(g->audio_minimize);
-
 
 	g->audio_label=gtk_label_new(vtt->name);
 	gtk_widget_set_halign(g->audio_label, GTK_ALIGN_START);
@@ -896,11 +888,8 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_widget_show(g->control_label);
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->control_label, WID_DYN);
 
-	g->control_minimize=gtk_button_new();
-	pixmap=tx_pixmap_widget(MINIMIZE_PANEL);
-	gtk_container_add (GTK_CONTAINER (g->control_minimize), pixmap);	
+	g->control_minimize=create_top_button(MINIMIZE);
 	gtk_box_pack_end(GTK_BOX(tempbox2), g->control_minimize, WID_FIX);
-	gtk_widget_show(pixmap);
 	gtk_widget_show(g->control_minimize);
 
 	g->scrolled_win=gtk_scrolled_window_new (NULL, NULL);
@@ -917,7 +906,11 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(g->scrolled_win), g->control_subbox);
 #endif
 	gtk_widget_show(g->control_subbox);
-		   
+
+	g->static_box = gtk_list_box_new();
+	gtk_list_box_set_selection_mode (GTK_LIST_BOX (g->static_box), GTK_SELECTION_NONE);
+	gtk_widget_show(g->static_box);
+	gtk_container_add(GTK_CONTAINER(g->control_subbox), g->static_box);
 
 	/* Main panel */
 	
@@ -941,16 +934,16 @@ void build_vtt_gui(vtt_class *vtt)
 	gui_set_tooltip(g->adjust_button, "Activate this button to adjust this turntable's speed to the master turntable's speed.");
 	p->add_client_widget(g->adjust_button);
 
-	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
+	gtk_list_box_insert(GTK_LIST_BOX(g->static_box), p->get_list_box_row(), -1);
 				
 	p=new tX_panel("Playback", g->control_subbox);
 	g->trigger_panel=p;
 	
-	g->trigger=gtk_button_new_with_label("Trigger!");
+	g->trigger=gtk_button_new_with_label("Trigger");
 	gui_set_tooltip(g->trigger, "Click here to trigger this turntable right now. If the audio engine is disabled this turntable will be triggerd as soon as the engine is turned on.");
 	p->add_client_widget(g->trigger);
 	
-	g->stop=gtk_button_new_with_label("Stop.");
+	g->stop=gtk_button_new_with_label("Stop");
 	gui_set_tooltip(g->stop, "Stop this turntable's playback.");
 	p->add_client_widget(g->stop);
 	g_signal_connect(G_OBJECT(g->trigger), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_trigger);		
@@ -984,29 +977,31 @@ void build_vtt_gui(vtt_class *vtt)
 	gui_set_tooltip(dummy, "Determines how often a sync-client turntable gets triggered. 0 -> this turntable will be triggered with every trigger of the sync-master table, 1 -> the table will be triggered every 2nd master trigger and so on.");
 	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_sync_cycles);	
 
-	gtk_box_pack_start(GTK_BOX(g->control_subbox), p->get_widget(), WID_FIX);
+	gtk_list_box_insert(GTK_LIST_BOX(g->static_box), p->get_list_box_row(), -1);
 	
-	g->fx_box=gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
+	dummy=gtk_header_bar_new();
+	gtk_header_bar_set_title(GTK_HEADER_BAR(dummy), "FX");
+	gtk_header_bar_set_has_subtitle(GTK_HEADER_BAR(dummy), FALSE);
+	gtk_widget_show(dummy);
+	g->fx_button=create_top_button(ADD_ITEM);
+	gtk_header_bar_pack_end(GTK_HEADER_BAR(dummy), g->fx_button);
+	gtk_widget_show(g->fx_button);
+	gui_set_tooltip(g->fx_button, "Click here to load a LADSPA plugin. You will get a menu from which you can choose which plugin to load.");
+	gtk_box_pack_start(GTK_BOX(g->control_subbox), dummy, WID_FIX);
+	
+	g->fx_box = gtk_list_box_new();
+	gtk_list_box_set_selection_mode (GTK_LIST_BOX (g->fx_box), GTK_SELECTION_NONE);
 	gtk_box_pack_start(GTK_BOX(g->control_subbox), g->fx_box, WID_FIX);
 	gtk_widget_show(g->fx_box);
-	
-	dummy=gtk_button_new_with_label("FX");
-	gtk_container_foreach(GTK_CONTAINER(dummy), (GtkCallback) tX_panel_make_label_bold, NULL);
-	gtk_widget_show(dummy);
-	g->fx_button=dummy;
-	gui_set_tooltip(g->fx_button, "Click here to load a LADSPA plugin. You will get a menu from which you can choose which plugin to load.");
-	gtk_box_pack_start(GTK_BOX(g->fx_box), dummy, WID_FIX);
-	
+
 	/* Lowpass Panel */
 
-	p=new tX_panel("Lowpass", g->fx_box);
-	g_signal_connect(G_OBJECT(p->get_labelbutton()), "button_press_event", G_CALLBACK(vg_show_fx_menu), vtt->lp_fx);
+	p=new tX_panel("Lowpass", g->control_subbox, NULL, vtt->get_lp_effect());
 	g->lp_panel=p;
 		
 	g->lp_enable=gtk_check_button_new_with_label("Enable");
 	gui_set_tooltip(g->lp_enable, "Click here to enable the built-in lowpass effect.");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->lp_enable), vtt->lp_enable);
-	p->add_client_widget(vg_create_fx_bar(vtt, vtt->lp_fx, 0));
 	g_signal_connect(G_OBJECT(g->lp_enable), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_lp_enable);	
 
 	p->add_client_widget(g->lp_enable);
@@ -1027,16 +1022,13 @@ void build_vtt_gui(vtt_class *vtt)
 	p->add_client_widget(g->lp_resod->get_widget());
 	gui_set_tooltip(g->lp_resod->get_entry(), "Adjust the resonance of the lowpass filter. This value determines how much the signal at the cutoff frequency will be amplified.");
 
-	gtk_box_pack_start(GTK_BOX(g->fx_box), p->get_widget(), WID_FIX);
+	gtk_list_box_insert(GTK_LIST_BOX(g->fx_box), p->get_list_box_row(), -1);
 
 	/* Echo Panel */
 
-	p=new tX_panel("Echo", g->fx_box);
-	g_signal_connect(G_OBJECT(p->get_labelbutton()), "button_press_event",  G_CALLBACK(vg_show_fx_menu), vtt->ec_fx);
+	p=new tX_panel("Echo", g->control_subbox, NULL, vtt->get_ec_effect());
 	g->ec_panel=p;
 
-	p->add_client_widget(vg_create_fx_bar(vtt, vtt->ec_fx, 0));
-	
 	g->ec_enable=gtk_check_button_new_with_label("Enable");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->ec_enable), vtt->ec_enable);
 	p->add_client_widget(g->ec_enable);
@@ -1064,18 +1056,21 @@ void build_vtt_gui(vtt_class *vtt)
 	p->add_client_widget(g->ec_pand->get_widget());
 	gui_set_tooltip(g->ec_pand->get_entry(), "Adjust the panning of the echo effect.");
 
-	gtk_box_pack_start(GTK_BOX(g->fx_box), p->get_widget(), WID_FIX);
-	
-	g->stereo_fx_box=gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+	gtk_list_box_insert(GTK_LIST_BOX(g->fx_box), p->get_list_box_row(), -1);
+
+	dummy=gtk_header_bar_new();
+	gtk_header_bar_set_title(GTK_HEADER_BAR(dummy), "Stereo FX");
+	gtk_header_bar_set_has_subtitle(GTK_HEADER_BAR(dummy), FALSE);
+	gtk_widget_show(dummy);
+	g->stereo_fx_button=create_top_button(ADD_ITEM);
+	gtk_header_bar_pack_end(GTK_HEADER_BAR(dummy), g->stereo_fx_button);
+	gtk_widget_show(g->stereo_fx_button);
+	gtk_box_pack_start(GTK_BOX(g->control_subbox), dummy, WID_FIX);
+
+	g->stereo_fx_box = gtk_list_box_new();
+	gtk_list_box_set_selection_mode (GTK_LIST_BOX (g->stereo_fx_box), GTK_SELECTION_NONE);
 	gtk_box_pack_start(GTK_BOX(g->control_subbox), g->stereo_fx_box, WID_FIX);
 	gtk_widget_show(g->stereo_fx_box);
-	
-	dummy=gtk_button_new_with_label("Stereo FX");
-	gtk_container_foreach(GTK_CONTAINER(dummy), (GtkCallback) tX_panel_make_label_bold, NULL);
-	gtk_widget_show(dummy);
-	g->stereo_fx_button=dummy;
-	gui_set_tooltip(g->stereo_fx_button, "Click here to load a stereo LADSPA plugin. You will get a menu from which you can choose which plugin to load.");
-	gtk_box_pack_start(GTK_BOX(g->stereo_fx_box), dummy, WID_FIX);
 
 	/* Output */
 	
@@ -1171,45 +1166,6 @@ void fx_kill(GtkWidget *wid, vtt_fx_ladspa *effect)
 	vtt->effect_remove(effect);
 }
 
-GtkWidget *vg_create_fx_bar(vtt_class *vtt, vtt_fx *effect, int showdel)
-{
-	GtkWidget *box;
-	GtkWidget *pixmap;
-	GtkWidget *button;
-	
-	box=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
-
-	if (showdel) {
-		button=gtk_button_new();
-		pixmap=tx_pixmap_widget(FX_CLOSE);
-		gtk_container_add (GTK_CONTAINER (button), pixmap);	
-		gtk_box_pack_end(GTK_BOX(box), button, WID_FIX);
-		gtk_widget_show(pixmap);
-		gtk_widget_show(button);
-		g_signal_connect(G_OBJECT(button), "clicked", (GCallback) fx_kill, (void *) effect);
-	}
-
-	button=gtk_button_new();
-	pixmap=tx_pixmap_widget(FX_DOWN);
-	gtk_container_add (GTK_CONTAINER (button), pixmap);	
-	gtk_box_pack_end(GTK_BOX(box), button, WID_FIX);
-	gtk_widget_show(pixmap);
-	gtk_widget_show(button);
-	g_signal_connect(G_OBJECT(button), "clicked", (GCallback) fx_down, (void *) effect);
-
-	button=gtk_button_new();
-	pixmap=tx_pixmap_widget(FX_UP);
-	gtk_container_add (GTK_CONTAINER (button), pixmap);	
-	gtk_box_pack_end(GTK_BOX(box), button, WID_FIX);
-	gtk_widget_show(pixmap);
-	gtk_widget_show(button);
-	g_signal_connect(G_OBJECT(button), "clicked", (GCallback) fx_up, (void *) effect);
-	
-	gtk_widget_show(box);
-	
-	return box;
-}
-
 int gtk_box_get_widget_pos(GtkBox *box, GtkWidget *child)
 {
 	int i=0;
@@ -1226,86 +1182,42 @@ int gtk_box_get_widget_pos(GtkBox *box, GtkWidget *child)
 	return i;
 }
 
-void vg_move_fx_panel_up(GtkWidget *wid, vtt_class *vtt, bool stereo)
+void vg_move_fx_panel_up(tX_panel *panel, vtt_class *vtt, bool stereo)
 {
-	GtkWidget *box=(stereo ? vtt->gui.stereo_fx_box : vtt->gui.fx_box);
-	int pos=gtk_box_get_widget_pos(GTK_BOX(box), wid);
-	gtk_box_reorder_child(GTK_BOX(box), wid, pos-1);
+	GtkWidget *list_box=(stereo ? vtt->gui.stereo_fx_box : vtt->gui.fx_box);
+	GtkWidget *row=panel->get_list_box_row();
+
+	int pos=gtk_list_box_row_get_index(GTK_LIST_BOX_ROW(row));
+	g_object_ref(row);
+	gtk_container_remove(GTK_CONTAINER(list_box), row);
+	gtk_list_box_insert(GTK_LIST_BOX(list_box), row, pos-1);
+	g_object_unref(row);
 }
 
-void vg_move_fx_panel_down(GtkWidget *wid, vtt_class *vtt, bool stereo)
+void vg_move_fx_panel_down(tX_panel *panel, vtt_class *vtt, bool stereo)
 {
-	GtkWidget *box=(stereo ? vtt->gui.stereo_fx_box : vtt->gui.fx_box);
-	int pos=gtk_box_get_widget_pos(GTK_BOX(box), wid);
-	gtk_box_reorder_child(GTK_BOX(box), wid, pos+1);
-}
+	GtkWidget *list_box=(stereo ? vtt->gui.stereo_fx_box : vtt->gui.fx_box);
+	GtkWidget *row=panel->get_list_box_row();
 
-static gint vg_show_fx_info(GtkWidget *wid, vtt_fx *effect)
-{
-	tx_l_note(effect->get_info_string());
-	return TRUE;
+	int pos=gtk_list_box_row_get_index(GTK_LIST_BOX_ROW(row));
+	g_object_ref(row);
+	gtk_container_remove(GTK_CONTAINER(list_box), row);
+	gtk_list_box_insert(GTK_LIST_BOX(list_box), row, pos+1);
+	g_object_unref(row);
 }
 
 void vg_toggle_drywet(GtkWidget *wid, vtt_fx *effect)
 {
+	tX_panel *panel = effect->get_panel();
 	effect->toggle_drywet();
-}
 
-static gint vg_show_fx_menu(GtkWidget *wid, GdkEventButton *event, vtt_fx *effect)
-{
-	if (event->button==3) {
-		GtkWidget *menu=gtk_menu_new();
-		GtkWidget *item=gtk_menu_item_new_with_label("View Plugin Details");
-		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-		gtk_widget_set_sensitive(item, (effect->has_drywet_feature()!=NOT_DRYWET_CAPABLE));
-		gtk_widget_show(item);
-		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(vg_show_fx_info), effect);
-		
-		switch (effect->has_drywet_feature()) {
-			case (NOT_DRYWET_CAPABLE):
-				item=gtk_menu_item_new_with_label("Add Dry/Wet Control");
-				gtk_widget_set_sensitive(item, FALSE);
-				break;
-			case (DRYWET_ACTIVE):
-				item=gtk_menu_item_new_with_label("Remove Dry/Wet Control");
-				break;
-			case (DRYWET_AVAILABLE):
-				item=gtk_menu_item_new_with_label("Add Dry/Wet Control");
-				break;
-		}
-		
-		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(vg_toggle_drywet), effect);	
-		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-		gtk_widget_show(item);
-		
-		item = gtk_menu_item_new();
-		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-		gtk_widget_set_sensitive(item, FALSE);
-		gtk_widget_show(item);
-	
-		item=gtk_menu_item_new_with_label("Up");
-		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-		gtk_widget_show(item);
-		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(fx_up), effect);
-	
-		item=gtk_menu_item_new_with_label("Down");
-		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-		gtk_widget_show(item);
-		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(fx_down), effect);
-	
-		item=gtk_menu_item_new_with_label("Delete");
-		gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-		gtk_widget_set_sensitive(item, (effect->has_drywet_feature()!=NOT_DRYWET_CAPABLE));
-		gtk_widget_show(item);
-		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(fx_kill), effect);
-	
-		gtk_menu_popup (GTK_MENU(menu), NULL, NULL, NULL, NULL, 0, 0);
-	
-		/* gtk+ is really waiting for this.. */
-		g_signal_emit_by_name(G_OBJECT(wid), "released", effect);
-		return TRUE;
+	if (effect->has_drywet_feature() == DRYWET_ACTIVE) {
+		gtk_widget_hide(panel->get_add_drywet_button());
+		gtk_widget_show(panel->get_remove_drywet_button());
+	} else {
+		gtk_widget_show(panel->get_add_drywet_button());
+		gtk_widget_hide(panel->get_remove_drywet_button());
 	}
-	return FALSE;
 }
 
 void vg_create_fx_gui(vtt_class *vtt, vtt_fx_ladspa *effect, LADSPA_Plugin *plugin)
@@ -1317,28 +1229,46 @@ void vg_create_fx_gui(vtt_class *vtt, vtt_fx_ladspa *effect, LADSPA_Plugin *plug
 	tX_panel *p;
 	list <tX_seqpar_vttfx *> :: iterator sp;
 	
-	strcpy(buffer, plugin->getLabel());
-	if (strlen(buffer) > 6) {
-		buffer[5]='.';
-		buffer[6]='.';
+	strcpy(buffer, plugin->getName());
+	if (strlen(buffer) > 8) {
 		buffer[7]='.';
-		buffer[8]=0;
+		buffer[8]='.';
+		buffer[9]='.';
+		buffer[10]=0;
 	}
 
-	p=new tX_panel(buffer, g->control_subbox);
-	
-	p->add_client_widget(vg_create_fx_bar(vtt, effect, 1));
+	p=new tX_panel(buffer, g->control_subbox, G_CALLBACK(fx_kill), effect);
 	
 	for (sp = effect->controls.begin(); sp != effect->controls.end(); sp++) {
+	    	if ((strcmp((*sp)->get_label_name(), "Enable") == 0) && ((effect->has_drywet_feature() != NOT_DRYWET_CAPABLE))) {
+	    	    	GtkWidget *box=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
+	    	    	gtk_container_add_with_properties(GTK_CONTAINER(box), (*sp)->get_widget(), "expand", TRUE, NULL);
+	    	   	gtk_widget_show((*sp)->get_widget());
+			
+			g_signal_connect(G_OBJECT(p->get_add_drywet_button()), "clicked", G_CALLBACK(vg_toggle_drywet), effect);
+			gtk_widget_set_tooltip_text(p->get_add_drywet_button(), "Click to add Dry/Wet controls for this effect.");	
+	    	   	gtk_container_add(GTK_CONTAINER(box), p->get_add_drywet_button());
+			if (effect->has_drywet_feature() == DRYWET_AVAILABLE) {
+				gtk_widget_show(p->get_add_drywet_button());
+			}
+			
+			g_signal_connect(G_OBJECT(p->get_remove_drywet_button()), "clicked", G_CALLBACK(vg_toggle_drywet), effect);	
+			gtk_widget_set_tooltip_text(p->get_remove_drywet_button(), "Click to remove Dry/Wet controls for this effect.");	
+	    	   	gtk_container_add(GTK_CONTAINER(box), p->get_remove_drywet_button());
+			if (effect->has_drywet_feature() == DRYWET_ACTIVE) {
+				gtk_widget_show(p->get_remove_drywet_button());
+			}
+
+	    	   	p->add_client_widget(box);
+		} else {
 			p->add_client_widget((*sp)->get_widget());
+		}
 	}
 
-	g_signal_connect(G_OBJECT(p->get_labelbutton()), "button_press_event", (GCallback) vg_show_fx_menu, (void *) effect);
-	gui_set_tooltip(p->get_labelbutton(), "Right-click to access menu.");
 	effect->set_panel_widget(p->get_widget());
 	effect->set_panel(p);
 
-	gtk_box_pack_start(GTK_BOX((effect->is_stereo() ? g->stereo_fx_box : g->fx_box)), p->get_widget(), WID_FIX);
+	gtk_list_box_insert(GTK_LIST_BOX(effect->is_stereo() ? g->stereo_fx_box : g->fx_box), p->get_list_box_row(), -1);
 }
 
 void gui_set_filename (vtt_class *vtt, char *newname)

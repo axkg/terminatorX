@@ -311,8 +311,11 @@ class vtt_class
 	void render_lp();
 	void render_ec();
 	
+	vtt_fx *get_lp_effect() { return lp_fx; }
+	vtt_fx *get_ec_effect() { return ec_fx; }
 	void effect_up(vtt_fx *effect);
 	void effect_down(vtt_fx *effect);
+	void effect_move(vtt_fx *effect, int pos);
 	void effect_remove(vtt_fx_ladspa *effect);
 	
 	void hide_audio(bool);

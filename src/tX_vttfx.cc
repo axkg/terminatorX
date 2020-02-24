@@ -30,6 +30,7 @@
 #include <string.h>
 
 float ladspa_dummy_output_port;
+extern void vg_toggle_drywet(GtkWidget *wid, vtt_fx *effect);
 
 void vtt_fx :: reconnect_buffer()
 {
@@ -319,7 +320,13 @@ void vtt_fx_ladspa :: load(xmlDocPtr doc, xmlNodePtr node) {
 			restore_int("ladspa_id", dummy);
 			restore_bool("panel_hidden", hidden);
 			restore_bool("has_drywet", drywet);
-			if (drywet) add_drywet();
+			if (drywet) {
+			       if (panel) {
+					vg_toggle_drywet(panel_widget, this);
+				} else {
+			       		add_drywet();
+				}
+			}
 			
 			if ((!elementFound) && (xmlStrcmp(cur->name, (xmlChar *) "param")==0)) {
 				val=0;
@@ -354,7 +361,6 @@ void vtt_fx_ladspa :: toggle_drywet() {
 
 void vtt_fx_ladspa :: add_drywet() {
 	char buffer[1024];
-	
 	sp_wet=new tX_seqpar_vttfx_float();
 	sp_wet->set_mapping_parameters(1.0, 0, 0.01, 1);
 	sprintf(buffer, "%s: Dry/Wet", plugin->getLabel());

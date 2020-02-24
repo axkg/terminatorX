@@ -42,6 +42,7 @@ struct vtt_gui
 	GtkWidget *control_minimize;
 	GtkWidget *scrolled_win;
 	GtkWidget *control_subbox;
+	GtkWidget *static_box;
 	GtkWidget *fx_box;
 	GtkWidget *stereo_fx_box;
 	GtkWidget *ladspa_menu;
