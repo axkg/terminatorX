@@ -423,6 +423,7 @@ class tX_seqpar_vttfx : public tX_seqpar_update
 	tX_seqpar_vttfx();
 	virtual ~tX_seqpar_vttfx();
 	void set_name(const char *, const char *);
+	const char *get_label_name() { return label_name; }
 	GtkWidget *get_widget() { return widget; } 
 	
 	virtual float get_value();

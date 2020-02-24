@@ -1,29 +1,29 @@
 /*
     terminatorX - realtime audio scratching software
     Copyright (C) 1999-2016  Alexander König
- 
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
- 
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
- 
+
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
     File: tX_vtt.cc
- 
+
     Description: This implements the new virtual turntable class. It replaces
 		 the old turntable.c from terminatorX 3.2 and earlier. The lowpass
 		 filter is based on some sample code by Paul Kellett
 		 <paul.kellett@maxim.abel.co.uk>
-		 
-    08 Dec 1999 - Switched to the new audiofile class		 
-*/    
+
+    08 Dec 1999 - Switched to the new audiofile class
+*/
 
 #include "tX_vtt.h"
 #include "tX_global.h"
@@ -89,10 +89,10 @@ int vtt_class::mix_buffer_size=0;
 #define GAIN_AUTO_ADJUST 0.8
 
 vtt_class :: vtt_class (int do_create_gui)
-{	
+{
 	vtt_amount++;
 	cleanup_required=false;
-	
+
 	sprintf (name, "Turntable %i", vtt_amount);
 	strcpy(filename, "NONE");
 	buffer=NULL;
@@ -174,8 +174,10 @@ vtt_class :: vtt_class (int do_create_gui)
 	if (do_create_gui)
 	{	
 		build_vtt_gui(this);
-		lp_fx->set_panel_widget(gui.lp_panel->get_widget());	
+		lp_fx->set_panel_widget(gui.lp_panel->get_widget());
+		lp_fx->set_panel(gui.lp_panel);
 		ec_fx->set_panel_widget(gui.ec_panel->get_widget());
+		ec_fx->set_panel(gui.ec_panel);
 	}
 	else have_gui=0;
 		
@@ -1604,11 +1606,40 @@ void add_vtt(GtkWidget *ctrl, GtkWidget *audio, char *fn)
 	if (fn) new_tt->load_file(fn);
 }
 
-extern void vg_move_fx_panel_up(GtkWidget *wid, vtt_class *vtt, bool stereo);
-extern void vg_move_fx_panel_down(GtkWidget *wid, vtt_class *vtt, bool stereo);
+extern void vg_move_fx_panel_up(tX_panel *panel, vtt_class *vtt, bool stereo);
+extern void vg_move_fx_panel_down(tX_panel *panel, vtt_class *vtt, bool stereo);
 
 //#define debug_fx_stack(); for (i=list->begin(); i != list->end(); i++) puts((*i)->get_info_string());
 #define debug_fx_stack();
+
+void vtt_class :: effect_move(vtt_fx *effect, int pos) {
+	list <vtt_fx *> :: iterator i;
+	list <vtt_fx *> :: iterator previous;
+	list <vtt_fx *> *list;
+	int ctr = 0;
+
+	if (effect->is_stereo()) {
+		list=(std::list <vtt_fx *> *) &stereo_fx_list;
+	} else {
+		list=&fx_list;
+	}
+
+	if (pos == 0) {
+	    list->remove(effect);
+	    list->push_front(effect);
+	} else if (pos == list->size() - 1) {
+	    list->remove(effect);
+	    list->push_back(effect);
+	} else {
+		list->remove(effect);
+		for (previous = i = list->begin(), ctr = 0; ctr <= pos; i++, ctr++) {
+		    previous = i;
+		}
+		list->insert(previous, effect);
+	}
+    debug_fx_stack();
+}
+
 
 void vtt_class :: effect_up(vtt_fx *effect)
 {
@@ -1641,7 +1672,7 @@ void vtt_class :: effect_up(vtt_fx *effect)
 		list->insert(previous, effect);
 		pthread_mutex_unlock(&render_lock);
 
-		vg_move_fx_panel_up(effect->get_panel_widget(), this, effect->is_stereo());
+		vg_move_fx_panel_up(effect->get_panel(), this, effect->is_stereo());
 	}
 	
 	debug_fx_stack();
@@ -1677,7 +1708,7 @@ void vtt_class :: effect_down(vtt_fx *effect)
 		list->remove(effect);
 		
 		list->insert(i, effect);
-		vg_move_fx_panel_down(effect->get_panel_widget(), this, effect->is_stereo());
+		vg_move_fx_panel_down(effect->get_panel(), this, effect->is_stereo());
 		pthread_mutex_unlock(&render_lock);
 	}
 	

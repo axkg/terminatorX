@@ -38,12 +38,16 @@ typedef enum {
 	FX_UP,
 	FX_DOWN,
 	FX_CLOSE,
-	MINIMIZE_PANEL,
+	ADD_ITEM,
+	ADD_DRYWET,
+	REMOVE_DRYWET,
 	ALL_ICONS
 } tX_icon;
 
+extern const char* tx_icons[];
 extern GtkWidget *tx_pixmap_widget(tX_icon id);
 extern void tx_icons_init(int size);
+extern GtkWidget* create_top_button(int icon_id);
 extern GtkWidget *tx_xpm_label_box(tX_icon id, const gchar *label_text, GtkWidget **labelwidget=(GtkWidget **) NULL);
 extern GtkWidget *tx_xpm_button_new(tX_icon id, const char *label, int toggle, GtkWidget **labelwidget=(GtkWidget **) NULL);
 #endif
