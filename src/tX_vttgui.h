@@ -51,6 +51,8 @@ struct vtt_gui
 	/* Main */
 	tX_panel  *main_panel;
 	GtkWidget *name;
+	GtkWidget *color_button;
+	GtkCssProvider *css_provider;
 	GtkWidget *show_audio;
 	GtkWidget *del;
 	GtkWidget *adjust_button;
@@ -114,6 +116,8 @@ struct vtt_gui
 	GtkWidget *mouse_mapping_menu_x;
 	GtkWidget *mouse_mapping_menu_y;
 
+        char style_class[32];
+
 #ifdef USE_ALSA_MIDI_IN
 	GtkWidget *midi_mapping;
 #endif	
@@ -125,6 +129,7 @@ struct vtt_gui
 	GtkWidget *control_minimized_panel_bar_label;
 };
 
+extern void update_vtt_css(vtt_class *vtt, GdkRGBA* rgba);
 extern void cleanup_all_vtts();
 extern void update_all_vtts();
 extern void vg_enable_critical_buttons(int enable);

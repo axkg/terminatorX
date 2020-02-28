@@ -164,8 +164,12 @@ typedef struct {
 	int filename_length;
 	
 	int restore_midi_connections;
-	int wav_display_history;
 	
+	double title_bar_alpha;
+	int wav_use_vtt_color;
+
+	int wav_display_history;
+
 	char wav_display_bg_focus[8];
 	char wav_display_bg_no_focus[8];
 	
@@ -174,7 +178,7 @@ typedef struct {
 	
 	char wav_display_cursor[8];	
 	char wav_display_cursor_mute[8];
-	
+
 	char vu_meter_bg[8];
 	char vu_meter_loud[8];
 	char vu_meter_normal[8];

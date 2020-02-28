@@ -128,6 +128,7 @@ void apply_options(GtkWidget *dialog) {
 	}
 
 	globals.wav_display_history=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "wav_display_history")))==TRUE);
+	globals.title_bar_alpha=gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "title_bar_alpha")));
 
 	/* Audio Colors */
 	
@@ -137,6 +138,7 @@ void apply_options(GtkWidget *dialog) {
 	strcpy(globals.wav_display_fg_no_focus, (char *) g_object_get_data(G_OBJECT(lookup_widget(dialog, "wav_display_fg_no_focus")), "Color"));
 	strcpy(globals.wav_display_cursor, (char *) g_object_get_data(G_OBJECT(lookup_widget(dialog, "wav_display_cursor")), "Color"));
 	strcpy(globals.wav_display_cursor_mute, (char *) g_object_get_data(G_OBJECT(lookup_widget(dialog, "wav_display_cursor_mute")), "Color"));
+	globals.wav_use_vtt_color=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "wav_use_vtt_color")))==TRUE);
 
 	/* VU Colors */ 
 	strcpy(globals.vu_meter_bg, (char *) g_object_get_data(G_OBJECT(lookup_widget(dialog, "vu_meter_bg")), "Color"));
@@ -159,10 +161,11 @@ void apply_options(GtkWidget *dialog) {
 	std::list<vtt_class *>::iterator vtt;
 	
 	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++) {
-		gtk_tx_update_colors(GTK_TX((*vtt)->gui.display));
+		gtk_tx_update_colors(GTK_TX((*vtt)->gui.display), (*vtt)->get_color());
 		gtk_widget_queue_draw((*vtt)->gui.display);
 		gtk_tx_flash_update_colors(GTK_TX_FLASH((*vtt)->gui.flash));
 		gtk_widget_queue_draw((*vtt)->gui.flash);
+		update_vtt_css((*vtt), (*vtt)->get_color());
 	}
 	
 	gtk_tx_flash_update_colors(GTK_TX_FLASH(main_flash));
@@ -438,6 +441,7 @@ void init_tx_options(GtkWidget *dialog) {
 	}
 	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "wav_display_history")), globals.wav_display_history);
+	gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "title_bar_alpha")), globals.title_bar_alpha);
 
 	/* Audio Colors */
 	int ctr=0;
@@ -448,6 +452,7 @@ void init_tx_options(GtkWidget *dialog) {
 	set_color_button(globals.wav_display_fg_no_focus, "wav_display_fg_no_focus");
 	set_color_button(globals.wav_display_cursor, "wav_display_cursor");
 	set_color_button(globals.wav_display_cursor_mute, "wav_display_cursor_mute");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "wav_use_vtt_color")), globals.wav_use_vtt_color);
 	
 	/* VU Colors */
 	set_color_button(globals.vu_meter_bg, "vu_meter_bg");

@@ -86,6 +86,8 @@ class vtt_class
 	char name[256]; // Turntable's name
 	char filename[PATH_MAX]; // The corresponding audiofile
 	
+	GdkRGBA color;
+
 	int is_playing;
 	bool is_sync_master;
 	bool is_sync_client;
@@ -222,6 +224,8 @@ class vtt_class
 	/* Parameter setup methods */
 	void set_name(char *);
 	int set_output_buffer_size(int);
+
+	GdkRGBA* get_color() { return &color; };
 
 	void set_volume(f_prec);
 	void recalc_volume();

@@ -662,6 +662,34 @@ static gint stereo_fx_button_pressed(GtkWidget *wid, GdkEventButton *event, vtt_
 	return TRUE;
 }
 
+
+void update_vtt_css(vtt_class *vtt, GdkRGBA* rgba) {
+	char css[256];
+	GdkRGBA copy;
+	memcpy(&copy, rgba, sizeof(GdkRGBA));
+	copy.alpha = globals.title_bar_alpha;
+	char *color_str = gdk_rgba_to_string(&copy);
+	snprintf(css, sizeof(css), ".%08x { background-color: %s; }", vtt, color_str);
+	g_free(color_str);
+        gtk_css_provider_load_from_data(vtt->gui.css_provider, css, -1, NULL);
+        gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(vtt->gui.css_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+
+	gtk_tx_update_colors(GTK_TX(vtt->gui.display), rgba);
+	gtk_widget_queue_draw(vtt->gui.display);
+}
+
+static void gui_color_set(GtkWidget *widget, vtt_class *vtt) {
+	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(widget), vtt->get_color());
+
+	update_vtt_css(vtt, vtt->get_color());
+}
+
+void gui_set_color(vtt_class *vtt, GdkRGBA* rgba)  {
+	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(vtt->gui.color_button), rgba);
+	update_vtt_css(vtt, rgba);
+
+}
+
 #define TOOLTIP_LENGTH 2048
 
 void gui_set_name(vtt_class *vtt, char *newname)
@@ -803,9 +831,14 @@ void build_vtt_gui(vtt_class *vtt)
 	char nice_name[256];
 	
 	vtt_gui *g;
-	
+
 	g=&vtt->gui;
 	vtt->have_gui=1;
+
+	snprintf(g->style_class, sizeof(g->style_class), "%0x", vtt);
+
+	g->css_provider = gtk_css_provider_new();	
+
 	g->par_menu=NULL;
 	g->ladspa_menu=NULL;
 
@@ -828,6 +861,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_widget_show(g->audio_minimize);
 
 	g->audio_label=gtk_label_new(vtt->name);
+	gtk_style_context_add_class(gtk_widget_get_style_context(tempbox2), g->style_class); 
 	gtk_widget_set_halign(g->audio_label, GTK_ALIGN_START);
 	gtk_widget_set_margin_start(g->audio_label, 10);
 	gtk_widget_show(g->audio_label);
@@ -835,6 +869,7 @@ void build_vtt_gui(vtt_class *vtt)
 
 	nicer_filename(nice_name, vtt->filename);
 	g->file = gtk_button_new_with_label(nice_name);
+	gtk_style_context_add_class(gtk_widget_get_style_context(g->file), g->style_class); 
 	gtk_widget_show(g->file);
 	gui_set_tooltip(g->file, "Click to Load/Edit/Reload a sample for this turntable. To load you can also drag a file and drop it over this button or the sound data display below.");
 	gtk_box_pack_start(GTK_BOX(tempbox), g->file, WID_DYN);
@@ -842,12 +877,14 @@ void build_vtt_gui(vtt_class *vtt)
 	g->mouse_mapping=gtk_button_new_with_label("Mouse");
 	gtk_widget_show(g->mouse_mapping);
 	gui_set_tooltip(g->mouse_mapping, "Determines what parameters should be affected on mouse motion in mouse grab mode.");
+	gtk_style_context_add_class(gtk_widget_get_style_context(g->mouse_mapping), g->style_class); 
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->mouse_mapping, WID_FIX);
 
 #ifdef USE_ALSA_MIDI_IN
 	g->midi_mapping=gtk_button_new_with_label("MIDI");
 	gtk_widget_show(g->midi_mapping);
 	gui_set_tooltip(g->midi_mapping, "Determines what parameters should be bound to what MIDI events.");
+	gtk_style_context_add_class(gtk_widget_get_style_context(g->midi_mapping), g->style_class); 
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->midi_mapping, WID_FIX);
 	
 	if (!tX_engine::get_instance()->get_midi()->get_is_open()) {
@@ -885,6 +922,7 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_box_pack_start(GTK_BOX(g->control_box), tempbox2, WID_FIX);
 
 	g->control_label=gtk_label_new(vtt->name);
+	gtk_style_context_add_class(gtk_widget_get_style_context(tempbox2), g->style_class); 
 	gtk_widget_show(g->control_label);
 	gtk_box_pack_start(GTK_BOX(tempbox2), g->control_label, WID_DYN);
 
@@ -917,12 +955,24 @@ void build_vtt_gui(vtt_class *vtt)
 	tX_panel *p=new tX_panel("Main", g->control_subbox);
 	g->main_panel=p;
 			
+	GtkWidget *mainbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	g->name = gtk_entry_new();
 	gtk_entry_set_max_length(GTK_ENTRY(g->name), 256);
 	gtk_entry_set_text(GTK_ENTRY(g->name), vtt->name);
 	gtk_entry_set_width_chars(GTK_ENTRY(g->name), 10);
 	gtk_entry_set_max_width_chars(GTK_ENTRY(g->name), 10);
-	p->add_client_widget(g->name);
+	gtk_container_add_with_properties(GTK_CONTAINER(mainbox), g->name, "expand", TRUE, NULL);
+	g->color_button = gtk_color_button_new();
+	gtk_color_chooser_set_use_alpha(GTK_COLOR_CHOOSER(g->color_button), FALSE);
+	gui_set_color(vtt, vtt->get_color());
+	g_signal_connect(G_OBJECT(g->color_button), "color_set", (GCallback) gui_color_set , vtt);		
+	
+	gtk_button_set_relief(GTK_BUTTON(g->color_button), GTK_RELIEF_NONE);
+	gtk_container_add(GTK_CONTAINER(mainbox), g->color_button);
+	gtk_widget_show(g->color_button);
+	gtk_widget_show(g->name);
+
+	p->add_client_widget(mainbox);
 	gui_set_tooltip(g->name, "Enter the turntable's name here.");
 	//gtk_widget_set_size_request(g->name, 40, -1);
 
@@ -1289,6 +1339,7 @@ void gui_hide_control_panel(vtt_class *vtt, bool hide) {
 	if (hide) {
 		gtk_widget_hide(vtt->gui.control_box);
 		vtt->gui.control_minimized_panel_bar_button=tx_xpm_button_new(MIN_CONTROL, vtt->name, 0, &vtt->gui.control_minimized_panel_bar_label);
+		gtk_style_context_add_class(gtk_widget_get_style_context(vtt->gui.control_minimized_panel_bar_button), vtt->gui.style_class); 
 		g_signal_connect(G_OBJECT(vtt->gui.control_minimized_panel_bar_button), "clicked", (GCallback) unminimize_control_panel, vtt);
 		gtk_widget_show(vtt->gui.control_minimized_panel_bar_button);
 		snprintf(tooltip, TOOLTIP_LENGTH, "Show \"%s\" control panel.", vtt->name);
@@ -1308,6 +1359,7 @@ void gui_hide_audio_panel(vtt_class *vtt, bool hide) {
 	if (hide) {
 		gtk_widget_hide(vtt->gui.audio_box);
 		vtt->gui.audio_minimized_panel_bar_button=tx_xpm_button_new(MIN_AUDIO, vtt->name, 0, &vtt->gui.audio_minimized_panel_bar_label);
+		gtk_style_context_add_class(gtk_widget_get_style_context(vtt->gui.audio_minimized_panel_bar_button), vtt->gui.style_class); 
 		g_signal_connect(G_OBJECT(vtt->gui.audio_minimized_panel_bar_button), "clicked", (GCallback) unminimize_audio_panel, vtt);		
 		gtk_widget_show(vtt->gui.audio_minimized_panel_bar_button);
 		snprintf(tooltip, TOOLTIP_LENGTH, "Show \"%s\" audio panel.", vtt->name);
@@ -1348,6 +1400,8 @@ void delete_gui(vtt_class *vtt)
 	if (vtt->gui.file_menu) gtk_widget_destroy(vtt->gui.file_menu);
 	if (vtt->gui.mouse_mapping_menu) gtk_widget_destroy(vtt->gui.mouse_mapping_menu);
 	if (vtt->gui.ladspa_menu) gtk_widget_destroy(vtt->gui.ladspa_menu);
+
+        gtk_style_context_remove_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(vtt->gui.css_provider));
 }
 
 void cleanup_vtt(vtt_class *vtt)
