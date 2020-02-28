@@ -106,7 +106,7 @@ void gtk_tx_cleanup_pos_display (GtkTx *tx);
 void gtk_tx_update_pos_display (GtkTx *tx, int sample, int mute);
 void gtk_tx_show_focus(GtkTx *tx, int show);
 void gtk_tx_set_zoom(GtkTx *tx, f_prec zoom, int is_playing);
-void gtk_tx_update_colors(GtkTx *tx);
+void gtk_tx_update_colors(GtkTx *tx, GdkRGBA *vtt_color);
 f_prec gtk_tx_get_zoom(GtkTx *tx);
 
 #ifdef __cplusplus

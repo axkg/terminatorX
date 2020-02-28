@@ -54,6 +54,7 @@
 
 extern void build_vtt_gui(vtt_class *);
 extern void gui_set_name(vtt_class *vtt, char *newname);
+extern void gui_set_color(vtt_class *vtt, GdkRGBA* rgba);
 extern void gui_set_filename(vtt_class *vtt, char *newname);
 extern void delete_gui(vtt_class *vtt);
 extern void gui_update_display(vtt_class *vtt);
@@ -94,6 +95,19 @@ vtt_class :: vtt_class (int do_create_gui)
 	cleanup_required=false;
 
 	sprintf (name, "Turntable %i", vtt_amount);
+
+	double rgb[3];
+
+	for (int c=0; c<3; c++) {
+		double r = (double)rand() / RAND_MAX;
+    		rgb[c] = 0.7 + r*(0.3);
+	}
+	
+	color.red = rgb[0];
+	color.green = rgb[1];
+	color.blue = rgb[2];
+	color.alpha = 1;
+
 	strcpy(filename, "NONE");
 	buffer=NULL;
 	samples_in_buffer=0;
@@ -199,6 +213,7 @@ vtt_class :: vtt_class (int do_create_gui)
 	do_scratch=0;
 	speed_last=1;
 	speed_real=1;
+
 }
 
 vtt_class :: ~vtt_class()
@@ -1210,6 +1225,7 @@ void vtt_class :: xy_input(f_prec x_value, f_prec y_value)
 
 int  vtt_class :: save(FILE *rc, gzFile rz, char *indent) {
 	char tmp_xml_buffer[4096];
+	char* color_buffer;
 	
 	int res=0;
 
@@ -1217,6 +1233,10 @@ int  vtt_class :: save(FILE *rc, gzFile rz, char *indent) {
 	strcat(indent, "\t");
 	
 	store_string("name", name);
+	color_buffer = gdk_rgba_to_string(&color);
+	store_string("color", color_buffer);
+	g_free(color_buffer);
+	
 	if (buffer) {
 		store_string("audiofile", filename);
 	} else {
@@ -1339,6 +1359,9 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 			elementFound=0;
 			
 			restore_string_ac("name", buffer, set_name(buffer));
+			restore_string("color", buffer);
+			gdk_rgba_parse(&color, buffer);
+			gui_set_color(this, &color);
 			restore_string("audiofile", filename);
 			restore_bool("sync_master", is_sync_master);
 			restore_bool("autotrigger", autotrigger);

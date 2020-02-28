@@ -106,7 +106,7 @@ static void gtk_tx_class_init(GtkTxClass * gclass) {
 #define COL_CURSOR       4
 #define COL_CURSOR_MUTE  5
 
-void gtk_tx_update_colors(GtkTx *tx) {
+void gtk_tx_update_colors(GtkTx *tx, GdkRGBA *vtt_color) {
 	int step;
 
 	gdk_rgba_parse(&tx->colors[COL_BG_FOCUS], globals.wav_display_bg_focus);
@@ -114,9 +114,17 @@ void gtk_tx_update_colors(GtkTx *tx) {
 	gdk_rgba_parse(&tx->colors[COL_BG_NO_FOCUS], globals.wav_display_bg_no_focus);
 	tx->colors[COL_BG_NO_FOCUS].alpha=1.0;
 	
-	gdk_rgba_parse(&tx->colors[COL_FG_FOCUS], globals.wav_display_fg_focus);
+	if (globals.wav_use_vtt_color && vtt_color) {
+		memcpy(&tx->colors[COL_FG_FOCUS], vtt_color, sizeof(GdkRGBA));
+	} else {
+		gdk_rgba_parse(&tx->colors[COL_FG_FOCUS], globals.wav_display_fg_focus);
+	}
 	tx->colors[COL_FG_FOCUS].alpha=1.0;
-	gdk_rgba_parse(&tx->colors[COL_FG_NO_FOCUS], globals.wav_display_fg_no_focus);
+	if (globals.wav_use_vtt_color && vtt_color) {
+		memcpy(&tx->colors[COL_FG_NO_FOCUS], vtt_color, sizeof(GdkRGBA));
+	} else {
+		gdk_rgba_parse(&tx->colors[COL_FG_NO_FOCUS], globals.wav_display_fg_no_focus);
+	}
 	tx->colors[COL_FG_NO_FOCUS].alpha=1.0;
 	
 	gdk_rgba_parse(&tx->colors[COL_CURSOR], globals.wav_display_cursor);
@@ -133,6 +141,8 @@ void gtk_tx_update_colors(GtkTx *tx) {
 		color->blue = tx->colors[COL_CURSOR].blue;
 		color->alpha = frac*frac/2;
 	}
+	tx->render_buffer_fg = NULL;
+	gtk_tx_prepare(tx);
 }
 
 
@@ -147,7 +157,7 @@ static void gtk_tx_init(GtkTx * tx) {
 	memset(tx->colors, 0, sizeof(tx->colors));
 	memset(tx->history_colors, 0, sizeof(tx->history_colors));
 
-	gtk_tx_update_colors(tx);
+	gtk_tx_update_colors(tx, NULL);
 	
 	tx->current_fg=tx->audio_colors_focus;
 	tx->current_bg=&tx->colors[COL_BG_NO_FOCUS];
@@ -468,6 +478,7 @@ static void gtk_tx_update_render_buffer(GtkTx *tx) {
 	
 	if ((tx->render_buffer_display_width != tx->display_width) || 
 			(tx->render_buffer_fg != tx->current_fg)) {
+		
 		// need to redraw all samples
 		cairo_t *cr = cairo_create(tx->render_buffer_surface_a);
 		tx->current_render_buffer_surface = tx->render_buffer_surface_a;
@@ -532,7 +543,7 @@ static gboolean gtk_tx_draw(GtkWidget * widget, cairo_t *cr) {
 	g_return_val_if_fail(GTK_IS_TX(widget), FALSE);
 
 	tx = GTK_TX(widget);
-	
+
 	gdk_cairo_get_clip_rectangle(cr, &area);
 	
 	cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);

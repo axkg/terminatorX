@@ -148,7 +148,10 @@ void set_global_defaults() {
 	strcpy(globals.wav_display_fg_no_focus, "#00FF00");
 
 	strcpy(globals.wav_display_cursor, "#FF6666");
-	strcpy(globals.wav_display_cursor_mute, "#FFFFFF");	
+	strcpy(globals.wav_display_cursor_mute, "#FFFFFF");
+
+	globals.wav_use_vtt_color = 1;
+	globals.title_bar_alpha = 0.5;
 	
 	strcpy(globals.vu_meter_bg, "#000000");
 	strcpy(globals.vu_meter_loud, "#FF0000");
@@ -248,6 +251,8 @@ int load_globals_xml() {
 			restore_int("restore_midi_connections", globals.restore_midi_connections);
 
 			restore_int("wav_display_history", globals.wav_display_history);
+			restore_float("title_bar_alpha", globals.title_bar_alpha);
+			restore_int("wav_use_vtt_color", globals.wav_use_vtt_color);
 			restore_string("wav_display_bg_focus", globals.wav_display_bg_focus);
 			restore_string("wav_display_bg_no_focus", globals.wav_display_bg_no_focus);
 			restore_string("wav_display_fg_focus", globals.wav_display_fg_focus);
@@ -376,6 +381,8 @@ void store_globals() {
 		store_int("restore_midi_connections", globals.restore_midi_connections);
 
 		store_int("wav_display_history", globals.wav_display_history);
+		store_float("title_bar_alpha", globals.title_bar_alpha);
+		store_int("wav_use_vtt_color", globals.wav_use_vtt_color);
 		store_string("wav_display_bg_focus", globals.wav_display_bg_focus);
 		store_string("wav_display_bg_no_focus", globals.wav_display_bg_no_focus);
 		store_string("wav_display_fg_focus", globals.wav_display_fg_focus);

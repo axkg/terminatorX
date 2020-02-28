@@ -201,6 +201,8 @@ create_tx_options (GtkWindow* parent)
   GtkWidget *label46;
   GtkWidget *label47;
   GtkWidget *wav_display_history;
+  GtkWidget *wav_use_vtt_color;
+  GtkWidget *title_bar_alpha;
   GtkWidget *wav_display_bg_focus;
   GtkWidget *wav_display_bg_no_focus;
   GtkWidget *wav_display_fg_focus;
@@ -592,6 +594,17 @@ create_tx_options (GtkWindow* parent)
   gtk_grid_attach (GTK_GRID (grid2), wav_display_history, 1, 9, 1, 1);
   gtk_widget_set_tooltip_text(wav_display_history, "Adds visual history to the turntable cursor or needles.");
 
+  label38 = gtk_label_new("Turntable Titelbar Alpha:");
+  gtk_widget_show (label38);
+  gtk_grid_attach (GTK_GRID (grid2), label38, 0, 10, 1, 1);
+  gtk_widget_set_halign(label38, GTK_ALIGN_START);
+
+  title_bar_alpha = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (gtk_adjustment_new (0.5, 0, 1.0, 0.1, 0.01, 0.01)));
+  gtk_widget_show (title_bar_alpha);
+  gtk_grid_attach (GTK_GRID (grid2), title_bar_alpha, 1, 10, 1, 1);
+  gtk_scale_set_value_pos (GTK_SCALE (title_bar_alpha), GTK_POS_LEFT);
+  gtk_scale_set_digits (GTK_SCALE (title_bar_alpha), 2);
+
   label2 = gtk_label_new ("User Interface");
   gtk_widget_show (label2);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 2), label2);
@@ -661,6 +674,16 @@ create_tx_options (GtkWindow* parent)
   gtk_widget_set_hexpand(wav_display_cursor_mute , TRUE);
   gtk_widget_show (wav_display_cursor_mute);
   gtk_grid_attach (GTK_GRID (grid8), wav_display_cursor_mute, 1, 5, 1, 1);
+
+  label38 = gtk_label_new("Turntable color");
+  gtk_widget_show (label38);
+  gtk_grid_attach (GTK_GRID (grid8), label38, 0, 6, 1, 1);
+  gtk_widget_set_halign(label38, GTK_ALIGN_START);
+
+  wav_use_vtt_color = gtk_check_button_new_with_mnemonic ("Use turntable color for audio signal display");
+  gtk_widget_show (wav_use_vtt_color);
+  gtk_grid_attach (GTK_GRID (grid8), wav_use_vtt_color, 1, 6, 1, 1);
+  gtk_widget_set_tooltip_text(wav_use_vtt_color, "Each turntable can have a seprate color.");
 
   label41 = gtk_label_new ("Audio Colors");
   gtk_widget_show (label41);
@@ -981,6 +1004,8 @@ create_tx_options (GtkWindow* parent)
   TX_UI_HOOKUP_OBJECT (tx_options, knob_size, "knob_size");
   TX_UI_HOOKUP_OBJECT (tx_options, override_knob_size, "override_knob_size");
   TX_UI_HOOKUP_OBJECT (tx_options, wav_display_history, "wav_display_history");
+  TX_UI_HOOKUP_OBJECT (tx_options, title_bar_alpha, "title_bar_alpha");
+  TX_UI_HOOKUP_OBJECT (tx_options, wav_use_vtt_color, "wav_use_vtt_color");
 
   return tx_options;
 }
