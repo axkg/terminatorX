@@ -1754,7 +1754,7 @@ void display_help()
 	
 	if (help_child==0) {
 		// child
-		execlp("gnome-help","gnome-help","file://" XML_MANUAL, NULL);		
+		execlp("gnome-help","gnome-help","help:terminatorX-manual", NULL);
 		_exit(-1);
 	} else if (help_child==-1) {
 		tx_note("System error: couldn't fork() to run the help process.", true);

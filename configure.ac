@@ -583,12 +583,9 @@ if test "$enable_lrdf" != "no"; then
 fi
 
 dnl User Manual
-GNOME_DOC_INIT
+YELP_HELP_INIT
 
-xml_man="\\\"${datadir}/gnome/help/terminatorX-manual/C/terminatorX-manual.xml\\\""
-
-
-CFLAGS="$XML_CFLAGS $CFLAGS -DXML_MANUAL=$xml_man"
+CFLAGS="$XML_CFLAGS $CFLAGS"
 LIBS="$XML_LIBS $LIBS"
 
 AC_OUTPUT(Makefile 

@@ -4,12 +4,9 @@ EXTRA_DIST = COPYING-DOCS\
 	README.PERFORMANCE\
 	terminatorX.spec.in\
 	terminatorX.appdata.xml\
-	gnome-doc-utils.make\
 	terminatorX.desktop\
 	autogen.sh\
 	terminatorX.mime
-
-DISTCLEANFILES = gnome-doc-utils.make
 
 # Destkop Entry
 desktopdir = $(datadir)/applications
