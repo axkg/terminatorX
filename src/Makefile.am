@@ -44,3 +44,5 @@ terminatorX_SOURCES =	tX_endian.c tX_dialog.cc tX_widget.c wav_write.c \
 			tX_ui_callbacks.h tX_ui_support.cc \
 			tX_ui_support.h tX_ladspa_class.h tX_ladspa_class.cc \
 			tX_capabilities.h tX_capabilities.cc
+
+terminatorX_LDADD = $(LDADD) -ldl
