@@ -247,7 +247,7 @@ void append_alsa_device_list(GtkComboBoxText *combo, char *current) {
 	}
 }
 #else
-void append_alsa_device_list(GtkComboBoxText *combo) {
+void append_alsa_device_list(GtkComboBoxText *combo, char* current) {
 }
 #endif
 
