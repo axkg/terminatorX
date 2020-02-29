@@ -19,6 +19,7 @@ tX_knob_resource_file = tX_knob.gresource.xml
 tX_dialog_resource_file = tX_dialog.gresource.xml
 
 BUILT_SOURCES = tX_knob_resources.c tX_icons_resources.c tX_dialog_resources.c
+CLEANFILES = tX_knob_resources.c tX_icons_resources.c tX_dialog_resources.c
 EXTRA_DIST = 	$(tX_knob_resource_file) $(tX_knob_images) $(tX_icons_resource_file) $(tX_icons) $(tX_dialog_resource_file)
 
 tX_knob_resources.c: $(tX_knob_resource_file) $(tX_knob_images)
