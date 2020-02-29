@@ -360,7 +360,10 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 {
 	GtkWidget *widget=GTK_WIDGET(tx_flash);
 	GtkAllocation allocation;
+	GdkDrawingContext *context;
+	GdkWindow *window;
 	cairo_t *cr;
+	cairo_region_t *region;
 	gint i, y;
 	int new_level;
 	int red=0;
@@ -368,7 +371,10 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 	new_level=(int) (new_value/tx_flash->level_value);
 	gtk_widget_get_allocation(widget, &allocation);
 	
-	cr = gdk_cairo_create (gtk_widget_get_window(widget));
+	region = cairo_region_create();
+	window = gtk_widget_get_window(widget);
+	context = gdk_window_begin_draw_frame(window, region);
+	cr =  gdk_drawing_context_get_cairo_context(context);
 	cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 	cairo_set_line_width(cr,1);
 	cairo_set_source_surface (cr, tx_flash->surface, 0, 0);
@@ -409,45 +415,45 @@ static void gtk_tx_flash_set_channel_level(GtkTxFlash *tx_flash, f_prec new_valu
 		}
 	}
 	
-	if (new_level==channel->last_level) 
-		return;
-	
-	if (new_level<channel->last_level) {
-		new_level=channel->last_level*globals.flash_response;
+	if (new_level!=channel->last_level)  {
+	    if (new_level<channel->last_level) {
+		    new_level=channel->last_level*globals.flash_response;
+	    }
+
+	    if (new_level>channel->last_level) {
+		    gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_NORM]);
+
+		    for (i=channel->last_level, y=allocation.height-(DY+channel->last_level*DLEVEL); i<=new_level; y-=DLEVEL, i++) {
+			    if (!red) {
+				    if (i>=tx_flash->red_level) {
+					    gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_LOUD]);
+					    red=1;
+				    }
+			    }
+			    cairo_move_to (cr, channel->x1, y);
+			    cairo_line_to (cr, channel->x2, y);
+			    cairo_stroke (cr);
+		    }
+	    } else {
+		    gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_BG]);
+
+		    if (channel->last_level==channel->max) {
+			    i=channel->last_level-1;
+		    } else {
+			    i=channel->last_level;
+		    }
+
+		    for (y=allocation.height-(DY+i*DLEVEL); i>new_level; y+=DLEVEL, i--) {
+			    cairo_move_to (cr, channel->x1, y);
+			    cairo_line_to (cr, channel->x2, y);
+			    cairo_stroke (cr);
+		    }
+	    }
+	    channel->last_level=new_level;
 	}
-	
-	if (new_level>channel->last_level) {
-		gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_NORM]);
-		
-		for (i=channel->last_level, y=allocation.height-(DY+channel->last_level*DLEVEL); i<=new_level; y-=DLEVEL, i++) {
-			if (!red) {
-				if (i>=tx_flash->red_level) {
-					gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_LOUD]);
-					red=1;
-				}
-			}
-			cairo_move_to (cr, channel->x1, y);
-			cairo_line_to (cr, channel->x2, y);
-			cairo_stroke (cr);
-		}
-	} else {
-		gdk_cairo_set_source_rgba (cr, &tx_flash->colors[COL_BG]);
-		
-		if (channel->last_level==channel->max) {
-			i=channel->last_level-1;
-		} else {
-			i=channel->last_level;
-		}
-		
-		for (y=allocation.height-(DY+i*DLEVEL); i>new_level; y+=DLEVEL, i--) {
-			cairo_move_to (cr, channel->x1, y);
-			cairo_line_to (cr, channel->x2, y);
-			cairo_stroke (cr);
-		}
-	}
-	channel->last_level=new_level;
-	
-	cairo_destroy(cr);
+
+	gdk_window_end_draw_frame(window, context);
+	cairo_region_destroy(region);
 }
 
 void
@@ -463,9 +469,7 @@ gtk_tx_flash_clear (GtkWidget *widget)
 	tx_flash->channel[1].last_level=0;
 	tx_flash->max_cycles=0;
 	
-	cairo_t *cr = gdk_cairo_create (gtk_widget_get_window(widget));
-	gtk_tx_flash_paint_yourself(widget, cr);
-	cairo_destroy(cr);
+	gtk_widget_queue_draw(widget);
 }
 
 #ifdef __cplusplus

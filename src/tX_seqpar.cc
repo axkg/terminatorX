@@ -239,15 +239,15 @@ void tX_seqpar :: receive_forward_value(const float value)
 void tX_seqpar :: materialize_forward_values()
 {
 	list <tX_seqpar *> :: iterator sp;
-	
+
 	for (sp=all->begin(); sp!=all->end(); sp++) {
 		(*sp)->exec_value((*sp)->fwd_value);
-	}	
-	gdk_flush();
+	}
+	gdk_display_flush(gdk_display_get_default());
 }
 
 const char * tX_seqpar :: get_vtt_name()
-{       
+{
         if (vtt) return tt->name;
         else return "Master Track";
 }
@@ -1183,8 +1183,8 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget *widget, GdkEventButton *event, gp
 		g_signal_connect(item, "activate", (GCallback) menu_delete_all_events_for_sp, sp);		
 				
 		gtk_widget_show(menu);
-		
-		gtk_menu_popup (GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, event->time);
+	
+		gtk_menu_popup_at_widget(GTK_MENU(menu), widget, GDK_GRAVITY_SOUTH_WEST, GDK_GRAVITY_NORTH_WEST, (GdkEvent *)event);
 		//gtk_grab_remove(gtk_grab_get_current());
 
 		return TRUE;

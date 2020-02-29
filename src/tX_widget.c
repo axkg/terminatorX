@@ -142,7 +142,7 @@ void gtk_tx_update_colors(GtkTx *tx, GdkRGBA *vtt_color) {
 		color->alpha = frac*frac/2;
 	}
 	tx->render_buffer_fg = NULL;
-	gtk_tx_prepare(tx);
+	gtk_tx_prepare(GTK_WIDGET(tx));
 }
 
 
