@@ -1,9 +1,5 @@
-include $(top_srcdir)/gnome-doc-utils.make
-dist-hook: doc-dist-hook
+@YELP_HELP_RULES@
 
-DOC_MODULE = terminatorX-manual
-DOC_ENTITIES = 
-DOC_INCLUDES = 
-DOC_FIGURES = figures/signalflow.png
-
-DOC_LINGUAS = 
+HELP_ID = terminatorX-manual
+HELP_FILES = index.docbook
+HELP_MEDIA = figures/signalflow.png
