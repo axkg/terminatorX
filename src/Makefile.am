@@ -12,6 +12,7 @@ license.c: $(top_srcdir)/COPYING
 tX_dialog.o: license.c
 
 BUILT_SOURCES = license.c
+CLEANFILES = license.c
 
 bin_PROGRAMS = terminatorX
 
