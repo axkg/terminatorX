@@ -522,11 +522,11 @@ static gint vg_mouse_mapping_pressed(GtkWidget *wid, GdkEventButton *event, vtt_
 		vtt->gui.mouse_mapping_menu=NULL;
 	}
 	/* gtk+ seems to cleanup the submenus automatically */
-	
+
 	vtt->gui.mouse_mapping_menu=gtk_menu_new();
 	GtkWidget *x_item;
 	GtkWidget *y_item;
-	
+
 	x_item=gtk_menu_item_new_with_label("X-axis (Left <-> Right)");
 	gtk_menu_shell_append(GTK_MENU_SHELL(vtt->gui.mouse_mapping_menu), x_item);
 	gtk_widget_show(x_item);
@@ -534,13 +534,13 @@ static gint vg_mouse_mapping_pressed(GtkWidget *wid, GdkEventButton *event, vtt_
 	y_item=gtk_menu_item_new_with_label("Y-axis (Up <-> Down)");
 	gtk_menu_shell_append(GTK_MENU_SHELL(vtt->gui.mouse_mapping_menu), y_item);
 	gtk_widget_show(y_item);
-	
+
 	vtt->gui.mouse_mapping_menu_x=gtk_menu_new();
 	vtt->gui.mouse_mapping_menu_y=gtk_menu_new();
-	
+
 	GtkWidget *item;
 	GtkWidget *item_to_activate=NULL;
-	
+
 	/* Filling the X menu */
 	item = gtk_check_menu_item_new_with_label("Disable");
 	gtk_menu_shell_append(GTK_MENU_SHELL(vtt->gui.mouse_mapping_menu_x), item);
@@ -556,16 +556,16 @@ static gint vg_mouse_mapping_pressed(GtkWidget *wid, GdkEventButton *event, vtt_
 			gtk_menu_shell_append(GTK_MENU_SHELL(vtt->gui.mouse_mapping_menu_x), item);
 			gtk_widget_show(item);
 			g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(vg_xcontrol_set), (void*) (*sp));
-			
+
 			if (vtt->x_par==(*sp)) item_to_activate=item;
 		}
 	}
 
 	if (item_to_activate) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item_to_activate), TRUE);
-	
+
 	/* Filling the Y menu */
 	item_to_activate=NULL;
-	
+
 	item = gtk_check_menu_item_new_with_label("Disable");
 	gtk_menu_shell_append(GTK_MENU_SHELL(vtt->gui.mouse_mapping_menu_y), item);
 	gtk_widget_show(item);
@@ -578,19 +578,19 @@ static gint vg_mouse_mapping_pressed(GtkWidget *wid, GdkEventButton *event, vtt_
 			gtk_menu_shell_append(GTK_MENU_SHELL(vtt->gui.mouse_mapping_menu_y), item);
 			gtk_widget_show(item);
 			g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(vg_ycontrol_set), (void*) (*sp));
-			
+
 			if (vtt->y_par==(*sp)) item_to_activate=item;
 		}
 	}
 
 	if (item_to_activate) gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item_to_activate), TRUE);
-	
+
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(x_item), vtt->gui.mouse_mapping_menu_x);
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(y_item), vtt->gui.mouse_mapping_menu_y);
-	gtk_menu_popup (GTK_MENU(vtt->gui.mouse_mapping_menu), NULL, NULL, NULL, NULL, 0, 0);
-	
+	gtk_menu_popup_at_widget(GTK_MENU(vtt->gui.mouse_mapping_menu), wid, GDK_GRAVITY_SOUTH_WEST, GDK_GRAVITY_NORTH_WEST, (GdkEvent *)event);
+
 	g_signal_emit_by_name(G_OBJECT(wid), "released", vtt);
-	
+
 	return TRUE;
 }
 
@@ -618,7 +618,7 @@ static gint vg_file_button_pressed(GtkWidget *wid, GdkEventButton *event, vtt_cl
 		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(reload_vtt_buffer), vtt);
 	}
 	
-	gtk_menu_popup(GTK_MENU(vtt->gui.file_menu), NULL, NULL, NULL, NULL, 0,0);
+	gtk_menu_popup_at_widget(GTK_MENU(vtt->gui.file_menu), wid, GDK_GRAVITY_SOUTH_WEST, GDK_GRAVITY_NORTH_WEST, (GdkEvent *)event);
 	/* gtk+ is really waiting for this.. */
 	g_signal_emit_by_name(G_OBJECT(wid), "released", vtt);
 	
@@ -638,7 +638,7 @@ static gint fx_button_pressed(GtkWidget *wid, GdkEventButton *event, vtt_class *
 
 	if (g->ladspa_menu) gtk_widget_destroy(GTK_WIDGET(g->ladspa_menu));
 	g->ladspa_menu=LADSPA_Class::get_ladspa_menu();
-	gtk_menu_popup (GTK_MENU(g->ladspa_menu), NULL, NULL, NULL, NULL, 0, 0);
+	gtk_menu_popup_at_widget(GTK_MENU(g->ladspa_menu), wid, GDK_GRAVITY_SOUTH_WEST, GDK_GRAVITY_NORTH_WEST, (GdkEvent *)event);
 
 	/* gtk+ is really waiting for this.. */
 	g_signal_emit_by_name(G_OBJECT(wid), "released", vtt);
@@ -654,7 +654,7 @@ static gint stereo_fx_button_pressed(GtkWidget *wid, GdkEventButton *event, vtt_
 
 	if (g->ladspa_menu) gtk_widget_destroy(GTK_WIDGET(g->ladspa_menu));
 	g->ladspa_menu=LADSPA_Class::get_stereo_ladspa_menu();
-	gtk_menu_popup (GTK_MENU(g->ladspa_menu), NULL, NULL, NULL, NULL, 0, 0);
+	gtk_menu_popup_at_widget(GTK_MENU(g->ladspa_menu), wid, GDK_GRAVITY_SOUTH_WEST, GDK_GRAVITY_NORTH_WEST, (GdkEvent *)event);
 
 	/* gtk+ is really waiting for this.. */
 	g_signal_emit_by_name(G_OBJECT(wid), "released", vtt);
@@ -669,7 +669,7 @@ void update_vtt_css(vtt_class *vtt, GdkRGBA* rgba) {
 	memcpy(&copy, rgba, sizeof(GdkRGBA));
 	copy.alpha = globals.title_bar_alpha;
 	char *color_str = gdk_rgba_to_string(&copy);
-	snprintf(css, sizeof(css), ".%08x { background-color: %s; }", vtt, color_str);
+	snprintf(css, sizeof(css), ".%08lx { background-color: %s; }", (unsigned long) vtt, color_str);
 	g_free(color_str);
         gtk_css_provider_load_from_data(vtt->gui.css_provider, css, -1, NULL);
         gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(vtt->gui.css_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
@@ -835,7 +835,7 @@ void build_vtt_gui(vtt_class *vtt)
 	g=&vtt->gui;
 	vtt->have_gui=1;
 
-	snprintf(g->style_class, sizeof(g->style_class), "%0x", vtt);
+	snprintf(g->style_class, sizeof(g->style_class), "%08lx", (unsigned long) vtt);
 
 	g->css_provider = gtk_css_provider_new();	
 

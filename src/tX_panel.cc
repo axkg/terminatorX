@@ -28,7 +28,9 @@
 #define WID_DYN TRUE, TRUE, 0
 #define WID_FIX FALSE, FALSE, 0
 
-static const GtkTargetEntry entries[] = { { "GTK_LIST_BOX_ROW", GTK_TARGET_SAME_APP, 0 } };
+// workaround GtkEntry not having target set to const for some reason
+static gchar entries_type[] = "GTK_LIST_BOX_ROW"; 
+static const GtkTargetEntry entries[] = { { entries_type, GTK_TARGET_SAME_APP, 0 } };
 
 static vtt_fx *dragged_effect = NULL;
 static GtkWidget *dragged_list_box = NULL;

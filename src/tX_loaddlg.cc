@@ -49,7 +49,7 @@ gfloat ld_old_prog;
 #define add_widget_fix(wid); gtk_box_pack_start(GTK_BOX(vbox), wid, WID_FIX);\
 	gtk_widget_show(wid);
 
-#define gtk_flush(); { int ctr=0; while (gtk_events_pending()) { ctr++; if (ctr>5) break; gtk_main_iteration(); gdk_flush(); }}
+#define gtk_flush(); { int ctr=0; while (gtk_events_pending()) { ctr++; if (ctr>5) break; gtk_main_iteration(); gdk_display_flush(gdk_display_get_default()); }}
 
 
 int ld_create_loaddlg(int mode, int count)

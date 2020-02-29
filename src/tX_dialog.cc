@@ -260,19 +260,19 @@ void append_oss_device_list(GtkComboBoxText *combo, char *current) {
     struct dirent **namelist;
     int n,i;
     n = scandir("/dev", &namelist, oss_select_dsp_only, alphasort);
-    
+
     if (n>0) {
-    	for (i=0; i<n; i++) {
-			char buffer[256];
-            sprintf(buffer, "/dev/%s", namelist[i]->d_name);
-            free(namelist[i]);
-            gtk_combo_box_text_append_text(combo, strdup(buffer));
-            
-            if (strcmp(buffer, current)==0) {
-				gtk_combo_box_set_active(GTK_COMBO_BOX(combo), i);
-			}
-		}
+    for (i=0; i<n; i++) {
+	char buffer[PATH_MAX];
+	snprintf(buffer, sizeof(buffer), "/dev/%s", namelist[i]->d_name);
+	free(namelist[i]);
+
+	gtk_combo_box_text_append_text(combo, strdup(buffer));
+	if (strcmp(buffer, current)==0) {
+	    gtk_combo_box_set_active(GTK_COMBO_BOX(combo), i);
 	}
+	}
+    }
 }
 
 

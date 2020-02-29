@@ -1,24 +1,24 @@
 /*
     terminatorX - realtime audio scratching software
     Copyright (C) 1999-2020  Alexander König
- 
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
- 
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
- 
+
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
+
     File: tX_mouse.cc
- 
+
     Description: This implements the mouse AND keyboard Input handling in
-    		 Grab-Mode.
+		 Grab-Mode.
 */
 
 #include <sys/wait.h>
@@ -50,7 +50,7 @@ tx_mouse :: tx_mouse()
 	keyboard = NULL;
 	linux_input_channel = NULL;
 	grab_mode = LINUX_INPUT;
-	
+
 	grabbed=0;
 	warp=TX_MOUSE_SPEED_NORMAL;
 	enable_auto_mnemonics = FALSE;
@@ -61,23 +61,23 @@ tx_mouse :: tx_mouse()
 
 
 int tx_mouse :: grab()
-{	
+{
 	if (grabbed) return 0;
 
 	// release all keys
 	memset(key_pressed, 0, sizeof(key_pressed));
 
 	warp_override=false;
-	
+
 	if (grab_linux_input()) {
 		grab_mode = LINUX_INPUT;
 	} else {
 		grab_mode = FALLBACK;
 	}
-	
+
 	window =  gtk_widget_get_window(main_window);
 	GdkDisplay* gdk_dpy = gdk_window_get_display(window);
-	GdkDeviceManager *device_manager = gdk_display_get_device_manager(gdk_dpy);
+	GdkSeat *seat = gdk_display_get_default_seat(gdk_dpy);
 
 	if (grab_mode == FALLBACK) {
 	    enable_compression = gdk_window_get_event_compression(window);
@@ -102,34 +102,25 @@ int tx_mouse :: grab()
 		g_object_set (gtk_widget_get_settings (main_window), "gtk-auto-mnemonics", off, NULL);
 	}
 
-	pointer = gdk_device_manager_get_client_pointer(device_manager);
+	pointer = gdk_seat_get_pointer(seat);
 	GdkGrabStatus grab_status = gdk_device_grab(pointer, top_window, GDK_OWNERSHIP_APPLICATION, FALSE, GdkEventMask (GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, GDK_CURRENT_TIME);
 
-	gdk_device_get_position(pointer, &screen, &x_restore, &y_restore);	
-	
+	gdk_device_get_position(pointer, &screen, &x_restore, &y_restore);
+
 	gint x = gdk_screen_get_width(screen) / 2;
 	gint y = gdk_screen_get_height(screen) / 2;
-	
+
 	x_abs = x;
 	y_abs = y;
-	
+
 	gdk_device_warp(pointer, screen, x_abs, y_abs);
 
 	if (grab_status != GDK_GRAB_SUCCESS) {
 		return(-1);
-	}	
-	
-	GList *list = gdk_device_manager_list_devices (device_manager, GDK_DEVICE_TYPE_MASTER);
-	for (GList *link = list; link != NULL; link = g_list_next (link)) {
-		GdkDevice *device = GDK_DEVICE (link->data);
-		
-		if (gdk_device_get_source (device) != GDK_SOURCE_KEYBOARD)
-			continue;
-
-		keyboard = device;
-		break;
 	}
-	
+
+	keyboard = gdk_seat_get_keyboard(seat);
+
 	grab_status = gdk_device_grab(keyboard, top_window, GDK_OWNERSHIP_APPLICATION, FALSE, GdkEventMask (GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK), NULL, GDK_CURRENT_TIME);
 
 	if (grab_status != GDK_GRAB_SUCCESS) {
@@ -139,12 +130,12 @@ int tx_mouse :: grab()
 
 	cursor = gdk_window_get_cursor(window);
 	gdk_window_set_cursor(window, gdk_cursor_new_for_display(gdk_dpy, GDK_BLANK_CURSOR));
-	
+
 	grabbed=1;
-	
+
 	std::list<vtt_class *> :: iterator v;
 	int c=0;
-	
+
 	for (v=vtt_class::main_list.begin(); v!=vtt_class::main_list.end(); v++) {
 		if (!(*v)->audio_hidden) {
 			vtt_class::focus_no(c);
@@ -154,7 +145,7 @@ int tx_mouse :: grab()
 	}
 
 	warp=TX_MOUSE_SPEED_NORMAL;
-	
+
 	return 0;
 }
 
@@ -163,7 +154,7 @@ void tx_mouse :: ungrab()
 	if (!grabbed) return;
 
 	tX_debug("tX_mouse::ungrab(): this: %016" PRIxPTR, (uintptr_t) this);
-	
+
 	gdk_device_ungrab(keyboard, GDK_CURRENT_TIME);
 	gdk_device_ungrab(pointer, GDK_CURRENT_TIME);
 
@@ -176,15 +167,15 @@ void tx_mouse :: ungrab()
 	if (enable_auto_mnemonics) {
 		g_object_set (gtk_widget_get_settings (main_window), "gtk-auto-mnemonics", enable_auto_mnemonics, NULL);
 	}
-	
+
 	if (grab_mode == FALLBACK) {
 	    gdk_window_set_event_compression(window, enable_compression);
 	}
 
 	ungrab_linux_input();
-	
+
 	tX_debug("tX_mouse::ungrab(): done");
-	
+
 	grabbed=0;
 }
 
@@ -198,7 +189,7 @@ GError *tx_mouse::open_channel() {
 	} else {
 		return error;
 	}
-	
+
 	return NULL;
 }
 
@@ -211,7 +202,7 @@ void tx_mouse::close_channel() {
 }
 
 int tx_mouse::grab_linux_input() {
-	
+
 	if (linux_input_channel) {
 		linux_input_watch = g_io_add_watch_full(linux_input_channel, G_PRIORITY_HIGH, G_IO_IN, tx_mouse::linux_input_wrap, this, NULL);
 	} else {
@@ -223,7 +214,7 @@ int tx_mouse::grab_linux_input() {
 
 void tx_mouse::ungrab_linux_input() {
 	if (grab_mode == LINUX_INPUT) {
-	    	// only remove the watch, we keep the channel as we dropped root and might fail to re-open it
+		// only remove the watch, we keep the channel as we dropped root and might fail to re-open it
 		g_source_remove(linux_input_watch);
 	}
 }
@@ -234,13 +225,13 @@ void tx_mouse::motion_notify(GtkWidget *widget, GdkEventMotion *eventMotion) {
 	if ((grab_mode == FALLBACK) && vtt) {
 		gdouble d_x = eventMotion->x_root - x_abs;
 		gdouble d_y = eventMotion->y_root - y_abs;
-		
+
 		if ((d_x != 0.0) || (d_y != 0.0)) {
 			//gdouble xnow, ynow;
 			//gdk_device_get_position_double(pointer, NULL, &xnow, &ynow);
 			//printf("%lf -> %lf, %lf -> %lf\n", eventMotion->x_root, xnow, eventMotion->y_root, ynow);
 			gdk_device_warp(pointer, screen, x_abs, y_abs);
-			
+
 			if (warp_override) {
 				f_prec value=(fabs(d_x)>fabs(d_y)) ? d_x : d_y;
 				vtt->sp_speed.handle_mouse_input(value*globals.mouse_speed*warp);
@@ -257,7 +248,7 @@ void tx_mouse::linux_input(tx_input_event *event) {
 			// gdk_device_warp(pointer, screen, x_abs, y_abs);
 			gdouble d_x = event->x_motion;
 			gdouble d_y = event->y_motion;
-		
+
 			if (warp_override) {
 				f_prec value=(fabs(d_x)>fabs(d_y)) ? d_x : d_y;
 				vtt->sp_speed.handle_mouse_input(value*globals.mouse_speed*warp);
@@ -410,12 +401,12 @@ gboolean tx_mouse::linux_input_wrap(GIOChannel *source, GIOCondition condition, 
 		tx_mouse* mouse = (tx_mouse *) data;
 		gint fd = g_io_channel_unix_get_fd(mouse->linux_input_channel);
 		ssize_t bytes_read = read(fd, &eventbuffer, sizeof(eventbuffer));
-		
+
 		//printf("read %lu bytes, %lu events\n", bytes_read, bytes_read / sizeof(tx_input_event));
-		
+
 		sum.x_motion = 0;
 		sum.y_motion = 0;
-		
+
 		for (ssize_t i = 0; i < bytes_read / ((ssize_t) sizeof(tx_input_event)); i++) {
 			sum.x_motion += eventbuffer[i].x_motion;
 			sum.y_motion += eventbuffer[i].y_motion;

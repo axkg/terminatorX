@@ -255,7 +255,7 @@ int main(int argc, char **argv)
 	if (globals.show_nag) {
 		while (!timesup) {
 			while (gtk_events_pending()) { gtk_main_iteration(); }
-			gdk_flush();				
+			gdk_display_flush(gdk_display_get_default());
 			usleep(250);
 		}
 		destroy_about();
@@ -268,7 +268,7 @@ int main(int argc, char **argv)
 	
 	if (globals.startup_set) {
 		while (gtk_events_pending()) { gtk_main_iteration(); }
-		gdk_flush();	
+		gdk_display_flush(gdk_display_get_default());
 		tX_cursor::set_cursor(tX_cursor::WAIT_CURSOR);
 		load_tt_part(globals.startup_set);
 		tX_cursor::reset_cursor();
@@ -327,8 +327,8 @@ int main(int argc, char **argv)
 	fprintf(stderr, "Have a nice life.\n");
 #else // CREATE_BENCHMARK
 	gtk_widget_hide(main_window);
-	while (gtk_events_pending()) gtk_main_iteration(); gdk_flush();	
-	gdk_flush();
+	while (gtk_events_pending()) gtk_main_iteration(); gdk_display_flush(gdk_display_get_default());
+	gdk_display_flush(gdk_display_get_default());
 	
 	vtt_class::set_sample_rate(48000);
 	

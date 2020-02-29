@@ -151,7 +151,7 @@ void turn_audio_off(void)
 {
 	if (audioon) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(engine_btn), 0);
-		while (gtk_events_pending()) gtk_main_iteration();		
+		while (gtk_events_pending()) gtk_main_iteration();
 	}
 }
 
@@ -159,18 +159,18 @@ gint pos_update(gpointer data)
 {
 	f_prec temp,temp2;
 
-	if (stop_update) {		
+	if (stop_update) {
 		cleanup_all_vtts();
 		tX_seqpar :: update_all_graphics();
 		if (old_focus) gui_show_focus(old_focus, 0);
 		old_focus=NULL;
 		gtk_tx_flash_clear(main_flash);
-		gdk_flush();	
+		gdk_display_flush(gdk_display_get_default());
 		update_tag=0;
 		return FALSE;
 	} else {
 		update_all_vtts();
-		
+
 		/*main vu meter */
 		temp=vtt_class::mix_max_l;
 		vtt_class::mix_max_l=0;
@@ -181,7 +181,7 @@ gint pos_update(gpointer data)
 		if (vtt_class::focused_vtt!=old_focus) {
 			if (old_focus) gui_show_focus(old_focus, 0);
 			old_focus=vtt_class::focused_vtt;
-			if (old_focus) gui_show_focus(old_focus, 1);			
+			if (old_focus) gui_show_focus(old_focus, 1);
 		}
 
 		grab_status = mouse.is_grabbed();
@@ -192,24 +192,24 @@ gint pos_update(gpointer data)
 				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(grab_button), 0);
 			}
 		}
-		gdk_flush();	
+		gdk_display_flush(gdk_display_get_default());
 		update_delay--;
-		
+
 		if (update_delay < 0) {
 			seq_update();
 			tX_seqpar::update_all_graphics();
 			update_delay=globals.update_delay;
 		}
-		
+
 		if (tX_engine::get_instance()->check_error()) {
 			tX_error("ouch - error while playback...");
-			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(engine_btn), 0);			
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(engine_btn), 0);
 			return FALSE;
-		}		
-		
+		}
+
 		// let the audio engine we got the chance to do something
 		tX_engine::get_instance()->reset_cycles_ctr();
-		
+
 		return TRUE;
 	}
 }
@@ -222,9 +222,9 @@ void mg_update_status()
 	pid_t mypid;
 	char filename[PATH_MAX];
 	char buffer[256];
-	int found=0;	
+	int found=0;
 	int mem;
-	
+
 	mypid=getpid();
 	sprintf(filename, "/proc/%i/status", mypid);
 	procfs=fopen(filename, "r");
@@ -1309,8 +1309,6 @@ void create_mastergui(int x, int y)
 	GtkWidget *wrapbox;
 	
 	main_window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
-
-	gtk_window_set_wmclass(GTK_WINDOW(main_window), "terminatorX", "tX_mastergui");
 
 	gtk_window_set_title(GTK_WINDOW(main_window), "terminatorX");
 
