@@ -29,8 +29,6 @@
 #include "tX_pbutton.h"
 #include "tX_global.h"
 
-#include "icons/tX_icons_resources.c"
-
 const char* tx_icons[ALL_ICONS];
 
 int tx_icon_size=20;
