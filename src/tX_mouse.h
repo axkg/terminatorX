@@ -78,11 +78,11 @@ class tx_mouse
 	guint last_button_press;
 	guint last_button_release;
 
+	GdkDisplay* display;
 	GdkDevice* pointer;
-	GdkDevice* keyboard;
+	GdkSeat *seat;
 	GdkScreen* screen;
 	GdkWindow* window;
-	GdkCursor* blankCursor;
 	GdkCursor* cursor;
 	gdouble x_abs;
 	gdouble y_abs;
@@ -146,7 +146,6 @@ class tx_mouse
 	static gboolean key_press_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data);
 	static gboolean key_release_wrap(GtkWidget *widget, GdkEventKey *eventKey, void *data);
 	static gboolean linux_input_wrap(GIOChannel *source, GIOCondition condition, gpointer data);
-
 };
 
 
