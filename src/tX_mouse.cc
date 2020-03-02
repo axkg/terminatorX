@@ -47,7 +47,9 @@
 tx_mouse :: tx_mouse()
 {
 	pointer = NULL;
-	keyboard = NULL;
+	display = NULL;
+	window = NULL;
+	seat = NULL;
 	linux_input_channel = NULL;
 	grab_mode = LINUX_INPUT;
 
@@ -75,17 +77,23 @@ int tx_mouse :: grab()
 		grab_mode = FALLBACK;
 	}
 
-	window =  gtk_widget_get_window(main_window);
-	GdkDisplay* gdk_dpy = gdk_window_get_display(window);
-	GdkSeat *seat = gdk_display_get_default_seat(gdk_dpy);
+	if (window == NULL) {
+		window = gtk_widget_get_window(main_window);
+		display = gdk_window_get_display(window);
+		seat = gdk_display_get_default_seat(display);
+		cursor = gdk_cursor_new_for_display(display, GDK_BLANK_CURSOR);
+	}
 
 	if (grab_mode == FALLBACK) {
 	    enable_compression = gdk_window_get_event_compression(window);
-	    gdk_window_set_event_compression(window, False);
+	    gdk_window_set_event_compression(window, FALSE);
 	}
 
-	if (!gdk_dpy) {
+	if (!display) {
 		fputs("GrabMode Error: couldn't access GDKDisplay.", stderr);
+		if (grab_mode == FALLBACK) {
+			gdk_window_set_event_compression(window, enable_compression);
+		}
 		return(ENG_ERR_XOPEN);
 	}
 
@@ -102,34 +110,26 @@ int tx_mouse :: grab()
 		g_object_set (gtk_widget_get_settings (main_window), "gtk-auto-mnemonics", off, NULL);
 	}
 
-	pointer = gdk_seat_get_pointer(seat);
-	GdkGrabStatus grab_status = gdk_device_grab(pointer, top_window, GDK_OWNERSHIP_APPLICATION, FALSE, GdkEventMask (GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, GDK_CURRENT_TIME);
-
-	gdk_device_get_position(pointer, &screen, &x_restore, &y_restore);
-
-	gint x = gdk_screen_get_width(screen) / 2;
-	gint y = gdk_screen_get_height(screen) / 2;
-
-	x_abs = x;
-	y_abs = y;
-
-	gdk_device_warp(pointer, screen, x_abs, y_abs);
+	GdkGrabStatus grab_status = gdk_seat_grab(seat, top_window, GdkSeatCapabilities (GDK_SEAT_CAPABILITY_POINTER | GDK_SEAT_CAPABILITY_KEYBOARD), FALSE, cursor, NULL, NULL, NULL);
 
 	if (grab_status != GDK_GRAB_SUCCESS) {
+		if (grab_mode == FALLBACK) {
+	    		gdk_window_set_event_compression(window, enable_compression);
+		}
 		return(-1);
 	}
 
-	keyboard = gdk_seat_get_keyboard(seat);
+	pointer = gdk_seat_get_pointer(seat);
+	gdk_device_get_position(pointer, &screen, &x_restore, &y_restore);
+	GdkMonitor *monitor = gdk_display_get_monitor_at_point(display, x_restore, y_restore);
+	GdkRectangle rect;
 
-	grab_status = gdk_device_grab(keyboard, top_window, GDK_OWNERSHIP_APPLICATION, FALSE, GdkEventMask (GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK), NULL, GDK_CURRENT_TIME);
+	gdk_monitor_get_geometry(monitor, &rect);
 
-	if (grab_status != GDK_GRAB_SUCCESS) {
-		gdk_device_ungrab(pointer, GDK_CURRENT_TIME);
-		return(-2);
-	}
+	x_abs = rect.width / 2 * gdk_monitor_get_scale_factor(monitor);
+	y_abs = rect.height / 2 * gdk_monitor_get_scale_factor(monitor);
 
-	cursor = gdk_window_get_cursor(window);
-	gdk_window_set_cursor(window, gdk_cursor_new_for_display(gdk_dpy, GDK_BLANK_CURSOR));
+	gdk_device_warp(pointer, screen, x_abs, y_abs);
 
 	grabbed=1;
 
@@ -155,10 +155,7 @@ void tx_mouse :: ungrab()
 
 	tX_debug("tX_mouse::ungrab(): this: %016" PRIxPTR, (uintptr_t) this);
 
-	gdk_device_ungrab(keyboard, GDK_CURRENT_TIME);
-	gdk_device_ungrab(pointer, GDK_CURRENT_TIME);
-
-	gdk_window_set_cursor(window, cursor);
+	gdk_seat_ungrab(seat);
 
 	vtt_class::unfocus();
 

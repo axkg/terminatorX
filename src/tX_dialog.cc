@@ -226,7 +226,7 @@ void append_alsa_device_list(GtkComboBoxText *combo, char *current) {
 			if (strlen(buffer)) buffer[strlen(buffer)-1]=0;
 			if(strstr(buffer, "playback")) {
 				char foo[PATH_MAX];
-				char tmp[PATH_MAX];
+				char tmp[PATH_MAX*2];
 				memset(foo, 0, PATH_MAX);
 				int card;
 				int device;
