@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
 	  <!ENTITY version "4.00">
-	  <!ENTITY date "2016-06-17">
+	  <!ENTITY date "2021-02-14">
 ]>
 <article id="index" lang="en">
 
@@ -25,6 +25,7 @@
 			<year>2006</year>
 			<year>2014</year>
 			<year>2016</year>
+			<year>2021</year>
 	    <holder role="mailto:alex@lisas.de">Alexander König</holder>
 	  </copyright>
     <revhistory>
@@ -280,7 +281,7 @@
 
         <listitem>
 
-          <para>Syncing tables to one master turntable</para>
+          <para>Syncing tables to one leader turntable</para>
 
         </listitem>
 
@@ -541,8 +542,8 @@
 
     <title>Operation</title>
 
-    <para>TerminatorX' user interface is split up into the main 
-    controls (master, sequencer, engine controls and menu buttons) and 
+    <para>TerminatorX' user interface is split up into several control
+    areas (main channel, sequencer, engine controls and menu buttons) and 
     the individual turntable's controls. Each turntable has it's own 
     interface split up into a control and a audio panel (see 
     <xref linkend="TURNTABLECONTROLS"/>).</para>
@@ -853,8 +854,8 @@
 
       <title>Main Controls</title>
 
-      <para>The controls of the master GUI are located in the top and 
-      the right bar of the terminatorX main window.</para>
+      <para>The controls of the main channel GUI are located in the top and 
+      the right bar of the terminatorX application window.</para>
 
       <itemizedlist>
 
@@ -890,10 +891,10 @@
 
         <listitem>
 
-          <para><emphasis>Master Volume / Pitch</emphasis></para>
+          <para><emphasis>Main Volume / Pitch</emphasis></para>
 
           <para>The volume and pitch settings of the individual 
-          turntables are relative to these master settings. This 
+          turntables are relative to these main channel settings. This 
           information will be stored within the .tX set files.</para>
 
         </listitem>
@@ -1095,7 +1096,7 @@
               <emphasis>Compute Pitch</emphasis> dialog to pop up. With 
               this dialog it is possible to specify how many loops of 
               this turntable should be played as fast as a certain 
-              amount of loops of the master turntable. After pressing 
+              amount of loops of the leader turntable. After pressing 
               the <emphasis>Ok</emphasis> button terminatorX will 
               adjust the turntable's ptich accordingly in order to 
               match the given playback speed requirements.</para>
@@ -1142,22 +1143,22 @@
 
             <listitem>
 
-              <para><emphasis>Master Button</emphasis></para>
+              <para><emphasis>Lead Button</emphasis></para>
 
               <para>Enabling this button makes this turntable the 
-              <emphasis>sync-master</emphasis>. Note that only 
+              <emphasis>sync-leader</emphasis>. Note that only 
               <emphasis>one</emphasis> turntable at a time can be the 
-              sync-master.</para>
+              sync-leader.</para>
 
             </listitem>
 
             <listitem>
 
-              <para><emphasis>Client Button</emphasis></para>
+              <para><emphasis>Follow Button</emphasis></para>
 
               <para>This button marks the turntable as 
-              <emphasis>sync-client</emphasis>, so it will be triggered 
-              with the master automatically.</para>
+              <emphasis>sync-follower</emphasis>, so it will be triggered 
+              with the leader automatically.</para>
 
             </listitem>
 
@@ -1165,12 +1166,12 @@
 
               <para><emphasis>Sync-Cycles Selection</emphasis></para>
 
-              <para>The sync cycles determine how often a sync-client 
+              <para>The sync cycles determine how often a sync-follower
               should be triggered. With a setting of zero the 
-              sync-client will be (re-)triggered with 
-              <emphasis>every</emphasis> trigger of the sync-master. A 
-              setting of 1 will (re-)trigger the client every 
-              <emphasis>second</emphasis> master-trigger and so 
+              sync-follower will be (re-)triggered with 
+              <emphasis>every</emphasis> trigger of the sync-leader. A 
+              setting of 1 will (re-)trigger the follower every 
+              <emphasis>second</emphasis> leader-trigger and so 
               on.</para>
 
             </listitem>
@@ -1559,19 +1560,19 @@
       loops and one bassline loaded in three turntables. Of course you 
       want these samples to be triggered at the same time but you don't 
       want to invest time to cut them to the exact length. Therefore 
-      you decide which of the drum loops to make the sync master. 
+      you decide which of the drum loops to make the sync leader. 
       You'll have to do this before you enable the audio engine (for 
-      now). Only one turntable can be the sync master. Now you can make 
-      the other two sync clients which will cause them to be 
-      (re-)triggered whenever the master is (re-)triggered. The number 
-      you can select to the right of the <emphasis>client 
+      now). Only one turntable can be the sync leader. Now you can make 
+      the other two sync followers which will cause them to be 
+      (re-)triggered whenever the leader is (re-)triggered. The number 
+      you can select to the right of the <emphasis>follow 
       button</emphasis> sets the trigger delay for the button: if it's 
-      set to zero the turntable will be triggered with every master 
-      trigger, if it's set to 1 it'll be triggered every 2nd master 
+      set to zero the turntable will be triggered with every leader 
+      trigger, if it's set to 1 it'll be triggered every 2nd leader 
       trigger and so on.</para>
 
       <para>A nice side effect of this feature is: you can now scratch 
-      the second (sync client) drum loop and no matter whether you're 
+      the second (sync follower) drum loop and no matter whether you're 
       scratching is good or not the beat will be triggered correctly 
       again ;)</para>
 
@@ -1629,8 +1630,7 @@
             <row><entry><keycap>BACKSPACE</keycap></entry><entry>stops 
             the turntable</entry></row>
 
-            <row><entry><keycap>S</keycap></entry><entry>toggles "Sync 
-            Client"</entry></row>
+            <row><entry><keycap>S</keycap></entry><entry>toggles "Follow Sync"</entry></row>
 
             <row><entry><keycap>SPACE</keycap></entry><entry>while 
             pressed turntable speed is mapped to mouse speed 
@@ -1725,7 +1725,7 @@
 
         <listitem>
 
-          <para>master volume &amp; pitch</para>
+          <para>main volume &amp; pitch</para>
 
         </listitem>
 
@@ -1755,7 +1755,7 @@
 
         <listitem>
 
-          <para>sync client settings</para>
+          <para>sync follower settings</para>
 
         </listitem>
 
@@ -2063,7 +2063,7 @@
 
             <row><entry>Trigger</entry><entry>0</entry></row>
 
-            <row><entry>Sync Client</entry><entry>1</entry></row>
+            <row><entry>Follow Sync</entry><entry>1</entry></row>
 
             <row><entry>Loop</entry><entry>2</entry></row>
 
