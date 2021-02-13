@@ -35,8 +35,8 @@ create_tx_adjust (void)
   GtkWidget *vbox1;
   GtkWidget *label34;
   GtkWidget *grid7;
-  GtkAdjustment *master_cycles_adj;
-  GtkWidget *master_cycles;
+  GtkAdjustment *leader_cycles_adj;
+  GtkWidget *leader_cycles;
   GtkWidget *label36;
   GtkWidget *label35;
   GtkAdjustment *cycles_adj;
@@ -56,7 +56,7 @@ create_tx_adjust (void)
   gtk_box_pack_start (GTK_BOX (dialog_vbox2), vbox1, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (vbox1), 4);
 
-  label34 = gtk_label_new ("In order to compute the optimum pitch value, please specify how many loops of this turntable should play as fast as how many loops of the masterturntable:");
+  label34 = gtk_label_new ("In order to compute the optimum pitch value, please specify how many loops of this turntable should play as fast as how many loops of the leader turntable:");
   gtk_widget_show (label34);
   gtk_box_pack_start (GTK_BOX (vbox1), label34, FALSE, FALSE, 0);
   gtk_label_set_line_wrap (GTK_LABEL (label34), TRUE);
@@ -66,14 +66,14 @@ create_tx_adjust (void)
   gtk_box_pack_start (GTK_BOX (vbox1), grid7, TRUE, TRUE, 0);
   gtk_grid_set_column_spacing (GTK_GRID (grid7), 3);
 
-  master_cycles_adj = gtk_adjustment_new (1, 1, 100, 1, 10, 0);
-  master_cycles = gtk_spin_button_new (GTK_ADJUSTMENT (master_cycles_adj), 1, 0);
-  gtk_widget_set_hexpand(master_cycles, TRUE);
-  gtk_widget_show (master_cycles);
-  gtk_grid_attach (GTK_GRID (grid7), master_cycles, 1, 1, 1, 1);
-  gtk_widget_set_tooltip_text(master_cycles, "Specify the number of loops for the master turntable.");
+  leader_cycles_adj = gtk_adjustment_new (1, 1, 100, 1, 10, 0);
+  leader_cycles = gtk_spin_button_new (GTK_ADJUSTMENT (leader_cycles_adj), 1, 0);
+  gtk_widget_set_hexpand(leader_cycles, TRUE);
+  gtk_widget_show (leader_cycles);
+  gtk_grid_attach (GTK_GRID (grid7), leader_cycles, 1, 1, 1, 1);
+  gtk_widget_set_tooltip_text(leader_cycles, "Specify the number of loops for the leader turntable.");
 
-  label36 = gtk_label_new ("Loops of the master turntable:");
+  label36 = gtk_label_new ("Loops of the leader turntable:");
   gtk_widget_show (label36);
   gtk_grid_attach (GTK_GRID (grid7), label36, 0, 1, 1, 1);
 
@@ -110,7 +110,7 @@ create_tx_adjust (void)
   TX_UI_HOOKUP_OBJECT (tx_adjust, vbox1, "vbox1");
   TX_UI_HOOKUP_OBJECT (tx_adjust, label34, "label34");
   TX_UI_HOOKUP_OBJECT (tx_adjust, grid7, "grid7");
-  TX_UI_HOOKUP_OBJECT (tx_adjust, master_cycles, "master_cycles");
+  TX_UI_HOOKUP_OBJECT (tx_adjust, leader_cycles, "leader_cycles");
   TX_UI_HOOKUP_OBJECT (tx_adjust, label36, "label36");
   TX_UI_HOOKUP_OBJECT (tx_adjust, label35, "label35");
   TX_UI_HOOKUP_OBJECT (tx_adjust, cycles, "cycles");

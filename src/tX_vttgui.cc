@@ -387,17 +387,17 @@ void ec_volume_changed(GtkWidget *wid, vtt_class *vtt)
 	vtt->sp_ec_volume.receive_gui_value(gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 }
 
-void master_setup(GtkWidget *wid, vtt_class *vtt)
+void leader_setup(GtkWidget *wid, vtt_class *vtt)
 {
-	vtt->set_sync_master(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(wid)));
+	vtt->set_sync_leader(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(wid)));
 }
 
 void client_setup(GtkWidget *wid, vtt_class *vtt)
 {
 	int client;
 	
-	client=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(vtt->gui.sync_client));	
-	vtt->sp_sync_client.receive_gui_value(client);
+	client=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(vtt->gui.sync_follower));	
+	vtt->sp_sync_follower.receive_gui_value(client);
 }
 
 void client_setup_number(GtkWidget *wid, vtt_class *vtt)
@@ -475,11 +475,11 @@ gboolean vg_delete_pitch_adjust (GtkWidget *wid, vtt_class *vtt) {
 }
 
 void vg_do_pitch_adjust (GtkWidget *wid, vtt_class *vtt) {
-	int master_cycles=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget(vtt->gui.adjust_dialog, "master_cycles")));
+	int leader_cycles=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget(vtt->gui.adjust_dialog, "leader_cycles")));
 	int cycles=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget(vtt->gui.adjust_dialog, "cycles")));
 	bool create_event=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(vtt->gui.adjust_dialog, "create_event")));
 
-	vtt->adjust_to_main_pitch(master_cycles, cycles, create_event);
+	vtt->adjust_to_main_pitch(leader_cycles, cycles, create_event);
 	
 	gtk_widget_destroy(vtt->gui.adjust_dialog);
 }
@@ -494,13 +494,13 @@ void vg_adjust_pitch_vtt(GtkWidget *wid, vtt_class *vtt) {
 		return;
 	}
 	
-	if (!vtt_class::sync_master) {
-		tx_note("No master turntable to adjust pitch to selected.", true);
+	if (!vtt_class::sync_leader) {
+		tx_note("No leader turntable to adjust pitch to selected.", true);
 		return;
 	}
 	
-	if (vtt==vtt_class::sync_master) {
-		tx_note("This is the master turntable - cannot adjust a turntable to itself.", true);
+	if (vtt==vtt_class::sync_leader) {
+		tx_note("This is the leader turntable - cannot adjust a turntable to itself.", true);
 		return;
 	}
 	
@@ -772,8 +772,8 @@ void gui_connect_signals(vtt_class *vtt)
 	connect_button(stop, stop_vtt);
 	connect_button(autotrigger, autotrigger_toggled);
 	connect_button(loop, loop_toggled);
-	connect_button(sync_master, master_setup);
-	connect_button(sync_client, client_setup);
+	connect_button(sync_leader, leader_setup);
+	connect_button(sync_follower, client_setup);
 	connect_button(adjust_button, vg_adjust_pitch_vtt);
 	connect_adj(cycles, client_setup_number);
 	connect_press_button(fx_button, fx_button_pressed);
@@ -981,7 +981,7 @@ void build_vtt_gui(vtt_class *vtt)
 	p->add_client_widget(g->del);
 	
 	g->adjust_button=gtk_button_new_with_label("Pitch Adj.");
-	gui_set_tooltip(g->adjust_button, "Activate this button to adjust this turntable's speed to the master turntable's speed.");
+	gui_set_tooltip(g->adjust_button, "Activate this button to adjust this turntable's speed to the leader turntable's speed.");
 	p->add_client_widget(g->adjust_button);
 
 	gtk_list_box_insert(GTK_LIST_BOX(g->static_box), p->get_list_box_row(), -1);
@@ -1010,21 +1010,21 @@ void build_vtt_gui(vtt_class *vtt)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->loop), vtt->loop);
 	g_signal_connect(G_OBJECT(g->loop), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_loop);		
 	
-	g->sync_master=gtk_check_button_new_with_label("Master");
-	p->add_client_widget(g->sync_master);
-	gui_set_tooltip(g->sync_master, "Click here to make this turntable the sync-master. All turntables marked as sync-clients will be (re-)triggered in relation to the sync-master. Note that only *one* turntable can be the sync-master.");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->sync_master), vtt->is_sync_master);
+	g->sync_leader=gtk_check_button_new_with_label("Lead");
+	p->add_client_widget(g->sync_leader);
+	gui_set_tooltip(g->sync_leader, "Click here to make this turntable the sync-leader. All turntables marked as sync-followers will be (re-)triggered in relation to the sync-leader. Note that only *one* turntable can be the sync-leader.");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->sync_leader), vtt->is_sync_leader);
 	
-	g->sync_client=gtk_check_button_new_with_label("Client");
-	p->add_client_widget(g->sync_client);
-	gui_set_tooltip(g->sync_client, "If enabled this turntable will be (re-)triggerd in relation to the sync-master turntable.");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->sync_client), vtt->is_sync_client);
-	g_signal_connect(G_OBJECT(g->sync_client), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_sync_client);	
+	g->sync_follower=gtk_check_button_new_with_label("Follow");
+	p->add_client_widget(g->sync_follower);
+	gui_set_tooltip(g->sync_follower, "If enabled this turntable will be (re-)triggerd in relation to the sync-leader turntable.");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->sync_follower), vtt->is_sync_follower);
+	g_signal_connect(G_OBJECT(g->sync_follower), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_sync_follower);	
 	
 	g->cycles=GTK_ADJUSTMENT(gtk_adjustment_new(vtt->sync_cycles, 0, 10.0, 1,1,0));
 	dummy=gtk_spin_button_new(g->cycles, 1.0, 0);
 	p->add_client_widget(dummy);
-	gui_set_tooltip(dummy, "Determines how often a sync-client turntable gets triggered. 0 -> this turntable will be triggered with every trigger of the sync-master table, 1 -> the table will be triggered every 2nd master trigger and so on.");
+	gui_set_tooltip(dummy, "Determines how often a sync-follower turntable gets triggered. 0 -> this turntable will be triggered with every trigger of the sync-leader table, 1 -> the table will be triggered every 2nd leader trigger and so on.");
 	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &vtt->sp_sync_cycles);	
 
 	gtk_list_box_insert(GTK_LIST_BOX(g->static_box), p->get_list_box_row(), -1);
@@ -1452,9 +1452,9 @@ void cleanup_all_vtts()
 	}
 }
 
-void gui_clear_master_button(vtt_class *vtt)
+void gui_clear_leader_button(vtt_class *vtt)
 {
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(vtt->gui.sync_master), 0);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(vtt->gui.sync_leader), 0);
 }
 
 void gui_show_focus(vtt_class *vtt, int show)
@@ -1471,7 +1471,7 @@ void vg_enable_critical_buttons(int enable)
 	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++)
 	{
 		gtk_widget_set_sensitive(vgui.del, enable);
-		gtk_widget_set_sensitive(vgui.sync_master, enable);
+		gtk_widget_set_sensitive(vgui.sync_leader, enable);
 	}
 }
 
@@ -1482,7 +1482,7 @@ void vg_init_all_non_seqpars()
 	for (vtt=vtt_class::main_list.begin(); vtt!=vtt_class::main_list.end(); vtt++)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON((*vtt)->gui.autotrigger), (*vtt)->autotrigger);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON((*vtt)->gui.sync_master), (*vtt)->is_sync_master);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON((*vtt)->gui.sync_leader), (*vtt)->is_sync_leader);
 	}	
 }
 

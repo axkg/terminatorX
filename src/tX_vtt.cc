@@ -58,7 +58,7 @@ extern void gui_set_color(vtt_class *vtt, GdkRGBA* rgba);
 extern void gui_set_filename(vtt_class *vtt, char *newname);
 extern void delete_gui(vtt_class *vtt);
 extern void gui_update_display(vtt_class *vtt);
-extern void gui_clear_master_button(vtt_class *vtt);
+extern void gui_clear_leader_button(vtt_class *vtt);
 extern void cleanup_vtt(vtt_class *vtt);
 extern int vg_get_current_page(vtt_class *vtt);
 extern f_prec gui_get_audio_x_zoom(vtt_class *vtt);
@@ -78,9 +78,9 @@ pthread_mutex_t vtt_class::render_lock=PTHREAD_MUTEX_INITIALIZER;
 f_prec vtt_class::main_volume=1.0;
 f_prec vtt_class::res_main_volume=1.0;
 
-vtt_class * vtt_class::sync_master=NULL;
-int vtt_class::master_triggered=0;
-int vtt_class::master_triggered_at=0;
+vtt_class * vtt_class::sync_leader=NULL;
+int vtt_class::leader_triggered=0;
+int vtt_class::leader_triggered_at=0;
 vtt_class * vtt_class::focused_vtt=NULL;
 f_prec vtt_class::mix_max_l=0;
 f_prec vtt_class::mix_max_r=0;
@@ -130,8 +130,8 @@ vtt_class :: vtt_class (int do_create_gui)
 	loop=1;
 	
 	is_playing=0;
-	is_sync_master=0;
-	is_sync_client=0;
+	is_sync_leader=0;
+	is_sync_follower=0;
 	sync_cycles=0,
 	sync_countdown=0;
 	
@@ -160,7 +160,7 @@ vtt_class :: vtt_class (int do_create_gui)
 	sp_pan.set_vtt((void *) this);
 	sp_trigger.set_vtt((void *) this);	
 	sp_loop.set_vtt((void *) this);	
-	sp_sync_client.set_vtt((void *) this);	
+	sp_sync_follower.set_vtt((void *) this);	
 	sp_sync_cycles.set_vtt((void *) this);	
 	sp_lp_enable.set_vtt((void *) this);	
 	sp_lp_gain.set_vtt((void *) this);	
@@ -243,8 +243,8 @@ vtt_class :: ~vtt_class()
 		delete stereo_effect;
 	}
 	
-	if (sync_master==this) {
-		sync_master=NULL;
+	if (sync_leader==this) {
+		sync_leader=NULL;
 	}
 	
 	delete_gui(this);
@@ -678,10 +678,10 @@ void vtt_class :: render_scratch()
 				pos_f-=maxpos;
 				if (res_pitch>0) {
 					if (loop) {
-						if (is_sync_master)
+						if (is_sync_leader)
 						{
-							master_triggered=1;
-							master_triggered_at=sample;
+							leader_triggered=1;
+							leader_triggered_at=sample;
 						}
 					} else {
 						want_stop=1;
@@ -691,10 +691,10 @@ void vtt_class :: render_scratch()
 				pos_f+=maxpos;
 				if (res_pitch<0) {
 					if (loop) {
-						if (is_sync_master)
+						if (is_sync_leader)
 						{
-							master_triggered=1;
-							master_triggered_at=sample;
+							leader_triggered=1;
+							leader_triggered_at=sample;
 						}
 					} else {
 						want_stop=1;
@@ -782,9 +782,9 @@ void vtt_class :: forward_turntable()
 			pos_f-=maxpos;
 			if (res_pitch>0) {
 				if (loop) {
-					if (is_sync_master) {
-						master_triggered=1;
-						master_triggered_at=sample;
+					if (is_sync_leader) {
+						leader_triggered=1;
+						leader_triggered_at=sample;
 					}
 				} else {
 					want_stop=1;
@@ -794,9 +794,9 @@ void vtt_class :: forward_turntable()
 			pos_f+=maxpos;
 			if (res_pitch<0) {
 				if (loop) {
-					if (is_sync_master) {
-						master_triggered=1;
-						master_triggered_at=sample;
+					if (is_sync_leader) {
+						leader_triggered=1;
+						leader_triggered_at=sample;
 					}
 				} else {
 					want_stop=1;
@@ -890,9 +890,9 @@ int16_t * vtt_class :: render_all_turntables()
 			mix_buffer[mix_sample++]=(*vtt)->output_buffer2[sample]*FL_SHRT_MAX;
 		}
 
-		if (master_triggered) {
+		if (leader_triggered) {
 			for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
-				if ((*vtt)->is_sync_client)	{
+				if ((*vtt)->is_sync_follower)	{
 					if ((*vtt)->sync_countdown)	{
 						(*vtt)->sync_countdown--;
 					} else {
@@ -936,7 +936,7 @@ int16_t * vtt_class :: render_all_turntables()
 			right=!right;
 		}
 	}
-	master_triggered=0;
+	leader_triggered=0;
 		
 	vtt=render_list.begin();
 	while (vtt!=render_list.end()) {
@@ -959,9 +959,9 @@ void vtt_class :: forward_all_turntables()
 		vtt=render_list.begin();
 		(*vtt)->forward_turntable();			 
 		
-		if (master_triggered) {
+		if (leader_triggered) {
 			for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
-				if ((*vtt)->is_sync_client){
+				if ((*vtt)->is_sync_follower){
 					if ((*vtt)->sync_countdown) {
 						(*vtt)->sync_countdown--;
 					} else {
@@ -978,7 +978,7 @@ void vtt_class :: forward_all_turntables()
 		}
 	}
 	
-	master_triggered=0;
+	leader_triggered=0;
 	vtt=render_list.begin();
 	while (vtt!=render_list.end()) {
 		next=vtt;
@@ -1003,9 +1003,9 @@ void vtt_class :: retrigger()
 	max_value=0;
 	max_value2=0;
 	
-	if (is_sync_master)	{
-		master_triggered=1;
-		master_triggered_at=0;
+	if (is_sync_leader)	{
+		leader_triggered=1;
+		leader_triggered_at=0;
 	}
 }
 
@@ -1029,7 +1029,7 @@ int vtt_class :: trigger(bool need_lock)
 			(*effect)->activate();
 		}
 		
-		if (is_sync_master)  {
+		if (is_sync_leader)  {
 			render_list.push_front(this);		
 		} else {
 			render_list.push_back(this);
@@ -1077,31 +1077,31 @@ int vtt_class :: stop()
 	return res;
 }
 
-void vtt_class :: set_sync_master(int master)
+void vtt_class :: set_sync_leader(int leader)
 {
-	if (master) {
-		if (sync_master) sync_master->set_sync_master(0);
-		sync_master=this;
-		is_sync_master=1;
+	if (leader) {
+		if (sync_leader) sync_leader->set_sync_leader(0);
+		sync_leader=this;
+		is_sync_leader=1;
 	} else {
-		if (sync_master==this) sync_master=0;
-		is_sync_master=0;
-		gui_clear_master_button(this);
+		if (sync_leader==this) sync_leader=0;
+		is_sync_leader=0;
+		gui_clear_leader_button(this);
 	}
 }
 
-void vtt_class :: set_sync_client(int slave, int cycles)
+void vtt_class :: set_sync_follower(int slave, int cycles)
 {
-	tX_debug("vtt_class::set_sync_client() setting %i, %i.", slave, cycles);
-	is_sync_client=slave;
+	tX_debug("vtt_class::set_sync_follower() setting %i, %i.", slave, cycles);
+	is_sync_follower=slave;
 	sync_cycles=cycles;
 //	sync_countdown=cycles; 
 	sync_countdown=0;
 }
 
-void vtt_class :: set_sync_client_ug(int slave, int cycles)
+void vtt_class :: set_sync_follower_ug(int slave, int cycles)
 {
-	set_sync_client(slave, cycles);
+	set_sync_follower(slave, cycles);
 }
 
 void vtt_class :: set_main_volume(f_prec new_volume)
@@ -1242,11 +1242,11 @@ int  vtt_class :: save(FILE *rc, gzFile rz, char *indent) {
 	} else {
 		store_string("audiofile", "");
 	}
-	store_bool("sync_master", is_sync_master);
+	store_bool("sync_leader", is_sync_leader);
 	store_bool("autotrigger", autotrigger);
 	store_bool_sp("loop", loop, sp_loop);
 
-	store_bool_sp("sync_client", is_sync_client, sp_sync_client);
+	store_bool_sp("sync_follower", is_sync_follower, sp_sync_follower);
 	store_int_sp("sync_cycles", sync_cycles, sp_sync_cycles);
 
 	store_float_sp("volume", rel_volume, sp_volume);
@@ -1363,11 +1363,13 @@ int vtt_class :: load(xmlDocPtr doc, xmlNodePtr node) {
 			gdk_rgba_parse(&color, buffer);
 			gui_set_color(this, &color);
 			restore_string("audiofile", filename);
-			restore_bool("sync_master", is_sync_master);
+			restore_bool("sync_leader", is_sync_leader);
+			restore_bool("sync_master", is_sync_leader); // pre 4.1.0 compatibilty
 			restore_bool("autotrigger", autotrigger);
 			restore_bool_id("loop", loop, sp_loop, nop);
-			restore_bool_id("sync_client", is_sync_client, sp_sync_client, set_sync_client(is_sync_client, sync_cycles));
-			restore_int_id("sync_cycles", sync_cycles, sp_sync_cycles, set_sync_client(is_sync_client, sync_cycles));
+			restore_bool_id("sync_client", is_sync_follower, sp_sync_follower, set_sync_follower(is_sync_follower, sync_cycles)); // pre 4.1.0 compatibilty
+			restore_bool_id("sync_follower", is_sync_follower, sp_sync_follower, set_sync_follower(is_sync_follower, sync_cycles));
+			restore_int_id("sync_cycles", sync_cycles, sp_sync_cycles, set_sync_follower(is_sync_follower, sync_cycles));
 			restore_float_id("volume", rel_volume, sp_volume, recalc_volume());
 			restore_float_id("pitch", rel_pitch, sp_pitch, recalc_pitch());
 			restore_bool_id("mute", mute, sp_mute, set_mute(mute));
@@ -1789,14 +1791,14 @@ void vtt_class :: set_sample_rate(int samplerate) {
 	set_mix_buffer_size(no_samples);	
 }
 
-void vtt_class :: adjust_to_main_pitch(int master_cycles, int cycles, bool create_event) {
-	if (!sync_master) return;
-	if (this==sync_master) return;
-	if (!sync_master->audiofile) return;
+void vtt_class :: adjust_to_main_pitch(int leader_cycles, int cycles, bool create_event) {
+	if (!sync_leader) return;
+	if (this==sync_leader) return;
+	if (!sync_leader->audiofile) return;
 	if (!audiofile) return;
 	
-	double master_time=((double) master_cycles)/sync_master->rel_pitch*sync_master->audiofile->get_no_samples()/((double) sync_master->audiofile->get_sample_rate());
-	double my_rel_pitch=((audiofile->get_no_samples()/((double) audiofile->get_sample_rate()))*((double) cycles))/master_time;
+	double leader_time=((double) leader_cycles)/sync_leader->rel_pitch*sync_leader->audiofile->get_no_samples()/((double) sync_leader->audiofile->get_sample_rate());
+	double my_rel_pitch=((audiofile->get_no_samples()/((double) audiofile->get_sample_rate()))*((double) cycles))/leader_time;
 	
 	if (create_event) {
 		sp_pitch.do_exec(my_rel_pitch);
@@ -1805,7 +1807,7 @@ void vtt_class :: adjust_to_main_pitch(int master_cycles, int cycles, bool creat
 		sp_pitch.do_exec(my_rel_pitch);
 	}
 	
-	tX_debug("master_time: %lf, res_pitch: %lf - res time: %lf, (%lf, %lf)", master_time, my_rel_pitch, ((double) cycles)*my_rel_pitch*audiofile->get_no_samples()/((double) audiofile->get_sample_rate()), (double) sync_master->audiofile->get_sample_rate(),(double)  audiofile->get_sample_rate());
+	tX_debug("leader_time: %lf, res_pitch: %lf - res time: %lf, (%lf, %lf)", leader_time, my_rel_pitch, ((double) cycles)*my_rel_pitch*audiofile->get_no_samples()/((double) audiofile->get_sample_rate()), (double) sync_leader->audiofile->get_sample_rate(),(double)  audiofile->get_sample_rate());
 	
 	sp_pitch.update_graphics();
 }

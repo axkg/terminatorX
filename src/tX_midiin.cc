@@ -609,7 +609,7 @@ void tX_midiin::auto_assign_midi_mappings(GtkWidget *widget, gpointer dummy)
 		
 		/* The toggles mapped to notes... */
 		cc_note((&(*vtt)->sp_trigger), 		0, 60+ctr);
-		cc_note((&(*vtt)->sp_sync_client), 	1, 60+ctr);
+		cc_note((&(*vtt)->sp_sync_follower), 	1, 60+ctr);
 		cc_note((&(*vtt)->sp_loop), 		2, 60+ctr);
 		cc_note((&(*vtt)->sp_lp_enable), 	3, 60+ctr);
 		cc_note((&(*vtt)->sp_ec_enable), 	4, 60+ctr);
