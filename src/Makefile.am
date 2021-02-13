@@ -29,9 +29,9 @@ terminatorX_SOURCES =	tX_endian.c tX_dialog.cc tX_widget.c wav_write.c \
 			main.cc tX_global.c wav_read.c licmak.awk \
 			tX_endian.h tX_engine.h tX_types.h tX_flash.c tX_flash.h \
 			tX_global.h version.h tX_tape.h tX_tape.cc \
-			tX_dialog.h tX_mastergui.h tX_widget.h wav_file.h \
+			tX_dialog.h tX_maingui.h tX_widget.h wav_file.h \
 			tX_vtt.cc tX_vtt.h tX_vttgui.h tX_vttgui.cc \
-			tX_audiodevice.cc tX_audiodevice.h tX_mastergui.cc \
+			tX_audiodevice.cc tX_audiodevice.h tX_maingui.cc \
 			tX_audiofile.cc tX_audiofile.h tX_loaddlg.cc \
 			tX_loaddlg.h tX_prelis.cc tX_prelis.h \
 			tX_seqpar.h tX_seqpar.cc tX_pbutton.cc tX_pbutton.h \

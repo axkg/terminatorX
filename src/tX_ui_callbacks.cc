@@ -28,7 +28,7 @@
 #include "tX_ui_support.h"
 #include "tX_dialog.h"
 #include "tX_global.h"
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 #include "tX_sequencer.h"
 
 void

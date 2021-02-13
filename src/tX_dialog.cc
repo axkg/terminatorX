@@ -36,7 +36,7 @@
 #include "tX_flash.h"
 
 #include "license.c"
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 #include "version.h"
 #include "tX_vtt.h"
 #include <dirent.h>

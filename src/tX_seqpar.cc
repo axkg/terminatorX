@@ -23,7 +23,7 @@
 #include "tX_seqpar.h"
 #include "tX_vtt.h"
 #include <stdio.h>
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 #include "tX_global.h"
 #include "tX_sequencer.h"
 #include "tX_extdial.h"

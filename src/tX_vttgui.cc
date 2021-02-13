@@ -28,7 +28,7 @@
 #include "tX_vttgui.h"
 #include "tX_vtt.h"
 #include "tX_widget.h"
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 #include "tX_loaddlg.h"
 #include "tX_prelis.h"
 #include "tX_pbutton.h"

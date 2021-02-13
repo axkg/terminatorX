@@ -26,7 +26,7 @@
 #define BENCH_CYCLES 100000
 
 #include <stdio.h>
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 #include <malloc.h>
 #include <math.h>
 #include <stdio.h>
@@ -250,7 +250,7 @@ int main(int argc, char **argv)
 #ifdef USE_SCHEDULER
 	tX_debug("main() GUI thread is p:%i, t:%i and has policy %i.", getpid(), (int) pthread_self(), sched_getscheduler(getpid()));
 #endif	
-	create_mastergui(globals.width, globals.height);
+	create_maingui(globals.width, globals.height);
 	
 	if (globals.show_nag) {
 		while (!timesup) {
@@ -264,7 +264,7 @@ int main(int argc, char **argv)
 #ifdef USE_JACK
 	jack_check();
 #endif
-	display_mastergui();
+	display_maingui();
 	
 	if (globals.startup_set) {
 		while (gtk_events_pending()) { gtk_main_iteration(); }

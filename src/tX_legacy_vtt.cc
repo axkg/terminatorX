@@ -26,7 +26,7 @@
 #include "tX_vtt.h"
 #include "tX_global.h"
 #include "tX_loaddlg.h"
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 #include "tX_sequencer.h"
 #include <string.h>
 

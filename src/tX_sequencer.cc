@@ -22,7 +22,7 @@
 */ 
 
 #include "tX_sequencer.h"
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 #include "tX_global.h"
 #include <string.h>
 

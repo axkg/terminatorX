@@ -21,7 +21,7 @@
 #include "tX_vttfx.h"
 #include "tX_vtt.h"
 #include "tX_pbutton.h"
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 #include <string.h>
 #include <stdio.h>
 

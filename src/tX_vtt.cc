@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include "malloc.h"
 #include <math.h>
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 #include "tX_sequencer.h"
 #include <glib.h>
 

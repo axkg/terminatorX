@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
-    File: tX_mastergui.cc
+    File: tX_maingui.cc
  
     Description: This implements the main (aka master) gtk+ GUI of terminatorX
     		 It serves as a container for the vtt-guis.
@@ -39,7 +39,7 @@
 #include "tX_seqpar.h"
 #include "tX_pbutton.h"
 #include "tX_sequencer.h"
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 #include "tX_knobloader.h"
 #include "tX_ui_interface.h"
 #include "tX_ui_support.h"
@@ -1294,7 +1294,7 @@ void create_master_menu()
 	g_signal_connect(menu_item, "activate", (GCallback) display_browser, NULL);
 }
 
-void create_mastergui(int x, int y)
+void create_maingui(int x, int y)
 {
 	GtkWidget *mother_of_all_boxen;
 	GtkWidget *main_vbox;
@@ -1687,7 +1687,7 @@ void fullscreen_setup() {
 }
 #endif
 
-void display_mastergui()
+void display_maingui()
 {
 	GtkWidget *top;
 	gtk_widget_realize(main_window);

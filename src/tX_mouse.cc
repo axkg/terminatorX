@@ -33,7 +33,7 @@
 #include <gtk/gtk.h>
 
 #include "tX_mouse.h"
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 #include "tX_global.h"
 #include "tX_engine.h"
 #include "tX_vtt.h"
