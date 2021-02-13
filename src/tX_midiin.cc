@@ -25,7 +25,7 @@
 #include "tX_ui_interface.h"
 #include "tX_ui_support.h"
 #include "tX_dialog.h"
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 
 #ifdef USE_ALSA_MIDI_IN
 #include "tX_global.h"

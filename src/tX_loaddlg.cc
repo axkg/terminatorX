@@ -26,7 +26,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 
 GtkWidget *ld_loaddlg=(GtkWidget *) NULL;
 GtkWidget *ld_single_l=(GtkWidget *)NULL;

@@ -17,7 +17,7 @@
  
     File: tX_audiodevice.h
  
-    Description: Header to tX_mastergui.cc
+    Description: Header to tX_maingui.cc
 */    
 
 #ifndef _h_tx_audiodevice

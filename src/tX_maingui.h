@@ -15,13 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
-    File: tX_mastergui.h
+    File: tX_maingui.h
  
-    Description: Header to tX_mastergui.cc
+    Description: Header to tX_maingui.cc
 */    
 
-#ifndef _h_tx_mastergui
-#define _h_tx_mastergui 1
+#ifndef _h_tx_maingui
+#define _h_tx_maingui 1
 
 #include <gtk/gtk.h>
 
@@ -41,12 +41,12 @@ extern GtkWidget *main_flash;
 extern tX_seqpar_master_volume sp_master_volume;
 extern tX_seqpar_master_pitch sp_master_pitch;
 
-extern void create_mastergui(int x, int y);
+extern void create_maingui(int x, int y);
 extern void wav_progress_update(gfloat percent);
 extern void note_destroy(GtkWidget *widget, GtkWidget *mbox);
 extern void tx_note(const char *message, bool isError=false, GtkWindow *window=NULL);
 extern void tx_l_note(const char *message);
-extern void display_mastergui();
+extern void display_maingui();
 extern void grab_off();
 extern void mg_update_status();
 extern void load_tt_part(char *);

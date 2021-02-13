@@ -31,7 +31,7 @@
 #include <pthread.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkprivate.h>
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 #include "tX_global.h"
 #include "tX_tape.h"
 #include "tX_widget.h"

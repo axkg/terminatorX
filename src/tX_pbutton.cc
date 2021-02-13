@@ -25,7 +25,7 @@
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <stdio.h>
-#include "tX_mastergui.h"
+#include "tX_maingui.h"
 #include "tX_pbutton.h"
 #include "tX_global.h"
 
