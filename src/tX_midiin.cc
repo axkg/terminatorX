@@ -585,8 +585,8 @@ void tX_midiin::auto_assign_midi_mappings(GtkWidget *widget, gpointer dummy)
 	} */
 	
 	/* Works on my hardware :) */
-	cc_map(&sp_master_volume, 0, 28);
-	cc_map(&sp_master_volume, 0, 29);	
+	cc_map(&sp_main_volume, 0, 28);
+	cc_map(&sp_main_volume, 0, 29);	
 	
 	for (vtt=vtt_class::main_list.begin(); (vtt!=vtt_class::main_list.end()) && (ctr<16); vtt++, ctr++) {
 		/* These are pretty standard... */

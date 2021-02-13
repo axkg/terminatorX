@@ -17,7 +17,7 @@
  
     File: tX_maingui.cc
  
-    Description: This implements the main (aka master) gtk+ GUI of terminatorX
+    Description: This implements the main gtk+ GUI of terminatorX
     		 It serves as a container for the vtt-guis.
 */    
 
@@ -97,8 +97,8 @@ GtkAdjustment *volume_adj;
 GtkAdjustment *pitch_adj;
 
 /* seq-pars */
-tX_seqpar_master_volume sp_master_volume;
-tX_seqpar_master_pitch sp_master_pitch;
+tX_seqpar_main_volume sp_main_volume;
+tX_seqpar_main_pitch sp_main_pitch;
 
 GtkWidget *engine_btn;
 
@@ -577,15 +577,15 @@ GCallback save_tables()
 	return NULL;
 }
 
-GCallback master_volume_changed (GtkWidget *wid, void *d)
+GCallback main_volume_changed (GtkWidget *wid, void *d)
 {
-	sp_master_volume.receive_gui_value((float) gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
+	sp_main_volume.receive_gui_value((float) gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));
 	return NULL;	
 }
 
-GCallback master_pitch_changed(GtkWidget *wid, void *d)
+GCallback main_pitch_changed(GtkWidget *wid, void *d)
 {
-	sp_master_pitch.receive_gui_value((float) gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));	
+	sp_main_pitch.receive_gui_value((float) gtk_adjustment_get_value(GTK_ADJUSTMENT(wid)));	
 	return NULL;	
 }
 
@@ -1304,7 +1304,7 @@ void create_maingui(int x, int y)
 	//GtkWidget *sequencer_box;
 	GtkAdjustment *dumadj;
 	GtkWidget *dummy;
-	GtkWidget *master_vol_box;
+	GtkWidget *main_vol_box;
 	GtkWidget *status_box;
 	GtkWidget *wrapbox;
 	
@@ -1470,10 +1470,10 @@ void create_maingui(int x, int y)
 	gtk_box_pack_start(GTK_BOX(main_vbox), right_hbox, WID_FIX);
 	gtk_widget_show(right_hbox);
 
-	/* Master */
+	/* Main */
 	
 	dummy=gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(dummy),"<b>Master</b>");
+	gtk_label_set_markup(GTK_LABEL(dummy),"<b>Main</b>");
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);	
 
@@ -1489,36 +1489,36 @@ void create_maingui(int x, int y)
 
 	dumadj=(GtkAdjustment*) gtk_adjustment_new(globals.pitch, -3, 3, 0.001, 0.001, 0.01);
 	pitch_adj=dumadj;
-	connect_adj(dumadj, master_pitch_changed, NULL);
+	connect_adj(dumadj, main_pitch_changed, NULL);
 	
-	tX_extdial *pdial=new tX_extdial("Pitch", pitch_adj, &sp_master_pitch, true);
+	tX_extdial *pdial=new tX_extdial("Pitch", pitch_adj, &sp_main_pitch, true);
 	gtk_box_pack_start(GTK_BOX(right_hbox), pdial->get_widget(), WID_FIX);
-	gui_set_tooltip(pdial->get_entry(), "Use this dial to adjust the master pitch (affecting *all* turntables).");
+	gui_set_tooltip(pdial->get_entry(), "Use this dial to adjust the main pitch (affecting *all* turntables).");
 	
 	dummy=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 	gtk_box_pack_start(GTK_BOX(right_hbox), dummy, WID_FIX);
 	gtk_widget_show(dummy);
 	
 	/* Volume */
-	master_vol_box=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-	gtk_box_pack_start(GTK_BOX(right_hbox), master_vol_box, WID_DYN);
-	gtk_widget_show(master_vol_box);
+	main_vol_box=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+	gtk_box_pack_start(GTK_BOX(right_hbox), main_vol_box, WID_DYN);
+	gtk_widget_show(main_vol_box);
 	
 	dumadj=(GtkAdjustment*) gtk_adjustment_new(globals.volume, 0, 2, 0.01, 0.05, 0.000);
 	volume_adj=dumadj;
 
-	connect_adj(dumadj, master_volume_changed, NULL);
+	connect_adj(dumadj, main_volume_changed, NULL);
 	dummy=gtk_scale_new(GTK_ORIENTATION_VERTICAL, dumadj);
 	gtk_range_set_inverted(GTK_RANGE(dummy), TRUE);
 	gtk_scale_set_draw_value(GTK_SCALE(dummy), FALSE);
-	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &sp_master_volume);	
+	g_signal_connect(G_OBJECT(dummy), "button_press_event", (GCallback) tX_seqpar::tX_seqpar_press, &sp_main_volume);	
 	
-	gtk_box_pack_end(GTK_BOX(master_vol_box), dummy, WID_FIX);
+	gtk_box_pack_end(GTK_BOX(main_vol_box), dummy, WID_FIX);
 	gtk_widget_show(dummy);	
-	gui_set_tooltip(dummy, "Adjust the master volume. This parameter will effect *all* turntables in the set.");
+	gui_set_tooltip(dummy, "Adjust the main volume. This parameter will effect *all* turntables in the set.");
 	
 	main_flash=gtk_tx_flash_new();
-	gtk_box_pack_end(GTK_BOX(master_vol_box), main_flash, WID_DYN);
+	gtk_box_pack_end(GTK_BOX(main_vol_box), main_flash, WID_DYN);
 	gtk_widget_show(main_flash);
 
 	dummy=gtk_label_new("Volume");

@@ -479,7 +479,7 @@ void vg_do_pitch_adjust (GtkWidget *wid, vtt_class *vtt) {
 	int cycles=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget(vtt->gui.adjust_dialog, "cycles")));
 	bool create_event=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(vtt->gui.adjust_dialog, "create_event")));
 
-	vtt->adjust_to_master_pitch(master_cycles, cycles, create_event);
+	vtt->adjust_to_main_pitch(master_cycles, cycles, create_event);
 	
 	gtk_widget_destroy(vtt->gui.adjust_dialog);
 }

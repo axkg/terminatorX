@@ -191,20 +191,20 @@ class tX_seqpar_no_update_active_forward : public tX_seqpar_no_update
 
 /* now the classes for *real* sequenceable parameters */
 
-class tX_seqpar_master_volume : public tX_seqpar_update
+class tX_seqpar_main_volume : public tX_seqpar_update
 {
 	public:
-	tX_seqpar_master_volume();
+	tX_seqpar_main_volume();
 	virtual void do_exec(const float value);
 	virtual void do_update_graphics();	
 	private:
 	virtual const char *get_name(); 
 };
 
-class tX_seqpar_master_pitch : public tX_seqpar_update_active_forward
+class tX_seqpar_main_pitch : public tX_seqpar_update_active_forward
 {
 	public:
-	tX_seqpar_master_pitch();
+	tX_seqpar_main_pitch();
 	virtual void do_exec(const float value);
 	virtual void do_update_graphics();	
 	private:

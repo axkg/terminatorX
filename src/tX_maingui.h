@@ -38,8 +38,8 @@ extern GtkAdjustment *volume_adj;
 extern GtkAdjustment *pitch_adj;
 extern GtkWidget *main_flash;
 
-extern tX_seqpar_master_volume sp_master_volume;
-extern tX_seqpar_master_pitch sp_master_pitch;
+extern tX_seqpar_main_volume sp_main_volume;
+extern tX_seqpar_main_pitch sp_main_pitch;
 
 extern void create_maingui(int x, int y);
 extern void wav_progress_update(gfloat percent);

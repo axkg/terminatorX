@@ -66,8 +66,8 @@ class vtt_class
 	static unsigned int samples_in_mix_buffer;
 	static pthread_mutex_t render_lock;
 	
-	static f_prec master_volume;
-	static f_prec res_master_volume;
+	static f_prec main_volume;
+	static f_prec res_main_volume;
 	static f_prec vol_channel_adjust;
 
 	static vtt_class * sync_master;
@@ -231,7 +231,7 @@ class vtt_class
 	void recalc_volume();
 	
 	void set_pan(f_prec);
-	void adjust_to_master_pitch(int master_cycles, int cycles, bool create_event);
+	void adjust_to_main_pitch(int master_cycles, int cycles, bool create_event);
 	void set_pitch(f_prec);
 	void recalc_pitch();
 	
@@ -275,8 +275,8 @@ class vtt_class
 	static void forward_all_turntables();
 	
 	static int set_mix_buffer_size(int);
-	static void set_master_volume(f_prec);
-	static void set_master_pitch(f_prec);
+	static void set_main_volume(f_prec);
+	static void set_main_pitch(f_prec);
 	static void focus_no(int);
 	static void focus_next();
 	static void unfocus();
