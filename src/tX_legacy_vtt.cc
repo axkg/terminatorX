@@ -619,11 +619,11 @@ int  vtt_class :: load_all_10(FILE* input, char *fname)
 	}
 		
 	atload(max);
-	atload(master_volume);
-	set_master_volume(master_volume);
-	globals.volume=master_volume;
+	atload(main_volume);
+	set_main_volume(main_volume);
+	globals.volume=main_volume;
 	atload(globals.pitch);	
-	set_master_pitch(globals.pitch);
+	set_main_pitch(globals.pitch);
 
 	ld_create_loaddlg(TX_LOADDLG_MODE_MULTI, max);
 	ld_set_setname(fname);
@@ -669,15 +669,15 @@ int  vtt_class :: load_all_11(FILE* input, char *fname)
 	}
 		
 	atload(max);
-	atload(master_volume);
-	set_master_volume(master_volume);
-	globals.volume=master_volume;
+	atload(main_volume);
+	set_main_volume(main_volume);
+	globals.volume=main_volume;
 	atload(globals.pitch);	
-	set_master_pitch(globals.pitch);
+	set_main_pitch(globals.pitch);
 	atload(pid);
-	sp_master_volume.set_persistence_id(pid);
+	sp_main_volume.set_persistence_id(pid);
 	atload(pid);
-	sp_master_pitch.set_persistence_id(pid);
+	sp_main_pitch.set_persistence_id(pid);
 
 	ld_create_loaddlg(TX_LOADDLG_MODE_MULTI, max);
 	ld_set_setname(fname);
@@ -724,15 +724,15 @@ int  vtt_class :: load_all_12(FILE* input, char *fname)
 	}
 		
 	atload(max);
-	atload(master_volume);
-	set_master_volume(master_volume);
-	globals.volume=master_volume;
+	atload(main_volume);
+	set_main_volume(main_volume);
+	globals.volume=main_volume;
 	atload(globals.pitch);	
-	set_master_pitch(globals.pitch);
+	set_main_pitch(globals.pitch);
 	atload(pid);
-	sp_master_volume.set_persistence_id(pid);
+	sp_main_volume.set_persistence_id(pid);
 	atload(pid);
-	sp_master_pitch.set_persistence_id(pid);
+	sp_main_pitch.set_persistence_id(pid);
 
 	ld_create_loaddlg(TX_LOADDLG_MODE_MULTI, max);
 	ld_set_setname(fname);
@@ -778,15 +778,15 @@ int  vtt_class :: load_all_13(FILE* input, char *fname)
 	}
 		
 	atload(max);
-	atload(master_volume);
-	set_master_volume(master_volume);
-	globals.volume=master_volume;
+	atload(main_volume);
+	set_main_volume(main_volume);
+	globals.volume=main_volume;
 	atload(globals.pitch);	
-	set_master_pitch(globals.pitch);
+	set_main_pitch(globals.pitch);
 	atload(pid);
-	sp_master_volume.set_persistence_id(pid);
+	sp_main_volume.set_persistence_id(pid);
 	atload(pid);
-	sp_master_pitch.set_persistence_id(pid);
+	sp_main_pitch.set_persistence_id(pid);
 
 	ld_create_loaddlg(TX_LOADDLG_MODE_MULTI, max);
 	ld_set_setname(fname);
@@ -832,15 +832,15 @@ int  vtt_class :: load_all_14(FILE* input, char *fname)
 	}
 		
 	atload(max);
-	atload(master_volume);
-	set_master_volume(master_volume);
-	globals.volume=master_volume;
+	atload(main_volume);
+	set_main_volume(main_volume);
+	globals.volume=main_volume;
 	atload(globals.pitch);	
-	set_master_pitch(globals.pitch);
+	set_main_pitch(globals.pitch);
 	atload(pid);
-	sp_master_volume.set_persistence_id(pid);
+	sp_main_volume.set_persistence_id(pid);
 	atload(pid);
-	sp_master_pitch.set_persistence_id(pid);
+	sp_main_pitch.set_persistence_id(pid);
 
 	ld_create_loaddlg(TX_LOADDLG_MODE_MULTI, max);
 	ld_set_setname(fname);

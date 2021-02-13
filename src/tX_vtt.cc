@@ -75,8 +75,8 @@ int vtt_class::solo_ctr=0;
 
 unsigned int vtt_class::samples_in_mix_buffer=0;
 pthread_mutex_t vtt_class::render_lock=PTHREAD_MUTEX_INITIALIZER;
-f_prec vtt_class::master_volume=1.0;
-f_prec vtt_class::res_master_volume=1.0;
+f_prec vtt_class::main_volume=1.0;
+f_prec vtt_class::res_main_volume=1.0;
 
 vtt_class * vtt_class::sync_master=NULL;
 int vtt_class::master_triggered=0;
@@ -196,7 +196,7 @@ vtt_class :: vtt_class (int do_create_gui)
 	else have_gui=0;
 		
 	set_pan(0);	
-	set_master_volume(globals.volume);
+	set_main_volume(globals.volume);
 	set_output_buffer_size(samples_in_mix_buffer/2);
 	
 	audiofile = NULL;
@@ -326,7 +326,7 @@ void vtt_class :: set_volume(f_prec newvol)
 
 void vtt_class :: recalc_volume()
 {
-	res_volume=rel_volume*res_master_volume;
+	res_volume=rel_volume*res_main_volume;
 	f_prec ec_res_volume=res_volume*ec_volume;
 	
 	if (pan>0.0) {
@@ -1104,16 +1104,16 @@ void vtt_class :: set_sync_client_ug(int slave, int cycles)
 	set_sync_client(slave, cycles);
 }
 
-void vtt_class :: set_master_volume(f_prec new_volume)
+void vtt_class :: set_main_volume(f_prec new_volume)
 {
 	list <vtt_class *> :: iterator vtt;
 
-	master_volume=new_volume;
+	main_volume=new_volume;
 	globals.volume=new_volume;
 	
 	if (main_list.size()>0) {
 		vol_channel_adjust=sqrt((f_prec) main_list.size());
-		res_master_volume=master_volume/vol_channel_adjust;		
+		res_main_volume=main_volume/vol_channel_adjust;		
 	}
 		
 	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
@@ -1121,7 +1121,7 @@ void vtt_class :: set_master_volume(f_prec new_volume)
 	}
 }
 
-void vtt_class :: set_master_pitch(f_prec new_pitch)
+void vtt_class :: set_main_pitch(f_prec new_pitch)
 {
 	list <vtt_class *> :: iterator vtt;
 	
@@ -1328,8 +1328,8 @@ int  vtt_class :: save_all(FILE* rc, gzFile rz) {
 	
 	strcpy(indent, "\t");
 
-	store_float_sp("master_volume", master_volume, sp_master_volume);
-	store_float_sp("master_pitch", globals.pitch, sp_master_pitch);
+	store_float_sp("main_volume", main_volume, sp_main_volume);
+	store_float_sp("main_pitch", globals.pitch, sp_main_pitch);
 
 	for (vtt=main_list.begin(); vtt!=main_list.end(); vtt++) {
 		res+=(*vtt)->save(rc, rz, indent);
@@ -1501,22 +1501,22 @@ void vtt_class :: delete_all()
 		delete((*main_list.begin()));
 	}
 	
-	/* Take care of the master events.. */
+	/* Take care of the main channel events.. */
 	sequencer.delete_all_events(tX_sequencer::DELETE_ALL);
 	
-	/* Now reset master settings ot the default: */
-	set_master_pitch(1.0);
-	set_master_volume(1.0);
+	/* Now reset main settings ot the default: */
+	set_main_pitch(1.0);
+	set_main_volume(1.0);
 	
-	sp_master_pitch.do_exec(1.0);
-	sp_master_pitch.do_update_graphics();
+	sp_main_pitch.do_exec(1.0);
+	sp_main_pitch.do_update_graphics();
 
-	sp_master_volume.do_exec(1.0);
-	sp_master_volume.do_update_graphics();
+	sp_main_volume.do_exec(1.0);
+	sp_main_volume.do_update_graphics();
 	
-	/* Remove master MIDI mappings... */
-	sp_master_pitch.bound_midi_event.type=tX_midievent::NONE;
-	sp_master_volume.bound_midi_event.type=tX_midievent::NONE;
+	/* Remove main channel MIDI mappings... */
+	sp_main_pitch.bound_midi_event.type=tX_midievent::NONE;
+	sp_main_volume.bound_midi_event.type=tX_midievent::NONE;
 	
 	seq_update();
 }
@@ -1572,8 +1572,12 @@ int vtt_class :: load_all(xmlDocPtr doc, char *fname) {
 		if (cur->type == XML_ELEMENT_NODE) {			
 			elementFound=0;
 		
-			restore_float_id("master_volume", master_volume, sp_master_volume, set_master_volume(master_volume));
-			restore_float_id("master_pitch", globals.pitch, sp_master_pitch, set_master_pitch(globals.pitch));
+			/* compatibilty for pre 4.1 set files */
+			restore_float_id("master_volume", main_volume, sp_main_volume, set_main_volume(main_volume));
+			restore_float_id("master_pitch", globals.pitch, sp_main_pitch, set_main_pitch(globals.pitch));
+			/* 4.1+ uses main instead */
+			restore_float_id("main_volume", main_volume, sp_main_volume, set_main_volume(main_volume));
+			restore_float_id("main_pitch", globals.pitch, sp_main_pitch, set_main_pitch(globals.pitch));
 			
 			if ((!elementFound) && (xmlStrcmp(cur->name, (xmlChar *) "turntable")==0)) {
 				elementFound=1;
@@ -1603,8 +1607,8 @@ int vtt_class :: load_all(xmlDocPtr doc, char *fname) {
 		}
 	}
 	
-	sp_master_volume.do_update_graphics();
-	sp_master_pitch.do_update_graphics();
+	sp_main_volume.do_update_graphics();
+	sp_main_pitch.do_update_graphics();
 
 	while (gtk_events_pending()) gtk_main_iteration();
 
@@ -1785,7 +1789,7 @@ void vtt_class :: set_sample_rate(int samplerate) {
 	set_mix_buffer_size(no_samples);	
 }
 
-void vtt_class :: adjust_to_master_pitch(int master_cycles, int cycles, bool create_event) {
+void vtt_class :: adjust_to_main_pitch(int master_cycles, int cycles, bool create_event) {
 	if (!sync_master) return;
 	if (this==sync_master) return;
 	if (!sync_master->audiofile) return;

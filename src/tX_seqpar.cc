@@ -249,7 +249,7 @@ void tX_seqpar :: materialize_forward_values()
 const char * tX_seqpar :: get_vtt_name()
 {
         if (vtt) return tt->name;
-        else return "Master Track";
+        else return "Main Track";
 }
 
 void tX_seqpar :: restore_meta(xmlNodePtr node) {
@@ -436,46 +436,46 @@ void tX_seqpar_update_active_forward :: receive_forward_value(const float value)
 
 /**** Sequencable Parameter: MASTER VOLUME ****/
 
-tX_seqpar_master_volume :: tX_seqpar_master_volume() 
+tX_seqpar_main_volume :: tX_seqpar_main_volume() 
 {
 	set_mapping_parameters(2.5, 0, 0.1, 0);
 }
 
-void tX_seqpar_master_volume :: do_exec(const float value)
+void tX_seqpar_main_volume :: do_exec(const float value)
 {
-	vtt_class :: set_master_volume(value);
+	vtt_class :: set_main_volume(value);
 }
 
-void tX_seqpar_master_volume :: do_update_graphics ()
+void tX_seqpar_main_volume :: do_update_graphics ()
 {
-	gtk_adjustment_set_value(volume_adj, vtt_class::master_volume);
+	gtk_adjustment_set_value(volume_adj, vtt_class::main_volume);
 }
 
-const char * tX_seqpar_master_volume :: get_name()
+const char * tX_seqpar_main_volume :: get_name()
 {
-        return "Master Volume";
+        return "Main Volume";
 }
 
 /**** Sequencable Parameter: MASTER PITCH ****/
 
-tX_seqpar_master_pitch :: tX_seqpar_master_pitch()
+tX_seqpar_main_pitch :: tX_seqpar_main_pitch()
 {
 	set_mapping_parameters(3.0, -3.0, 0.1, 0);
 }
 
-void tX_seqpar_master_pitch :: do_exec(const float value)
+void tX_seqpar_main_pitch :: do_exec(const float value)
 {
-	vtt_class :: set_master_pitch(value);
+	vtt_class :: set_main_pitch(value);
 }
 
-void tX_seqpar_master_pitch :: do_update_graphics ()
+void tX_seqpar_main_pitch :: do_update_graphics ()
 {
 	gtk_adjustment_set_value(pitch_adj, globals.pitch);
 }
 
-const char * tX_seqpar_master_pitch :: get_name()
+const char * tX_seqpar_main_pitch :: get_name()
 {
-        return "Master Pitch";
+        return "Main Pitch";
 }
 
 /**** Sequencable Parameter: TURNTABLE SPEED ****/
