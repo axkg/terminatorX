@@ -65,8 +65,8 @@ struct vtt_gui
 	GtkWidget *stop;
 	GtkWidget *autotrigger;
 	GtkWidget *loop;
-	GtkWidget *sync_master;
-	GtkWidget *sync_client;
+	GtkWidget *sync_leader;
+	GtkWidget *sync_follower;
 	GtkAdjustment *cycles;
 	
 	/* Output Panel */

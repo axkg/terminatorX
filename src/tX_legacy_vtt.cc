@@ -39,8 +39,8 @@ int vtt_class :: load_10(FILE * input)
 	
 	atload(name);
 	atload(filename);
-	atload(is_sync_master);
-	atload(is_sync_client);
+	atload(is_sync_leader);
+	atload(is_sync_follower);
 	atload(sync_cycles);
 	atload(rel_volume);
 	recalc_volume();
@@ -79,8 +79,8 @@ int vtt_class :: load_11(FILE * input)
 	
 	atload(name);
 	atload(filename);
-	atload(is_sync_master);
-	atload(is_sync_client);
+	atload(is_sync_leader);
+	atload(is_sync_follower);
 	atload(sync_cycles);
 	atload(rel_volume);
 	recalc_volume();
@@ -117,7 +117,7 @@ int vtt_class :: load_11(FILE * input)
 	atload(pid);
 	sp_loop.set_persistence_id(pid);
 	atload(pid);
-	sp_sync_client.set_persistence_id(pid);
+	sp_sync_follower.set_persistence_id(pid);
 	atload(pid);
 	sp_sync_cycles.set_persistence_id(pid);
 	atload(pid);
@@ -161,8 +161,8 @@ int vtt_class :: load_12(FILE * input)
 	atload(buffer);
 	this->set_name(buffer);
 	atload(filename);
-	atload(is_sync_master);
-	atload(is_sync_client);
+	atload(is_sync_leader);
+	atload(is_sync_follower);
 	atload(sync_cycles);
 	atload(rel_volume);
 	recalc_volume();
@@ -197,7 +197,7 @@ int vtt_class :: load_12(FILE * input)
 	atload(pid);
 	sp_loop.set_persistence_id(pid);
 	atload(pid);
-	sp_sync_client.set_persistence_id(pid);
+	sp_sync_follower.set_persistence_id(pid);
 	atload(pid);
 	sp_sync_cycles.set_persistence_id(pid);
 	atload(pid);
@@ -306,8 +306,8 @@ int vtt_class :: load_13(FILE * input)
 	atload(buffer);
 	this->set_name(buffer);
 	atload(filename);
-	atload(is_sync_master);
-	atload(is_sync_client);
+	atload(is_sync_leader);
+	atload(is_sync_follower);
 	atload(sync_cycles);
 	atload(rel_volume);
 	atload(rel_pitch);
@@ -348,7 +348,7 @@ int vtt_class :: load_13(FILE * input)
 	atload(pid);
 	sp_loop.set_persistence_id(pid);
 	atload(pid);
-	sp_sync_client.set_persistence_id(pid);
+	sp_sync_follower.set_persistence_id(pid);
 	atload(pid);
 	sp_sync_cycles.set_persistence_id(pid);
 	atload(pid);
@@ -463,8 +463,8 @@ int vtt_class :: load_14(FILE * input)
 	atload(buffer);
 	this->set_name(buffer);
 	atload(filename);
-	atload(is_sync_master);
-	atload(is_sync_client);
+	atload(is_sync_leader);
+	atload(is_sync_follower);
 	atload(sync_cycles);
 	atload(rel_volume);
 	atload(rel_pitch);
@@ -508,7 +508,7 @@ int vtt_class :: load_14(FILE * input)
 	atload(pid);
 	sp_loop.set_persistence_id(pid);
 	atload(pid);
-	sp_sync_client.set_persistence_id(pid);
+	sp_sync_follower.set_persistence_id(pid);
 	atload(pid);
 	sp_sync_cycles.set_persistence_id(pid);
 	atload(pid);

@@ -282,10 +282,10 @@ class tX_seqpar_vtt_loop : public tX_seqpar_update
         virtual const char *get_name(); 
 };
 
-class tX_seqpar_vtt_sync_client : public tX_seqpar_update
+class tX_seqpar_vtt_sync_follower : public tX_seqpar_update
 {
 	public:
-	tX_seqpar_vtt_sync_client();
+	tX_seqpar_vtt_sync_follower();
 	private:	
 	virtual void do_exec(const float value);
 	virtual void do_update_graphics();	

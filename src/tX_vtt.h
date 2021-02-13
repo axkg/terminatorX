@@ -70,9 +70,9 @@ class vtt_class
 	static f_prec res_main_volume;
 	static f_prec vol_channel_adjust;
 
-	static vtt_class * sync_master;
-	static int master_triggered;
-	static int master_triggered_at;
+	static vtt_class * sync_leader;
+	static int leader_triggered;
+	static int leader_triggered_at;
 	static vtt_class * focused_vtt;
 	static int solo_ctr;
 	static int mix_buffer_size;
@@ -89,8 +89,8 @@ class vtt_class
 	GdkRGBA color;
 
 	int is_playing;
-	bool is_sync_master;
-	bool is_sync_client;
+	bool is_sync_leader;
+	bool is_sync_follower;
 	int sync_cycles;
 	int sync_countdown;
 	bool want_stop;
@@ -194,7 +194,7 @@ class vtt_class
 	tX_seqpar_vtt_pan sp_pan;
 	tX_seqpar_vtt_trigger sp_trigger;
 	tX_seqpar_vtt_loop sp_loop;
-	tX_seqpar_vtt_sync_client sp_sync_client;
+	tX_seqpar_vtt_sync_follower sp_sync_follower;
 	tX_seqpar_vtt_sync_cycles sp_sync_cycles;
 	tX_seqpar_vtt_lp_enable sp_lp_enable;
 	tX_seqpar_vtt_lp_gain sp_lp_gain;
@@ -231,7 +231,7 @@ class vtt_class
 	void recalc_volume();
 	
 	void set_pan(f_prec);
-	void adjust_to_main_pitch(int master_cycles, int cycles, bool create_event);
+	void adjust_to_main_pitch(int leader_cycles, int cycles, bool create_event);
 	void set_pitch(f_prec);
 	void recalc_pitch();
 	
@@ -257,9 +257,9 @@ class vtt_class
 	void ec_set_pan(f_prec);
 	void ec_clear_buffer();
 	
-	void set_sync_master(int);		
-	void set_sync_client(int, int);
-	void set_sync_client_ug(int, int); // and update gui
+	void set_sync_leader(int);		
+	void set_sync_follower(int, int);
+	void set_sync_follower_ug(int, int); // and update gui
 	
 	void set_scratch(int);
 	void xy_input(f_prec, f_prec);

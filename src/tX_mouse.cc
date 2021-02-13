@@ -290,7 +290,7 @@ void tx_mouse::key_press(GtkWidget *widget, GdkEventKey *eventKey) {
 
 			case GDK_KEY_Tab: if (press_key(KEY_Tab)) { vtt_class::focus_next(); } break;
 
-			case GDK_KEY_s: if (press_key(KEY_s)) { vtt->sp_sync_client.receive_input_value(!vtt->is_sync_client); } break;
+			case GDK_KEY_s: if (press_key(KEY_s)) { vtt->sp_sync_follower.receive_input_value(!vtt->is_sync_follower); } break;
 
 			case GDK_KEY_m:  if (press_key(KEY_m)) { vtt->sp_mute.receive_input_value(1); } break;
 			case GDK_KEY_Control_L:  if (press_key(KEY_Control_L)) { vtt->sp_mute.receive_input_value(1); } break;

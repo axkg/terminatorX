@@ -1085,7 +1085,7 @@ Are you sure you really want this?");
 	return NULL;	
 }
 
-void create_master_menu() 
+void create_main_menu() 
 {
 	GtkWidget *menu_item;
 	GtkWidget *sub_menu;
@@ -1339,7 +1339,7 @@ void create_maingui(int x, int y)
 	gtk_container_add(GTK_CONTAINER(wrapbox), mother_of_all_boxen);
 	gtk_widget_show(mother_of_all_boxen);	
 
-	create_master_menu();
+	create_main_menu();
 
 	g_signal_connect(G_OBJECT(main_window), "motion_notify_event", G_CALLBACK(tx_mouse::motion_notify_wrap), &mouse);
 	g_signal_connect(G_OBJECT(main_window), "button_press_event", G_CALLBACK(tx_mouse::button_press_wrap), &mouse);

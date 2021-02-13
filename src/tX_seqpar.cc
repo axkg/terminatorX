@@ -639,23 +639,23 @@ void tX_seqpar_vtt_loop :: do_update_graphics ()
 
 /**** Sequencable Parameter: TURNTABLE SYNC CLIENT ****/
 
-tX_seqpar_vtt_sync_client :: tX_seqpar_vtt_sync_client()
+tX_seqpar_vtt_sync_follower :: tX_seqpar_vtt_sync_follower()
 {
 	set_mapping_parameters(0,0,0,0);
 	is_boolean=true;
 }
 
-void tX_seqpar_vtt_sync_client :: do_exec(const float value)
+void tX_seqpar_vtt_sync_follower :: do_exec(const float value)
 {
-	tt->set_sync_client((value>0), tt->sync_cycles);
+	tt->set_sync_follower((value>0), tt->sync_cycles);
 }
 
-void tX_seqpar_vtt_sync_client :: do_update_graphics ()
+void tX_seqpar_vtt_sync_follower :: do_update_graphics ()
 {
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tt->gui.sync_client), tt->is_sync_client);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tt->gui.sync_follower), tt->is_sync_follower);
 }
 
-const char * tX_seqpar_vtt_sync_client :: get_name()
+const char * tX_seqpar_vtt_sync_follower :: get_name()
 {
         return "Sync Client (On/Off)";
 }
@@ -669,7 +669,7 @@ tX_seqpar_vtt_sync_cycles :: tX_seqpar_vtt_sync_cycles()
 
 void tX_seqpar_vtt_sync_cycles :: do_exec(const float value)
 {
-	tt->set_sync_client(tt->is_sync_client, (int) value);
+	tt->set_sync_follower(tt->is_sync_follower, (int) value);
 }
 
 void tX_seqpar_vtt_sync_cycles :: do_update_graphics ()
