@@ -1774,9 +1774,9 @@ void display_browser()
 	
 	if (browser_child==0) {
 		// child
-		execlp(BROWSER1, BROWSER1, "http://terminatorX.org", NULL);
-		execlp(BROWSER2, BROWSER2, "http://terminatorX.org", NULL);
-		execlp(BROWSER3, BROWSER3, "http://terminatorX.org", NULL);
+		execlp(BROWSER1, BROWSER1, "https://terminatorX.org", NULL);
+		execlp(BROWSER2, BROWSER2, "https://terminatorX.org", NULL);
+		execlp(BROWSER3, BROWSER3, "https://terminatorX.org", NULL);
 		_exit(-1);
 	} else if (browser_child==-1) {
 		tx_note("System error: couldn't fork() to run the browser process.", true);

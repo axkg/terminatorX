@@ -4,8 +4,8 @@ Version:	@VERSION@
 Release:	1%{?dist}
 Group:		Applications/Multimedia
 License:	GPLv2+ and GFDL
-URL:		http://terminatorX.org
-Source0:	http://terminatorX.org/dist/%{name}-%{version}.tar.gz
+URL:		https://terminatorX.org
+Source0:	https://terminatorX.org/dist/%{name}-%{version}.tar.gz
 
 BuildRequires: alsa-lib-devel
 BuildRequires: audiofile-devel
