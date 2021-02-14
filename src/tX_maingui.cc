@@ -1295,6 +1295,7 @@ void create_maingui(int x, int y) {
 
     gtk_window_set_title(GTK_WINDOW(main_window), "terminatorX");
 
+    gtk_window_set_default_size(GTK_WINDOW(main_window), x, y);
     gtk_widget_realize(main_window);
 
     GtkWidget* posLabel = gtk_label_new("Pos:");
@@ -1535,7 +1536,6 @@ void create_maingui(int x, int y) {
 
     /* END GUI */
 
-    gtk_window_set_default_size(GTK_WINDOW(main_window), x, y);
     gtk_widget_set_sensitive(grab_button, 0);
 
     new_table(NULL, NULL); // to give the user something to start with ;)
