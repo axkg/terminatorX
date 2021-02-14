@@ -58,6 +58,8 @@ tx_mouse ::tx_mouse() {
 
     last_button_press = 0;
     last_button_release = 0;
+
+    motion_timestamp = 0;
 }
 
 int tx_mouse ::grab() {
@@ -217,6 +219,12 @@ void tx_mouse::ungrab_linux_input() {
 #define vtt vtt_class::focused_vtt
 
 void tx_mouse::motion_notify(GtkWidget* widget, GdkEventMotion* eventMotion) {
+    if (eventMotion->time == motion_timestamp) {
+	return;
+    }
+
+    motion_timestamp = eventMotion->time;
+
     if ((grab_mode == FALLBACK) && vtt) {
         gdouble d_x = eventMotion->x_root - x_abs;
         gdouble d_y = eventMotion->y_root - y_abs;

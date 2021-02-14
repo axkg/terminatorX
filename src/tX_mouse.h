@@ -98,6 +98,8 @@ class tx_mouse {
         LINUX_INPUT
     } grab_mode;
 
+    guint32 motion_timestamp;
+
     GIOChannel* linux_input_channel;
     guint linux_input_watch;
 
