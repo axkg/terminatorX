@@ -24,40 +24,42 @@
 
 class vtt_fx;
 
-class tX_panel
-{
-	GtkWidget *list_box_row;
-	GtkWidget *drag_handle;
-	GtkWidget *mainbox;
-	GtkWidget *topbox;
-	GtkWidget *clientbox;
-	GtkWidget *clientframe;
-	GtkWidget *labelbutton;
-	GtkWidget *minimize_button;
-	GtkWidget *maximize_button;
-	GtkWidget *close_button;
-	GtkWidget *button_box;
-	GtkWidget *controlbox;
-	GtkWidget *add_drywet_button;
-	GtkWidget *remove_drywet_button;
-	int client_hidden;
+class tX_panel {
+    GtkWidget* list_box_row;
+    GtkWidget* drag_handle;
+    GtkWidget* mainbox;
+    GtkWidget* topbox;
+    GtkWidget* clientbox;
+    GtkWidget* clientframe;
+    GtkWidget* labelbutton;
+    GtkWidget* minimize_button;
+    GtkWidget* maximize_button;
+    GtkWidget* close_button;
+    GtkWidget* button_box;
+    GtkWidget* controlbox;
+    GtkWidget* add_drywet_button;
+    GtkWidget* remove_drywet_button;
+    int client_hidden;
 
-	public:
-	tX_panel(const char *name, GtkWidget *controlbox, GCallback close_callback = NULL, vtt_fx* effect = NULL);
-	~tX_panel();
+  public:
+    tX_panel(const char* name, GtkWidget* controlbox, GCallback close_callback = NULL, vtt_fx* effect = NULL);
+    ~tX_panel();
 
-	GtkWidget *get_widget() {return mainbox;};
-	GtkWidget *get_list_box_row() {return list_box_row;};
-	GtkWidget *get_labelbutton() {return labelbutton;}
-	GtkWidget *get_add_drywet_button() { return add_drywet_button; }
-	GtkWidget *get_remove_drywet_button() { return remove_drywet_button; }
+    GtkWidget* get_widget() { return mainbox; };
+    GtkWidget* get_list_box_row() { return list_box_row; };
+    GtkWidget* get_labelbutton() { return labelbutton; }
+    GtkWidget* get_add_drywet_button() { return add_drywet_button; }
+    GtkWidget* get_remove_drywet_button() { return remove_drywet_button; }
 
-	void add_client_widget(GtkWidget *w);
-	int is_hidden() { return client_hidden; }
-	void hide(int i) { client_hidden=i; tX_panel::minimize(NULL, this); }
+    void add_client_widget(GtkWidget* w);
+    int is_hidden() { return client_hidden; }
+    void hide(int i) {
+        client_hidden = i;
+        tX_panel::minimize(NULL, this);
+    }
 
-	static void minimize(GtkWidget *w, tX_panel *p);
+    static void minimize(GtkWidget* w, tX_panel* p);
 };
 
-extern void tX_panel_make_label_bold(GtkWidget *widget);
+extern void tX_panel_make_label_bold(GtkWidget* widget);
 #endif

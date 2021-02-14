@@ -26,23 +26,23 @@ extern "C" {
 #include "tX_global.h"
 #include "tX_types.h"
 
-typedef struct{
-	int32_t	srate;
-	int8_t	chans;
-	int8_t	depth;
-	int32_t	bps;
-	int8_t	blkalign;
-	int32_t	len;
-	int32_t	sofar;
-	
-	FILE*   handle;
-	char	name[PATH_MAX];
-	char    head[43];
+typedef struct {
+    int32_t srate;
+    int8_t chans;
+    int8_t depth;
+    int32_t bps;
+    int8_t blkalign;
+    int32_t len;
+    int32_t sofar;
+
+    FILE* handle;
+    char name[PATH_MAX];
+    char head[43];
 } wav_sig;
 
-FILE* init_wav_read(char file_name[], wav_sig *info);
-FILE* open_wav_rec(wav_sig *info);
-extern int rewrite_head(wav_sig *info);
+FILE* init_wav_read(char file_name[], wav_sig* info);
+FILE* open_wav_rec(wav_sig* info);
+extern int rewrite_head(wav_sig* info);
 extern void wav_close(FILE* wav);
 #ifdef __cplusplus
 }

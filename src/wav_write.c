@@ -16,9 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <stdio.h>
 
 #ifndef WIN32
 #include <sys/soundcard.h>
@@ -30,73 +30,73 @@
 #include "tX_endian.h"
 #include <string.h>
 
-void init_head(wav_sig *info){
-	int32_t tmp32;
-	
-	strcpy(info->head, "RIFF    WAVEfmt                     data    ");
-	
-	tmp32=(info->sofar + 32);	
-#ifdef BIG_ENDIAN_MACHINE	
-	swap32(&tmp32);
+void init_head(wav_sig* info) {
+    int32_t tmp32;
+
+    strcpy(info->head, "RIFF    WAVEfmt                     data    ");
+
+    tmp32 = (info->sofar + 32);
+#ifdef BIG_ENDIAN_MACHINE
+    swap32(&tmp32);
 #endif
-	*(int32_t  *)&info->head[4]  = tmp32;
-	
-	
-	tmp32=16;
-#ifdef BIG_ENDIAN_MACHINE	
-	swap32(&tmp32);
+    *(int32_t*)&info->head[4] = tmp32;
+
+    tmp32 = 16;
+#ifdef BIG_ENDIAN_MACHINE
+    swap32(&tmp32);
 #endif
-	*(int32_t *)&info->head[16] = tmp32;
-	
-/*	tmp16=1;
+    *(int32_t*)&info->head[16] = tmp32;
+
+    /*	tmp16=1;
 #ifdef BIG_ENDIAN_MACHINE	
 	swap16(&tmp16);
 #endif
 	*(int16_t *)&info->head[20] = tmp16;
 */
-	info->head[20] = 1;
-	info->head[21] = 0;
-	
-  	info->head[22] = info->chans;
-	info->head[23] = 0;	
-	
-	tmp32=info->srate;
-#ifdef BIG_ENDIAN_MACHINE	
-	swap32(&tmp32);
+    info->head[20] = 1;
+    info->head[21] = 0;
+
+    info->head[22] = info->chans;
+    info->head[23] = 0;
+
+    tmp32 = info->srate;
+#ifdef BIG_ENDIAN_MACHINE
+    swap32(&tmp32);
 #endif
-	*(int32_t  *)&info->head[24] = tmp32;
-	
-	tmp32=info->bps;
-#ifdef BIG_ENDIAN_MACHINE	
-	swap32(&tmp32);
+    *(int32_t*)&info->head[24] = tmp32;
+
+    tmp32 = info->bps;
+#ifdef BIG_ENDIAN_MACHINE
+    swap32(&tmp32);
 #endif
-	*(int32_t  *)&info->head[28] = tmp32;
-	
-        info->head[32] = info->blkalign;
-	info->head[33] = 0;
-		
-	info->head[34] = info->depth;
-	info->head[35] = 0;
-	
-	tmp32=info->sofar;
-#ifdef BIG_ENDIAN_MACHINE	
-	swap32(&tmp32);
+    *(int32_t*)&info->head[28] = tmp32;
+
+    info->head[32] = info->blkalign;
+    info->head[33] = 0;
+
+    info->head[34] = info->depth;
+    info->head[35] = 0;
+
+    tmp32 = info->sofar;
+#ifdef BIG_ENDIAN_MACHINE
+    swap32(&tmp32);
 #endif
-	*(int32_t  *)&info->head[40] = tmp32;
+    *(int32_t*)&info->head[40] = tmp32;
 }
 
-FILE* open_wav_rec(wav_sig *info){
-	info->handle = fopen(info->name, "w");
-	if (!info->handle) return NULL;
-	init_head(info);
-	fwrite(info->head, 44, 1, info->handle);
-	return(info->handle);
+FILE* open_wav_rec(wav_sig* info) {
+    info->handle = fopen(info->name, "w");
+    if (!info->handle)
+        return NULL;
+    init_head(info);
+    fwrite(info->head, 44, 1, info->handle);
+    return (info->handle);
 }
 
-int rewrite_head(wav_sig *info){
-	rewind(info->handle);
-	init_head(info);
-	fwrite(info->head, 44, 1, info->handle);
+int rewrite_head(wav_sig* info) {
+    rewind(info->handle);
+    init_head(info);
+    fwrite(info->head, 44, 1, info->handle);
 
-	return(0);
+    return (0);
 }
