@@ -1309,7 +1309,10 @@ int vtt_class ::save(FILE* rc, gzFile rz, char* indent) {
     return (res);
 }
 
-#define TX_XML_SETFILE_VERSION "1.0"
+#define TX_XML_SETFILE_VERSION "1.1"
+
+#define TX_XML_SETFILE_VERSION_11 "1.1"
+#define TX_XML_SETFILE_VERSION_10 "1.0"
 
 int vtt_class ::save_all(FILE* rc, gzFile rz) {
     int res = 0;
@@ -1542,7 +1545,8 @@ int vtt_class ::load_all(xmlDocPtr doc, char* fname) {
         return 3;
     }
 
-    if (xmlStrcmp(xmlGetProp(root, (xmlChar*)"version"), (xmlChar*)TX_XML_SETFILE_VERSION)) {
+    if (xmlStrcmp(xmlGetProp(root, (xmlChar*)"version"), (xmlChar*)TX_XML_SETFILE_VERSION_11) &&
+	    xmlStrcmp(xmlGetProp(root, (xmlChar*)"version"), (xmlChar*)TX_XML_SETFILE_VERSION_10)) {
         tX_warning("this set file is version %s - while this releases uses version %s - trying to load anyway.", xmlGetProp(root, (xmlChar*)"version"), TX_XML_SETFILE_VERSION);
     }
 
