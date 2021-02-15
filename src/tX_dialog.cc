@@ -266,7 +266,7 @@ void append_alsa_device_list(GtkComboBoxText* combo, char* current) {
 #endif
 
 int oss_select_dsp_only(const struct dirent* entry) {
-    return (strstr(entry->d_name, "dsp") != 0);
+    return strstr(entry->d_name, "dsp") != 0;
 }
 
 void append_oss_device_list(GtkComboBoxText* combo, char* current) {

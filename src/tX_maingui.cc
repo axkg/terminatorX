@@ -713,7 +713,7 @@ GCallback cancel_rec(GtkWidget* wid) {
     rec_dialog = NULL;
     rec_dialog_win = NULL;
     rec_dont_care = 0;
-    return (0);
+    return 0;
 }
 
 void do_rec(GtkWidget* wid) {

@@ -94,7 +94,7 @@ int tx_mouse ::grab() {
         if (grab_mode == FALLBACK) {
             gdk_window_set_event_compression(window, enable_compression);
         }
-        return (ENG_ERR_XOPEN);
+        return ENG_ERR_XOPEN;
     }
 
     gtk_window_present(GTK_WINDOW(main_window));
@@ -116,7 +116,7 @@ int tx_mouse ::grab() {
         if (grab_mode == FALLBACK) {
             gdk_window_set_event_compression(window, enable_compression);
         }
-        return (-1);
+        return -1;
     }
 
     pointer = gdk_seat_get_pointer(seat);

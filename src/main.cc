@@ -355,5 +355,5 @@ int main(int argc, char** argv) {
     ratio = ((double)BENCH_CYCLES) / res;
     printf("Rendered %i blocks in %f secons,\n=> %f blocks per second.\n\n", (long)BENCH_CYCLES, res, ratio);
 #endif // CREATE_BENCHMARK
-    return (0);
+    return 0;
 }

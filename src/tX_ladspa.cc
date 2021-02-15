@@ -207,7 +207,7 @@ LADSPA_Plugin* LADSPA_Plugin ::getPluginByIndex(int i) {
         return NULL;
 
     else
-        return (*plugin);
+        return *plugin;
 }
 
 LADSPA_Plugin* LADSPA_Plugin ::getPluginByUniqueID(long ID) {
@@ -215,7 +215,7 @@ LADSPA_Plugin* LADSPA_Plugin ::getPluginByUniqueID(long ID) {
 
     for (plugin = plugin_list.begin(); plugin != plugin_list.end(); plugin++) {
         if ((*plugin)->getUniqueID() == ID)
-            return (*plugin);
+            return *plugin;
     }
 
     return NULL;
@@ -244,7 +244,7 @@ LADSPA_Stereo_Plugin* LADSPA_Stereo_Plugin ::getPluginByIndex(int i) {
         return NULL;
 
     else
-        return (*plugin);
+        return *plugin;
 }
 
 LADSPA_Stereo_Plugin* LADSPA_Stereo_Plugin ::getPluginByUniqueID(long ID) {
@@ -252,7 +252,7 @@ LADSPA_Stereo_Plugin* LADSPA_Stereo_Plugin ::getPluginByUniqueID(long ID) {
 
     for (plugin = stereo_plugin_list.begin(); plugin != stereo_plugin_list.end(); plugin++) {
         if ((*plugin)->getUniqueID() == ID)
-            return (*plugin);
+            return *plugin;
     }
 
     return NULL;

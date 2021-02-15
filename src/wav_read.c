@@ -39,7 +39,7 @@
     p[0] = info->head[x];     \
     p[1] = info->head[x + 1]; \
     swap16(&tmp);             \
-    return (tmp);
+    return tmp;
 
 #else
 
@@ -48,7 +48,7 @@
     p = (int8_t*)&tmp;        \
     p[0] = info->head[x];     \
     p[1] = info->head[x + 1]; \
-    return (tmp);
+    return tmp;
 
 #endif
 
@@ -64,7 +64,7 @@
     p[2] = info->head[x + 2]; \
     p[3] = info->head[x + 3]; \
     swap32(&tmp);             \
-    return (tmp);
+    return tmp;
 
 #else
 
@@ -75,7 +75,7 @@
     p[1] = info->head[x + 1]; \
     p[2] = info->head[x + 2]; \
     p[3] = info->head[x + 3]; \
-    return (tmp);
+    return tmp;
 
 #endif
 
@@ -100,7 +100,7 @@ int16_t get_wav_format(wav_sig* info) {
 
 /* mono or stereo */
 int8_t get_wav_channels(wav_sig* info) {
-    return (info->head[22]);
+    return info->head[22];
     //	read16(22);
 }
 
@@ -120,13 +120,13 @@ int32_t get_wav_bps(wav_sig* info) {
 }
 
 int8_t get_wav_blkalign(wav_sig* info) {
-    return (info->head[32]);
+    return info->head[32];
     //	read16(32);
 }
 
 /* sample depth (8bit or 16bit) */
 int8_t get_wav_depth(wav_sig* info) {
-    return (info->head[34]);
+    return info->head[34];
     //	read16(34);
 }
 
@@ -149,7 +149,7 @@ FILE* init_wav_read(char file_name[], wav_sig* info) {
     info->blkalign = get_wav_blkalign(info);
     info->depth = get_wav_depth(info);
     info->len = get_wav_len(info);
-    return (info->handle);
+    return info->handle;
 }
 
 void wav_close(FILE* wav) {

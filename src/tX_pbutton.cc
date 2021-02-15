@@ -114,7 +114,7 @@ extern GtkWidget* tx_xpm_button_new(tX_icon id, const char* label, int toggle, G
     gtk_widget_show(box);
     gtk_container_add(GTK_CONTAINER(button), box);
 
-    return (button);
+    return button;
 }
 
 GtkWidget* create_top_button(int icon_id) {

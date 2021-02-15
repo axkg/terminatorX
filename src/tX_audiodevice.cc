@@ -112,7 +112,7 @@ int tX_audiodevice_oss ::open() {
     int buff_cfg;
 
     if (fd)
-        return (1);
+        return 1;
     fd = ::open(globals.oss_device, O_WRONLY, 0);
 
     if (fd == -1) {
@@ -163,7 +163,7 @@ int tX_audiodevice_oss ::open() {
 
 int tX_audiodevice_oss ::close() {
     if (!fd) {
-        return (1);
+        return 1;
     }
     is_open = false;
     ::close(fd);

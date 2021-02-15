@@ -197,11 +197,11 @@ tX_seqpar* tX_seqpar ::get_sp_by_persistence_id(unsigned int pid) {
 
     for (sp = all->begin(); sp != all->end(); sp++) {
         if ((*sp)->get_persistence_id() == pid)
-            return ((*sp));
+            return (*sp);
     }
 
     //tX_error("failed to resolve persistence id [%i].", pid);
-    return (NULL);
+    return NULL;
 }
 
 void tX_seqpar ::record_value(const float value) {
