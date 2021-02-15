@@ -90,7 +90,7 @@ FILE* open_wav_rec(wav_sig* info) {
         return NULL;
     init_head(info);
     fwrite(info->head, 44, 1, info->handle);
-    return (info->handle);
+    return info->handle;
 }
 
 int rewrite_head(wav_sig* info) {
@@ -98,5 +98,5 @@ int rewrite_head(wav_sig* info) {
     init_head(info);
     fwrite(info->head, 44, 1, info->handle);
 
-    return (0);
+    return 0;
 }

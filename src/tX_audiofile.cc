@@ -156,7 +156,7 @@ tX_audio_error tx_audiofile ::load(char* p_file_name) {
     if (!load_err) {
         tX_debug("tx_audiofile::load() Set samplerate to %i for file %s.", sample_rate, filename);
     }
-    return (load_err);
+    return load_err;
 }
 
 tx_audiofile ::~tx_audiofile() {
@@ -285,15 +285,15 @@ tX_audio_error tx_audiofile ::load_wav() {
     mem_type = TX_AUDIO_LOAD;
 
     if (!init_wav_read(filename, &wav_in)) {
-        return (TX_AUDIO_ERR_WAV_NOTFOUND);
+        return TX_AUDIO_ERR_WAV_NOTFOUND;
     }
 
     if (wav_in.depth != 16) {
-        return (TX_AUDIO_ERR_NOT_16BIT);
+        return TX_AUDIO_ERR_NOT_16BIT;
     }
 
     if (wav_in.chans != 1) {
-        return (TX_AUDIO_ERR_NOT_MONO);
+        return TX_AUDIO_ERR_NOT_MONO;
     }
 
     sample_rate = wav_in.srate;
@@ -302,7 +302,7 @@ tX_audio_error tx_audiofile ::load_wav() {
     data = (int16_t*)malloc(memsize);
 
     if (!data) {
-        return (TX_AUDIO_ERR_ALLOC);
+        return TX_AUDIO_ERR_ALLOC;
     }
 
     p = data;
@@ -320,7 +320,7 @@ tX_audio_error tx_audiofile ::load_wav() {
 
         if (bytes <= 0) {
             free(data);
-            return (TX_AUDIO_ERR_WAV_READ);
+            return TX_AUDIO_ERR_WAV_READ;
         }
 
 #ifdef BIG_ENDIAN_MACHINE
@@ -349,7 +349,7 @@ tX_audio_error tx_audiofile ::load_wav() {
     mem = data;
     no_samples = memsize / sizeof(int16_t);
 
-    return (TX_AUDIO_SUCCESS);
+    return TX_AUDIO_SUCCESS;
 }
 #endif
 

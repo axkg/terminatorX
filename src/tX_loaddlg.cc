@@ -130,7 +130,7 @@ char* strip_path(char* name) {
     } else
         tmp = name;
 
-    return (tmp);
+    return tmp;
 }
 
 void ld_set_setname(char* name) {

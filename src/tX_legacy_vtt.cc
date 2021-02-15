@@ -68,7 +68,7 @@ int vtt_class ::load_10(FILE* input) {
     atload(ec_feedback);
     ec_set_feedback(ec_feedback);
 
-    return (res);
+    return res;
 }
 
 int vtt_class ::load_11(FILE* input) {
@@ -141,7 +141,7 @@ int vtt_class ::load_11(FILE* input) {
 
     atload(gui_page);
 
-    return (res);
+    return res;
 }
 
 int vtt_class ::load_12(FILE* input) {
@@ -280,7 +280,7 @@ int vtt_class ::load_12(FILE* input) {
     atload(hidden);
     gui.ec_panel->hide(hidden);
 
-    return (res);
+    return res;
 }
 
 int vtt_class ::load_13(FILE* input) {
@@ -431,7 +431,7 @@ int vtt_class ::load_13(FILE* input) {
     atload(hidden);
     gui.ec_panel->hide(hidden);
 
-    return (res);
+    return res;
 }
 
 int vtt_class ::load_14(FILE* input) {
@@ -585,7 +585,7 @@ int vtt_class ::load_14(FILE* input) {
     atload(hidden);
     gui.ec_panel->hide(hidden);
 
-    return (res);
+    return res;
 }
 
 int vtt_class ::load_all_10(FILE* input, char* fname) {
@@ -629,7 +629,7 @@ int vtt_class ::load_all_10(FILE* input, char* fname) {
 
     ld_destroy();
 
-    return (res);
+    return res;
 }
 
 int vtt_class ::load_all_11(FILE* input, char* fname) {
@@ -678,7 +678,7 @@ int vtt_class ::load_all_11(FILE* input, char* fname) {
 
     ld_destroy();
 
-    return (res);
+    return res;
 }
 
 int vtt_class ::load_all_12(FILE* input, char* fname) {
@@ -727,7 +727,7 @@ int vtt_class ::load_all_12(FILE* input, char* fname) {
 
     ld_destroy();
 
-    return (res);
+    return res;
 }
 
 int vtt_class ::load_all_13(FILE* input, char* fname) {
@@ -776,7 +776,7 @@ int vtt_class ::load_all_13(FILE* input, char* fname) {
 
     ld_destroy();
 
-    return (res);
+    return res;
 }
 
 int vtt_class ::load_all_14(FILE* input, char* fname) {
@@ -829,7 +829,7 @@ int vtt_class ::load_all_14(FILE* input, char* fname) {
 
     ld_destroy();
 
-    return (res);
+    return res;
 }
 
 void vtt_fx_ladspa ::load(FILE* input) {

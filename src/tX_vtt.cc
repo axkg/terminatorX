@@ -304,7 +304,7 @@ tX_audio_error vtt_class ::load_file(char* fname) {
     }
     ec_set_length(ec_length);
 
-    return (res);
+    return res;
 }
 
 int vtt_class ::set_output_buffer_size(int newsize) {
@@ -948,7 +948,7 @@ int16_t* vtt_class ::render_all_turntables() {
     }
     pthread_mutex_unlock(&render_lock);
 
-    return (mix_out_buffer);
+    return mix_out_buffer;
 }
 
 void vtt_class ::forward_all_turntables() {
@@ -1306,7 +1306,7 @@ int vtt_class ::save(FILE* rc, gzFile rz, char* indent) {
     indent[strlen(indent) - 1] = 0;
     tX_store("%s</turntable>\n", indent);
 
-    return (res);
+    return res;
 }
 
 #define TX_XML_SETFILE_VERSION "1.1"
@@ -1337,7 +1337,7 @@ int vtt_class ::save_all(FILE* rc, gzFile rz) {
 
     tX_store("</terminatorXset>\n");
 
-    return (res);
+    return res;
 }
 
 int vtt_class ::load(xmlDocPtr doc, xmlNodePtr node) {
@@ -1626,7 +1626,7 @@ int vtt_class ::load_all(xmlDocPtr doc, char* fname) {
 
     ld_destroy();
 
-    return (res);
+    return res;
 }
 
 void add_vtt(GtkWidget* ctrl, GtkWidget* audio, char* fn) {
