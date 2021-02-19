@@ -1,15 +1,18 @@
-Summary:	Real-time Audio Synthesizer
-Name:		@PACKAGE_NAME@
-Version:	@VERSION@
-Release:	1%{?dist}
-Group:		Applications/Multimedia
-License:	GPLv2+ and GFDL
-URL:		https://terminatorX.org
-Source0:	https://terminatorX.org/dist/%{name}-%{version}.tar.gz
+
+Summary:       Real-time Audio Synthesizer
+Name:          terminatorX
+Version:       @VERSION@
+Release:       1%{?dist}
+Group:         Applications/Multimedia
+License:       GPLv2+ and GFDL
+URL:           http://terminatorx.org/
+Source0:       http://terminatorx.org/dist/%{name}-%{version}.tar.bz2
 
 BuildRequires: alsa-lib-devel
 BuildRequires: audiofile-devel
 BuildRequires: desktop-file-utils
+BuildRequires: libappstream-glib
+BuildRequires: gcc-c++
 BuildRequires: gtk3-devel
 BuildRequires: jack-audio-connection-kit-devel
 BuildRequires: ladspa-devel
@@ -21,18 +24,16 @@ BuildRequires: libxml2-devel
 BuildRequires: libX11-devel
 BuildRequires: mpg123
 BuildRequires: pulseaudio-libs-devel
-BuildRequires: scrollkeeper
+BuildRequires: rarian-compat
 BuildRequires: sox
 BuildRequires: vorbis-tools
-BuildRequires: gcc-c++
 BuildRequires: gnome-doc-utils
 
+Requires:      hicolor-icon-theme
 Requires:      mpg123
 Requires:      sox
 Requires:      vorbis-tools
 
-Requires(post): scrollkeeper
-Requires(postun): scrollkeeper
 %description
 terminatorX is a real-time audio synthesizer that allows you to "scratch" on
 digitally sampled audio data (*.wav, *.au, *.ogg, *.mp3, etc.) the way
@@ -43,52 +44,49 @@ interface - all accessible through an easy-to-use gtk+ GUI.
 %prep
 %setup -q
 
+# Fix Ladspa path
+sed -i 's|/lib/|/%{_lib}/|g' src/tX_ladspa.cc
+
 %build
-%configure --disable-suidroot
+%configure
 make %{?_smp_mflags}
 
 %install
 make install DESTDIR=%{buildroot}
 
-# install mime files
-mkdir -p %{buildroot}%{_datadir}/mime-info
-install -pm 0644 terminatorX.keys %{buildroot}%{_datadir}/mime-info
-install -pm 0644 terminatorX.mime %{buildroot}%{_datadir}/mime-info
-
 # desktop file categories
 ADD="Audio X-Jack X-DJTools X-DigitalProcessing Sequencer"
 REMOVE="Application"
-mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   `for c in ${ADD}    ; do echo "--add-category $c "    ; done` \
   `for c in ${REMOVE} ; do echo "--remove-category $c " ; done` \
-  %{name}.desktop
+  %{buildroot}%{_datadir}/applications/%{name}.desktop
 
-# we don't need to package these
-rm -f %{buildroot}%{_datadir}/gnome/apps/Multimedia/%{name}.desktop
+appstream-util validate-relax --nonet %{buildroot}/%{_datadir}/appdata/terminatorX.appdata.xml
 
 %post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun
 if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null
+    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
 
 %posttrans
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+
 
 %files
-%doc AUTHORS ChangeLog COPYING* NEWS README* THANKS TODO
-%attr(4755, root, root) %{_bindir}/%{name}
+%doc AUTHORS ChangeLog NEWS README* THANKS TODO
+%license COPYING*
+%{_bindir}/%{name}
 %{_mandir}/man1/%{name}.1*
 %{_datadir}/mime-info/%{name}.keys
 %{_datadir}/mime-info/%{name}.mime
 %{_datadir}/omf/{%name}-manual/%{name}-manual-C.omf
-%{_datadir}/gnome/help/terminatorX-manual/C/figures/signalflow.png
-%{_datadir}/gnome/help/terminatorX-manual/C/terminatorX-manual.xml
+%{_datadir}/gnome/help/%{name}-manual/
 %{_datadir}/pixmaps/%{name}.xpm
 %{_datadir}/icons/hicolor/512x512/apps/%{name}.png
 %{_datadir}/icons/hicolor/512x512/mimetypes/%{name}-mime.png
@@ -96,7 +94,51 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/appdata/%{name}.appdata.xml
 
 %changelog
-* Sun Jun 19 2016  Alexander Koenig <alex@lisas.de> - 4.00-1
+* Fri Fen 19 2021 Alexander Koenig <alex@lisas.de> - 4.1.0-1
+- UI improvements
+- more gtk3 adaptations
+- minor bug fixes
+
+* Thu Feb 04 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 4.0.1-11
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
+* Tue Aug 18 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 4.0.1-10
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Wed Feb 05 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 4.0.1-9
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
+* Fri Aug 09 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 4.0.1-8
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
+* Mon Mar 04 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 4.0.1-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
+* Sun Aug 19 2018 Leigh Scott <leigh123linux@googlemail.com> - 4.0.1-6
+- Rebuilt for Fedora 29 Mass Rebuild binutils issue
+
+* Fri Jul 27 2018 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 4.0.1-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
+* Thu Mar 01 2018 RPM Fusion Release Engineering <leigh123linux@googlemail.com> - 4.0.1-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
+* Thu Aug 31 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 4.0.1-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
+* Mon Mar 20 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 4.0.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
+* Tue Jul 26 2016 Adrian Reber <adrian@lisas.de> - 4.0.1-1
+- Update to 4.0.1
+- Added pulseaudio-devel BR
+- Removed unneeded BRs
+
+* Tue Jul 19 2016 Leigh Scott <leigh123linux@googlemail.com> - 4.0.0-1
+- Update to 4.0.0
+- Change from gtk2 to gtk3
+
+* Sun Jun 19 2016 Alexander Koenig <alex@lisas.de> - 4.00-1
 - fix icon resolutions
 - include appdata
 
@@ -108,6 +150,15 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Sat Feb 01 2014 Alexander Koenig <alex@lisas.de> - 3.90-1
 - Merge RPMFusion version
 - Drop obsolete patches
+
+* Sat Dec 06 2014 Nicolas Chauvet <kwizart@gmail.com> - 3.90-3
+- Switch to mpg123
+
+* Mon Sep 01 2014 Sérgio Basto <sergio@serjux.com> - 3.90-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
+* Thu Feb 13 2014 Orcan Ogetbil <oged[DOT]fedora[AT]gmail[DOT]com> - 3.90-1
+- Update to 3.90
 
 * Sun Dec 08 2013 Nicolas Chauvet <kwizart@gmail.com> - 3.84-5
 - Rebuilt
