@@ -1049,7 +1049,7 @@ create_tx_del_mode(void) {
     gtk_radio_button_set_group(GTK_RADIO_BUTTON(all_events), all_events_group);
     all_events_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(all_events));
 
-    upto_current = gtk_radio_button_new_with_mnemonic(NULL, "Upto the current song position");
+    upto_current = gtk_radio_button_new_with_mnemonic(NULL, "Up to the current song position");
     gtk_widget_show(upto_current);
     gtk_box_pack_start(GTK_BOX(vbox3), upto_current, FALSE, FALSE, 0);
     gtk_radio_button_set_group(GTK_RADIO_BUTTON(upto_current), all_events_group);

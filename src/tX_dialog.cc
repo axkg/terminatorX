@@ -750,7 +750,7 @@ void tX_set_icon(GtkWidget* widget) {
         GError* error = NULL;
         g_resource_new_from_data(g_bytes_new_static(tX_dialog_resource_data.data, sizeof(tX_dialog_resource_data.data)), &error);
         if (error) {
-            tX_error("Error accesing tX_dialog resources: %s", error->message);
+            tX_error("Error accessing tX_dialog resources: %s", error->message);
         }
         tX_window_icon = gdk_pixbuf_new_from_resource("/org/terminatorX/tX_dialog/../../icons/terminatorX.png", &error);
         if (error) {

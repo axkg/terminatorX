@@ -125,7 +125,7 @@ void load_part(char* newfile, vtt_class* vtt) {
             tx_note("Failed to load audiofile - there's not enough memory available.", true);
             break;
         case TX_AUDIO_ERR_PIPE_READ:
-            tx_note("An error occured on reading from the piped process - probably the file format of the audiofile is not supported by this configuration - please check terminatorX' INSTALL file on howto configure terminatorX for files of this format.", true);
+            tx_note("An error occurred on reading from the piped process - probably the file format of the audiofile is not supported by this configuration - please check terminatorX' INSTALL file on howto configure terminatorX for files of this format.", true);
             break;
         case TX_AUDIO_ERR_SOX:
             tx_note("Failed to run sox - to load the given audiofile please ensure that sox is installed correctly.", true);
@@ -134,7 +134,7 @@ void load_part(char* newfile, vtt_class* vtt) {
             tx_note("Failed to run mpg123 - to load the given mp3 file please ensure that mpg123 (or mpg321) is installed correctly.", true);
             break;
         case TX_AUDIO_ERR_WAV_NOTFOUND:
-            tx_note("Couldn't acces the audiofile - file not found.", true);
+            tx_note("Couldn't access the audiofile - file not found.", true);
             break;
         case TX_AUDIO_ERR_NOT_16BIT:
             tx_note("The wav file doesn't use 16 bit wide samples - please compile terminatorX with libaudiofile support to enable loading of such files.", true);
@@ -176,7 +176,7 @@ void load_part(char* newfile, vtt_class* vtt) {
             tx_note("libaudiofile failed to decode any data - possilby the audiofile is corrupt.", true);
             break;
         default:
-            tx_note("An unknown error occured - if this bug is reproducible please report it, thanks.", true);
+            tx_note("An unknown error occurred - if this bug is reproducible please report it, thanks.", true);
         }
     } else {
         nicer_filename(global_filename_buffer, newfile);
@@ -973,7 +973,7 @@ void build_vtt_gui(vtt_class* vtt) {
     g->trigger_panel = p;
 
     g->trigger = gtk_button_new_with_label("Trigger");
-    gui_set_tooltip(g->trigger, "Click here to trigger this turntable right now. If the audio engine is disabled this turntable will be triggerd as soon as the engine is turned on.");
+    gui_set_tooltip(g->trigger, "Click here to trigger this turntable right now. If the audio engine is disabled this turntable will be triggered as soon as the engine is turned on.");
     p->add_client_widget(g->trigger);
 
     g->stop = gtk_button_new_with_label("Stop");
@@ -1000,7 +1000,7 @@ void build_vtt_gui(vtt_class* vtt) {
 
     g->sync_follower = gtk_check_button_new_with_label("Follow");
     p->add_client_widget(g->sync_follower);
-    gui_set_tooltip(g->sync_follower, "If enabled this turntable will be (re-)triggerd in relation to the sync-leader turntable.");
+    gui_set_tooltip(g->sync_follower, "If enabled this turntable will be (re-)triggered in relation to the sync-leader turntable.");
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g->sync_follower), vtt->is_sync_follower);
     g_signal_connect(G_OBJECT(g->sync_follower), "button_press_event", (GCallback)tX_seqpar::tX_seqpar_press, &vtt->sp_sync_follower);
 

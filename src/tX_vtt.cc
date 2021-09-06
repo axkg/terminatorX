@@ -1471,7 +1471,7 @@ int vtt_class ::load(xmlDocPtr doc, xmlNodePtr node) {
             }
 
             if (!elementFound) {
-                tX_warning("unhandled element %s in turntable secion.", cur->name);
+                tX_warning("unhandled element %s in turntable section.", cur->name);
             }
         }
     }
