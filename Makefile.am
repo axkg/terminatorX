@@ -1,5 +1,5 @@
-AUTOMAKE_OPTIONS = foreign 
-SUBDIRS = src icons help 
+AUTOMAKE_OPTIONS = foreign
+SUBDIRS = src icons help
 EXTRA_DIST = COPYING-DOCS\
 	README.md\
 	INSTALL.md\
@@ -15,7 +15,7 @@ desktopdir = $(datadir)/applications
 desktop_DATA = terminatorX.desktop
 
 appdatadir = $(datarootdir)/appdata
-appdata_DATA = terminatorX.appdata.xml 
+appdata_DATA = terminatorX.appdata.xml
 
 mimedir = $(datadir)/mime-info
 mime_DATA = terminatorX.mime terminatorX.keys
