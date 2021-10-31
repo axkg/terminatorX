@@ -1,7 +1,9 @@
 AUTOMAKE_OPTIONS = foreign 
 SUBDIRS = src icons help 
 EXTRA_DIST = COPYING-DOCS\
-	README.PERFORMANCE\
+	README.md\
+	INSTALL.md\
+	README.PERFORMANCE.md\
 	terminatorX.spec.in\
 	terminatorX.appdata.xml\
 	terminatorX.desktop\
