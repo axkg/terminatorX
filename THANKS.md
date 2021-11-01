@@ -15,7 +15,7 @@ In politically correct alphabetical order:
 
 - Adam King <aking@lgh.com.au> for fixing bugs and code contributions.
 
-- Adrian Reber <adrian@fht-esslingen.de> for being the *BEST* Linux 
+- Adrian Reber <adrian@fht-esslingen.de> for being the *BEST* Linux
   sysadmin ;), for numerous code contributions and the fabrication of
   terminatorX-rpms.
 
@@ -26,13 +26,13 @@ In politically correct alphabetical order:
 - Arthur Peters <amp@singingwizard.org> for contributing the ALSA MIDI
   support
 
-- Darrick Servis <darrick@dcn.davis.ca.us> for telling me to implement the 
+- Darrick Servis <darrick@dcn.davis.ca.us> for telling me to implement the
   Anti-Clip-Device (checkout his audio file library:
   http://osalp.sourceforge.net)
 
 - Benno Senoner <sbenno@gardena.net> for his mmap() patch, all the low
   latency kernel work and tips
-  (checkout: http://www.gardena.net/benno/linux/audio/) 
+  (checkout: http://www.gardena.net/benno/linux/audio/)
 
 - Michael Kahl <m.kahl@student.hu-berlin.de> for the cool MK II icon that I
   no longer use
@@ -43,7 +43,7 @@ In politically correct alphabetical order:
 
 - Robert Dale <rob@nb.net> for making his already gone 3DNow!-Header
   temporarily available again
-  
+
 - Scott C. Knight <scknight@indiana.edu> for helping me to get this thing
   running on big endian machines again.
 
