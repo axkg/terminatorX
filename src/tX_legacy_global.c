@@ -54,8 +54,8 @@ void load_globals_old() {
 
     /* i'll have to keep these as they're in the code
           everywhere but I think it doesn't make sense resetting
-	  to old values on startup....
-	*/
+          to old values on startup....
+        */
     globals.use_stdout_cmdline = 0;
     globals.current_path[0] = 0;
     globals.pitch = 1.0;

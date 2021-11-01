@@ -30,7 +30,7 @@
 #include <string.h>
 
 /* Read little endian 16bit values little endian
-*/
+ */
 #ifdef BIG_ENDIAN_MACHINE
 
 #define read16(x)             \
@@ -53,7 +53,7 @@
 #endif
 
 /* Read little endian 32bit values little endian
-*/
+ */
 #ifdef BIG_ENDIAN_MACHINE
 
 #define read32(x)             \

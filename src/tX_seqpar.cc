@@ -200,7 +200,7 @@ tX_seqpar* tX_seqpar ::get_sp_by_persistence_id(unsigned int pid) {
             return (*sp);
     }
 
-    //tX_error("failed to resolve persistence id [%i].", pid);
+    // tX_error("failed to resolve persistence id [%i].", pid);
     return NULL;
 }
 
@@ -208,10 +208,10 @@ void tX_seqpar ::record_value(const float value) {
 #define last_event ((tX_event*)last_event_recorded)
 
     /* recording more than one event per seqpar for
-	  one timestamp doesn't make sense... so if the 
-	  last_event_recorded was for the current timestamp
-	  we simply set that event's value to the current one.
-	*/
+          one timestamp doesn't make sense... so if the
+          last_event_recorded was for the current timestamp
+          we simply set that event's value to the current one.
+        */
     if ((last_event) && (last_event->get_timestamp() == sequencer.get_timestamp())) {
         last_event->set_value(value);
     } else {
@@ -886,7 +886,7 @@ void tX_seqpar_vttfx_float ::create_widget() {
     double tmp = (max_value - min_value) / 1000.0;
 
     *fx_value = min_value;
-    //myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value+tmp/10, max_value-tmp/10, tmp, tmp, tmp));
+    // myadj=GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value+tmp/10, max_value-tmp/10, tmp, tmp, tmp));
     myadj = GTK_ADJUSTMENT(gtk_adjustment_new(*fx_value, min_value, max_value, tmp, tmp, tmp));
     mydial = new tX_extdial(label_name, myadj, this);
     g_signal_connect(G_OBJECT(myadj), "value_changed", (GCallback)tX_seqpar_vttfx_float ::gtk_callback, this);
@@ -1100,7 +1100,7 @@ gboolean tX_seqpar::tX_seqpar_press(GtkWidget* widget, GdkEventButton* event, gp
         gtk_widget_show(menu);
 
         gtk_menu_popup_at_widget(GTK_MENU(menu), widget, GDK_GRAVITY_SOUTH_WEST, GDK_GRAVITY_NORTH_WEST, (GdkEvent*)event);
-        //gtk_grab_remove(gtk_grab_get_current());
+        // gtk_grab_remove(gtk_grab_get_current());
 
         return TRUE;
     }

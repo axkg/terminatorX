@@ -92,8 +92,8 @@ int tX_midiin::check_event() {
 
     while (snd_seq_event_input(ALSASeqHandle, &ev) != -EAGAIN) {
 
-        //MidiEvent::type MessageType=MidiEvent::NONE;
-        //int Volume=0,Note=0,EventDevice=0;
+        // MidiEvent::type MessageType=MidiEvent::NONE;
+        // int Volume=0,Note=0,EventDevice=0;
         tX_midievent event;
         event.is_noteon = false;
         bool event_usable = true;

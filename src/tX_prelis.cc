@@ -18,7 +18,7 @@
     File: tX_prelis.cc
 
     Description: This takes care of the "pre-listening" of audiofiles
-		 in the load dialog.
+                 in the load dialog.
 */
 
 extern "C" {

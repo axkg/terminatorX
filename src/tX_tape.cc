@@ -18,7 +18,7 @@
     File: tX_tape.cc
 
     Description: This implements a "harddisk recording tapedeck" - simply dumps
-		 the generated audio into a plain mono wav-file.
+                 the generated audio into a plain mono wav-file.
 */
 
 #include "tX_tape.h"

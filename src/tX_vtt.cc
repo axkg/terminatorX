@@ -18,9 +18,9 @@
     File: tX_vtt.cc
 
     Description: This implements the new virtual turntable class. It replaces
-		 the old turntable.c from terminatorX 3.2 and earlier. The lowpass
-		 filter is based on some sample code by Paul Kellett
-		 <paul.kellett@maxim.abel.co.uk>
+                 the old turntable.c from terminatorX 3.2 and earlier. The lowpass
+                 filter is based on some sample code by Paul Kellett
+                 <paul.kellett@maxim.abel.co.uk>
 
     08 Dec 1999 - Switched to the new audiofile class
 */
@@ -321,7 +321,7 @@ int vtt_class ::set_output_buffer_size(int newsize) {
         tX_freemem(output_buffer2, "output_buffer2", "vtt set_output_buffer2_size()");
     tX_malloc(output_buffer2, "output_buffer2", "vtt set_output_buffer2_size()", sizeof(float) * newsize, (float*));
 
-    end_of_outputbuffer = output_buffer + newsize; //size_t(sizeof(float)*(newsize));
+    end_of_outputbuffer = output_buffer + newsize; // size_t(sizeof(float)*(newsize));
 
     samples_in_outputbuffer = newsize;
     inv_samples_in_outputbuffer = 1.0 / samples_in_outputbuffer;
@@ -750,12 +750,12 @@ void vtt_class ::forward_turntable() {
         return;
 
     /*  the following code is problematic as adding speed_real*n is
-	different from adding speed_real n times to pos_f.
+        different from adding speed_real n times to pos_f.
 
-	well it speeds things up quite a bit and double precision
-	seems to do a satisfying job.
+        well it speeds things up quite a bit and double precision
+        seems to do a satisfying job.
 
-	#define pos_f_test to prove that.
+        #define pos_f_test to prove that.
     */
 
     pos_f_tmp = pos_f + speed_real * samples_in_outputbuffer;
@@ -810,8 +810,8 @@ void vtt_class ::forward_turntable() {
 }
 
 /*
-	The following lowpass filter is based on some sample code by
-	Paul Kellett <paul.kellett@maxim.abel.co.uk>
+        The following lowpass filter is based on some sample code by
+        Paul Kellett <paul.kellett@maxim.abel.co.uk>
 */
 
 void vtt_class ::render_lp() {
@@ -875,8 +875,8 @@ int16_t* vtt_class ::render_all_turntables() {
     if (render_list.size() == 0) {
         memset((void*)mix_out_buffer, 0, sizeof(int16_t) * samples_in_mix_buffer);
         /* We need to memset mix_buffer, too, as the JACK backend
-	   acesses this directly.
-	*/
+           acesses this directly.
+        */
         memset((void*)mix_buffer, 0, sizeof(float) * samples_in_mix_buffer);
     } else {
         vtt = render_list.begin();
@@ -1545,8 +1545,7 @@ int vtt_class ::load_all(xmlDocPtr doc, char* fname) {
         return 3;
     }
 
-    if (xmlStrcmp(xmlGetProp(root, (xmlChar*)"version"), (xmlChar*)TX_XML_SETFILE_VERSION_11) &&
-	    xmlStrcmp(xmlGetProp(root, (xmlChar*)"version"), (xmlChar*)TX_XML_SETFILE_VERSION_10)) {
+    if (xmlStrcmp(xmlGetProp(root, (xmlChar*)"version"), (xmlChar*)TX_XML_SETFILE_VERSION_11) && xmlStrcmp(xmlGetProp(root, (xmlChar*)"version"), (xmlChar*)TX_XML_SETFILE_VERSION_10)) {
         tX_warning("this set file is version %s - while this releases uses version %s - trying to load anyway.", xmlGetProp(root, (xmlChar*)"version"), TX_XML_SETFILE_VERSION);
     }
 

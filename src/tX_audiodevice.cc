@@ -189,7 +189,7 @@ void tX_audiodevice_oss ::play(int16_t* buffer) {
     }
 }
 
-#endif //USE_OSS
+#endif // USE_OSS
 
 #ifdef USE_ALSA
 
@@ -303,7 +303,7 @@ int tX_audiodevice_alsa ::open() {
         snd_pcm_hw_params_free(hw_params);
     }
 
-    return 0; //snd_pcm_prepare(pcm_handle);
+    return 0; // snd_pcm_prepare(pcm_handle);
 }
 
 int tX_audiodevice_alsa ::close() {
@@ -342,7 +342,7 @@ void tX_audiodevice_alsa ::play(int16_t* buffer) {
             tX_error("tX_audiodevice_alsa::play() more than 10 EPIPE cycles. Giving up.");
             break;
         }
-        //tX_warning("ALSA: ** buffer underrun **");
+        // tX_warning("ALSA: ** buffer underrun **");
     }
 
     if (pcmreturn < 0) {
@@ -350,7 +350,7 @@ void tX_audiodevice_alsa ::play(int16_t* buffer) {
     }
 }
 
-#endif //USE_ALSA
+#endif // USE_ALSA
 
 #ifdef USE_PULSE
 #include <pulse/error.h>
@@ -428,8 +428,8 @@ void tX_audiodevice_pulse::context_state_callback(pa_context* context) {
 
         if ((stream = pa_stream_new(context, "terminatorX", &spec, NULL))) {
             tX_debug("pulseaudio stream created");
-            //pa_stream_set_started_callback(stream, tX_audiodevice_pulse::wrap_stream_started_callback, this);
-            //pa_stream_set_underflow_callback(stream, tX_audiodevice_pulse::wrap_stream_underflow_callback, this);
+            // pa_stream_set_started_callback(stream, tX_audiodevice_pulse::wrap_stream_started_callback, this);
+            // pa_stream_set_underflow_callback(stream, tX_audiodevice_pulse::wrap_stream_underflow_callback, this);
             pa_stream_set_overflow_callback(stream, tX_audiodevice_pulse::wrap_stream_overflow_callback, this);
             pa_stream_set_write_callback(stream, tX_audiodevice_pulse::wrap_stream_write_callback, this);
 
@@ -589,7 +589,7 @@ void tX_audiodevice_pulse ::play(int16_t* buffer) {
 tX_audiodevice_pulse ::~tX_audiodevice_pulse() {
 }
 
-#endif //USE_PULSE
+#endif // USE_PULSE
 
 #ifdef USE_JACK
 

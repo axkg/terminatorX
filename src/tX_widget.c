@@ -18,8 +18,8 @@
     File: tX_widget.c
 
     Description: This contains the implementation of the tx_widget.
-		 This file is based on the GTK+ widget example from
-		 the GTK+ 1.2 tutorial.
+                 This file is based on the GTK+ widget example from
+                 the GTK+ 1.2 tutorial.
 */
 
 #include <math.h>
@@ -303,7 +303,7 @@ static void gtk_tx_reallocate_disp_data(GtkWidget* widget) {
 #ifdef USE_DISPLAY_NORMALIZE
             if (tx->max_value == -1) {
                 /* We haven't figured a max value yet... */
-                //puts("searching max...");
+                // puts("searching max...");
 
                 for (x = 0, ptr = tx->disp_data; x < tx->display_width; ptr++, x++) {
                     value = 0;
@@ -320,7 +320,7 @@ static void gtk_tx_reallocate_disp_data(GtkWidget* widget) {
                 }
             } else {
 #endif
-                //puts("have max...");
+                // puts("have max...");
                 /* We have a max value... */
                 for (x = 0, ptr = tx->disp_data; x < tx->display_width; ptr++, x++) {
                     f_prec t;

@@ -18,9 +18,9 @@
     File: tX_vttgui.cc
 
     Description: This implements the gtk+ GUI for the virtual turntable
-		 class implemented in tX_vtt.cc. This code is not in tX_vtt.cc
-		 for mainly to keep the GUI code divided from the audio-rendering
-		 code and as gtk+ callback to C++ method call wrapper.
+                 class implemented in tX_vtt.cc. This code is not in tX_vtt.cc
+                 for mainly to keep the GUI code divided from the audio-rendering
+                 code and as gtk+ callback to C++ method call wrapper.
 */
 
 #include "tX_vttgui.h"
@@ -778,7 +778,7 @@ void gui_connect_signals(vtt_class* vtt) {
     connect_adj(ec_pan, ec_pan_changed);
     connect_adj(ec_volume, ec_volume_changed);
     connect_range(zoom, vg_adjust_zoom);
-    //connect_scale_format(zoom, vg_format_zoom);
+    // connect_scale_format(zoom, vg_format_zoom);
     connect_press_button(mouse_mapping, vg_mouse_mapping_pressed);
     connect_button(control_minimize, minimize_control_panel);
     connect_button(audio_minimize, minimize_audio_panel);
@@ -957,7 +957,7 @@ void build_vtt_gui(vtt_class* vtt) {
 
     p->add_client_widget(mainbox);
     gui_set_tooltip(g->name, "Enter the turntable's name here.");
-    //gtk_widget_set_size_request(g->name, 40, -1);
+    // gtk_widget_set_size_request(g->name, 40, -1);
 
     g->del = gtk_button_new_with_label("Delete");
     gui_set_tooltip(g->del, "Click here to annihilate this turntable. All events recorded for this turntable will be erased, too.");
