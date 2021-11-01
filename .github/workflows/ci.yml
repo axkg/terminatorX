@@ -24,3 +24,15 @@ jobs:
         ./autogen.sh
         ./configure ${{ matrix.target }}
         make -j $(nproc)
+    - name: Run make indent
+      if: matrix.target == 'CC=clang CXX=clang++'
+      run: >
+        make indent &&
+        STATUS=$(git status --porcelain) &&
+        if [ ! -z "$STATUS" ]; then
+          echo "FAIL: some files are not correctly formatted.";
+          echo "$STATUS"
+          git diff
+          echo "FAIL: please run 'make indent'";
+          exit 1;
+        fi

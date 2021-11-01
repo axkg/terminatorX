@@ -34,3 +34,6 @@ dist-hook:
 	else \
 		echo 'A git clone is required to generate a ChangeLog' >&2; \
 	fi
+
+indent:
+	@find src -maxdepth 1  -name '*[ch]' -type f -print0 | xargs --null --max-args 128 --max-procs 4 clang-format -i
