@@ -18,8 +18,8 @@
     File: tX_global.c
 
     Description:  This file contains the routines for handling the
-		  "globals" block. Intializing, reading setup from
-		  disk and storing it.
+                  "globals" block. Intializing, reading setup from
+                  disk and storing it.
 */
 
 #include "tX_global.h"

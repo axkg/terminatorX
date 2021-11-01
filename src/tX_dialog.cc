@@ -18,8 +18,8 @@
     File: tX_dialog.cc
 
     Description: Contains the implementation of the Options and About
-		 Dialogs. (And some really ugly "WE WANT TO
-		 TYPE LESS" macros)
+                 Dialogs. (And some really ugly "WE WANT TO
+                 TYPE LESS" macros)
 */
 
 #include "tX_dialog.h"
@@ -95,7 +95,7 @@ void apply_options(GtkWidget* dialog) {
     globals.pulse_buffer_length = (int)gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "pulse_buffer_size")));
 
     /* TODO: JACK
-	*/
+     */
 
     globals.mouse_speed = gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "mouse_speed")));
     globals.sense_cycles = (int)gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "stop_sense_cycles")));

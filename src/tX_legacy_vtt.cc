@@ -53,8 +53,8 @@ int vtt_class ::load_10(FILE* input) {
     atload(loop);
 
     atload(mute);
-    atload(obsolete_int); //x_control
-    atload(obsolete_int); //y_control
+    atload(obsolete_int); // x_control
+    atload(obsolete_int); // y_control
 
     atload(lp_enable);
     atload(lp_gain);
@@ -91,8 +91,8 @@ int vtt_class ::load_11(FILE* input) {
     atload(loop);
 
     atload(mute);
-    atload(obsolete_int); //x_control
-    atload(obsolete_int); //y_control
+    atload(obsolete_int); // x_control
+    atload(obsolete_int); // y_control
 
     atload(lp_enable);
     atload(lp_gain);
@@ -617,7 +617,7 @@ int vtt_class ::load_all_10(FILE* input, char* fname) {
             strcpy(ftmp, newvtt->filename);
             ld_set_filename(ftmp);
 
-            //restmp=load_wav(newvtt->filename, &newbuffer, &size);
+            // restmp=load_wav(newvtt->filename, &newbuffer, &size);
             restmp = (int)newvtt->load_file(ftmp);
             res += restmp;
         }
@@ -666,7 +666,7 @@ int vtt_class ::load_all_11(FILE* input, char* fname) {
             strcpy(ftmp, newvtt->filename);
             ld_set_filename(ftmp);
 
-            //restmp=load_wav(newvtt->filename, &newbuffer, &size);
+            // restmp=load_wav(newvtt->filename, &newbuffer, &size);
             restmp = (int)newvtt->load_file(ftmp);
             res += restmp;
         }
@@ -715,7 +715,7 @@ int vtt_class ::load_all_12(FILE* input, char* fname) {
             strcpy(ftmp, newvtt->filename);
             ld_set_filename(ftmp);
 
-            //restmp=load_wav(newvtt->filename, &newbuffer, &size);
+            // restmp=load_wav(newvtt->filename, &newbuffer, &size);
             restmp = (int)newvtt->load_file(ftmp);
             res += restmp;
         }
@@ -764,7 +764,7 @@ int vtt_class ::load_all_13(FILE* input, char* fname) {
             strcpy(ftmp, newvtt->filename);
             ld_set_filename(ftmp);
 
-            //restmp=load_wav(newvtt->filename, &newbuffer, &size);
+            // restmp=load_wav(newvtt->filename, &newbuffer, &size);
             restmp = (int)newvtt->load_file(ftmp);
             res += restmp;
         }
@@ -813,7 +813,7 @@ int vtt_class ::load_all_14(FILE* input, char* fname) {
             strcpy(ftmp, newvtt->filename);
             ld_set_filename(ftmp);
 
-            //restmp=load_wav(newvtt->filename, &newbuffer, &size);
+            // restmp=load_wav(newvtt->filename, &newbuffer, &size);
             restmp = (int)newvtt->load_file(ftmp);
             res += restmp;
         }

@@ -18,7 +18,7 @@
     File: tX_maingui.cc
 
     Description: This implements the main gtk+ GUI of terminatorX
-		 It serves as a container for the vtt-guis.
+                 It serves as a container for the vtt-guis.
 */
 
 #include "tX_maingui.h"
@@ -134,7 +134,7 @@ extern void gui_show_focus(vtt_class* vtt, int show);
 GdkWindow* rec_dialog_win = NULL;
 GtkWidget* rec_dialog = NULL;
 
-//GtkWidget *no_of_vtts=NULL;
+// GtkWidget *no_of_vtts=NULL;
 GtkWidget* used_mem = NULL;
 
 int stop_update = 0;
@@ -249,11 +249,11 @@ void mg_update_status() {
     }
 
     /*sprintf(buffer, "%i", vtt_class::vtt_amount);
-	gtk_label_set_text(GTK_LABEL(no_of_vtts), buffer);*/
+        gtk_label_set_text(GTK_LABEL(no_of_vtts), buffer);*/
 }
 
 GCallback new_table(GtkWidget*, char* fn) {
-    //turn_audio_off();
+    // turn_audio_off();
 
     if (fn) {
         ld_create_loaddlg(TX_LOADDLG_MODE_SINGLE, 1);
@@ -781,8 +781,8 @@ GCallback tape_on(GtkWidget* w, void* d) {
 void grab_on(GtkWidget* w, void* d) {
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))) {
         if (mouse.grab() != 0) {
-            //tX_engine::get_instance()->set_grab_request();
-            // TODO: handle error
+            // tX_engine::get_instance()->set_grab_request();
+            //  TODO: handle error
         }
     }
     grab_status = 1;
@@ -1215,7 +1215,7 @@ void create_main_menu() {
     gtk_container_add(GTK_CONTAINER(sub_menu), menu_item);
 
     menu_item = gtk_check_menu_item_new_with_mnemonic("_Confirm Recorded Events");
-    //rec_menu_item = menu_item;
+    // rec_menu_item = menu_item;
     gtk_widget_show(menu_item);
     gtk_container_add(GTK_CONTAINER(sub_menu), menu_item);
     gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), globals.confirm_events);
@@ -1401,7 +1401,7 @@ void create_maingui(int x, int y) {
     dummy = gtk_entry_new();
     gtk_entry_set_max_length(GTK_ENTRY(dummy), 12);
     seq_entry = dummy;
-    //gtk_widget_set_usize(dummy, 65, 20);
+    // gtk_widget_set_usize(dummy, 65, 20);
     gtk_entry_set_text(GTK_ENTRY(dummy), "00:00.00");
 #if GTK_CHECK_VERSION(2, 4, 0)
     gtk_entry_set_alignment(GTK_ENTRY(dummy), 0.5);
@@ -1673,10 +1673,10 @@ gboolean help_checker() {
             help_tag = -1;
         }
     } else {
-        //yelp waitpid status does not allow determining success
-        //printf("%i %i\n", WIFEXITED(status), WEXITSTATUS(status));
+        // yelp waitpid status does not allow determining success
+        // printf("%i %i\n", WIFEXITED(status), WEXITSTATUS(status));
         ///* We are still here and the child exited - that could mean trouble. */
-        //tx_note("Couldn't run the gnome-help command (alias \"yelp\") to display the terminatorX manual. Please ensure that \"yelp\" is installed.", true);
+        // tx_note("Couldn't run the gnome-help command (alias \"yelp\") to display the terminatorX manual. Please ensure that \"yelp\" is installed.", true);
 
         g_source_remove(help_tag);
         help_tag = -1;

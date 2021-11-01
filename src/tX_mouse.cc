@@ -18,7 +18,7 @@
     File: tX_mouse.cc
 
     Description: This implements the mouse AND keyboard Input handling in
-		 Grab-Mode.
+                 Grab-Mode.
 */
 
 #include <sys/wait.h>
@@ -220,7 +220,7 @@ void tx_mouse::ungrab_linux_input() {
 
 void tx_mouse::motion_notify(GtkWidget* widget, GdkEventMotion* eventMotion) {
     if (eventMotion->time == motion_timestamp) {
-	return;
+        return;
     }
 
     motion_timestamp = eventMotion->time;
@@ -230,9 +230,9 @@ void tx_mouse::motion_notify(GtkWidget* widget, GdkEventMotion* eventMotion) {
         gdouble d_y = eventMotion->y_root - y_abs;
 
         if ((d_x != 0.0) || (d_y != 0.0)) {
-            //gdouble xnow, ynow;
-            //gdk_device_get_position_double(pointer, NULL, &xnow, &ynow);
-            //printf("%lf -> %lf, %lf -> %lf\n", eventMotion->x_root, xnow, eventMotion->y_root, ynow);
+            // gdouble xnow, ynow;
+            // gdk_device_get_position_double(pointer, NULL, &xnow, &ynow);
+            // printf("%lf -> %lf, %lf -> %lf\n", eventMotion->x_root, xnow, eventMotion->y_root, ynow);
             gdk_device_warp(pointer, screen, x_abs, y_abs);
 
             if (warp_override) {
@@ -567,7 +567,7 @@ gboolean tx_mouse::linux_input_wrap(GIOChannel* source, GIOCondition condition, 
         gint fd = g_io_channel_unix_get_fd(mouse->linux_input_channel);
         ssize_t bytes_read = read(fd, &eventbuffer, sizeof(eventbuffer));
 
-        //printf("read %lu bytes, %lu events\n", bytes_read, bytes_read / sizeof(tx_input_event));
+        // printf("read %lu bytes, %lu events\n", bytes_read, bytes_read / sizeof(tx_input_event));
 
         sum.x_motion = 0;
         sum.y_motion = 0;

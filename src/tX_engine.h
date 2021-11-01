@@ -71,7 +71,7 @@ class tX_engine {
     bool stop_flag;
     bool loop_is_active;
     /*	bool grab_request;
-	bool grab_active; */
+        bool grab_active; */
     bool runtime_error;
     bool overload_error;
     int cycles_ctr;

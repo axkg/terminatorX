@@ -171,11 +171,11 @@ typedef struct {
 
     char current_path[PATH_MAX];
 
-    /* new audiodevice handling 
-	   we have *all* variables for *all* audiodevice types -
-	   even if support for them is not compiled in - to keep
-	   the .terminatorX3rc.bin in sync.
-	*/
+    /* new audiodevice handling
+           we have *all* variables for *all* audiodevice types -
+           even if support for them is not compiled in - to keep
+           the .terminatorX3rc.bin in sync.
+        */
 
     tX_audiodevice_type audiodevice_type; // TX_AUDIODEVICE_TYPE_OSS etc.
 

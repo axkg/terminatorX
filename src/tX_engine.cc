@@ -18,8 +18,8 @@
     File: tX_engine.c
 
     Description: Contains the code that does the real "Scratching
-		 business": XInput, DGA, Mouse and Keyboardgrabbing
-		 etc.
+                 business": XInput, DGA, Mouse and Keyboardgrabbing
+                 etc.
 */
 
 #include "tX_engine.h"
@@ -106,10 +106,10 @@ void tX_engine::loop() {
         // in case we got kicked out by jack we might have
         // to kill the mouse grab
         /*		if (grab_active) {
-			mouse->ungrab();
-			grab_active=false;
-			grab_off();
-		} */
+                        mouse->ungrab();
+                        grab_active=false;
+                        grab_off();
+                } */
 
         if (!stop_flag) {
             runtime_error = true;
@@ -153,7 +153,7 @@ void* engine_thread_entry(void* engine_void) {
             tX_debug("engine_thread_entry(): set SCHED_FIFO with maximum priority.");
         }
     }
-#endif //USE_SCHEDULER
+#endif // USE_SCHEDULER
 
 #ifdef USE_JACK
     /* Create the client now, so the user has something to connect to. */
@@ -282,9 +282,9 @@ void tX_engine ::stop() {
 
     while (loop_is_active) {
         /* Due to gtk+ signal handling this can cause a deadlock
-		   on the seqpars' update list. So we need to handle events
-		   while waiting...			
-		*/
+                   on the seqpars' update list. So we need to handle events
+                   while waiting...
+                */
         while (gtk_events_pending())
             gtk_main_iteration();
         usleep(50);

@@ -233,7 +233,7 @@ static void gtk_tx_flash_prepare(GtkWidget* widget) {
     }
     tx_flash->channel[1].x1 = allocation.width / 2 + 2;
 
-    //tX_msg("flash: width %i: left %i, right %i", widget->allocation.width, tx_flash->channel[0].x2-tx_flash->channel[0].x1, tx_flash->channel[1].x2-tx_flash->channel[1].x1);
+    // tX_msg("flash: width %i: left %i, right %i", widget->allocation.width, tx_flash->channel[0].x2-tx_flash->channel[0].x1, tx_flash->channel[1].x2-tx_flash->channel[1].x1);
 }
 
 static void gtk_tx_flash_size_allocate(GtkWidget* widget, GtkAllocation* allocation) {

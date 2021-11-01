@@ -18,7 +18,7 @@
     File: main.c
 
     Description: This contains the main() function. All the initializing
-	         happens here.
+                 happens here.
 */
 
 #define TX_GTKRC "/usr/share/themes/terminatorX/gtk/gtkrc"
@@ -155,9 +155,9 @@ void checkenv(const char* name) {
     if (value) {
         length = strlen(value);
         /*
-		 strnlen requires extra macros...
-		 length=strnlen(value, PATH_MAX+1);
-		*/
+                 strnlen requires extra macros...
+                 length=strnlen(value, PATH_MAX+1);
+                */
 
         if (length >= PATH_MAX) {
             tX_error("Your \"%s\" environment variable seems malicious (%i chars).", name, length);

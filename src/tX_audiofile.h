@@ -106,7 +106,7 @@ class tx_audiofile {
     int16_t* mem;
     size_t memsize;
     long no_samples;
-    unsigned int sample_rate; //in HZ
+    unsigned int sample_rate; // in HZ
 
 #ifdef USE_BUILTIN_WAV
     tX_audio_error load_wav();

@@ -18,7 +18,7 @@
     File: tX_loaddlg.cc
 
     Description: Displays the progress indicator dialog for file
-		 loading.
+                 loading.
 */
 #include "tX_loaddlg.h"
 #include "tX_maingui.h"
@@ -32,7 +32,7 @@ GtkWidget* ld_single_l = (GtkWidget*)NULL;
 GtkWidget* ld_single_p = (GtkWidget*)NULL;
 GtkWidget* ld_multi_l = (GtkWidget*)NULL;
 GtkWidget* ld_multi_p = (GtkWidget*)NULL;
-//GtkWindow *ld_window=(GtkWindow *)NULL;
+// GtkWindow *ld_window=(GtkWindow *)NULL;
 
 int ld_mode;
 int ld_count;

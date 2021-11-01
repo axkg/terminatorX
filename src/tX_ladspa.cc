@@ -19,8 +19,8 @@
 
     Description: LADSPA_Plugin takes care of loading LADSPA plugins.
                  Most of this code is based on the LADSPA SDK code by
-		 Richard W.E. Furse. For more information about ladspa
-		 checkout http://www.ladspa.org
+                 Richard W.E. Furse. For more information about ladspa
+                 checkout http://www.ladspa.org
 */
 
 #include <dirent.h>

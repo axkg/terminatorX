@@ -46,18 +46,18 @@
 #ifndef _POSIX_MAPPED_FILES
 #define _POSIX_MAPPED_FILES
 #endif
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 #endif
 
 #ifdef USE_VORBIS_INPUT
-#include <vorbis/codec.h>
-#include <vorbis/vorbisfile.h>
 #include <errno.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
+#include <vorbis/codec.h>
+#include <vorbis/vorbisfile.h>
 #endif
 
 #ifdef USE_AUDIOFILE_INPUT
@@ -122,28 +122,28 @@ tX_audio_error tx_audiofile ::load(char* p_file_name) {
 #ifdef USE_MAD_INPUT
     if ((load_err) && (file_type == TX_FILE_MPG123)) {
         load_err = load_mad();
-        //if (load_err==TX_AUDIO_SUCCESS) return(load_err);
+        // if (load_err==TX_AUDIO_SUCCESS) return(load_err);
     }
 #endif
 
 #ifdef USE_MPG123_INPUT
     if ((load_err) && (file_type == TX_FILE_MPG123)) {
         load_err = load_mpg123();
-        //return(load_err);
+        // return(load_err);
     }
 #endif
 
 #ifdef USE_VORBIS_INPUT
     if ((load_err) && (file_type == TX_FILE_OGG123)) {
         load_err = load_vorbis();
-        //if (load_err==TX_AUDIO_SUCCESS) return(load_err);
+        // if (load_err==TX_AUDIO_SUCCESS) return(load_err);
     }
 #endif
 
 #ifdef USE_OGG123_INPUT
     if ((load_err) && (file_type == TX_FILE_OGG123)) {
         load_err = load_ogg123();
-        //return(load_err);
+        // return(load_err);
     }
 #endif
 
@@ -186,7 +186,7 @@ tX_audio_error tx_audiofile ::load_piped() {
             prev_bytes = allbytes;
             allbytes += bytes;
             int16_t* new_data = (int16_t*)realloc(data, allbytes);
-            //printf("All: %i, Bytes: %i, new: %08x, old: %08x\n", allbytes, bytes, new_data, data);
+            // printf("All: %i, Bytes: %i, new: %08x, old: %08x\n", allbytes, bytes, new_data, data);
 
             if (!new_data) {
                 pclose(file);
@@ -424,11 +424,11 @@ static enum mad_flow tX_mad_input(void* data, struct mad_stream* stream) {
 
         pos = stream->next_frame - buffer->start;
         bs = tX_min(TX_MAD_BLOCKSIZE, buffer->size - pos);
-        //tX_debug("last: %08x, new %08x, bs: %i, pos: %i",  buffer->last_frame, stream->next_frame, bs, pos);
+        // tX_debug("last: %08x, new %08x, bs: %i, pos: %i",  buffer->last_frame, stream->next_frame, bs, pos);
 
         mad_stream_buffer(stream, stream->next_frame, bs);
         if (stream->next_frame == buffer->last_frame) {
-            //tX_debug("tX_mad_input(): No new frame? Stopping.");
+            // tX_debug("tX_mad_input(): No new frame? Stopping.");
             return MAD_FLOW_STOP;
         }
         ld_set_progress((float)pos / (float)buffer->size);
@@ -443,8 +443,8 @@ static enum mad_flow tX_mad_error(void* data, struct mad_stream* stream, struct 
     if (MAD_RECOVERABLE(stream->error)) {
         if ((stream->error == MAD_ERROR_LOSTSYNC) && (buffer->lost_sync_counter < 3)) {
             /* Ignore at least two sync errors to not annoy people
-			   about ID3 tags.
-			*/
+                           about ID3 tags.
+                        */
             buffer->lost_sync_counter++;
             return MAD_FLOW_CONTINUE;
         }
