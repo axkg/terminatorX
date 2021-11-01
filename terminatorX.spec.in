@@ -79,7 +79,7 @@ fi
 
 
 %files
-%doc AUTHORS ChangeLog NEWS README* THANKS TODO
+%doc AUTHORS.md ChangeLog NEWS README* THANKS.md TODO.md
 %license COPYING*
 %{_bindir}/%{name}
 %{_mandir}/man1/%{name}.1*
