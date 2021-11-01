@@ -4,6 +4,9 @@ EXTRA_DIST = COPYING-DOCS\
 	README.md\
 	INSTALL.md\
 	README.PERFORMANCE.md\
+	THANKS.md\
+	TODO.md\
+	AUTHORS.md\
 	terminatorX.spec.in\
 	terminatorX.appdata.xml\
 	terminatorX.desktop\

@@ -7,7 +7,7 @@ I'd like to thank:
   sox, mpg123, the wav-tools, gtk+ and TCP/IP.
   It's obvious but: without their work there'd be no tX
 
-- All contributors (see AUTHORS)
+- All contributors (see [AUTHORS](AUTHORS.md))
 
 - All users who send feedback
 
