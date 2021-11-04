@@ -37,7 +37,7 @@ typedef struct {
 
     FILE* handle;
     char name[PATH_MAX];
-    char head[43];
+    char head[44];
 } wav_sig;
 
 FILE* init_wav_read(char file_name[], wav_sig* info);

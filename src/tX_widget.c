@@ -632,20 +632,20 @@ static gboolean gtk_tx_draw(GtkWidget* widget, cairo_t* cr) {
 
                     if ((max - min) <= tx->xc) {
                         for (x = min; x < max; x++) {
-                            double scale = (1.0 - (fabs(x - tx->cursor_x_pos) / (double)max_dist));
+                            double scale = (1.0 - (abs(x - tx->cursor_x_pos) / (double)max_dist));
                             int dist = scale * scale * 0.5 * (double)tx->ymax;
                             int value = tx->disp_data[x + tx->display_x_offset] + dist;
                             draw_sample2(x, tx->yc - value, tx->yc + value + 1);
                         }
                     } else {
                         for (x = 0; x < min; x++) {
-                            double scale = (1.0 - (fabs(x - tx->cursor_x_pos) / (double)max_dist));
+                            double scale = (1.0 - (abs(x - tx->cursor_x_pos) / (double)max_dist));
                             int dist = scale * scale * 0.5 * (double)tx->ymax;
                             int value = tx->disp_data[x + tx->display_x_offset] + dist;
                             draw_sample2(x, tx->yc - value, tx->yc + value + 1);
                         }
                         for (x = max; x < tx->xmax; x++) {
-                            double scale = (1.0 - (fabs(x - tx->cursor_x_pos) / (double)max_dist));
+                            double scale = (1.0 - (abs(x - tx->cursor_x_pos) / (double)max_dist));
                             int dist = scale * scale * 0.5 * (double)tx->ymax;
                             int value = tx->disp_data[x + tx->display_x_offset] + dist;
                             draw_sample2(x, tx->yc - value, tx->yc + value + 1);
