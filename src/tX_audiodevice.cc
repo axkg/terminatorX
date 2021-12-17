@@ -745,7 +745,9 @@ void tX_audiodevice_jack::fill_frames(jack_default_audio_sample_t* left, jack_de
     }
 
     while (outbuffer_pos < nframes) {
-        engine->render_cycle();
+        if (is_open) {
+            engine->render_cycle();
+        }
 
         for (sample = 0; ((sample < (unsigned int)vtt_class::samples_in_mix_buffer) && (outbuffer_pos < nframes));) {
             left[outbuffer_pos] = vtt_class::mix_buffer[sample++] / 32767.0;
