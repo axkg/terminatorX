@@ -128,6 +128,11 @@ create_tx_options(GtkWindow* parent) {
     GtkWidget* hbox2;
     GtkWidget* oss_driver;
     GSList* oss_driver_group = NULL;
+    GtkWidget* int_label;
+    GtkWidget* int_hbox;
+    GtkWidget* linear_interpolator;
+    GtkWidget* sinc_interpolator;
+    GSList* interpolator_group = NULL;
     GtkWidget* alsa_driver;
     GtkWidget* jack_driver;
     GtkWidget* pulse_driver;
@@ -416,6 +421,30 @@ create_tx_options(GtkWindow* parent) {
     gtk_grid_attach(GTK_GRID(grid4), pulse_buffer_size, 1, 11, 1, 1);
     gtk_scale_set_value_pos(GTK_SCALE(pulse_buffer_size), GTK_POS_LEFT);
     gtk_scale_set_digits(GTK_SCALE(pulse_buffer_size), 0);
+
+    int_label = gtk_label_new("Interpolation:");
+    gtk_widget_show(int_label);
+    gtk_grid_attach(GTK_GRID(grid4), int_label, 0, 12, 1, 1);
+    gtk_widget_set_halign(int_label, GTK_ALIGN_START);
+
+    int_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    gtk_widget_show(int_hbox);
+    gtk_grid_attach(GTK_GRID(grid4), int_hbox, 1, 12, 1, 1);
+    gtk_widget_set_hexpand(int_hbox, TRUE);
+
+    linear_interpolator = gtk_radio_button_new_with_mnemonic(NULL, "Linear");
+    gtk_widget_show(linear_interpolator);
+    gtk_box_pack_start(GTK_BOX(int_hbox), linear_interpolator, FALSE, FALSE, 0);
+    gtk_widget_set_tooltip_text(linear_interpolator, "Use linear interpolation (fast, low quality).");
+    gtk_radio_button_set_group(GTK_RADIO_BUTTON(linear_interpolator), interpolator_group);
+    interpolator_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(linear_interpolator));
+
+    sinc_interpolator = gtk_radio_button_new_with_mnemonic(NULL, "Sinc");
+    gtk_widget_show(sinc_interpolator);
+    gtk_box_pack_start(GTK_BOX(int_hbox), sinc_interpolator, FALSE, FALSE, 0);
+    gtk_widget_set_tooltip_text(sinc_interpolator, "Use windowed sinc interpolation (slow, high quality).");
+    gtk_radio_button_set_group(GTK_RADIO_BUTTON(sinc_interpolator), interpolator_group);
+    oss_driver_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(sinc_interpolator));
 
     grid1 = gtk_grid_new();
     gtk_widget_show(grid1);
@@ -1001,6 +1030,8 @@ create_tx_options(GtkWindow* parent) {
     TX_UI_HOOKUP_OBJECT(tx_options, wav_display_history, "wav_display_history");
     TX_UI_HOOKUP_OBJECT(tx_options, title_bar_alpha, "title_bar_alpha");
     TX_UI_HOOKUP_OBJECT(tx_options, wav_use_vtt_color, "wav_use_vtt_color");
+    TX_UI_HOOKUP_OBJECT(tx_options, linear_interpolator, "linear_interpolator");
+    TX_UI_HOOKUP_OBJECT(tx_options, sinc_interpolator, "sinc_interpolator");
 
     return tx_options;
 }

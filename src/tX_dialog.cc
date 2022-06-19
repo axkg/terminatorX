@@ -94,6 +94,12 @@ void apply_options(GtkWidget* dialog) {
     globals.alsa_free_hwstats = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "alsa_free_hwstats")));
     globals.pulse_buffer_length = (int)gtk_range_get_value(GTK_RANGE(lookup_widget(dialog, "pulse_buffer_size")));
 
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "linear_interpolator")))) {
+        globals.interpolator_type = LINEAR;
+    } else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "sinc_interpolator")))) {
+        globals.interpolator_type = SINC;
+    }
+
     /* TODO: JACK
      */
 
@@ -410,6 +416,12 @@ void init_tx_options(GtkWidget* dialog) {
 
     gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "pulse_buffer_size")), globals.pulse_buffer_length);
     gtk_widget_set_tooltip_text(lookup_widget(dialog, "pulse_buffer_size"), "Sets the requested buffer size for PulseAudio in samples (per channel). Lower values should result in lower latency, however PulseAudio may override this setting.");
+
+    if (globals.interpolator_type == LINEAR) {
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "linear_interpolator")), TRUE);
+    } else if (globals.interpolator_type == SINC) {
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget(dialog, "sinc_interpolator")), TRUE);
+    }
 
     gtk_range_set_value(GTK_RANGE(lookup_widget(dialog, "mouse_speed")), globals.mouse_speed);
     gtk_widget_set_tooltip_text(lookup_widget(dialog, "mouse_speed"), "The speed of your mouse in scratch mode. Use negative values to invert motion.");

@@ -122,6 +122,11 @@ typedef enum {
     PULSE = 3
 } tX_audiodevice_type;
 
+typedef enum {
+    LINEAR = 0,
+    SINC = 1
+} tX_interpolator_type;
+
 typedef struct {
     int xinput_enable;
     char xinput_device[256];
@@ -178,6 +183,7 @@ typedef struct {
         */
 
     tX_audiodevice_type audiodevice_type; // TX_AUDIODEVICE_TYPE_OSS etc.
+    tX_interpolator_type interpolator_type;
 
     /* OSS specific options  */
     char oss_device[PATH_MAX];

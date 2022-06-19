@@ -35,6 +35,7 @@
 #include "tX_vttgui.h"
 #include <float.h>
 #include <list>
+#include <math.h>
 #include <pthread.h>
 #include <stdio.h>
 
@@ -308,6 +309,93 @@ class vtt_class {
 #endif
 
     tX_audio_error load_file(char* name);
+
+    void seek_to_playback(int sample) {
+        pos_f += speed_real;
+
+        if (pos_f > maxpos) {
+            pos_f -= maxpos;
+            if (res_pitch > 0) {
+                if (loop) {
+                    if (is_sync_leader) {
+                        leader_triggered = 1;
+                        leader_triggered_at = sample;
+                    }
+                } else {
+                    want_stop = 1;
+                }
+            }
+        } else if (pos_f < 0) {
+            pos_f += maxpos;
+            if (res_pitch < 0) {
+                if (loop) {
+                    if (is_sync_leader) {
+                        leader_triggered = 1;
+                        leader_triggered_at = sample;
+                    }
+                } else {
+                    want_stop = 1;
+                }
+            }
+        }
+    }
+
+    int16_t get_sample(int sample) {
+        if (sample >= samples_in_buffer) {
+            if (loop) {
+                // sample %= samples_in_buffer;
+                while (sample >= samples_in_buffer) {
+                    sample -= samples_in_buffer;
+                }
+            } else {
+                return 0;
+            }
+        } else if (sample < 0) {
+            if (loop) {
+                while (sample < 0) {
+                    sample += samples_in_buffer;
+                }
+            } else {
+                return 0;
+            }
+        }
+        return buffer[sample];
+    }
+
+    f_prec sinc(f_prec x) {
+#if f_prec == float
+        if (fabsf(x) < 0.0001) {
+            return 1.0;
+        }
+
+        x *= M_PI;
+        return sinf(x) / x;
+#elif f_prec == double
+        if (fabs(x) < 0.0001) {
+            return 1.0;
+        }
+
+        x *= M_PI;
+        return sin(x) / x;
+#endif
+    }
+
+    static f_prec window_kaiser_bessel(f_prec idx) {
+        f_prec x = (0.5 + idx / 2.0) * M_PI;
+#if f_prec == float
+        return 0.402 - 0.498 * cosf(2.0 * x) + 0.098 * cosf(4.0 * x) - 0.001 * cosf(6.0 * x);
+#elif f_prec == double
+        return 0.402 - 0.498 * cos(2.0 * x) + 0.098 * cos(4.0 * x) - 0.001 * cos(6.0 * x);
+#endif
+    }
+
+    static f_prec window_cos(f_prec idx) {
+#if f_prec == float
+        return 0.5 + 0.5 * cosf(M_PI * idx);
+#elif f_prec == double
+        return 0.5 + 0.5 * cos(M_PI * ix);
+#endif
+    }
 
     void render_scratch();
     void render_lp();

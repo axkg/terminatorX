@@ -124,6 +124,8 @@ void set_global_defaults() {
 #endif
 #endif
 #endif
+    globals.interpolator_type = LINEAR;
+
     globals.use_stdout_cmdline = 0;
     strcpy(globals.current_path, "");
     strcpy(globals.lrdf_path, "/usr/share/ladspa/rdf:/usr/local/share/ladspa/rdf");
@@ -165,7 +167,8 @@ void set_global_defaults() {
 
 int load_globals_xml() {
     char rc_name[PATH_MAX] = "";
-    char device_type[16] = "oss";
+    char device_type[PATH_MAX] = "oss";
+    char interpolator_type[PATH_MAX] = "linear";
     xmlDocPtr doc;
     xmlNodePtr cur;
     int elementFound;
@@ -202,6 +205,7 @@ int load_globals_xml() {
             restore_int("store_globals", globals.store_globals);
 
             restore_string("audio_driver", device_type);
+            restore_string("audio_interpolator", interpolator_type);
 
             restore_string("oss_device", globals.oss_device);
             restore_int("oss_buff_no", globals.oss_buff_no);
@@ -296,12 +300,21 @@ int load_globals_xml() {
     } else
         globals.audiodevice_type = OSS;
 
+    if (strcmp(interpolator_type, "linear") == 0) {
+        globals.interpolator_type = LINEAR;
+    } else if (strcmp(interpolator_type, "sinc") == 0) {
+        globals.interpolator_type = SINC;
+    } else {
+        tX_error("Unknown interpolator type '%s'\n", interpolator_type);
+    }
+
     return 0;
 }
 
 void store_globals() {
     char rc_name[PATH_MAX + 256] = "";
     char device_type[16];
+    char interpolator_type[16];
     char indent[32] = "\t";
     FILE* rc = NULL;
     gzFile rz = NULL;
@@ -327,6 +340,14 @@ void store_globals() {
         strcpy(device_type, "oss");
     }
 
+    switch (globals.interpolator_type) {
+    case SINC:
+        strcpy(interpolator_type, "sinc");
+        break;
+    default:
+        strcpy(interpolator_type, "linear");
+    }
+
     if (rc) {
         fprintf(rc, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n");
         fprintf(rc, "<!-- Warning: this file will be rewritten by terminatorX on exit!\n     Don\'t waste your time adding comments - they will be erased -->\n\n");
@@ -335,6 +356,7 @@ void store_globals() {
         store_int("store_globals", globals.store_globals);
 
         store_string("audio_driver", device_type);
+        store_string("audio_interpolator", interpolator_type);
 
         store_string("oss_device", globals.oss_device);
         store_int("oss_buff_no", globals.oss_buff_no);

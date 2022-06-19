@@ -64,6 +64,8 @@
     ;
 #endif
 
+#define SINC_WIDTH 16
+
 extern void build_vtt_gui(vtt_class*);
 extern void gui_set_name(vtt_class* vtt, char* newname);
 extern void gui_set_color(vtt_class* vtt, GdkRGBA* rgba);
@@ -653,6 +655,7 @@ void vtt_class ::render_scratch() {
     int sample;
 
     d_prec pos_a_f;
+    f_prec pos_frac;
 
     f_prec amount_a;
     f_prec amount_b;
@@ -670,54 +673,37 @@ void vtt_class ::render_scratch() {
     for (sample = 0, out = output_buffer, fade_vol = 0.0; sample < samples_in_outputbuffer; sample++, out++, fade_vol += inv_samples_in_outputbuffer) {
         if ((speed_real != 0) || (fade_out)) {
 
-            pos_f += speed_real;
-
-            if (pos_f > maxpos) {
-                pos_f -= maxpos;
-                if (res_pitch > 0) {
-                    if (loop) {
-                        if (is_sync_leader) {
-                            leader_triggered = 1;
-                            leader_triggered_at = sample;
-                        }
-                    } else {
-                        want_stop = 1;
-                    }
-                }
-            } else if (pos_f < 0) {
-                pos_f += maxpos;
-                if (res_pitch < 0) {
-                    if (loop) {
-                        if (is_sync_leader) {
-                            leader_triggered = 1;
-                            leader_triggered_at = sample;
-                        }
-                    } else {
-                        want_stop = 1;
-                    }
-                }
-            }
+            seek_to_playback(sample);
 
             pos_a_f = floor(pos_f);
             pos_i = (unsigned int)pos_a_f;
+            pos_frac = pos_f - pos_a_f;
 
-            amount_b = pos_f - pos_a_f;
-            amount_a = 1.0 - amount_b;
-
-            if (do_mute) {
+            if (want_stop || do_mute) {
                 *out = 0.0;
             } else {
-                ptr = &buffer[pos_i];
-                sample_a = (f_prec)*ptr;
+                // linear
+                if (globals.interpolator_type == LINEAR) {
+                    amount_b = pos_frac;
+                    amount_a = 1.0 - amount_b;
 
-                if (pos_i == pos_i_max) {
-                    sample_b = *buffer;
+                    sample_a = (f_prec)get_sample(pos_i);
+                    sample_b = (f_prec)get_sample(pos_i + 1);
+
+                    sample_res = (sample_a * amount_a) + (sample_b * amount_b);
                 } else {
-                    ptr++;
-                    sample_b = (f_prec)*ptr;
-                }
+                    sample_res = 0;
+                    f_prec k_sum = 0;
 
-                sample_res = (sample_a * amount_a) + (sample_b * amount_b);
+                    for (int idx = -SINC_WIDTH + 1; idx <= SINC_WIDTH; idx++) {
+                        f_prec window_idx = f_prec(idx) - pos_frac;
+
+                        f_prec k = sinc(window_idx) * window_kaiser_bessel(window_idx / SINC_WIDTH);
+                        sample_res += (f_prec)get_sample(pos_i + idx) * k;
+                        k_sum += k;
+                    }
+                    sample_res /= k_sum;
+                }
 
                 // scale to 0 db := 1.0f
                 sample_res /= FL_SHRT_MAX;
@@ -1773,7 +1759,6 @@ void vtt_class ::hide_control(bool hide) {
 void vtt_class ::set_sample_rate(int samplerate) {
     list<vtt_class*>::iterator vtt;
     double sr = (double)samplerate;
-
     last_sample_rate = samplerate;
 
     for (vtt = main_list.begin(); vtt != main_list.end(); vtt++) {
@@ -1789,6 +1774,22 @@ void vtt_class ::set_sample_rate(int samplerate) {
     int no_samples = (int)(sr * 0.001); // Forcing 1 ms blocksize
 
     set_mix_buffer_size(no_samples);
+
+#ifdef SINC_DEBUG
+    // write cos and kaiser-bessel windows for plotting
+
+    FILE* fcos = fopen("cos-window.log", "w");
+    FILE* fbess = fopen("kaiser-bessel-window.log", "w");
+
+    for (int idx = -SINC_WIDTH + 1; idx <= SINC_WIDTH; idx++) {
+        f_prec pos = (f_prec)idx / (f_prec)SINC_WIDTH;
+        fprintf(fcos, "%0.6lf, %0.6lf\n", pos, window_cos(pos));
+        fprintf(fbess, "%0.6lf, %0.6lf\n", pos, window_kaiser_bessel(pos));
+    }
+    fclose(fcos);
+    fclose(fbess);
+
+#endif
 }
 
 void vtt_class ::adjust_to_main_pitch(int leader_cycles, int cycles, bool create_event) {
