@@ -1,9 +1,9 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([terminatorX], [4.1.0], [https://terminatorX.org/bugs/], [terminatorX], [https://terminatorX.org])
+AC_INIT([terminatorX],[4.1.0],[https://terminatorX.org/bugs/],[terminatorX],[https://terminatorX.org])
 
 AC_CONFIG_SRCDIR([src/tX_global.h])
 AM_INIT_AUTOMAKE
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
 
 AC_ARG_ENABLE(sox,		[  --enable-sox            use sox as input converter. (default=auto) ])
 AC_ARG_ENABLE(mpg123,		[  --enable-mpg123         use mpg123 as input converter. (default=auto) ])
@@ -69,11 +69,9 @@ dnl Some machines don't require any switches for pthread support...
 AC_MSG_CHECKING([whether pthreads works without switches])
 	no_threads_flags=no
 	AC_LANG_SAVE
-	AC_LANG_C
-	AC_TRY_LINK([#include <pthread.h>], [ pthread_t thread; pthread_create(&thread, NULL, NULL, NULL);],
-		no_threads_flags=yes,
-		no_threads_flags=no
-	)
+	AC_LANG([C])
+	AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <pthread.h>]], [[ pthread_t thread; pthread_create(&thread, NULL, NULL, NULL);]])],[no_threads_flags=yes],[no_threads_flags=no
+	])
 	AC_LANG_RESTORE
 AC_MSG_RESULT([$no_threads_flags])
 
@@ -101,11 +99,9 @@ if test "$tX_threads" = "no"; then
 		ac_save_CFLAGS=$CFLAGS
 		CFLAGS="$CFLAGS -pthread"
 		AC_LANG_SAVE
-		AC_LANG_C
-		AC_TRY_LINK([#include <pthread.h>], [ pthread_t thread; pthread_create(&thread, NULL, NULL, NULL);],
-			use_gcc_threads=yes,
-			use_gcc_threads=no
-		)
+		AC_LANG([C])
+		AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <pthread.h>]], [[ pthread_t thread; pthread_create(&thread, NULL, NULL, NULL);]])],[use_gcc_threads=yes],[use_gcc_threads=no
+		])
 		AC_LANG_RESTORE
 		CFLAGS=$ac_save_CFLAGS
 	AC_MSG_RESULT([$use_gcc_threads])
@@ -127,11 +123,11 @@ AC_SEARCH_LIBS([dlclose], [dl])
 
 dnl Check for GTK
 
-AM_PATH_GTK_3_0(, [
+PKG_CHECK_MODULES([GTK], [gtk+-3.0], [
 	GTK3_CFLAGS="$GTK_CFLAGS"
 	GTK3_LIBS="$GTK_LIBS"
 	gtk3="yes"
-	GTK3_VERSION="`$PKG_CONFIG --modversion gtk+-3.0`"], [ gtk3="yes" ]) 
+	GTK3_VERSION="`$PKG_CONFIG --modversion gtk+-3.0`"], [ gtk3="no" ]) 
 
 if test "$gtk3" = "yes"; then
 	AC_DEFINE_UNQUOTED([USE_STARTUP_NOTIFICATION], 1, [Use gtk+ statup notification.])
@@ -144,8 +140,9 @@ AS_IF([test "$GLIB_COMPILE_RESOURCES" == ""],[
        	AC_MSG_ERROR([glib-compile-resources not found])
        	])
 
-dnl Checks for header files.
-AC_HEADER_STDC
+AC_CHECK_INCLUDES_DEFAULT
+AC_PROG_EGREP
+
 AC_CHECK_HEADERS(fcntl.h limits.h malloc.h unistd.h)
 
 dnl Disable LADSPA caching..
@@ -176,7 +173,7 @@ fi
 
 ac_save_CFLAGS=$CFLAGS
 CFLAGS="$CFLAGS -finput-charset=utf-8"
-AC_TRY_COMPILE([#include <stdio.h>],, have_utf8=yes, have_utf8=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>]], [[]])],[have_utf8=yes],[have_utf8=no])
 CFLAGS=$ac_save_CFLAGS
 
 if test "$have_utf8" = "yes"; then
@@ -588,14 +585,15 @@ YELP_HELP_INIT
 CFLAGS="$XML_CFLAGS $CFLAGS"
 LIBS="$XML_LIBS $LIBS"
 
-AC_OUTPUT(Makefile 
+AC_CONFIG_FILES([Makefile 
 	src/Makefile 
 	icons/Makefile 
 	src/icons/Makefile 
 	help/Makefile
 	terminatorX.keys 
 	terminatorX.spec 
-	terminatorX.1)
+	terminatorX.1])
+AC_OUTPUT
 
 option_info_min() {
 	echo "$option support: $option_val"
