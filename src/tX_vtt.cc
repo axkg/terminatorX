@@ -64,7 +64,7 @@
     ;
 #endif
 
-#define SINC_WIDTH 16
+#define SINC_WIDTH 4
 
 extern void build_vtt_gui(vtt_class*);
 extern void gui_set_name(vtt_class* vtt, char* newname);
@@ -79,6 +79,8 @@ extern f_prec gui_get_audio_x_zoom(vtt_class* vtt);
 extern void gui_set_audio_x_zoom(vtt_class* vtt, f_prec);
 
 int vtt_class::last_sample_rate = 44100;
+f_prec vtt_class::sinc_window[SINC_WIDTH * 2];
+
 int vtt_class::vtt_amount = 0;
 list<vtt_class*> vtt_class::main_list;
 list<vtt_class*> vtt_class::render_list;
@@ -695,10 +697,12 @@ void vtt_class ::render_scratch() {
                     sample_res = 0;
                     f_prec k_sum = 0;
 
+                    int window_ptr = 0;
+
                     for (int idx = -SINC_WIDTH + 1; idx <= SINC_WIDTH; idx++) {
                         f_prec window_idx = f_prec(idx) - pos_frac;
 
-                        f_prec k = sinc(window_idx) * window_kaiser_bessel(window_idx / SINC_WIDTH);
+                        f_prec k = sinc(window_idx) * sinc_window[window_ptr++];
                         sample_res += (f_prec)get_sample(pos_i + idx) * k;
                         k_sum += k;
                     }
@@ -1775,9 +1779,15 @@ void vtt_class ::set_sample_rate(int samplerate) {
 
     set_mix_buffer_size(no_samples);
 
+    // cache the kaiser-bessel coefficients
+    int window_ptr = 0;
+    for (int idx = -SINC_WIDTH + 1; idx <= SINC_WIDTH; idx++) {
+        f_prec pos = (f_prec)idx / (f_prec)SINC_WIDTH;
+        sinc_window[window_ptr++] = window_kaiser_bessel(pos);
+    }
+
 #ifdef SINC_DEBUG
     // write cos and kaiser-bessel windows for plotting
-
     FILE* fcos = fopen("cos-window.log", "w");
     FILE* fbess = fopen("kaiser-bessel-window.log", "w");
 
@@ -1788,7 +1798,6 @@ void vtt_class ::set_sample_rate(int samplerate) {
     }
     fclose(fcos);
     fclose(fbess);
-
 #endif
 }
 

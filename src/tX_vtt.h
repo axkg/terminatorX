@@ -78,6 +78,8 @@ class vtt_class {
     static int mix_buffer_size;
     static int last_sample_rate;
 
+    static f_prec sinc_window[];
+
     /* the gui */
     vtt_gui gui;
     bool have_gui;
