@@ -47,8 +47,8 @@ void tx_icons_init(int size) {
     tx_icons[PLAY] = "media-playback-start-symbolic";
     tx_icons[STOP] = "media-playback-stop-symbolic";
     tx_icons[RECORD] = "media-record-symbolic";
-    tx_icons[MIN_AUDIO] = "audio-x-generic-symbolic";
-    tx_icons[MIN_CONTROL] = "multimedia-volume-control-symbolic";
+    tx_icons[MIN_AUDIO] = "audio-speakers-symbolic";
+    tx_icons[MIN_CONTROL] = "audio-x-generic-symbolic";
 
     tx_icons[MINIMIZE] = "window-minimize-symbolic";
     tx_icons[MAXIMIZE] = "view-more-symbolic";

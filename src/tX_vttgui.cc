@@ -644,7 +644,7 @@ void update_vtt_css(vtt_class* vtt, GdkRGBA* rgba) {
     memcpy(&copy, rgba, sizeof(GdkRGBA));
     copy.alpha = globals.title_bar_alpha;
     char* color_str = gdk_rgba_to_string(&copy);
-    snprintf(css, sizeof(css), ".%08lx { background-color: %s; }", (unsigned long)vtt, color_str);
+    snprintf(css, sizeof(css), ".%08lx { background-color: %s; background-image: none; }", (unsigned long)vtt, color_str);
     g_free(color_str);
     gtk_css_provider_load_from_data(vtt->gui.css_provider, css, -1, NULL);
     gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(vtt->gui.css_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
