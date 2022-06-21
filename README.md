@@ -1,8 +1,8 @@
 terminatorX v4.1.0
 ==================
 
-Copyright (C) 1999-2021 Alexander König  
-eMail: alex@lisas.de  
+Copyright (C) 1999-2022 Alexander König
+eMail: alex@lisas.de
 Homepage: https://terminatorX.org
 
 This is free software see the COPYING file that came with this
