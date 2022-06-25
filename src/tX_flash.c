@@ -270,7 +270,7 @@ static void gtk_tx_flash_paint_yourself(GtkWidget* widget, cairo_t* cr) {
     cairo_fill(cr);
 
     cairo_set_line_width(cr, 1);
-    gdk_cairo_set_source_rgba(cr, &tx_flash->colors[COL_NORM]);
+    gdk_cairo_set_source_rgba(cr, &tx_flash->colors[COL_NORM_HALF]);
 
     x12 = DMINIX + S_MINIX;
     x21 = allocation.width - 1 - x12;
