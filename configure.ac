@@ -516,17 +516,19 @@ dnl Detecting libxml. Based on dia's test.
 found_libxml=false
 
 if test "$enable_libxml2" != "no"; then
+	PKG_CHECK_MODULES([XML2], [libxml-2.0 >= 2.3.9], [found_libxml=true], [:])
+
 	if ! $found_libxml; then
 	  AC_CHECK_PROG(XML2_CONFIG, xml2-config, xml2-config)
 	  if test "x$XML2_CONFIG" != x ; then
-	    AC_MSG_CHECKING(for libxml >= 2.3.9)
+	    AC_MSG_CHECKING(for libxml >= 2.3.9 with xml2-config)
 	    vers=`$XML2_CONFIG --version | sed -e "s/libxml //" | awk 'BEGIN {FS=".";} { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
 
 	    if test "$vers" -ge 2003009; then
 	      AC_MSG_RESULT(yes)
 	      found_libxml=true
-	      XML_LIBS="`$XML2_CONFIG --libs`"
-	      XML_CFLAGS="`$XML2_CONFIG --cflags`"
+	      XML2_LIBS="`$XML2_CONFIG --libs`"
+	      XML2_CFLAGS="`$XML2_CONFIG --cflags`"
 	    else
 	      AC_MSG_RESULT(no)
 	    fi
@@ -538,8 +540,8 @@ if ! $found_libxml; then
     AC_MSG_ERROR([** libxml not found. Get libxml(2) at http://www.libxml.org **])
 fi
 
-AC_SUBST(XML_LIBS)
-AC_SUBST(XML_CFLAGS)
+AC_SUBST(XML2_LIBS)
+AC_SUBST(XML2_CFLAGS)
 
 if test "$enable_lrdf" != "no"; then
     AC_MSG_CHECKING(for liblrdf >= 0.2.4)
@@ -565,8 +567,8 @@ fi
 dnl User Manual
 YELP_HELP_INIT
 
-CFLAGS="$XML_CFLAGS $CFLAGS"
-LIBS="$XML_LIBS $LIBS"
+CFLAGS="$XML2_CFLAGS $CFLAGS"
+LIBS="$XML2_LIBS $LIBS"
 
 AC_CONFIG_FILES([Makefile 
 	src/Makefile 
