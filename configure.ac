@@ -534,25 +534,6 @@ if test "$enable_libxml2" != "no"; then
 	fi
 fi	
 
-if ! $found_libxml 
-then
-	AC_CHECK_PROG(XML_CONFIG, xml-config, xml-config)
-	if test "x$XML_CONFIG" != x ; then
-	  AC_MSG_CHECKING(for libxml >= 1.8.14)
-	  vers=`$XML_CONFIG --version | sed -e "s/libxml //" | awk 'BEGIN {FS=".";} { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-
-	  dnl 1.18.14 is required for xmlUseNewParser()    
-	  if test "$vers" -ge 1008014; then
-	    AC_MSG_RESULT(yes)
-	    found_libxml=true
-	    XML_LIBS="`$XML_CONFIG --libs`"
-	    XML_CFLAGS="`$XML_CONFIG --cflags`"
-	  else
-	    AC_MSG_RESULT(no)
-	  fi
-	fi
-fi
-
 if ! $found_libxml; then
     AC_MSG_ERROR([** libxml not found. Get libxml(2) at http://www.libxml.org **])
 fi
