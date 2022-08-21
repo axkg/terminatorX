@@ -28,6 +28,7 @@ BuildRequires: rarian-compat
 BuildRequires: sox
 BuildRequires: vorbis-tools
 BuildRequires: gnome-doc-utils
+BuildRequires: itstool
 
 Requires:      hicolor-icon-theme
 Requires:      mpg123
