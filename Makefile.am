@@ -25,6 +25,9 @@ mime_DATA = terminatorX.mime terminatorX.keys
 
 man_MANS = terminatorX.1
 
+tarballs: dist
+	gzip -d < $(distdir).tar.gz | bzip2 -9 > $(distdir).tar.bz2
+
 dist-hook:
 	@if test -d "$(top_srcdir)/.git"; then \
 		echo ' GEN ChangeLog'; \
