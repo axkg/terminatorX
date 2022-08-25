@@ -1,4 +1,4 @@
-terminatorX v4.1.0
+terminatorX v4.2.0
 ==================
 
 Copyright (C) 1999-2022 Alexander König

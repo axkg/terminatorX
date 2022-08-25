@@ -27,8 +27,8 @@
 #include <config.h>
 #define VERSIONSTRING PACKAGE " release " VERSION
 #else
-#define VERSION "4.1.0"
-#define VERSIONSTRING "terminatorX release 4.1.0"
+#define VERSION "4.2.0"
+#define VERSIONSTRING "terminatorX release 4.2.0"
 #endif
 
 #endif

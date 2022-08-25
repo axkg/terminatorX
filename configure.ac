@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([terminatorX],[4.1.0],[https://terminatorX.org/bugs/],[terminatorX],[https://terminatorX.org])
+AC_INIT([terminatorX],[4.2.0],[https://terminatorX.org/bugs/],[terminatorX],[https://terminatorX.org])
 
 AC_CONFIG_SRCDIR([src/tX_global.h])
 AM_INIT_AUTOMAKE
