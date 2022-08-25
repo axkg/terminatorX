@@ -14,12 +14,12 @@ tX_dialog_resource_file = tX_dialog.gresource.xml
 
 BUILT_SOURCES = tX_knob_resources.c tX_dialog_resources.c
 CLEANFILES = tX_knob_resources.c tX_dialog_resources.c
-EXTRA_DIST = 	$(tX_knob_resource_file) $(tX_knob_images) $(tX_dialog_resource_file)
+EXTRA_DIST = 	$(tX_knob_resource_file) $(tX_knob_images) $(tX_dialog_resource_file) tX_logo.jpg
 
 tX_knob_resources.c: $(tX_knob_resource_file) $(tX_knob_images)
 	$(GLIB_COMPILE_RESOURCES) --target=$@ --internal --generate-source $(tX_knob_resource_file)
 
-tX_dialog_resources.c: $(tX_dialog_resource_file) ../../icons/terminatorX.png
+tX_dialog_resources.c: $(tX_dialog_resource_file) ../../icons/terminatorX.png tX_logo.jpg
 	$(GLIB_COMPILE_RESOURCES) --target=$@ --internal --generate-source $(tX_dialog_resource_file)
 
 

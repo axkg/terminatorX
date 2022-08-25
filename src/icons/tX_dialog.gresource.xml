@@ -2,6 +2,7 @@
 <gresources>
   <gresource prefix="/org/terminatorX/tX_dialog">
 		<file>../../icons/terminatorX.png</file>
+		<file>tX_logo.jpg</file>
   </gresource>
 </gresources>
 

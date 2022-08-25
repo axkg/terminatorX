@@ -53,11 +53,14 @@
 extern void jack_check();
 #endif
 
-extern char* logo_xpm[];
 GtkWidget* opt_dialog;
 int opt_hidden = 0;
 
 static GtkWidget* last_alsa_device_widget = NULL;
+
+static GdkPixbuf* tX_window_icon = NULL;
+static GdkPixbuf* tX_logo = NULL;
+static bool tX_dialog_resources_loaded = false;
 
 void apply_options(GtkWidget* dialog) {
     /* Audio */
@@ -554,6 +557,20 @@ void show_about(int nag) {
         return;
     }
 
+    if (!tX_dialog_resources_loaded) {
+        GError* error = NULL;
+        if (!tX_dialog_resources_loaded) {
+            g_resource_new_from_data(g_bytes_new_static(tX_dialog_resource_data.data, sizeof(tX_dialog_resource_data.data)), &error);
+            if (error) {
+                tX_error("Error accessing tX_dialog resources: %s", error->message);
+            }
+        }
+        tX_logo = gdk_pixbuf_new_from_resource("/org/terminatorX/tX_dialog/tX_logo.jpg", &error);
+        if (error) {
+            tX_error("Error loading tX logo: %s", error->message);
+        }
+    }
+
     /* Create the window... */
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_container_set_border_width(GTK_CONTAINER(window), 5);
@@ -562,8 +579,7 @@ void show_about(int nag) {
     gtk_window_set_modal(GTK_WINDOW(window), TRUE);
     gtk_window_set_resizable(GTK_WINDOW(window), nag ? TRUE : FALSE);
 
-    GdkPixbuf* image = gdk_pixbuf_new_from_xpm_data((const char**)logo_xpm);
-    iwid = gtk_image_new_from_pixbuf(image);
+    iwid = gtk_image_new_from_pixbuf(tX_logo);
 
     if (nag) {
         GtkWidget* box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
@@ -755,14 +771,14 @@ void show_about(int nag) {
     about = window;
 }
 
-static GdkPixbuf* tX_window_icon = NULL;
-
 void tX_set_icon(GtkWidget* widget) {
     if (!tX_window_icon) {
         GError* error = NULL;
-        g_resource_new_from_data(g_bytes_new_static(tX_dialog_resource_data.data, sizeof(tX_dialog_resource_data.data)), &error);
-        if (error) {
-            tX_error("Error accessing tX_dialog resources: %s", error->message);
+        if (!tX_dialog_resources_loaded) {
+            g_resource_new_from_data(g_bytes_new_static(tX_dialog_resource_data.data, sizeof(tX_dialog_resource_data.data)), &error);
+            if (error) {
+                tX_error("Error accessing tX_dialog resources: %s", error->message);
+            }
         }
         tX_window_icon = gdk_pixbuf_new_from_resource("/org/terminatorX/tX_dialog/../../icons/terminatorX.png", &error);
         if (error) {

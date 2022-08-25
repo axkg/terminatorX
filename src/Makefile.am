@@ -25,7 +25,7 @@ install-exec-hook:
 endif
 
 terminatorX_SOURCES =	tX_endian.c tX_dialog.cc tX_widget.c wav_write.c \
-			tX_engine.cc tX_logo.c tX_mouse.cc tX_mouse.h \
+			tX_engine.cc tX_mouse.cc tX_mouse.h \
 			main.cc tX_global.c wav_read.c licmak.awk \
 			tX_endian.h tX_engine.h tX_types.h tX_flash.c tX_flash.h \
 			tX_global.h version.h tX_tape.h tX_tape.cc \
