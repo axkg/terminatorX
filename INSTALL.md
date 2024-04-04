@@ -1,7 +1,6 @@
 # terminatorX INSTALL
 
-Copyright (C) 1999-2024 by Alexander König <alex@lisas.de>
-https://terminatorX.org
+Copyright (C) 1999-2024 by Alexander König <alex@lisas.de> - https://terminatorX.org
 
 ## Quickstart
 
@@ -113,7 +112,7 @@ upon installation.
 #### capabilities
 
 Allows running terminatorX suid-root to gain realtime scheduling
-(see README.PERFORMANCE).
+(see [README](README.md)).
 
 #### debug
 
