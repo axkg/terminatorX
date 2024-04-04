@@ -25,6 +25,8 @@
     08 Dec 1999 - Switched to the new audiofile class
 */
 
+#include <config.h>
+
 #include "tX_vtt.h"
 #include "malloc.h"
 #include "tX_global.h"
@@ -33,10 +35,6 @@
 #include <glib.h>
 #include <math.h>
 #include <stdio.h>
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
 
 #include "tX_loaddlg.h"
 

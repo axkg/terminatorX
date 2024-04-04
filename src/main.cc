@@ -25,16 +25,14 @@
 
 #define BENCH_CYCLES 100000
 
+#include <config.h>
+
 #include "tX_maingui.h"
 #include <malloc.h>
 #include <math.h>
 #include <stdio.h>
 #ifndef WIN32
 #include <unistd.h>
-#endif
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
 #endif
 
 #include "tX_audiodevice.h"

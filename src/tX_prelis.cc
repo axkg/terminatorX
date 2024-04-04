@@ -26,6 +26,7 @@ extern "C" {
 #include <sys/wait.h>
 };
 
+#include <config.h>
 #include "tX_global.h"
 
 #include <signal.h>
@@ -34,9 +35,6 @@ extern "C" {
 #include <string.h>
 #include <unistd.h>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
 
 pid_t player_pid = 0;
 

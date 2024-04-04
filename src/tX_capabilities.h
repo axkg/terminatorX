@@ -20,9 +20,7 @@
     Description: Aquire CAP_SYS_NICE through Linux' capabilities.
 */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #ifdef USE_CAPABILITIES
 #include <sys/prctl.h>

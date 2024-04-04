@@ -23,13 +23,11 @@
 #ifndef _H_TX_ENDIAN_
 #define _H_TX_ENDIAN_
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
 #ifdef WORDS_BIGENDIAN
 #define BIG_ENDIAN_MACHINE 1
 #else
 #undef BIG_ENDIAN_MACHINE
-#endif
 #endif
 
 #ifdef WORDS_BIGENDIAN

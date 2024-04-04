@@ -23,12 +23,7 @@
 #ifndef _H_VERSION
 #define _H_VERSION
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
 #define VERSIONSTRING PACKAGE " release " VERSION
-#else
-#define VERSION "4.2.0"
-#define VERSIONSTRING "terminatorX release 4.2.0"
-#endif
 
 #endif

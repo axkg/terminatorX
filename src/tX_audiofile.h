@@ -25,10 +25,7 @@
 
 #define SOX_BLOCKSIZE 32000
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
-
 #include <tX_endian.h>
 
 #ifdef USE_SOX_INPUT

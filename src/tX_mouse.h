@@ -23,9 +23,7 @@
 #ifndef _h_tx_mouse
 #define _h_tx_mouse
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>

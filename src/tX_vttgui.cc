@@ -39,14 +39,11 @@
 #include "tX_ui_support.h"
 #include "tX_vtt.h"
 #include "tX_widget.h"
+#include "tX_dial.h"
+#include "tX_flash.h"
+
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
-
-#ifdef USE_DIAL
-#include "tX_dial.h"
-#endif
-
-#include "tX_flash.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>

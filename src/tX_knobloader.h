@@ -25,11 +25,7 @@
 
 #include <gtk/gtk.h>
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
-
-#ifdef USE_DIAL
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,7 +43,5 @@ extern void load_knob_pixs(int fontHeight, int scaleFactor);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
-#endif
 
 #endif

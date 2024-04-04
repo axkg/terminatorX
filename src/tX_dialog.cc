@@ -35,14 +35,16 @@
 #include "tX_flash.h"
 #include "tX_widget.h"
 
-#include "license.c"
+#include "copying.h"
 #include "tX_engine.h"
 #include "tX_maingui.h"
 #include "tX_vtt.h"
 #include "version.h"
 #include <dirent.h>
 
-#include "icons/tX_dialog_resources.c"
+extern "C" {
+#include "tX_dialog_resource.h"
+}
 
 #ifdef USE_SCHEDULER
 #include <pthread.h>
@@ -560,7 +562,7 @@ void show_about(int nag) {
     if (!tX_dialog_resources_loaded) {
         GError* error = NULL;
         if (!tX_dialog_resources_loaded) {
-            g_resource_new_from_data(g_bytes_new_static(tX_dialog_resource_data.data, sizeof(tX_dialog_resource_data.data)), &error);
+            tX_dialog_get_resource();
             if (error) {
                 tX_error("Error accessing tX_dialog resources: %s", error->message);
             }
@@ -741,7 +743,7 @@ void show_about(int nag) {
         gtk_container_add(GTK_CONTAINER(scroll), text);
         gtk_text_buffer_create_tag(tbuffer, "courier", "family", "courier", NULL);
 
-        gtk_text_buffer_insert_with_tags_by_name(tbuffer, &iter, license, -1, "courier", NULL);
+        gtk_text_buffer_insert_with_tags_by_name(tbuffer, &iter, (const gchar*) ___COPYING, ___COPYING_len, "courier", NULL);
         gtk_text_view_set_left_margin(GTK_TEXT_VIEW(text), 5);
         gtk_text_view_set_right_margin(GTK_TEXT_VIEW(text), 5);
         gtk_widget_set_size_request(GTK_WIDGET(scroll), 640, 200);
@@ -775,7 +777,7 @@ void tX_set_icon(GtkWidget* widget) {
     if (!tX_window_icon) {
         GError* error = NULL;
         if (!tX_dialog_resources_loaded) {
-            g_resource_new_from_data(g_bytes_new_static(tX_dialog_resource_data.data, sizeof(tX_dialog_resource_data.data)), &error);
+            tX_dialog_get_resource();
             if (error) {
                 tX_error("Error accessing tX_dialog resources: %s", error->message);
             }

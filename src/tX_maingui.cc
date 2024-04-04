@@ -120,9 +120,9 @@ gint update_tag;
 
 #ifdef USE_X11
 Window x_window;
-GtkWidget* fullscreen_item;
 #endif
 
+GtkWidget* fullscreen_item;
 GdkWindow* top_window;
 #define WID_DYN TRUE, TRUE, 0
 #define WID_FIX FALSE, FALSE, 0
@@ -1236,9 +1236,10 @@ void create_main_menu() {
 
     gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), globals.fullscreen_enabled);
     gtk_widget_add_accelerator(menu_item, "activate", accel_group, GDK_KEY_F11, (GdkModifierType)0, GTK_ACCEL_VISIBLE);
-    g_signal_connect(menu_item, "activate", (GCallback)fullscreen_toggle, NULL);
 
-#ifndef USE_X11
+#ifdef USE_X11
+    g_signal_connect(menu_item, "activate", (GCallback)fullscreen_toggle, NULL);
+#else
     gtk_widget_set_sensitive(menu_item, False);
 #endif
     menu_item = gtk_separator_menu_item_new();

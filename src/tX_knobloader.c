@@ -21,12 +21,11 @@
 */
 
 #include "tX_knobloader.h"
-#include "icons/tX_knob_resources.c"
+#include "tX_knob_resource.h"
 #include "tX_global.h"
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gtk/gtk.h>
 
-#ifdef USE_DIAL
 int tX_knob_size;
 GdkPixbuf* knob_pixmaps[MAX_KNOB_PIX];
 
@@ -34,7 +33,7 @@ void load_knob_pixs(int fontHeight, int scaleFactor) {
     int i;
     GError* error = NULL;
 
-    g_resource_new_from_data(g_bytes_new_static(tX_knob_resource_data.data, sizeof(tX_knob_resource_data.data)), &error);
+    tX_knob_get_resource();
     if (error) {
         tX_error("failed accessing tX_dial resources: %s\n", error->message);
     }
@@ -56,5 +55,3 @@ void load_knob_pixs(int fontHeight, int scaleFactor) {
         }
     }
 }
-
-#endif

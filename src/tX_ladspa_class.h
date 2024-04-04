@@ -23,10 +23,7 @@
 #ifndef _h_tx_ladspa_class
 #define _h_tx_ladspa_class 1
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
-
 #include "tX_ladspa.h"
 #include "tX_vtt.h"
 #include <gtk/gtk.h>

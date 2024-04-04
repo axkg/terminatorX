@@ -17,12 +17,9 @@
 
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <gtk/gtk.h>
 
+#include <config.h>
 #include "tX_dialog.h"
 #include "tX_global.h"
 #include "tX_maingui.h"

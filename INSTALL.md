@@ -1,37 +1,49 @@
-terminatorX INSTALL
-===================
+# terminatorX INSTALL
 
-Copyright (C) 1999-2022 by Alexander König <alex@lisas.de>
+Copyright (C) 1999-2024 by Alexander König <alex@lisas.de>
 https://terminatorX.org
 
-Quickstart
-----------
+## Quickstart
 
 If you want enhanced audio-file support or optimization don't
 "quickstart" but read the rest of this file.
 
-If you just cant wait any longer try:
-> ./configure
-> make install
+To build terminatorX with default options run the following commands (using
+'build' as the build directory):
 
-Step 1: Configure terminatorX
------------------------------
+```
+$ meson setup build
+$ meson compile -C build
+$ sudo meson install -C build
+```
 
-If you want your compiler to optimize the binary, you need to set your
-environment variable CFLAGS to your needs BEFORE you run ./configure.
+The following sections descripe the installation steps in more detail.
 
-for example:
-if use bash: > export CFLAGS="-O2"
-with tcsh:   > setenv CFLAGS "-O2"
+## Step 1: Configure the terminatorX Build
 
-Optionally you might want to add additional tuning parameters for
-your target platform.
+The Meson Build system supports a number of [built-in
+options](https://mesonbuild.com/Builtin-options.html). The default build type
+for terminatorX is 'debugoptimized'. You may want to change that, e.g. if you
+you don't want the binary to carry debug information you could select 'release'
+instead:
 
-All of the following configure options can be either enabled with
---enable-option or disabled with --disable-option.
+```
+$ meson setup build --buildtype=release
+```
 
-The ./configure Options
------------------------
+In addition to the built-in options, the terminatorX meson build
+supports a number of additional [options](meson.options) to customize
+the build. These features can be either en- or disabled:
+
+```
+$ meson setup build -Dfeature=enabled
+```
+
+Where 'feature' can be anyone of the features listed in the following 
+section. It is possible to probide the '-D' argument multiple times to
+configure multiple features.
+
+## Meson Build Options
 
 ### File support options
 
@@ -42,7 +54,7 @@ terminatorX homepage for links to those apps if you don't have
 them - or check your distribution first, AFAIK all bring these
 tools nowaday.
 
---enable-mad
+#### mad
 
 This will make terminatorX use the MPEG Audio Decoder library if
 it's detected. This allows terminatorX to load mp3 files
@@ -50,20 +62,20 @@ significantly faster than with the mpg123 method. Additionally
 terminatorX will find out about the sampling rate of an mp3 file
 and adjust the playback speed accordingly.
 
---enable-vorbis
+#### vorbis
 
 This will make terminatorX use the OGG Vobris libraries to load
 OGG files directly. This method has the same advantages over
 loading through ogg123 as the "mad" method has over loading
 through mpg123.
 
---enable-audiofile
+#### audiofile
 
 This enables the use of libaudiofile on loading audio files.
 The library supports a wide range of common audio file formats
 (eg WAV/AIFF/AU etc) therefor its use highly recommended.
 
---enable-wav
+#### wav
 
 This enables the builtin wav routines. They load 16Bit/44Khz
 MONO RIFF/WAV files only but they do that significantly faster
@@ -72,65 +84,59 @@ enabled, terminatorX will try to load the file with sox as
 a fallback. Disable them only if they don't load your files
 correctly.
 
---enable-sox
+#### sox
 
 This enables sox support. As sox can load nearly any audio file
 it makes sense to use it. You have to have sox installed of
 course.
 
---enable-mpg123
+#### mpg123
 
 This enables mpg123 support. If you want to be able to load mp3
 files keep this option enabled. You have to have mpg123
 installed of course.
 
---enable-ogg123
+#### ogg123
 
 With this option you can turn on/off support for Ogg Vorbis
 soundfiles. This requires ogg123 (Version >= 1.0RC2) and
 sox to be installed.
 
---enable-suidroot
+## Other options
+
+#### suidroot
 
 When set, this option sets the setuid bits for the root user when
 installing the binary, note that this will require root privileges
 upon installation.
 
-## Other options
-
---enable-capabilities
+#### capabilities
 
 Allows running terminatorX suid-root to gain realtime scheduling
 (see README.PERFORMANCE).
 
---with-docdir
-
-If you intend to package terminatorX this flag will allow
-terminatorX to find the XML documentation in order to display
-it online.
-
---disable-libxml2
-
-If you've got libxml V2 installed but you want terminatorX to
-use V1 instead, use this to disable libxml V1.
-
---enable-debug
+#### debug
 
 This will cause terminatorX to display some debug messages on
 your console.
 
-Step 2: Build the binary
-------------------------
+## Step 2: Build the binary
 
 This one's easy:
-> make
 
-Step 3: Install the binary
---------------------------
+```
+$ meson compile -C build
+```
+
+## Step 3: Install the binary
 
 Just as easy:
-> make install
 
-Typically you will need root privileges to install in the standard prefix,
-if installing as root is not an option you can use the --prefix configure
-switch to install to another location.
+```
+$ sudo meson install -C build
+```
+
+The above example uses 'sudo' to gain root privileges, assuming the standard
+installation prefix was used (typically '/usr/local'). Other installation
+prefixes might not require root privileges, however if you chose the 'suidroot'
+option, root will be required in any case.

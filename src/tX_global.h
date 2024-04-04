@@ -28,9 +28,11 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#include <config.h>
 #include "tX_types.h"
 #include <limits.h>
 #include <stdio.h>
+#include <zlib.h>
 
 #ifndef PATH_MAX
 #define PATH_MAX 1024
@@ -43,12 +45,6 @@ extern "C" {
 #define BUTTON_TYPE_ICON 1
 #define BUTTON_TYPE_TEXT 2
 #define BUTTON_TYPE_BOTH 3
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <zlib.h>
 
 #ifdef ENABLE_DEBUG_OUTPUT
 #define tX_debug(fmt, args...)           \

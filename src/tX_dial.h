@@ -25,10 +25,7 @@
 #ifndef __GTK_TX_DIAL_H__
 #define __GTK_TX_DIAL_H__
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
-
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
