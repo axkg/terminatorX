@@ -24,9 +24,11 @@
 */
 
 #include "tX_vttgui.h"
+#include "tX_dial.h"
 #include "tX_dialog.h"
 #include "tX_engine.h"
 #include "tX_extdial.h"
+#include "tX_flash.h"
 #include "tX_global.h"
 #include "tX_ladspa.h"
 #include "tX_ladspa_class.h"
@@ -39,12 +41,10 @@
 #include "tX_ui_support.h"
 #include "tX_vtt.h"
 #include "tX_widget.h"
-#include "tX_dial.h"
-#include "tX_flash.h"
 
+#include <ctype.h>
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
-#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 

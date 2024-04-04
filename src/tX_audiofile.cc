@@ -457,9 +457,9 @@ static enum mad_flow tX_mad_error(void* data, struct mad_stream* stream, struct 
 
 /* From minimad.c of mad */
 static inline signed int scale(mad_fixed_t sample) {
-    //#ifdef BIG_ENDIAN_MACHINE
+    // #ifdef BIG_ENDIAN_MACHINE
     //	swap32_inline(&sample);
-    //#endif
+    // #endif
     /* round */
     sample += (1L << (MAD_F_FRACBITS - 16));
 

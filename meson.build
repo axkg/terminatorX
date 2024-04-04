@@ -50,6 +50,43 @@ src = [
     'src/wav_write.c'
 ]
 
+hdr = [
+    'src/tX_audiodevice.h',
+    'src/tX_audiofile.h',
+    'src/tX_capabilities.h',
+    'src/tX_dial.h',
+    'src/tX_dialog.h',
+    'src/tX_endian.h',
+    'src/tX_engine.h',
+    'src/tX_event.h',
+    'src/tX_extdial.h',
+    'src/tX_flash.h',
+    'src/tX_global.h',
+    'src/tX_knobloader.h',
+    'src/tX_ladspa_class.h',
+    'src/tX_ladspa.h',
+    'src/tX_loaddlg.h',
+    'src/tX_maingui.h',
+    'src/tX_midiin.h',
+    'src/tX_mouse.h',
+    'src/tX_panel.h',
+    'src/tX_pbutton.h',
+    'src/tX_prelis.h',
+    'src/tX_seqpar.h',
+    'src/tX_sequencer.h',
+    'src/tX_tape.h',
+    'src/tX_types.h',
+    'src/tX_ui_callbacks.h',
+    'src/tX_ui_interface.h',
+    'src/tX_ui_support.h',
+    'src/tX_vttfx.h',
+    'src/tX_vttgui.h',
+    'src/tX_vtt.h',
+    'src/tX_widget.h',
+    'src/version.h',
+    'src/wav_file.h'
+]
+
 includes = include_directories('src')
 
 xxd = find_program('xxd')
@@ -202,6 +239,13 @@ executable(meson.project_name(),
     install_mode: tX_mode
 )
 
+clang_format = find_program('clang-format', required: false)
+if clang_format.found()
+    test('Validating coding style', clang_format, 
+        args: ['--dry-run', '-Werror'] + src + hdr,
+        workdir: meson.project_source_root())
+endif
+
 # docs and supporting files
 
 doc_config = configuration_data()
@@ -226,7 +270,7 @@ spec_file = configure_file(input: 'terminatorX.spec.in',
 # desktop file
 
 desktop_file = configure_file(input: 'terminatorX.desktop',
-    output: 'terminatorX.desktop',
+    output: 'org.terminatorx.terminatorX.desktop',
     configuration: doc_config,
     install: true,
     install_dir: join_paths(get_option('datadir'), 'applications')
@@ -239,17 +283,17 @@ endif
 
 # appdata
 
-appdata = configure_file(input: 'terminatorX.appdata.xml',
-    output: 'terminatorX.appdata.xml',
+metainfo = configure_file(input: 'terminatorX.metainfo.xml',
+    output: 'org.terminatorx.terminatorX.metainfo.xml',
     configuration: doc_config,
     install: true,
-    install_dir: join_paths(get_option('datadir'), 'appdata')
+    install_dir: join_paths(get_option('datadir'), 'metainfo')
 )
 
 appdata_validator = find_program('appstreamcli', required: false)
 if appdata_validator.found()
   test('Validating desktop file', appdata_validator, 
-  args: ['validate', '--no-net', '--explain', appdata])
+  args: ['validate', '--no-net', '--explain', metainfo])
 endif
 
 # GNOME online help

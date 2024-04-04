@@ -19,7 +19,6 @@
 
 #include <gtk/gtk.h>
 
-#include <config.h>
 #include "tX_dialog.h"
 #include "tX_global.h"
 #include "tX_maingui.h"
@@ -27,6 +26,7 @@
 #include "tX_ui_callbacks.h"
 #include "tX_ui_interface.h"
 #include "tX_ui_support.h"
+#include <config.h>
 
 void on_pref_cancel_clicked(GtkButton* button,
     gpointer user_data) {

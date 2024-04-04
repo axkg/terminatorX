@@ -27,11 +27,11 @@
 
 #include <config.h>
 
-#include "tX_vtt.h"
 #include "malloc.h"
 #include "tX_global.h"
 #include "tX_maingui.h"
 #include "tX_sequencer.h"
+#include "tX_vtt.h"
 #include <glib.h>
 #include <math.h>
 #include <stdio.h>
@@ -1628,7 +1628,7 @@ void add_vtt(GtkWidget* ctrl, GtkWidget* audio, char* fn) {
 extern void vg_move_fx_panel_up(tX_panel* panel, vtt_class* vtt, bool stereo);
 extern void vg_move_fx_panel_down(tX_panel* panel, vtt_class* vtt, bool stereo);
 
-//#define debug_fx_stack(); for (i=list->begin(); i != list->end(); i++) puts((*i)->get_info_string());
+// #define debug_fx_stack(); for (i=list->begin(); i != list->end(); i++) puts((*i)->get_info_string());
 #define debug_fx_stack() ;
 
 void vtt_class ::effect_move(vtt_fx* effect, int pos) {

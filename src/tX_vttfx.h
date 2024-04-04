@@ -23,7 +23,7 @@
 #ifndef _h_tx_vttfx
 #define _h_tx_vttfx 1
 
-//#include "tX_vtt.h"
+// #include "tX_vtt.h"
 #include "tX_ladspa.h"
 #include "tX_panel.h"
 #include "tX_seqpar.h"

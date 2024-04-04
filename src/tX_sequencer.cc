@@ -83,8 +83,8 @@ int tX_sequencer ::trig_play() {
     return 1;
 }
 
-//#define SEQ_DEBUG 1
-//#define SEQ_DEBUG_MAX 1
+// #define SEQ_DEBUG 1
+// #define SEQ_DEBUG_MAX 1
 
 void tX_sequencer ::trig_stop() {
     list<tX_event*>::iterator song_event;

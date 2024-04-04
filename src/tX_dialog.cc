@@ -743,7 +743,7 @@ void show_about(int nag) {
         gtk_container_add(GTK_CONTAINER(scroll), text);
         gtk_text_buffer_create_tag(tbuffer, "courier", "family", "courier", NULL);
 
-        gtk_text_buffer_insert_with_tags_by_name(tbuffer, &iter, (const gchar*) ___COPYING, ___COPYING_len, "courier", NULL);
+        gtk_text_buffer_insert_with_tags_by_name(tbuffer, &iter, (const gchar*)___COPYING, ___COPYING_len, "courier", NULL);
         gtk_text_view_set_left_margin(GTK_TEXT_VIEW(text), 5);
         gtk_text_view_set_right_margin(GTK_TEXT_VIEW(text), 5);
         gtk_widget_set_size_request(GTK_WIDGET(scroll), 640, 200);

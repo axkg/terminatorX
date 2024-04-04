@@ -23,9 +23,9 @@
 #ifndef _h_tx_ladspa_class
 #define _h_tx_ladspa_class 1
 
-#include <config.h>
 #include "tX_ladspa.h"
 #include "tX_vtt.h"
+#include <config.h>
 #include <gtk/gtk.h>
 #include <list>
 

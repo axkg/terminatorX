@@ -26,15 +26,14 @@ extern "C" {
 #include <sys/wait.h>
 };
 
-#include <config.h>
 #include "tX_global.h"
+#include <config.h>
 
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
 
 pid_t player_pid = 0;
 

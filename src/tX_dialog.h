@@ -22,7 +22,7 @@
 
 #ifndef _H_TX_DIALOG_
 #define _H_TX_DIALOG_
-//#include <gdk/gdk.h>
+// #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 extern GtkWidget* opt_dialog;
 

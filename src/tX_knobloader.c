@@ -21,8 +21,8 @@
 */
 
 #include "tX_knobloader.h"
-#include "tX_knob_resource.h"
 #include "tX_global.h"
+#include "tX_knob_resource.h"
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gtk/gtk.h>
 
