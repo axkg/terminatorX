@@ -1,4 +1,3 @@
-
 Summary:       Real-time Audio Synthesizer
 Name:          terminatorX
 Version:       @VERSION@
@@ -6,7 +5,7 @@ Release:       1%{?dist}
 Group:         Applications/Multimedia
 License:       GPLv2+ and GFDL
 URL:           http://terminatorx.org/
-Source0:       http://terminatorx.org/dist/%{name}-%{version}.tar.bz2
+Source0:       http://terminatorx.org/dist/%{name}-%{version}.tar.xz
 
 BuildRequires: alsa-lib-devel
 BuildRequires: audiofile-devel
@@ -14,6 +13,7 @@ BuildRequires: desktop-file-utils
 BuildRequires: libappstream-glib
 BuildRequires: gcc-c++
 BuildRequires: gtk3-devel
+BuildRequires: itstool
 BuildRequires: jack-audio-connection-kit-devel
 BuildRequires: ladspa-devel
 BuildRequires: libcap-devel
@@ -24,16 +24,18 @@ BuildRequires: libxml2-devel
 BuildRequires: libX11-devel
 BuildRequires: mpg123
 BuildRequires: pulseaudio-libs-devel
-BuildRequires: rarian-compat
 BuildRequires: sox
 BuildRequires: vorbis-tools
-BuildRequires: gnome-doc-utils
-BuildRequires: itstool
+BuildRequires: meson
+BuildRequires: ninja-build
+BuildRequires: xxd
 
 Requires:      hicolor-icon-theme
 Requires:      mpg123
 Requires:      sox
 Requires:      vorbis-tools
+
+%define fqn org.terminatorx.terminatorX
 
 %description
 terminatorX is a real-time audio synthesizer that allows you to "scratch" on
@@ -49,11 +51,11 @@ interface - all accessible through an easy-to-use gtk+ GUI.
 sed -i 's|/lib/|/%{_lib}/|g' src/tX_ladspa.cc
 
 %build
-%configure
-make %{?_smp_mflags}
+%meson
+%meson_build
 
 %install
-make install DESTDIR=%{buildroot}
+%meson_install
 
 # desktop file categories
 ADD="Audio X-Jack X-DJTools X-DigitalProcessing Sequencer"
@@ -62,42 +64,49 @@ desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   `for c in ${ADD}    ; do echo "--add-category $c "    ; done` \
   `for c in ${REMOVE} ; do echo "--remove-category $c " ; done` \
-  %{buildroot}%{_datadir}/applications/%{name}.desktop
+  %{buildroot}%{_datadir}/applications/%{fqn}.desktop
 
-appstream-util validate-relax --nonet %{buildroot}/%{_datadir}/appdata/terminatorX.appdata.xml
-
-%post
-/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun
-if [ $1 -eq 0 ] ; then
-    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans
-/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
+appstream-util validate-relax --nonet %{buildroot}/%{_datadir}/metainfo/%{fqn}.metainfo.xml
 
 %files
-%doc AUTHORS.md ChangeLog NEWS README* THANKS.md TODO.md
+%doc AUTHORS.md README*
 %license COPYING*
 %{_bindir}/%{name}
 %{_mandir}/man1/%{name}.1*
-%{_datadir}/mime-info/%{name}.keys
-%{_datadir}/mime-info/%{name}.mime
 %{_datadir}/help/C/%{name}-manual/
-%{_datadir}/pixmaps/%{name}.xpm
-%{_datadir}/icons/hicolor/512x512/apps/%{name}.png
-%{_datadir}/icons/hicolor/512x512/mimetypes/%{name}-mime.png
-%{_datadir}/applications/%{name}.desktop
-%{_datadir}/appdata/%{name}.appdata.xml
+%{_datadir}/pixmaps/%{fqn}.xpm
+%{_datadir}/icons/hicolor/512x512/apps/%{fqn}.png
+%{_datadir}/icons/hicolor/512x512/mimetypes/%{fqn}.Set.png
+%{_datadir}/applications/%{fqn}.desktop
+%{_datadir}/mime/packages/%{fqn}-mime.xml
+%{_datadir}/metainfo/%{fqn}.metainfo.xml
 
 %changelog
-* Fri Feb 19 2021 Alexander Koenig <alex@lisas.de> - 4.1.0-1
-- UI improvements
-- more gtk3 adaptations
-- minor bug fixes
+* Fri Apr 05 2024 Alexander Koenig <alex@lisas.de>
+- Merge RPM Fusion downstream
+- Adapt to meson build
+
+* Sun Feb 04 2024 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 4.2.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
+
+* Wed Aug 02 2023 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 4.2.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
+
+* Sat Oct 01 2022 Leigh Scott <leigh123linux@gmail.com> - 4.2.0-1
+- Update to 4.2.0
+
+* Mon Aug 08 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 4.1.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild and ffmpeg
+  5.1
+
+* Wed Feb 09 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 4.1.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
+* Sat Oct 30 2021 Orcan Ogetbil <oged[DOT]fedora[AT]gmail[DOT]com> - 4.1.0-1
+- Version updae
+
+* Tue Aug 03 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 4.0.1-12
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
 * Thu Feb 04 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 4.0.1-11
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
@@ -137,19 +146,6 @@ fi
 * Tue Jul 19 2016 Leigh Scott <leigh123linux@googlemail.com> - 4.0.0-1
 - Update to 4.0.0
 - Change from gtk2 to gtk3
-
-* Sun Jun 19 2016 Alexander Koenig <alex@lisas.de> - 4.00-1
-- fix icon resolutions
-- include appdata
-
-* Fri May 13 2016 Alexander Koenig <alex@lisas.de> - 3.99-1
-- update to compile on rawhide (fc24)
-- install binary setuid root
-- require mpg123 instead of mpg321
-
-* Sat Feb 01 2014 Alexander Koenig <alex@lisas.de> - 3.90-1
-- Merge RPMFusion version
-- Drop obsolete patches
 
 * Sat Dec 06 2014 Nicolas Chauvet <kwizart@gmail.com> - 3.90-3
 - Switch to mpg123
@@ -224,10 +220,10 @@ fi
 - added patch to compile under redhat 8.0 and gcc 3.2
 - erased post warning about suid root executable
 
-* Sat Sep 14 2002 Alexander Koenig <alex@lisas.de>
+* Sat Sep 14 2002 Alexander Konig <alex@lisas.de>
  - Switch from xpm to pngs for GNOME icons
 
-* Fri May 31 2002 Alexander Koenig <alex@lisas.de>
+* Fri May 31 2002 Alexander Konig <alex@lisas.de>
  - Added Adrian's man page
 
 * Tue Mar 20 2001 Adrian Reber <adrian@lisas.de>
