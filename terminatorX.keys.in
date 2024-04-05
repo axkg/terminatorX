@@ -1,5 +1,0 @@
-application/x-terminatorX:
-	open=terminatorX %f
-	view=terminatorX %f
-	edit=terminatorX %f
-	icon-filename=@prefix@/icons/hicolor/512x512/mimetypes/terminatorX-mime.png

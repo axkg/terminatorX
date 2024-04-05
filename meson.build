@@ -258,39 +258,10 @@ spec_file = configure_file(input: 'terminatorX.spec.in',
     configuration: doc_config
 )
 
-# desktop file
-
-desktop_file = configure_file(input: 'terminatorX.desktop',
-    output: 'org.terminatorx.terminatorX.desktop',
-    configuration: doc_config,
-    install: true,
-    install_dir: join_paths(get_option('datadir'), 'applications')
-)
-
-desktop_validator = find_program('desktop-file-validate', required: false)
-if desktop_validator.found()
-  test('Validating desktop file', desktop_validator, args: [desktop_file])
-endif
-
-# appdata
-
-metainfo = configure_file(input: 'terminatorX.metainfo.xml',
-    output: 'org.terminatorx.terminatorX.metainfo.xml',
-    configuration: doc_config,
-    install: true,
-    install_dir: join_paths(get_option('datadir'), 'metainfo')
-)
-
-appdata_validator = find_program('appstreamcli', required: false)
-if appdata_validator.found()
-  test('Validating desktop file', appdata_validator, 
-  args: ['validate', '--no-net', '--explain', metainfo])
-endif
-
-# GNOME online help
+# GNOME help and manpage
 
 subdir('help')
 
-# icons
+# data
 
-subdir('icons')
+subdir('data')

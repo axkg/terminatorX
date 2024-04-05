@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+    <mime-type type="application/x-terminatorx">
+        <sub-class-of type="text/xml"/>
+        <comment>terminatorX set file</comment>
+        <glob pattern="*.tX"/>
+        <glob pattern="*.tx"/>
+        <generic-icon name="org.terminatorx.terminatorX.Set"/>
+    </mime-type>
+</mime-info>

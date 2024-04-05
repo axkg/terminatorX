@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/org/terminatorX/tX_dialog">
-		<file>../../icons/terminatorX.png</file>
+		<file>../../data/icons/org.terminatorx.terminatorX.png</file>
 		<file>tX_logo.jpg</file>
   </gresource>
 </gresources>
