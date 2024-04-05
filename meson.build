@@ -251,15 +251,6 @@ endif
 doc_config = configuration_data()
 doc_config.set('VERSION', meson.project_version())
 
-# man page
-
-man_page = configure_file(input: 'terminatorX.1.in',
-    output: 'terminatorX.1',
-    configuration: doc_config
-)
-
-install_man(man_page)
-
 # RPM spec file
 
 spec_file = configure_file(input: 'terminatorX.spec.in',
