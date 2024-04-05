@@ -650,8 +650,6 @@ void vtt_class ::calc_speed() {
 }
 
 void vtt_class ::render_scratch() {
-    int16_t* ptr;
-
     int sample;
 
     d_prec pos_a_f;
@@ -1646,7 +1644,7 @@ void vtt_class ::effect_move(vtt_fx* effect, int pos) {
     if (pos == 0) {
         list->remove(effect);
         list->push_front(effect);
-    } else if (pos == list->size() - 1) {
+    } else if (pos == ((int)list->size()) - 1) {
         list->remove(effect);
         list->push_back(effect);
     } else {

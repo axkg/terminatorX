@@ -343,10 +343,10 @@ class vtt_class {
     }
 
     int16_t get_sample(int sample) {
-        if (sample >= samples_in_buffer) {
+        if (sample >= (int)samples_in_buffer) {
             if (loop) {
                 // sample %= samples_in_buffer;
-                while (sample >= samples_in_buffer) {
+                while (sample >= (int)samples_in_buffer) {
                     sample -= samples_in_buffer;
                 }
             } else {

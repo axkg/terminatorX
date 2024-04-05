@@ -46,7 +46,7 @@ void LADSPA_Plugin ::init() {
         tX_warning("LADSPA_PATH not set. Trying /usr/lib/ladspa:/usr/local/lib/ladspa");
         strcpy(ladspa_path, "/usr/lib/ladspa:/usr/local/lib/ladspa");
     } else
-        strncpy(ladspa_path, ladspa_path_ptr, sizeof(ladspa_path));
+        strncpy(ladspa_path, ladspa_path_ptr, sizeof(ladspa_path) - 1);
 
     /* Scanning every dir in path */
     start = ladspa_path;

@@ -835,7 +835,6 @@ void build_vtt_gui(vtt_class* vtt) {
     gtk_widget_show(tempbox);
     gtk_box_pack_start(GTK_BOX(tempbox2), tempbox, WID_DYN);
 
-    GtkWidget* pixmap;
     g->audio_minimize = create_top_button(MINIMIZE);
     gtk_box_pack_end(GTK_BOX(tempbox2), g->audio_minimize, WID_FIX);
     gtk_widget_show(g->audio_minimize);

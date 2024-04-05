@@ -198,10 +198,10 @@ void tX_audiodevice_oss ::play(int16_t* buffer) {
 int tX_audiodevice_alsa ::open() {
     snd_pcm_stream_t stream = SND_PCM_STREAM_PLAYBACK;
     snd_pcm_hw_params_t* hw_params;
-    char pcm_name[64];
+    char pcm_name[4097];
     char* pos;
 
-    strncpy(pcm_name, globals.alsa_device_id, sizeof(pcm_name));
+    strncpy(pcm_name, globals.alsa_device_id, sizeof(pcm_name) - 1);
     if ((pos = strchr(pcm_name, '#')) != NULL)
         *pos = 0;
 

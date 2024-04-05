@@ -32,6 +32,7 @@
 #include "tX_endian.h"
 #include "tX_loaddlg.h"
 #include "wav_file.h"
+#include <cstdint>
 #include <malloc.h>
 #include <string.h>
 
@@ -754,13 +755,14 @@ tX_audio_error tx_audiofile::load_af() {
     }
 
     /* shorten to the actually read size of samples */
-    if (!realloc(data, frames_read * 2)) {
+    int16_t* new_data = (int16_t*)realloc(data, frames_read * 2);
+    if (!new_data) {
         if (data)
             free(data);
         return TX_AUDIO_ERR_ALLOC;
     }
 
-    mem = data;
+    mem = new_data;
     no_samples = frames_read;
 
     return TX_AUDIO_SUCCESS;

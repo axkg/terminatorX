@@ -311,7 +311,7 @@ void load_tt_part(char* buffer) {
 #endif
     turn_audio_off();
 
-    strncpy(globals.tables_filename, buffer, sizeof(globals.tables_filename));
+    strncpy(globals.tables_filename, buffer, sizeof(globals.tables_filename) - 1);
 
     doc = xmlParseFile(buffer);
     if (doc) {
