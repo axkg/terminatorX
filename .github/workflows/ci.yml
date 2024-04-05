@@ -19,7 +19,7 @@ jobs:
                             libjack-dev liblrdf0-dev libmad0-dev libpango1.0-dev \
                             libpulse-dev libsm-dev libvorbis-dev libx11-dev libxext-dev \
                             libxi-dev libxml2-dev mpg321 sox vorbis-tools yelp-tools zlib1g-dev \
-                            xxd meson ninja-build
+                            xxd meson ninja-build appstream desktop-file-utils gettext clang-format
     - name: Run compile test using ${{ matrix.target }}
       run: |
         ${{ matrix.target }} meson setup build

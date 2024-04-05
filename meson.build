@@ -118,12 +118,12 @@ vorbis_dep = dependency('vorbis', version : '>= 1.3', required: get_option('vorb
 vorbisfile_dep = dependency('vorbisfile', version : '>= 1.3', required: get_option('vorbis'))
 audiofile_dep = dependency('audiofile', version : '>= 0.3', required: get_option('audiofile'))
 alsa_dep = dependency('alsa', version : '>= 1.2', required: get_option('alsa'))
-jack_dep = dependency('jack', version : '>= 1.9', required: get_option('jack'))
-pulse_dep = dependency('libpulse', version : '>= 16', required: get_option('pulse'))
-x11_dep = dependency('x11', version : '>= 1.8', required: get_option('x11'))
+jack_dep = dependency('jack', version : '>= 0.120', required: get_option('jack'))
+pulse_dep = dependency('libpulse', version : '>= 15', required: get_option('pulse'))
+x11_dep = dependency('x11', version : '>= 1.7', required: get_option('x11'))
 cap_dep = dependency('libcap', version : '>= 2', required: get_option('capabilities'))
 lrdf_dep = dependency('lrdf', version : '>= 0.2.4', required: get_option('lrdf'))
-deps = [ gtk_dep, xml_dep, threads_dep, dl_dep, mad_dep, vorbis_dep, vorbisfile_dep, audiofile_dep, alsa_dep, jack_dep, pulse_dep, x11_dep, cap_dep, lrdf_dep ]
+deps = [ gtk_dep, xml_dep, z_dep, threads_dep, dl_dep, mad_dep, vorbis_dep, vorbisfile_dep, audiofile_dep, alsa_dep, jack_dep, pulse_dep, x11_dep, cap_dep, lrdf_dep ]
 
 ladspa = cc.has_header('ladspa.h', required: true)
 
