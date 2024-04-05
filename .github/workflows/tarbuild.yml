@@ -21,7 +21,8 @@ jobs:
                             libcap2-dev libglib2.0-dev libgtk-3-dev libice-dev \
                             libjack-dev liblrdf0-dev libmad0-dev libpango1.0-dev \
                             libpulse-dev libsm-dev libvorbis-dev libx11-dev libxext-dev \
-                            libxi-dev libxml2-dev mpg321 sox vorbis-tools yelp-tools zlib1g-dev
+                            libxi-dev libxml2-dev mpg321 sox vorbis-tools yelp-tools zlib1g-dev \
+                            meson ninja-build
     - name: Tag release
       uses: mathieudutour/github-tag-action@v6.0
       with:
@@ -29,11 +30,10 @@ jobs:
         custom_tag: ${{ inputs.relver }}
     - name: Build tarball
       run: |
-        ./autogen.sh
-        ./configure
-        make tarballs
+        meson setup build
+        meson dist --no-tests -C build
     - name: Collect artifacts
       uses: actions/upload-artifact@v2
       with:
         name: tarballs
-        path: terminatorX-*.tar.*
+        path: build/meson-dist/terminatorX-*.tar.*
