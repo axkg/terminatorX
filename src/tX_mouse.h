@@ -145,4 +145,3 @@ class tx_mouse {
     static gboolean key_release_wrap(GtkWidget* widget, GdkEventKey* eventKey, void* data);
     static gboolean linux_input_wrap(GIOChannel* source, GIOCondition condition, gpointer data);
 };
-
