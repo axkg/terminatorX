@@ -20,8 +20,7 @@
     Description: Header to tX_sequencer.cc
 */
 
-#ifndef _h_tx_sequencer_
-#define _h_tx_sequencer_ 1
+#pragma once
 
 #include <glib.h>
 #include <list>
@@ -101,5 +100,3 @@ class tX_sequencer {
 };
 
 extern tX_sequencer sequencer;
-
-#endif

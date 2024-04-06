@@ -20,15 +20,14 @@
     Description: Header to tX_seqpar.cc
 */
 
+#pragma once
+
 #include "tX_extdial.h"
 #include "tX_global.h"
 #include "tX_midiin.h"
 #include <gtk/gtk.h>
 #include <list>
 #include <pthread.h>
-
-#ifndef _tx_seqpar_h
-#define _tx_seqpar_h 1
 
 #define NO_MOUSE_MAPPING 0
 #define MOUSE_MAPPING_OK 1
@@ -477,5 +476,3 @@ class tX_seqpar_vttfx_int : public tX_seqpar_vttfx {
 
     static GCallback gtk_callback(GtkWidget*, tX_seqpar_vttfx_int*);
 };
-
-#endif

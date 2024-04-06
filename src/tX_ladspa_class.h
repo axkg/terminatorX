@@ -20,8 +20,7 @@
     Description: Header to tX_ladspa_class.cc - see there for more info
 */
 
-#ifndef _h_tx_ladspa_class
-#define _h_tx_ladspa_class 1
+#pragma once
 
 #include "tX_ladspa.h"
 #include "tX_vtt.h"
@@ -72,5 +71,3 @@ class LADSPA_Class { // Yeah, I know "class" name for C++ class - but it just se
     static void set_current_vtt(vtt_class* vtt) { current_vtt = vtt; }
     static vtt_class* get_current_vtt() { return current_vtt; }
 };
-
-#endif

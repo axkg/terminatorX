@@ -20,8 +20,7 @@
     Description: Header to tX_mouse.cc
 */
 
-#ifndef _h_tx_mouse
-#define _h_tx_mouse
+#pragma once
 
 #include <config.h>
 
@@ -147,4 +146,3 @@ class tx_mouse {
     static gboolean linux_input_wrap(GIOChannel* source, GIOCondition condition, gpointer data);
 };
 
-#endif

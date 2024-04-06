@@ -22,8 +22,7 @@
     08 Dec 1999 - added audiofile support
 */
 
-#ifndef _h_tx_vtt
-#define _h_tx_vtt 1
+#pragma once
 
 #include <config.h>
 
@@ -423,5 +422,3 @@ class vtt_class {
 
     static f_prec* get_mix_buffer() { return mix_buffer; }
 };
-
-#endif

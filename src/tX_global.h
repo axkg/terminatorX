@@ -21,8 +21,7 @@
                  tX_global struct.
 */
 
-#ifndef _TX_GLOBAL_H
-#define _TX_GLOBAL_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -445,5 +444,3 @@ extern int _store_compress_xml;
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
-#endif

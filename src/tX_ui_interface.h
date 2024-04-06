@@ -3,6 +3,8 @@
  * crafted code.
  */
 
+#pragma once
+
 GtkWidget* create_tx_adjust(void);
 GtkWidget* create_tx_options(GtkWindow* parent);
 GtkWidget* create_tx_del_mode(void);

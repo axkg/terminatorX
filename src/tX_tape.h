@@ -20,8 +20,7 @@
     Description: Header to tX_tape.cc
 */
 
-#ifndef _h_tx_tapedeck_
-#define _h_tx_tapedeck_ 1
+#pragma once
 
 #include "tX_types.h"
 #include "wav_file.h"
@@ -39,5 +38,3 @@ class tx_tapedeck {
 
     tx_tapedeck();
 };
-
-#endif

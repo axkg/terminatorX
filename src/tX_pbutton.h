@@ -20,8 +20,7 @@
     Description: Header to tX_pbutton.cc
 */
 
-#ifndef _tx_pbutton_h_
-#define _tx_pbutton_h_ 1
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -52,4 +51,3 @@ extern void tx_icons_init(int size);
 extern GtkWidget* create_top_button(int icon_id);
 extern GtkWidget* tx_xpm_label_box(tX_icon id, const gchar* label_text, GtkWidget** labelwidget = (GtkWidget**)NULL);
 extern GtkWidget* tx_xpm_button_new(tX_icon id, const char* label, int toggle, GtkWidget** labelwidget = (GtkWidget**)NULL);
-#endif

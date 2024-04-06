@@ -20,8 +20,8 @@
     Description: Header to tX_loaddlg.cc
 */
 
-#ifndef _h_tX_loaddlg
-#define _h_tX_loaddlg 1
+#pragma once
+
 #define TX_LOADDLG_MODE_SINGLE 0
 #define TX_LOADDLG_MODE_MULTI 1
 
@@ -34,5 +34,3 @@ extern void ld_set_filename(char* name);
 extern void ld_set_progress(gfloat progress);
 extern void ld_destroy();
 extern char* strip_path(char* name);
-
-#endif

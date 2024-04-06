@@ -20,8 +20,7 @@
     Description: Header to ladspa.cc - see there for more info
 */
 
-#ifndef _h_tx_ladspa
-#define _h_tx_ladspa 1
+#pragma once
 
 #include <ladspa.h>
 #include <list>
@@ -73,5 +72,3 @@ class LADSPA_Stereo_Plugin : public LADSPA_Plugin {
     static LADSPA_Stereo_Plugin* getPluginByIndex(int i);
     static LADSPA_Stereo_Plugin* getPluginByUniqueID(long ID);
 };
-
-#endif

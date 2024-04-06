@@ -20,6 +20,8 @@
     Description: Aquire CAP_SYS_NICE through Linux' capabilities.
 */
 
+#pragma once
+
 #include <config.h>
 
 #ifdef USE_CAPABILITIES

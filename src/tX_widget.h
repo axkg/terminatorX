@@ -20,8 +20,8 @@
     Description: Header to tX_widget.c
 */
 
-#ifndef __GTK_TX_H__
-#define __GTK_TX_H__
+#pragma once
+
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
@@ -111,4 +111,3 @@ f_prec gtk_tx_get_zoom(GtkTx* tx);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-#endif

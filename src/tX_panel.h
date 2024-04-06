@@ -17,8 +17,7 @@
 
 */
 
-#ifndef _h_tX_panel_
-#define _h_tX_panel_
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -62,4 +61,3 @@ class tX_panel {
 };
 
 extern void tX_panel_make_label_bold(GtkWidget* widget);
-#endif

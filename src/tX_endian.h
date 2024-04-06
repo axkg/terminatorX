@@ -20,8 +20,7 @@
     Description: header to tX_endian.c
 */
 
-#ifndef _H_TX_ENDIAN_
-#define _H_TX_ENDIAN_
+#pragma once
 
 #include <config.h>
 #ifdef WORDS_BIGENDIAN
@@ -60,5 +59,3 @@ extern void swap32(int32_t* val);
 #endif /* __cplusplus */
 
 #endif /* WORDS_BIGENDIAN */
-
-#endif /* _H_TX_ENDIAN_ */

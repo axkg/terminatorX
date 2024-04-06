@@ -20,8 +20,8 @@
     Description: Header to tX_flash.c
 */
 
-#ifndef __GTK_TX_FLASH_H__
-#define __GTK_TX_FLASH_H__
+#pragma once
+
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
@@ -70,4 +70,3 @@ void gtk_tx_flash_update_colors(GtkTxFlash* tx);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-#endif

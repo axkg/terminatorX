@@ -20,10 +20,8 @@
     Description: Header to tX_vttfx.cc - see there for more info
 */
 
-#ifndef _h_tx_vttfx
-#define _h_tx_vttfx 1
+#pragma once
 
-// #include "tX_vtt.h"
 #include "tX_ladspa.h"
 #include "tX_panel.h"
 #include "tX_seqpar.h"
@@ -162,4 +160,3 @@ class vtt_fx_stereo_ladspa : public vtt_fx_ladspa {
     virtual void run();
     virtual ~vtt_fx_stereo_ladspa();
 };
-#endif

@@ -20,8 +20,7 @@
     Description: Header to tX_midiin.cc
 */
 
-#ifndef _tx_midiin_h
-#define _tx_midiin_h 1
+#pragma once
 
 #include <libxml/encoding.h>
 #include <libxml/parser.h>
@@ -137,5 +136,3 @@ class tX_midiin {
 };
 
 #endif // USE_ALSA_MIDI_IN
-
-#endif // ndef _tx_midiin_h

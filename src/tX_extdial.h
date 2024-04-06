@@ -18,8 +18,7 @@
     File: tX_extdial.h
 */
 
-#ifndef _h_tx_extdial_
-#define _h_tx_extdial_
+#pragma once
 
 #include "tX_dial.h"
 #include <gtk/gtk.h>
@@ -56,5 +55,3 @@ class tX_extdial {
     static GCallback f_entry(GtkWidget* w, tX_extdial* ed);
     static GCallback f_adjustment(GtkWidget* w, tX_extdial* ed);
 };
-
-#endif

@@ -20,10 +20,7 @@
     Description: pretty dumb version management header...
 */
 
-#ifndef _H_VERSION
-#define _H_VERSION
+#pragma once
 
 #include <config.h>
 #define VERSIONSTRING PACKAGE " release " VERSION
-
-#endif

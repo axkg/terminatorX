@@ -3,6 +3,8 @@
  * crafted code.
  */
 
+# pragma once
+
 #include <config.h>
 #include <gtk/gtk.h>
 

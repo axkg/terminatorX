@@ -20,8 +20,7 @@
     Description: Header to audiofile.cc
 */
 
-#ifndef _h_tx_audiofile
-#define _h_tx_audiofile 1
+#pragma once
 
 #define SOX_BLOCKSIZE 32000
 
@@ -152,5 +151,3 @@ class tx_audiofile {
 
     ~tx_audiofile();
 };
-
-#endif

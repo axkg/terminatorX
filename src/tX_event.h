@@ -20,8 +20,7 @@
     Description: Header to tX_event.cc
 */
 
-#ifndef _h_tx_event_
-#define _h_tx_event_ 1
+#pragma once
 
 #include "tX_seqpar.h"
 #include "tX_types.h"
@@ -64,5 +63,3 @@ class tX_event {
             sp->exec_value(value);
     }
 };
-
-#endif

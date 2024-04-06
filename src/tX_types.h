@@ -21,8 +21,7 @@
                  available define USE_X86_TYPES on i386 machines
 */
 
-#ifndef _H_TX_TYPES
-#define _H_TX_TYPES
+#pragma once
 
 #define f_prec float
 #define d_prec double
@@ -36,7 +35,5 @@
 #define int8_t char
 #define int16_t short
 #define int32_t long
-
-#endif
 
 #endif

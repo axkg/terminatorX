@@ -16,12 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-#ifndef _H_WAVFILE
-#define _H_WAVFILE
 
 #include "tX_global.h"
 #include "tX_types.h"
@@ -44,8 +43,7 @@ FILE* init_wav_read(char file_name[], wav_sig* info);
 FILE* open_wav_rec(wav_sig* info);
 extern int rewrite_head(wav_sig* info);
 extern void wav_close(FILE* wav);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
-#endif

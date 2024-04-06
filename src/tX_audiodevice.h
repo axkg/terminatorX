@@ -20,8 +20,7 @@
     Description: Header to tX_maingui.cc
 */
 
-#ifndef _h_tx_audiodevice
-#define _h_tx_audiodevice 1
+#pragma once
 
 #include "pthread.h"
 #include "tX_global.h"
@@ -202,7 +201,5 @@ class tX_jack_client {
     bool get_jack_shutdown() { return jack_shutdown; }
     void set_device(tX_audiodevice_jack* dev) { device = dev; }
 };
-
-#endif
 
 #endif

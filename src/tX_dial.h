@@ -22,8 +22,7 @@
     Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
 */
 
-#ifndef __GTK_TX_DIAL_H__
-#define __GTK_TX_DIAL_H__
+#pragma once
 
 #include <config.h>
 #include <gdk/gdk.h>
@@ -74,5 +73,3 @@ void gtk_tx_dial_set_adjustment(GtkTxDial* tx_dial, GtkAdjustment* adjustment);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
-#endif /* __GTK_TX_DIAL_H__ */

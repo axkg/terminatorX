@@ -20,9 +20,8 @@
     Description: Header to tX_dialog.c
 */
 
-#ifndef _H_TX_DIALOG_
-#define _H_TX_DIALOG_
-// #include <gdk/gdk.h>
+#pragma once
+
 #include <gtk/gtk.h>
 extern GtkWidget* opt_dialog;
 
@@ -32,4 +31,3 @@ extern void destroy_about();
 extern void init_tx_options(GtkWidget* dialog);
 extern void tX_set_icon(GtkWidget* widget);
 extern void apply_options(GtkWidget*);
-#endif

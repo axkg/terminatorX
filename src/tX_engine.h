@@ -20,8 +20,7 @@
     Description: Header to tX_engine.cc
 */
 
-#ifndef _TX_ENGINE_H_
-#define _TX_ENGINE_H_
+#pragma once
 
 #include "tX_audiodevice.h"
 #include "tX_midiin.h"
@@ -107,4 +106,3 @@ class tX_engine {
     /*	void set_grab_request(); */
     bool is_stopped() { return stop_flag; }
 };
-#endif

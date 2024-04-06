@@ -20,8 +20,7 @@
     Description: Header to tX_knobloader.c
 */
 
-#ifndef _tX_knobloader_
-#define _tX_knobloader_ 1
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -43,5 +42,3 @@ extern void load_knob_pixs(int fontHeight, int scaleFactor);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
-#endif

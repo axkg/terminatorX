@@ -20,9 +20,7 @@
     Description: Header to tX_prelis.cc
 */
 
-#ifndef _h_tX_prelis
-#define _h_tX_prelis
+#pragma once
 
 extern void prelis_stop();
 extern void prelis_start(char* name);
-#endif

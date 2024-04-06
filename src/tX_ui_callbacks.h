@@ -1,3 +1,5 @@
+#pragma once
+
 #include <gtk/gtk.h>
 
 void on_tx_options_destroy(GObject* object,

@@ -20,8 +20,7 @@
     Description: Header to tX_vttgui.cc
 */
 
-#ifndef _h_tX_vttgui
-#define _h_tX_vttgui
+#pragma once
 
 #include "tX_extdial.h"
 #include "tX_panel.h"
@@ -136,4 +135,3 @@ extern void vg_init_all_non_seqpars();
 extern void vg_adjust_zoom(GtkWidget* wid, vtt_class* vtt);
 extern void gui_scroll_callback(GtkWidget* tx, GdkEventScroll* eventScroll, gpointer userdata);
 extern GCallback load_file(GtkWidget* wid, vtt_class* vtt);
-#endif
