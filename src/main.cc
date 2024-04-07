@@ -40,7 +40,6 @@
 #include "tX_endian.h"
 #include "tX_global.h"
 #include "tX_types.h"
-#include "version.h"
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <string.h>
@@ -192,7 +191,7 @@ int main(int argc, char** argv) {
 
     /* No suidroot below this comment. */
 
-    fprintf(stderr, "%s - Copyright (C) 1999-2022 by Alexander König\n", VERSIONSTRING);
+    fprintf(stderr, "%s - Copyright (C) 1999-2022 by Alexander König\n", PACKAGE " release " VERSION);
     fprintf(stderr, "terminatorX comes with ABSOLUTELY NO WARRANTY - for details read the license.\n");
 
     if (keep_caps_failed) {

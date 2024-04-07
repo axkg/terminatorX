@@ -83,7 +83,6 @@ hdr = [
     'src/tX_vttgui.h',
     'src/tX_vtt.h',
     'src/tX_widget.h',
-    'src/version.h',
     'src/wav_file.h'
 ]
 

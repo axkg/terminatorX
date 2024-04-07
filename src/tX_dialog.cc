@@ -39,7 +39,6 @@
 #include "tX_engine.h"
 #include "tX_maingui.h"
 #include "tX_vtt.h"
-#include "version.h"
 #include <dirent.h>
 
 extern "C" {
@@ -782,7 +781,7 @@ void tX_set_icon(GtkWidget* widget) {
                 tX_error("Error accessing tX_dialog resources: %s", error->message);
             }
         }
-        tX_window_icon = gdk_pixbuf_new_from_resource("/org/terminatorX/tX_dialog/../../icons/terminatorX.png", &error);
+        tX_window_icon = gdk_pixbuf_new_from_resource("/org/terminatorX/tX_dialog/../../data/icons/org.terminatorx.terminatorX.png", &error);
         if (error) {
             tX_error("Error rendering tX icon: %s", error->message);
         }

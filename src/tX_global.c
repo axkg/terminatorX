@@ -124,7 +124,7 @@ void set_global_defaults() {
 #endif
 #endif
 #endif
-    globals.interpolator_type = LINEAR;
+    globals.interpolator_type = SINC;
 
     globals.use_stdout_cmdline = 0;
     strcpy(globals.current_path, "");

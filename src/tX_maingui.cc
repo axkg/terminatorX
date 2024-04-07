@@ -37,7 +37,6 @@
 #include "tX_ui_support.h"
 #include "tX_vtt.h"
 #include "tX_vttgui.h"
-#include "version.h"
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
